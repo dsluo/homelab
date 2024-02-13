@@ -1,0 +1,14 @@
+{
+    "ansible.python.interpreterPath": "/bin/python",
+    "files.associations": {
+        "playbooks/**/*.yml": "ansible",
+        "playbooks/**/*.yaml": "ansible"
+    },
+    "editor.tabSize": 2,
+    "[yaml]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[ansible]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
+}

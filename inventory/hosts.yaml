@@ -1,0 +1,26 @@
+k3s:
+  vars:
+    ansible_user: debian
+  children:
+    servers:
+      vars:
+        k3s_control_node: true
+      hosts:
+        k0:
+          ansible_host: 192.168.40.10
+        k1:
+          ansible_host: 192.168.40.11
+        k2:
+          ansible_host: 192.168.40.12
+    agents:
+      hosts:
+        k3:
+          ansible_host: 192.168.40.13
+        k4:
+          ansible_host: 192.168.40.14
+        k5:
+          ansible_host: 192.168.40.15
+        k6:
+          ansible_host: 192.168.40.16
+        k7:
+          ansible_host: 192.168.40.17

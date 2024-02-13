@@ -1,0 +1,12 @@
+---
+- name: Setup k3s
+  hosts: k3s
+  become: true
+
+  roles:
+    - role: xanmanning.k3s
+      vars:
+        k3s_state: installed
+        k3s_release_version: stable
+        k3s_become: true
+        k3s_etcd_datastore: true

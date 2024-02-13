@@ -1,0 +1,26 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/debian
+{
+	"name": "Debian",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": {
+			"USERNAME": "${localEnv:USER}"
+		}
+	},
+	"mounts": [
+		"source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,readonly"
+	],
+	"workspaceMount": "source=${localWorkspaceFolder},target=/home/${localEnv:USER}/homelab,type=bind,consistency=cached",
+	"workspaceFolder": "/home/${localEnv:USER}/homelab",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"redhat.ansible",
+				"ms-azuretools.vscode-docker",
+				"esbenp.prettier-vscode"
+			]
+		}
+	}
+}
