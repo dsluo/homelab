@@ -10,7 +10,8 @@
 		}
 	},
 	"mounts": [
-		"source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,readonly"
+		"source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,readonly",
+		"source=${localEnv:HOME}/.kube,target=/home/${localEnv:USER}/.kube,type=bind,readonly"
 	],
 	"workspaceMount": "source=${localWorkspaceFolder},target=/home/${localEnv:USER}/homelab,type=bind,consistency=cached",
 	"workspaceFolder": "/home/${localEnv:USER}/homelab",
