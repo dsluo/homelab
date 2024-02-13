@@ -9,13 +9,26 @@ RUN \
     apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
-    locales man-db vim \
+    locales man-db vim gpg \
     curl git openssh-client bash-completion \
     python3 python-is-python3 pipx \
+    # kubectl
     kubernetes-client \
+    # helm
+    apt-transport-https \
+    && curl https://baltocdn.com/helm/signing.asc | gpg --dearmor > /usr/share/keyrings/helm.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" > /etc/apt/sources.list.d/helm-stable-debian.list \
+    && apt-get update \
+    && apt-get install helm \
+    # k9s
+    && curl -Lo /tmp/k9s.deb https://github.com/derailed/k9s/releases/download/v0.31.8/k9s_linux_amd64.deb \
+    && dpkg -i /tmp/k9s.deb \
+    && apt-get install -f \
+    # set proper locale
     && sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen \
     && locale-gen \
-    && rm -rf /var/lib/apt/lists/*
+    # cleanup
+    && rm -rf /var/lib/apt/lists/* /tmp/*
 
 ARG USERNAME=debian
 
