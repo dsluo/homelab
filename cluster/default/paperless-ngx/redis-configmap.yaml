@@ -4,9 +4,10 @@ metadata:
   name: paperless-redis-config
   namespace: default
 data:
-  master: |
-    persistence:
-      enabled: true
-      existingClaim: "paperless-redis-pvc"
-  image: |
-    tag: 7
+  values.yaml: |
+    master:
+      persistence:
+        enabled: true
+        existingClaim: "paperless-redis-pvc"
+    image:
+      tag: 7
