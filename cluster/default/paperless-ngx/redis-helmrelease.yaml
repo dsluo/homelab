@@ -12,7 +12,7 @@ spec:
         kind: HelmRepository
         name: bitnami
       version: "18.14.0"
-    valuesFrom:
+  valuesFrom:
     - kind: ConfigMap
       name: paperless-redis-config
     - kind: Secret
