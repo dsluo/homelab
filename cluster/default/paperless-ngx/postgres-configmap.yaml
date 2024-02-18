@@ -8,6 +8,5 @@ data:
     primary:
       persistence:
         enabled: true
-        existingClaim: "paperless-postgres-pvc"
     image:
       tag: 15
