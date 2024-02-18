@@ -5,6 +5,7 @@ metadata:
   namespace: default
 data:
   values.yaml: |
+    architecture: standalone
     master:
       persistence:
         enabled: true
