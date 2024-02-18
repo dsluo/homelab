@@ -2,6 +2,11 @@ version: "3"
 
 tasks:
   brew:
+    cmds:
+      - task: packages
+      - task: completions
+
+  packages:
     vars:
       INSTALLED:
         sh: brew list --full-name
@@ -33,3 +38,25 @@ tasks:
       - brew install "{{.PACKAGE}}"
     status:
       - echo "{{.INSTALLED}}" | grep "{{.PACKAGE}}"
+
+  completions:
+    vars:
+      BREW_COMPLETIONS:
+        sh: ls $(brew --prefix)/etc/bash_completion.d
+      LOCAL_COMPLETION_DIR: ~/.local/share/bash-completion/completions
+    cmds:
+      - for:
+          var: BREW_COMPLETIONS
+          as: COMPLETION
+        task: .install-completion
+        vars:
+          COMPLETION: "{{.COMPLETION}}"
+          LOCAL_COMPLETION_DIR: "{{.LOCAL_COMPLETION_DIR}}"
+
+  .install-completion:
+    internal: true
+    label: "Install {{.COMPLETION}} completion"
+    cmds:
+      - ln -s "$(brew --prefix)/etc/bash_completion.d/{{.COMPLETION}}" {{.LOCAL_COMPLETION_DIR}}/
+    status:
+      - ls {{.LOCAL_COMPLETION_DIR}} | grep "{{.COMPLETION}}"
