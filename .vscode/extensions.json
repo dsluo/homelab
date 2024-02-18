@@ -3,6 +3,7 @@
     "redhat.ansible",
     "ms-azuretools.vscode-docker",
     "esbenp.prettier-vscode",
-    "ms-kubernetes-tools.vscode-kubernetes-tools"
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
+    "signageos.signageos-vscode-sops"
   ]
 }
