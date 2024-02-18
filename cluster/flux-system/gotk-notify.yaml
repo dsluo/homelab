@@ -1,0 +1,31 @@
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Provider
+metadata:
+  name: discord-notify
+  namespace: flux-system
+spec:
+  type: discord
+  secretRef:
+    name: gotk-notify-secrets
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+  name: gotk-notify
+  namespace: flux-system
+spec:
+  providerRef:
+    name: discord-notify
+  eventSeverity: error
+  eventSources:
+  - kind: GitRepository
+    name: '*'
+  - kind: Kustomization
+    name: '*'
+  - kind: HelmRepository
+    name: '*'
+  - kind: HelmRelease
+    name: '*'
+  secretRef:
+    name: gotk-notify-secrets
