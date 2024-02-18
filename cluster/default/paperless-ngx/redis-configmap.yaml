@@ -8,3 +8,5 @@ data:
     persistence:
       enabled: true
       existingClaim: "paperless-redis-pvc"
+  image: |
+    tag: 7
