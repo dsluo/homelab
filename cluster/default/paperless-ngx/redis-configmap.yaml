@@ -9,4 +9,4 @@ data:
       persistence:
         enabled: true
     image:
-      tag: 7
+      tag: 7.2
