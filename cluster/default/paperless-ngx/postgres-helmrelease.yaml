@@ -2,6 +2,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: paperless-db
+  namespace: default
 spec:
   interval: 10m
   chart:
@@ -12,7 +13,7 @@ spec:
         name: bitnami
       version: 15
     valuesFrom:
-    - kind: ConfigMap
-      name: paperless-postgres-config
-    - kind: Secret
-      name: paperless-postgres-secrets
+      - kind: ConfigMap
+        name: paperless-postgres-config
+      - kind: Secret
+        name: paperless-postgres-secrets
