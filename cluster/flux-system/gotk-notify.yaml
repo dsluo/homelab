@@ -17,7 +17,7 @@ metadata:
 spec:
   providerRef:
     name: discord-notify
-  eventSeverity: error
+  eventSeverity: info
   eventSources:
     - kind: GitRepository
       name: "*"
