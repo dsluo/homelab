@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-app
+spec:
+  selector:
+    matchLabels:
+      app: paperless-app
+  template:
+    metadata:
+      labels:
+        app: paperless-app
+    spec:
+      containers:
+        - name: paperless-app
+          image: ghcr.io/paperless-ngx/paperless-ngx:latest
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: paperless-data
+              mountPath: /usr/src/paperless/data
+              subPath: data
+            - name: paperless-media
+              mountPath: /usr/src/paperless/media
+              subPath: media
+            - name: paperless-export
+              mountPath: /usr/src/paperless/export
+              subPath: export
+            - name: paperless-consume
+              mountPath: /usr/src/paperless/consume
+              subPath: consume
+          envFrom:
+            - configMapRef:
+                name: paperless-app-config
+            - secretRef:
+                name: paperless-app-secrets
+      volumes:
+        - name: paperless-app-pvc
+          persistentVolumeClaim:
+            claimName: paperless-app-pvc

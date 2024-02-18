@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: paperless-ngx
+  namespace: default
+resources:
+  # - app-configmap.yaml
+  # - app-deployment.yaml
+  # - app-pvc.yaml
+  # - app-secrets.sops.yaml
+  # - app-service.yaml
+  - gotenberg-deployment.yaml
+  - gotenberg-service.yaml
+  - kustomization.yaml
+  - postgres-configmap.yaml
+  - postgres-helmrelease.yaml
+  - postgres-pvc.yaml
+  - postgres-secrets.sops.yaml
+  - redis-configmap.yaml
+  - redis-helmrelease.yaml
+  - redis-pvc.yaml
+  - redis-secrets.sops.yaml
+  - tika-deployment.yaml
+  - tikia-service.yaml

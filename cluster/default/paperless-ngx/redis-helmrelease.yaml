@@ -1,0 +1,18 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: paperless-redis
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: redis
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+      version: 14
+    valuesFrom:
+    - kind: ConfigMap
+      name: paperless-redis-config
+    - kind: Secret
+      name: paperless-redis-secrets
