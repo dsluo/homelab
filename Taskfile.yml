@@ -1,101 +1,35 @@
 version: "3"
 
-vars:
-  COMPLETION_DIR: ~/.local/share/bash-completion/completions
-
 tasks:
   brew:
+    vars:
+      INSTALLED:
+        sh: brew list --full-name
+      PACKAGES: >-
+        bash-completion
+        go-task
+        ansible
+        ansible-lint
+        fluxcd/tap/flux
+        ansible
+        kubernetes-cli
+        k9s
+        helm
+        age
+        sops
     cmds:
-      - task: .bash-completion
-      - task: .task
-      - task: .brew
-      - task: .pipx
-      - task: .flux
-      - task: .ansible
-      - task: .kubectl
-      - task: .k9s
-      - task: .helm
+      - for:
+          var: PACKAGES
+          as: PACKAGE
+        task: .install-package
+        vars:
+          PACKAGE: "{{.PACKAGE}}"
+          INSTALLED: "{{.INSTALLED}}"
 
-  .bash-completion:
+  .install-package:
     internal: true
-    run: once
+    label: "Install {{.PACKAGE}}"
     cmds:
-      - sudo apt install bash-completion
-      - mkdir -p {{.COMPLETION_DIR}}
+      - brew install "{{.PACKAGE}}"
     status:
-      - dpkg -s bash-completion | grep Status | grep installed
-
-  .brew:
-    internal: true
-    run: once
-    cmds:
-      - ln -s $(brew --prefix)/Homebrew/completions/bash/brew {{.COMPLETION_DIR}}/brew
-    status:
-      - test -f {{.COMPLETION_DIR}}/brew
-
-  .task:
-    internal: true
-    run: once
-    cmds:
-      - curl -L https://raw.githubusercontent.com/go-task/task/main/completion/bash/task.bash > {{.COMPLETION_DIR}}/task
-    status:
-      - test -f {{.COMPLETION_DIR}}/task
-
-  .pipx:
-    internal: true
-    run: once
-    deps: [.bash-completion]
-    cmds:
-      - brew install pipx
-      - pipx ensurepath
-      - echo 'eval "$(register-python-argcomplete pipx)"' > {{.COMPLETION_DIR}}/pipx
-    status:
-      - test -f {{.COMPLETION_DIR}}/pipx
-
-  .ansible:
-    internal: true
-    run: once
-    deps: [.bash-completion, .pipx]
-    cmds:
-      - pipx install --include-deps ansible
-      - pipx inject --include-apps ansible ansible-lint argcomplete
-      - echo 'eval "$(register-python-argcomplete ansible)"' > {{.COMPLETION_DIR}}/ansible
-    status:
-      - test -f {{.COMPLETION_DIR}}/ansible
-
-  .flux:
-    internal: true
-    run: once
-    deps: [.bash-completion]
-    cmds:
-      - brew install fluxcd/tap/flux
-      - flux completion bash > {{.COMPLETION_DIR}}/flux
-    status:
-      - test -f {{.COMPLETION_DIR}}/flux
-
-  .kubectl:
-    internal: true
-    run: once
-    deps: [.bash-completion]
-    cmds:
-      - brew install kubectl
-      - kubectl completion bash > {{.COMPLETION_DIR}}/kubectl
-    status:
-      - test -f {{.COMPLETION_DIR}}/kubectl
-
-  .k9s:
-    internal: true
-    run: once
-    cmds:
-      - brew install k9s
-    status:
-      - brew list | grep k9s
-
-  .helm:
-    internal: true
-    run: once
-    cmds:
-      - brew install helm
-      - helm completion bash > {{.COMPLETION_DIR}}/helm
-    status:
-      - test -f {{.COMPLETION_DIR}}/helm
+      - echo "{{.INSTALLED}}" | grep "{{.PACKAGE}}"
