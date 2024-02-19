@@ -11,3 +11,5 @@ data:
         enabled: true
     image:
       tag: 7.2
+    auth:
+      enabled: true

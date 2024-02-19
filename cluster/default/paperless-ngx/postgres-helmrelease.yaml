@@ -12,8 +12,13 @@ spec:
         kind: HelmRepository
         name: bitnami
       version: "14.1.1"
+  values:
+    auth:
+      username: ${POSTGRES_USERNAME}
+      password: ${POSTGRES_PASSWORD}
+      database: ${POSTGRES_DATABASE}
   valuesFrom:
     - kind: ConfigMap
       name: paperless-postgres-config
     - kind: Secret
-      name: paperless-postgres-secrets
+      name: paperless-secrets

@@ -4,18 +4,16 @@ metadata:
   name: paperless-ngx
   namespace: default
 resources:
-  # - app-configmap.yaml
+  - app-configmap.yaml
   # - app-deployment.yaml
-  # - app-pvc.yaml
-  # - app-secrets.sops.yaml
+  - app-pvc.yaml
   # - app-service.yaml
+  - paperless-secrets.sops.yaml
   - gotenberg-deployment.yaml
   - gotenberg-service.yaml
   - postgres-configmap.yaml
   - postgres-helmrelease.yaml
-  - postgres-secrets.sops.yaml
   - redis-configmap.yaml
   - redis-helmrelease.yaml
-  - redis-secrets.sops.yaml
   - tika-deployment.yaml
   - tikia-service.yaml

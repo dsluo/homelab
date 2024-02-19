@@ -12,8 +12,12 @@ spec:
         kind: HelmRepository
         name: bitnami
       version: "18.14.0"
+  values:
+    auth:
+      enabled: true
+      password: ${REDIS_PASSWORD}
   valuesFrom:
     - kind: ConfigMap
       name: paperless-redis-config
     - kind: Secret
-      name: paperless-redis-secrets
+      name: paperless-secrets
