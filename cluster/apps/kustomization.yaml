@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./paperless-ngx
+patches:
+  - target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1
+      kind: Kustomization
+    patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: flux-system
+      - op: replace
+        path: /spec/decryption
+        value:
+          decryption:
+            provider: sops
+            secretRef:
+              name: sops-age

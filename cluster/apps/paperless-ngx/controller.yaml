@@ -1,16 +1,17 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: configs
+  name: paperless-ngx
   namespace: flux-system
 spec:
-  path: ./configs/production
   interval: 10m0s
+  path: ./cluster/apps/paperless-ngx
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-age
+    namespace: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: paperless-secrets
