@@ -7,7 +7,7 @@ spec:
   interval: 10m0s
   chart:
     spec:
-      chart: /cluster/apps/default/paperless-ngx/app
+      chart: ./cluster/apps/default/paperless-ngx/app
       sourceRef:
         kind: GitRepository
         name: flux-system
