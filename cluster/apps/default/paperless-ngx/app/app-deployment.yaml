@@ -37,8 +37,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: paperless-app-config
-            - secretRef:
-                name: paperless-app-secrets
           env:
             - name: PAPERLESS_REDIS
               value: redis://:${REDIS_PASSWORD}@paperless-redis-svc:6379

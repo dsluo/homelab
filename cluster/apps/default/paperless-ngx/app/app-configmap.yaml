@@ -4,8 +4,6 @@ metadata:
   name: paperless-app-config
   namespace: default
 data:
-  PAPERLESS_REDIS: redis://paperless-redis-svc:6379
-  PAPERLESS_DBHOST: paperless-db-svc
   PAPERLESS_TIKA_ENABLED: "1"
   PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-gotenberg-svc:3000
   PAPERLESS_TIKA_ENDPOINT: http://paperless-tika-svc:9998
