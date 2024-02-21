@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - ./flux-system
   - charts.yaml
-  - ./apps
+  - apps.yaml

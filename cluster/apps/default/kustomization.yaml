@@ -1,7 +1,9 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+metadata:
+  name: default
 resources:
-  - ./paperless-ngx
+  - ./paperless-ngx/controller.yaml
 patches:
   - target:
       group: kustomize.toolkit.fluxcd.io
@@ -12,8 +14,5 @@ patches:
         path: /metadata/namespace
         value: flux-system
       - op: replace
-        path: /spec/decryption
-        value:
-          provider: sops
-          secretRef:
-            name: sops-age
+        path: /spec/targetNamespace
+        value: default
