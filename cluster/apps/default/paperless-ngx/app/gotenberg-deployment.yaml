@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-gotenberg
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: paperless-gotenberg
+  template:
+    metadata:
+      labels:
+        app: paperless-gotenberg
+    spec:
+      containers:
+        - name: paperless-gotenberg
+          image: docker.io/gotenberg/gotenberg:7.10
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          command:
+            - "gotenberg"
+            - "--chromium-disable-javascript=true"
+            - "--chromium-allow-list=file:///tmp/.*"
+          ports:
+            - containerPort: 3000

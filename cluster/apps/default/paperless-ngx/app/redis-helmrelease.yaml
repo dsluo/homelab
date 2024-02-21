@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: paperless-redis
+  namespace: default
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: redis
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+      version: "18.14.0"
+  values:
+    auth:
+      enabled: true
+      password: ${REDIS_PASSWORD}
+  valuesFrom:
+    - kind: ConfigMap
+      name: paperless-redis-config
