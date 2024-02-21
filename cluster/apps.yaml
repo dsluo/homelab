@@ -29,17 +29,17 @@ spec:
             provider: sops
             secretRef:
               name: sops-age
-    # - target:
-    #     group: helm.toolkit.fluxcd.io
-    #     version: v1
-    #     kind: HelmRelease
-    #   patch: |-
-    #     - op: replace
-    #       path: /metadata/namespace
-    #       value: flux-system
-    #     - op: replace
-    #       path: /spec/decryption
-    #       value:
-    #         provider: sops
-    #         secretRef:
-    #           name: sops-age
+    - target:
+        group: helm.toolkit.fluxcd.io
+        version: v1
+        kind: HelmRelease
+      patch: |-
+        - op: replace
+          path: /metadata/namespace
+          value: flux-system
+        - op: replace
+          path: /spec/decryption
+          value:
+            provider: sops
+            secretRef:
+              name: sops-age

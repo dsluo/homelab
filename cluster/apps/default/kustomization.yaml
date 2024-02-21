@@ -11,8 +11,13 @@ patches:
       kind: Kustomization
     patch: |-
       - op: replace
-        path: /metadata/namespace
-        value: flux-system
+        path: /spec/targetNamespace
+        value: default
+  - target:
+      group: helm.toolkit.fluxcd.io
+      version: v1
+      kind: HelmRelease
+    patch: |-
       - op: replace
         path: /spec/targetNamespace
         value: default
