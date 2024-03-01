@@ -10,5 +10,6 @@
     },
     "[ansible]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "github.copilot.editor.enableAutoCompletions": false
 }
