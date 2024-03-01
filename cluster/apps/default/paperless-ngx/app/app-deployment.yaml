@@ -22,16 +22,16 @@ spec:
           ports:
             - containerPort: 8000
           volumeMounts:
-            - name: paperless-data
+            - name: paperless-app-vol
               mountPath: /usr/src/paperless/data
               subPath: data
-            - name: paperless-media
+            - name: paperless-app-vol
               mountPath: /usr/src/paperless/media
               subPath: media
-            - name: paperless-export
+            - name: paperless-app-vol
               mountPath: /usr/src/paperless/export
               subPath: export
-            - name: paperless-consume
+            - name: paperless-app-vol
               mountPath: /usr/src/paperless/consume
               subPath: consume
           envFrom:
@@ -55,6 +55,6 @@ spec:
             - name: PAPERLESS_DBPASSWORD
               value: $(POSTGRES_PASSWORD)
       volumes:
-        - name: paperless-app-pvc
+        - name: paperless-app-vol
           persistentVolumeClaim:
             claimName: paperless-app-pvc
