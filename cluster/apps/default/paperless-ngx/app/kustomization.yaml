@@ -5,9 +5,9 @@ metadata:
   namespace: default
 resources:
   - app-configmap.yaml
-  # - app-deployment.yaml
+  - app-deployment.yaml
   - app-pvc.yaml
-  # - app-service.yaml
+  - app-service.yaml
   - gotenberg-deployment.yaml
   - gotenberg-service.yaml
   - postgres-configmap.yaml
