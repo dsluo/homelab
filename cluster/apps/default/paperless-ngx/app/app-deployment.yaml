@@ -43,11 +43,11 @@ spec:
                 name: paperless-redis-secrets
           env:
             - name: PAPERLESS_REDIS
-              value: redis://:$(REDIS_PASSWORD)@paperless-redis-svc:6379
+              value: redis://:$(REDIS_PASSWORD)@paperless-redis-master
             - name: PAPERLESS_DBENGINE
               value: postgresql
             - name: PAPERLESS_DBHOST
-              value: paperless-postgres-svc
+              value: paperless-postgres-postgresql
             - name: PAPERLESS_DBNAME
               value: $(POSTGRES_DATABASE)
             - name: PAPERLESS_DBUSER
