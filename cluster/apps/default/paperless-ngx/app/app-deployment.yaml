@@ -17,7 +17,7 @@ spec:
           image: ghcr.io/paperless-ngx/paperless-ngx:latest
           resources:
             limits:
-              memory: "128Mi"
+              memory: "512Mi"
               cpu: "500m"
           ports:
             - containerPort: 8000
