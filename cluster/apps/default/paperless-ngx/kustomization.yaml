@@ -3,5 +3,4 @@ kind: Kustomization
 metadata:
   name: paperless-ngx
 resources:
-  - paperless-secrets.sops.yaml
   - controller.yaml

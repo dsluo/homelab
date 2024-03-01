@@ -13,11 +13,18 @@ spec:
         name: bitnami
         namespace: flux-system
       version: "14.1.1"
-  values:
-    auth:
-      username: ${POSTGRES_USERNAME}
-      password: ${POSTGRES_PASSWORD}
-      database: ${POSTGRES_DATABASE}
   valuesFrom:
     - kind: ConfigMap
       name: paperless-postgres-config
+    - kind: Secret
+      name: paperless-postgres-secrets
+      targetPath: auth.username
+      valuesKey: POSTGRES_USERNAME
+    - kind: Secret
+      name: paperless-postgres-secrets
+      targetPath: auth.password
+      valuesKey: POSTGRES_PASSWORD
+    - kind: Secret
+      name: paperless-postgres-secrets
+      targetPath: auth.database
+      valuesKey: POSTGRES_DATABASE

@@ -16,7 +16,10 @@ spec:
   values:
     auth:
       enabled: true
-      password: ${REDIS_PASSWORD}
   valuesFrom:
     - kind: ConfigMap
       name: paperless-redis-config
+    - kind: Secret
+      name: paperless-redis-secrets
+      valuesKey: REDIS_PASSWORD
+      targetPath: auth.password
