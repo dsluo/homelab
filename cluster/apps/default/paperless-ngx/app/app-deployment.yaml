@@ -52,7 +52,7 @@ spec:
               value: $(POSTGRES_DATABASE)
             - name: PAPERLESS_DBUSER
               value: $(POSTGRES_USERNAME)
-            - name: PAPERLESS_DBPASSWORD
+            - name: PAPERLESS_DBPASS
               value: $(POSTGRES_PASSWORD)
       volumes:
         - name: paperless-app-vol
