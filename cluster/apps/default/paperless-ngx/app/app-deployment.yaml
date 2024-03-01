@@ -37,19 +37,23 @@ spec:
           envFrom:
             - configMapRef:
                 name: paperless-app-config
+            - secretRef:
+                name: paperless-postgres-secrets
+            - secretRef:
+                name: paperless-redis-secrets
           env:
             - name: PAPERLESS_REDIS
-              value: redis://:${REDIS_PASSWORD}@paperless-redis-svc:6379
+              value: redis://:$(REDIS_PASSWORD)@paperless-redis-svc:6379
             - name: PAPERLESS_DBENGINE
               value: postgresql
             - name: PAPERLESS_DBHOST
               value: paperless-postgres-svc
             - name: PAPERLESS_DBNAME
-              value: ${POSTGRESS_DATABASE}
+              value: $(POSTGRES_DATABASE)
             - name: PAPERLESS_DBUSER
-              value: ${POSTGRES_USERNAME}
+              value: $(POSTGRES_USERNAME)
             - name: PAPERLESS_DBPASSWORD
-              value: ${POSTGRES_PASSWORD}
+              value: $(POSTGRES_PASSWORD)
       volumes:
         - name: paperless-app-pvc
           persistentVolumeClaim:
