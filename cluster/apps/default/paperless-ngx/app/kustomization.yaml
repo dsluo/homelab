@@ -11,8 +11,10 @@ resources:
   - gotenberg-deployment.yaml
   - gotenberg-service.yaml
   - postgres-configmap.yaml
+  - postgres-secrets.sops.yaml
   - postgres-helmrelease.yaml
   - redis-configmap.yaml
+  - redis-secrets.sops.yaml
   - redis-helmrelease.yaml
   - tika-deployment.yaml
   - tikia-service.yaml
