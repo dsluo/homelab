@@ -1,0 +1,25 @@
+---
+- name: Set up network for nodes.
+  hosts: k3s
+  become: true
+
+  tasks:
+    - name: Ensure hostname is set to node name.
+      ansible.builtin.hostname:
+        name: "{{ inventory_hostname }}"
+        use: debian
+    - name: Ensure systemd-networkd is configured to set addresses statically.
+      ansible.builtin.template:
+        src: ./templates/lan0.network.j2
+        dest: /etc/systemd/network/lan0.network
+        mode: "0644"
+    - name: Ensure systemd-networkd is enabled.
+      ansible.builtin.service:
+        name: systemd-networkd
+        enabled: true
+    - name: Ensure ifupdown is disabled.
+      ansible.builtin.service:
+        name: networking
+        enabled: false
+    - name: Reboot to apply changes.
+      ansible.builtin.reboot:

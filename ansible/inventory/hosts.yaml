@@ -1,6 +1,8 @@
 k3s:
   vars:
     ansible_user: debian
+    gateway: 192.168.40.1
+    dns: 192.168.40.1
   children:
     servers:
       vars:
