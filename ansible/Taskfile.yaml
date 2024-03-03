@@ -12,9 +12,13 @@ tasks:
       - ansible-playbook playbooks/k3s-nuke.yaml -K
 
   kubeconfig:
+    vars:
+      ENDPOINT:
+        sh: ansible-inventory --host k0 | jq -r .ansible_host
     cmds:
       - >
         ansible k0
         -m ansible.builtin.fetch
         -a 'src=/etc/rancher/k3s/k3s.yaml dest=~/.kube/config flat=true'
         --become -K
+      - sed -i 's/127.0.0.1/{{.ENDPOINT}}/' ~/.kube/config
