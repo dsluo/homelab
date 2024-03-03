@@ -6,7 +6,7 @@
   roles:
     - role: xanmanning.k3s
       vars:
-        k3s_state: uninstall
+        k3s_state: uninstalled
         k3s_release_version: stable
         k3s_become: true
         k3s_etcd_datastore: true
