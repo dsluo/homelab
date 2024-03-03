@@ -1,15 +1,10 @@
 version: "3"
 
 tasks:
-  network:
-    cmds:
-      - ansible-playbook playbooks/network.yaml -K
-  install:
-    cmds:
-      - ansible-playbook playbooks/k3s-install.yaml -K
-  nuke:
-    cmds:
-      - ansible-playbook playbooks/k3s-nuke.yaml -K
+  network: ansible-playbook playbooks/network.yaml -K
+  install: ansible-playbook playbooks/k3s-install.yaml -K
+  flux: ansible-playbook playbooks/flux-install.yaml
+  nuke: ansible-playbook playbooks/k3s-nuke.yaml -K
 
   kubeconfig:
     vars:

@@ -12,7 +12,4 @@ spec:
         kind: HelmRepository
         name: longhorn
       version: 1.6.0
-  targetNamespace: longhorn-system
-  install:
-    createNamespace: true
   interval: 1m0s

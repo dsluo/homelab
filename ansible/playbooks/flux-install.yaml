@@ -1,0 +1,36 @@
+---
+- name: Ensure flux is installed.
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    flux_directory: "../../cluster/flux-system/"
+
+  tasks:
+    - name: Ensure flux-system namespace exists.
+      kubernetes.core.k8s:
+        state: present
+        name: flux-system
+        api_version: v1
+        kind: Namespace
+    - name: Ensure flux-system secret exists.
+      kubernetes.core.k8s:
+        state: present
+        definition: >
+          {{
+          lookup('file', flux_directory ~ 'init/flux-secret.sops.yaml')
+          | community.sops.decrypt
+          }}
+    - name: Ensure sops-age secret exists.
+      kubernetes.core.k8s:
+        state: present
+        definition: >
+          {{
+          lookup('file', flux_directory ~ 'init/flux-sops-age-secret.sops.yaml')
+          | community.sops.decrypt
+          }}
+    - name: Ensure system is bootstrapped.
+      kubernetes.core.k8s:
+        state: present
+        # `dir` is relative to pwd for some reason.
+        definition: "{{ lookup('kubernetes.core.kustomize', dir=playbook_dir ~ '/../../cluster') }}"
