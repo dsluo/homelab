@@ -3,4 +3,6 @@ kind: Kustomization
 resources:
   - ./flux-system
   - charts.yaml
+  - ./longhorn-system
+  # - ./network
   - apps.yaml

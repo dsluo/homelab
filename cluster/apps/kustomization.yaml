@@ -4,4 +4,3 @@ metadata:
   name: apps
 resources:
   - ./default
-  - ./longhorn-system
