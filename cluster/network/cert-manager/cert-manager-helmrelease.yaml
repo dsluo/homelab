@@ -1,0 +1,19 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: cert-manager
+  namespace: network
+spec:
+  chart:
+    spec:
+      chart: cert-manager
+      reconcileStrategy: ChartVersion
+      sourceRef:
+        kind: HelmRepository
+        name: cert-manager
+        namespace: flux-system
+      version: 1.14.x
+  interval: 1m0s
+  releaseName: cert-manager
+  values:
+    installCRDs: true

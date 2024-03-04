@@ -4,5 +4,5 @@ resources:
   - ./flux-system
   - charts.yaml
   - ./longhorn-system
-  # - ./network
+  - ./network
   - apps.yaml
