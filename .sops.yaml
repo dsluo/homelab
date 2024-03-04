@@ -1,6 +1,6 @@
 creation_rules:
     - path_regex: .*\.sops\.ya?ml|/dev/stdin
-      encrypted_regex: ^(data|stringData)$
+      encrypted_regex: ^(data|stringData|email)$
       age: age1m0hh84hkt3nj4cpnd2sps8ffa4sm2dshwe7ryurj9v6nee06h4jsy7cj2s
 sops:
     kms: []
@@ -17,8 +17,8 @@ sops:
             UUJzekc4d1JXbmQ1U3EwVkIyVnRIT0UKQnWSBU3s9VMNRFITBwkC6z09qV+FvPIn
             /+v3Gr7tWk5Fv0pqzQUQFhyYq0ki8SSCTS/Ysbd8vyM4FVJFcV5nsQ==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2024-03-03T21:06:03Z"
-    mac: ENC[AES256_GCM,data:40iQvq8ph8QFYfd66OttK8kxJL4TimAp6MPPYP1pi8MVk9Flp0JCPfQCEW4PMrXgZw19XRjgau2YEIckCG9+oNbuYPQNG0ynx9KaadlTLPyMGJC/yMPSBCcWXug959+/5hpQwx8EdB7Ywx68FnP4Keqa6/4Y+nqESrs4Tf4HEIc=,iv:zD6+3IXsyXXIVxFUqiXz5oty8/cjFuU5RhR1Q4bi+jY=,tag:7D3op4G8gbLzq04Ok9Pdkg==,type:str]
+    lastmodified: "2024-03-04T04:37:11Z"
+    mac: ENC[AES256_GCM,data:r88DOBeGwD5LNbTaSacMnKQV2tM87s5VxiW9HKTOMwxSXfpFR8fY3JlknbGAHJzSm4de0lSmIhRJeNKo6HFgOKJGm2D61ThS5Vyo10A76k3NPJjbLqHGf6cOPgfUVt4/1JXX8MR2IMc0cgPnVIyO9DhEh5cSyJ8/kzCjkbvXrWE=,iv:3KWUM/28lX0xtxudBUnBKhgLJ2KEwMgONtzNq6IlOwE=,tag:kUeiE82wiTB1cH/+2QE03A==,type:str]
     pgp: []
     encrypted_regex: ^(data|stringData)$
     version: 3.8.1
