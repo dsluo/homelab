@@ -4,3 +4,4 @@ resources:
   - cert-manager-helmrelease.yaml
   - cloudflare-api-secret.sops.yaml
   - letsencrypt-staging-issuer.sops.yaml
+  - potatobread-dev-certificate.yaml
