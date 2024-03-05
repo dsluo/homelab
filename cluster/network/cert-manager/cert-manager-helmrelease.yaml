@@ -17,3 +17,7 @@ spec:
   releaseName: cert-manager
   values:
     installCRDs: true
+    replicas: 3
+    podDisruptionBudget:
+      enabled: true
+    dns01RecursiveNameservers: "1.1.1.1,1.0.0.1"
