@@ -8,6 +8,7 @@ resources:
   - app-deployment.yaml
   - app-pvc.yaml
   - app-service.yaml
+  - app-ingress.yaml
   - gotenberg-deployment.yaml
   - gotenberg-service.yaml
   - postgres-configmap.yaml
