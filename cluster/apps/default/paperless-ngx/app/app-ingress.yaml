@@ -8,7 +8,7 @@ spec:
   tls: {}
   routes:
     - kind: Rule
-      match: Host(`paperless.cornwater.net`)
+      match: Host(`paperless.potatobread.dev`)
       services:
         - name: paperless-app-svc
           port: 8000
