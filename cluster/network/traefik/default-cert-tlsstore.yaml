@@ -5,4 +5,4 @@ metadata:
   namespace: network
 spec:
   defaultCertificate:
-    secretName: homelab-staging-tls
+    secretName: homelab-production-tls

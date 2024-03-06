@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: homelab-production-certs
+spec:
+  secretName: homelab-production-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  dnsNames:
+    - "potatobread.dev"
+    - "*.potatobread.dev"
+    - "cornwater.net"
+    - "*.cornwater.net"

@@ -4,4 +4,6 @@ resources:
   - cert-manager-helmrelease.yaml
   - cloudflare-api-secret.sops.yaml
   - letsencrypt-staging-issuer.sops.yaml
-  - homelab-certificates.yaml
+  - homelab-staging-certificates.yaml
+  - letsencrypt-production-issuer.sops.yaml
+  - homelab-production-certificates.yaml
