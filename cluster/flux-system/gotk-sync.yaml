@@ -10,7 +10,7 @@ spec:
   ref:
     branch: main
   secretRef:
-    name: flux-system
+    name: homelab-source
   url: ssh://git@github.com/dsluo/homelab
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
