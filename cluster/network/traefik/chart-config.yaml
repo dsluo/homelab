@@ -11,3 +11,6 @@ spec:
       websecure:
         tls:
           enabled: true
+    deployment:
+      kind: DaemonSet
+      replicas: 3
