@@ -2,7 +2,6 @@ apiVersion: traefik.io/v1alpha1
 kind: TLSStore
 metadata:
   name: default
-  namespace: network
 spec:
   defaultCertificate:
     secretName: homelab-production-tls
