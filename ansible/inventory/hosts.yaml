@@ -7,6 +7,9 @@ k3s:
     servers:
       vars:
         k3s_control_node: true
+        k3s_server:
+          disable:
+            - local-storage
       hosts:
         k0:
           ansible_host: 192.168.40.10
