@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: paperless-ingest-config
+data:
+  SFTP_USERS: "paperless::1000:1000"
+  authorized_keys.sh: |
+    #!/bin/bash
+    SSH_DIR=/home/paperless/.ssh
+    mkdir $SSH_DIR
+    cp /etc/ssh/authorized_keys $SSH_DIR/authorized_keys
+    chmod 700 $SSH_DIR
+    chmod 600 $SSH_DIR/*
+    chown -R 1000:1000 $SSH_DIR

@@ -3,10 +3,20 @@
   hosts: k3s
   become: true
 
-  roles:
-    - role: xanmanning.k3s
+  tasks:
+    - name: Ensure K3S is installed.
+      tags:
+        - k3s
+      ansible.builtin.import_role:
+        name: xanmanning.k3s
       vars:
         k3s_state: installed
         k3s_release_version: stable
         k3s_become: true
         k3s_etcd_datastore: true
+    - name: Ensure nfs-common is installed.
+      tags:
+        - packages
+      ansible.builtin.apt:
+        name: nfs-common
+        state: present

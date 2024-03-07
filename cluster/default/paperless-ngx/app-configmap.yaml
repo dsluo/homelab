@@ -8,6 +8,7 @@ data:
   PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-gotenberg-svc:3000
   PAPERLESS_TIKA_ENDPOINT: http://paperless-tika-svc:9998
   PAPERLESS_URL: https://paperless.potatobread.dev
+  PAPERLESS_CONSUMER_POLLING: "5"
 
   # The UID and GID of the user used to run paperless in the container. Set this
   # to your UID and GID on the host so that you have write access to the

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-ingest
+spec:
+  selector:
+    matchLabels:
+      app: paperless-ingest
+  template:
+    metadata:
+      labels:
+        app: paperless-ingest
+    spec:
+      containers:
+        - name: paperless-ingest
+          image: atmoz/sftp:alpine
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          envFrom:
+            - configMapRef:
+                name: paperless-ingest-config
+          ports:
+            - containerPort: 22
+          volumeMounts:
+            - name: ingest
+              mountPath: /home/paperless/ingest
+              subPath: consume
+            - name: keys
+              mountPath: /etc/ssh/authorized_keys
+              subPath: authorized_keys
+            - name: keys
+              mountPath: /etc/ssh/ssh_host_rsa_key
+              subPath: ssh_host_rsa_key
+              readOnly: true
+            - name: keys
+              mountPath: /etc/ssh/ssh_host_ed25519_key
+              subPath: ssh_host_ed25519_key
+              readOnly: true
+            - name: config
+              mountPath: /etc/sftp.d/authorized_keys.sh
+              subPath: authorized_keys.sh
+      volumes:
+        - name: ingest
+          persistentVolumeClaim:
+            claimName: paperless-ingest-pvc
+        - name: keys
+          secret:
+            secretName: paperless-ingest-secrets
+            defaultMode: 0600
+        - name: config
+          configMap:
+            name: paperless-ingest-config
+            defaultMode: 0700

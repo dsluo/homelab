@@ -31,7 +31,7 @@ spec:
             - name: paperless-app-vol
               mountPath: /usr/src/paperless/export
               subPath: export
-            - name: paperless-app-vol
+            - name: paperless-ingest-vol
               mountPath: /usr/src/paperless/consume
               subPath: consume
           envFrom:
@@ -58,3 +58,6 @@ spec:
         - name: paperless-app-vol
           persistentVolumeClaim:
             claimName: paperless-app-pvc
+        - name: paperless-ingest-vol
+          persistentVolumeClaim:
+            claimName: paperless-ingest-pvc
