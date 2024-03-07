@@ -9,4 +9,4 @@ spec:
     - match: HostSNI(`*`)
       services:
         - name: paperless-ingest-svc
-          port: 2222
+          port: sftp

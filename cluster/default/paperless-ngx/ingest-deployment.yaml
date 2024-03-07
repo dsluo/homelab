@@ -22,7 +22,8 @@ spec:
             - configMapRef:
                 name: paperless-ingest-config
           ports:
-            - containerPort: 22
+            - name: sftp
+              containerPort: 22
           volumeMounts:
             - name: ingest
               mountPath: /home/paperless/ingest
