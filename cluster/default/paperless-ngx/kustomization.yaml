@@ -8,6 +8,12 @@ resources:
   - app-pvc.yaml
   - app-service.yaml
   - app-ingress.yaml
+  - ingest-configmap.yaml
+  - ingest-secrets.sops.yaml
+  - ingest-pvc.yaml
+  - ingest-deployment.yaml
+  - ingest-service.yaml
+  - ingest-ingress.yaml
   - gotenberg-deployment.yaml
   - gotenberg-service.yaml
   - postgres-configmap.yaml

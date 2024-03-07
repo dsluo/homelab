@@ -11,6 +11,8 @@ spec:
       websecure:
         tls:
           enabled: true
+      sftp:
+        expose: true
+        port: 2222
     deployment:
       kind: DaemonSet
-      replicas: 3
