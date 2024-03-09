@@ -14,9 +14,11 @@
         k3s_release_version: stable
         k3s_become: true
         k3s_etcd_datastore: true
-    - name: Ensure nfs-common is installed.
+    - name: Ensure required packages are installed.
       tags:
         - packages
       ansible.builtin.apt:
-        name: nfs-common
+        package:
+          - nfs-common
+          - open-iscsi
         state: present
