@@ -7,6 +7,8 @@ spec:
   selector:
     matchLabels:
       app: paperless-app
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -17,8 +19,8 @@ spec:
           image: ghcr.io/paperless-ngx/paperless-ngx:latest
           resources:
             limits:
-              memory: "1Gi"
-              cpu: "1000m"
+              memory: "4Gi"
+              cpu: "4"
           ports:
             - containerPort: 8000
           volumeMounts:
