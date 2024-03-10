@@ -4,18 +4,25 @@
   become: true
 
   tasks:
-    - name: Ensure powertop is installed.
-      ansible.builtin.apt:
-        package:
-          - powertop
-        state: present
-    - name: Ensure powertop autotune service exists.
-      ansible.builtin.template:
-        src: ./templates/powertop.service.j2
-        dest: /etc/systemd/system/powertop.service
-        mode: "0644"
-    - name: Ensure powertop autotune is started and runs on boot.
-      ansible.builtin.systemd_service:
-        name: powertop
-        enabled: true
-        state: started
+    - name: Powertop
+      tags: powertop
+      block:
+        - name: Ensure powertop is installed.
+          ansible.builtin.apt:
+            package:
+              - powertop
+            state: present
+        - name: Ensure powertop autotune service exists.
+          ansible.builtin.template:
+            src: ./templates/powertop.service.j2
+            dest: /etc/systemd/system/powertop.service
+            mode: "0644"
+        - name: Ensure powertop autotune is started and runs on boot.
+          ansible.builtin.systemd_service:
+            name: powertop
+            enabled: true
+            state: started
+    - name: Ensure CPU governor is set to powersave. # noqa: no-changed-when
+      tags: governor
+      ansible.builtin.command: >
+        echo "powersave" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
