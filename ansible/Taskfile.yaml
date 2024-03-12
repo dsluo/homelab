@@ -1,6 +1,7 @@
 version: "3"
 
 tasks:
+  default: task --list-all
   network: ansible-playbook playbooks/network.yaml -K
   install: ansible-playbook playbooks/k3s-install.yaml -K
   flux: ansible-playbook playbooks/flux-install.yaml
