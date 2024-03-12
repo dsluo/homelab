@@ -1,6 +1,6 @@
 ---
 - name: Power Management
-  hosts: k3s
+  hosts: physical
   become: true
 
   tasks:

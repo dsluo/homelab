@@ -5,27 +5,48 @@ k3s:
     dns: 192.168.40.1
   children:
     servers:
-      vars:
-        k3s_control_node: true
-        k3s_server:
-          disable:
-            - local-storage
-      hosts:
-        k0:
-          ansible_host: 192.168.40.10
-        k1:
-          ansible_host: 192.168.40.11
-        k2:
-          ansible_host: 192.168.40.12
     agents:
-      hosts:
-        k3:
-          ansible_host: 192.168.40.13
-        k4:
-          ansible_host: 192.168.40.14
-        k5:
-          ansible_host: 192.168.40.15
-        k6:
-          ansible_host: 192.168.40.16
-        k7:
-          ansible_host: 192.168.40.17
+
+servers:
+  vars:
+    k3s_control_node: true
+    k3s_server:
+      disable:
+        - local-storage
+  hosts:
+    vk0:
+      ansible_host: 192.168.41.10
+    k0:
+      ansible_host: 192.168.40.10
+    k1:
+      ansible_host: 192.168.40.11
+
+agents:
+  hosts:
+    k2:
+      ansible_host: 192.168.40.12
+    k3:
+      ansible_host: 192.168.40.13
+    k4:
+      ansible_host: 192.168.40.14
+    k5:
+      ansible_host: 192.168.40.15
+    k6:
+      ansible_host: 192.168.40.16
+    k7:
+      ansible_host: 192.168.40.17
+
+physical:
+  hosts:
+    k0:
+    k1:
+    k2:
+    k3:
+    k4:
+    k5:
+    k6:
+    k7:
+
+virtual:
+  hosts:
+    vk0:
