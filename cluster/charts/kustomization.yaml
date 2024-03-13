@@ -5,3 +5,4 @@ resources:
   - longhorn.yaml
   - cert-manager.yaml
   - bitnami.yaml
+  - prometheus-community.yaml

@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ./flux-system
   - ./charts
+  - ./monitoring
   - ./longhorn-system
   - ./network
   - ./default
