@@ -25,12 +25,24 @@ agents:
   hosts:
     k2:
       ansible_host: 192.168.40.12
+      k3s_agent:
+        node-label:
+          - "coral-tpu.present=true"
     k3:
       ansible_host: 192.168.40.13
+      k3s_agent:
+        node-label:
+          - "coral-tpu.present=true"
     k4:
       ansible_host: 192.168.40.14
+      k3s_agent:
+        node-label:
+          - "coral-tpu.present=true"
     k5:
       ansible_host: 192.168.40.15
+      k3s_agent:
+        node-label:
+          - "coral-tpu.present=true"
     k6:
       ansible_host: 192.168.40.16
     k7:
