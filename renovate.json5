@@ -1,0 +1,43 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":timezone(America/Detroit)",
+    "docker:enableMajor"
+  ],
+  "ignorePaths": [
+    "**/*.sops.*"
+  ],
+  "flux": {
+    "fileMatch": [
+      "(?:^|/)gotk-components\\.ya?ml$"
+    ]
+  },
+  "helmfile": {
+    "registryAliases": {
+      "stable": "https://charts.helm.sh/stable"
+    },
+    "commitMessageTopic": "helm chart {{depName}}",
+    "fileMatch": [
+      "(^|/)helmfile\\.ya?ml(?:\\.gotmpl)?$"
+    ]
+  },
+  "helm-values": {
+    "commitMessageTopic": "helm values {{depName}}",
+    "fileMatch": [
+      "(^|/)values\\.ya?ml$"
+    ],
+    "pinDigests": false
+  },
+  "kubernetes": {
+    "fileMatch": [
+      "(^|/)cluster/.+\\.ya?ml$"
+    ]
+  },
+  "kustomize": {
+    "fileMatch": [
+      "(^|/)kustomization\\.ya?ml$"
+    ],
+    "pinDigests": false
+  }
+}
