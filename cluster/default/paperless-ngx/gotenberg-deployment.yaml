@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: paperless-gotenberg
-          image: docker.io/gotenberg/gotenberg:7.10
+          image: docker.io/gotenberg/gotenberg:8.6
           resources:
             limits:
               memory: "128Mi"
