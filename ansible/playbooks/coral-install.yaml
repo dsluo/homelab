@@ -1,0 +1,27 @@
+---
+- name: Ensure Coral Edge TPU Runtime is installed.
+  hosts: coral
+  become: true
+
+  tasks:
+    - name: Ensure Google Package Repository is enabled.
+      # "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main"
+      ansible.builtin.deb822_repository:
+        name: coral-edgetpu-stable
+        suites:
+          - coral-edgetpu-stable
+        components:
+          - main
+        types: [deb]
+        uris: https://packages.cloud.google.com/apt
+        # repo: "deb  coral-edgetpu-stable main"
+        signed_by: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+        enabled: true
+    - name: Ensure Google Coral Edge TPU Runtime is installed.
+      ansible.builtin.apt:
+        pkg:
+          - gasket-dkms
+          - libedgetpu1-std
+        state: present
+        update_cache: true

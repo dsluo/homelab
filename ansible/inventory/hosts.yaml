@@ -62,3 +62,10 @@ physical:
 virtual:
   hosts:
     vk0:
+
+coral:
+  hosts:
+    k2:
+    k3:
+    k4:
+    k5:
