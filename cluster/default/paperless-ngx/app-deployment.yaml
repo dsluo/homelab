@@ -56,6 +56,8 @@ spec:
               value: $(POSTGRES_USERNAME)
             - name: PAPERLESS_DBPASS
               value: $(POSTGRES_PASSWORD)
+            - name: PAPERLESS_CONSUMER_POLLING
+              value: 3
       volumes:
         - name: paperless-app-vol
           persistentVolumeClaim:
