@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 ---
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-talosVersion: v1.9.2
+talosVersion: v1.9.3
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 kubernetesVersion: v1.32.1
 
@@ -29,7 +29,17 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba
+    # todo: update task talos:upgrade-node to use schematic if available
+    schematic:
+      customization:
+        extraKernelArgs:
+          - console=ttyS0
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/iscsi-tools
+            - siderolabs/util-linux-tools
+            - siderolabs/qemu-guest-agent
+    talosImageURL: factory.talos.dev/installer/ba6068d6ff06ad172c42a80bcb879416efd13425b12b01e0ee9aa61464fb39e2
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
