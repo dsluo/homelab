@@ -15,8 +15,8 @@ spec:
         name: bjw-s
         namespace: flux-system
   dependsOn:
-    - name: paperless-ngx-postgres
-    - name: paperless-ngx-valkey
+    - name: paperless-postgres
+    - name: paperless-valkey
   values:
     controllers:
       app:
