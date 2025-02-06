@@ -21,7 +21,7 @@ spec:
     architecture: standalone
     auth:
       existingSecret: paperless-ngx-valkey-secret
-      existingSecretPasswordKey: password
+      existingSecretPasswordKey: valkeyPassword
     primary:
       persistence:
         enabled: true
