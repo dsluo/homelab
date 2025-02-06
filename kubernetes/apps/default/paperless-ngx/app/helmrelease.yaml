@@ -34,7 +34,7 @@ spec:
                     name: paperless-ngx-valkey-secret
                     key: valkeyUrl
               PAPERLESS_DBENGINE: postgres
-              PAPERLESS_DBHOST: paperless-ngx-postgres
+              PAPERLESS_DBHOST: default-paperless-ngx-postgres
               PAPERLESS_DBPORT: 5432
               PAPERLESS_DBNAME: paperless
               PAPERLESS_DBUSER: paperless
