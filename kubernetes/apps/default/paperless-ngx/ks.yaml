@@ -23,7 +23,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app paperless-ngx-postgres
+  name: &app paperless-postgres
   namespace: flux-system
 spec:
   targetNamespace: default
@@ -43,7 +43,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app paperless-ngx-valkey
+  name: &app paperless-valkey
   namespace: flux-system
 spec:
   targetNamespace: default

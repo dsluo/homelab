@@ -31,17 +31,17 @@ spec:
               PAPERLESS_REDIS:
                 valueFrom:
                   secretKeyRef:
-                    name: paperless-ngx-valkey-secret
+                    name: paperless-valkey-secret
                     key: valkeyUrl
               PAPERLESS_DBENGINE: postgres
-              PAPERLESS_DBHOST: default-paperless-ngx-postgres
+              PAPERLESS_DBHOST: default-paperless-postgres
               PAPERLESS_DBPORT: 5432
               PAPERLESS_DBNAME: paperless
               PAPERLESS_DBUSER: paperless
               PAPERLESS_DBPASS:
                 valueFrom:
                   secretKeyRef:
-                    name: paperless-ngx-postgres-secret
+                    name: paperless-postgres-secret
                     key: password
               PAPERLESS_TIKA_ENABLED: true
               PAPERLESS_TIKA_ENDPOINT: todo
@@ -52,7 +52,7 @@ spec:
               PAPERLESS_SECRET_KEY:
                 valueFrom:
                   secretKeyRef:
-                    name: paperless-ngx-secret
+                    name: paperless-secret
                     key: secretKey
             probes:
               liveness:

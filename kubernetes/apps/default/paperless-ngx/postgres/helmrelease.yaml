@@ -21,7 +21,7 @@ spec:
     auth:
       username: paperless
       database: paperless
-      existingSecret: paperless-ngx-postgres-secret
+      existingSecret: paperless-postgres-secret
     primary:
       persistence:
         enabled: true
