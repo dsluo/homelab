@@ -16,3 +16,4 @@ resources:
   - ./spegel.yaml
   - ./stakater.yaml
   - ./longhorn.yaml
+  - ./bitnami.yaml
