@@ -17,9 +17,6 @@ spec:
   dependsOn:
     - name: longhorn
       namespace: longhorn-system
-  valuesFrom:
-    - kind: Secret
-      name: paperless-ngx-postgres-secret
   values:
     auth:
       username: paperless
