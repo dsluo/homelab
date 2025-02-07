@@ -44,8 +44,8 @@ spec:
                     name: paperless-postgres-secret
                     key: password
               PAPERLESS_TIKA_ENABLED: true
-              PAPERLESS_TIKA_ENDPOINT: http://tika:9998
-              PAPERLESS_GOTENBERG_ENDPOINT: http://gotenburg:3000
+              PAPERLESS_TIKA_ENDPOINT: http://paperless-ngx-tika:9998
+              PAPERLESS_GOTENBERG_ENDPOINT: http://paperless-ngx-gotenburg:3000
               PAPERLESS_CONSUMPTION_DIR: /paperless/consume
               PAPERLESS_DATA_DIR: /paperless/data
               PAPERLESS_MEDIA_ROOT: /paperless/media
