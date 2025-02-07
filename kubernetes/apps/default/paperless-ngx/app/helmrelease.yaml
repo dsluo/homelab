@@ -27,7 +27,7 @@ spec:
               repository: ghcr.io/paperless-ngx/paperless-ngx
               tag: 2.14.7@sha256:2a6d9f6461ad7e8335f5b2123a173b9e6002fda209af8a66483b0c00629569ab
             env:
-              PAPERLESS_URL: https://paperless.potatobread.dev
+              PAPERLESS_URL: https://paperless.${SECRET_DOMAIN}
               PAPERLESS_REDIS:
                 valueFrom:
                   secretKeyRef:
@@ -80,15 +80,15 @@ spec:
       app:
         className: internal
         hosts:
-          - host: paperless.potatobread.dev
+          - host: paperless.${SECRET_DOMAIN}
             paths:
               - path: /
                 service:
                   identifier: app
                   port: http
-        tls:
-          - hosts:
-            - paperless.potatobread.dev
+        # tls:
+        #   - hosts:
+        #     - paperless.${SECRET_DOMAIN}
 
 
       # gotenburg:
