@@ -46,9 +46,9 @@ spec:
               PAPERLESS_TIKA_ENABLED: true
               PAPERLESS_TIKA_ENDPOINT: http://paperless-ngx-tika:9998
               PAPERLESS_GOTENBERG_ENDPOINT: http://paperless-ngx-gotenburg:3000
-              PAPERLESS_CONSUMPTION_DIR: /paperless/consume
-              PAPERLESS_DATA_DIR: /paperless/data
-              PAPERLESS_MEDIA_ROOT: /paperless/media
+              PAPERLESS_CONSUMPTION_DIR: &consume /paperless/consume
+              PAPERLESS_DATA_DIR: &data /paperless/data
+              PAPERLESS_MEDIA_ROOT: &media /paperless/media
               PAPERLESS_SECRET_KEY:
                 valueFrom:
                   secretKeyRef:
@@ -132,3 +132,19 @@ spec:
                 service:
                   identifier: app
                   port: http
+    persistence:
+      app:
+        type: persistentVolumeClaim
+        # storageClass: null # the default
+        accessMode: ReadWriteMany
+        size: 8Gi
+        retain: true
+        advancedMounts:
+          app: # controller
+            app: # container
+              - path: *consume
+                subPath: consume
+              - path: *data
+                subPath: data
+              - path: *media
+                subPath: media
