@@ -44,8 +44,8 @@ spec:
                     name: paperless-postgres-secret
                     key: password
               PAPERLESS_TIKA_ENABLED: true
-              PAPERLESS_TIKA_ENDPOINT: todo
-              PAPERLESS_GOTENBERG_ENDPOINT: todo
+              PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+              PAPERLESS_GOTENBERG_ENDPOINT: http://gotenburg:3000
               PAPERLESS_CONSUMPTION_DIR: /paperless/consume
               PAPERLESS_DATA_DIR: /paperless/data
               PAPERLESS_MEDIA_ROOT: /paperless/media
@@ -70,12 +70,58 @@ spec:
               requests:
                 cpu: 40m
                 memory: 1.2Gi
+      gotenburg:
+        containers:
+          gotenburg:
+            image:
+              repository: gotenberg/gotenberg
+              tag: 8.16.0@sha256:deac6b4a34d8c2e09f2fe15aff501dc4d6375bf0d4174c142cd01ee42ffe2e73
+            command:
+              - "gotenberg"
+              - "--chromium-disable-javascript=true"
+              - "--chromium-allow-list=file:///tmp/.*"
+            resources:
+              limits:
+                cpu: 1000m
+                memory: 1Gi
+              requests:
+                cpu: 200m
+                memory: 256Mi
+            securityContext:
+              # https://gotenberg.dev/docs/getting-started/installation#kubernetes
+              readOnlyRootFilesystem: false
+              allowPrivilegeEscalation: false
+              privileged: false
+              runAsUser: 1001
+
+      tika:
+        containers:
+          tika:
+            image:
+              repository: ghcr.io/paperless-ngx/tika
+              tag: 2.9.1-minimal@sha256:20db3df89eaeb1b271dd840888fe909b88b12f4b86ef641ec07a1d45d4c5168f
+            resources:
+              limits:
+                memory: 220Mi
+              requests:
+                cpu: 10m
+                memory: 220Mi
     service:
       app:
         controller: app
         ports:
           http:
             port: 8000
+      gotenburg:
+        controller: gotenburg
+        ports:
+          http:
+            port: 3000
+      tika:
+        controller: tika
+        ports:
+          http:
+            port: 9998
     ingress:
       app:
         className: internal
@@ -86,34 +132,3 @@ spec:
                 service:
                   identifier: app
                   port: http
-        # tls:
-        #   - hosts:
-        #     - paperless.${SECRET_DOMAIN}
-
-
-      # gotenburg:
-      #   containers:
-      #     gotenburg:
-      #       env:
-      #         DISABLE_GOOGLE_CHROME: "1"
-      #       image:
-      #         repository: gotenberg/gotenberg
-      #         tag: 8.16.0@sha256:deac6b4a34d8c2e09f2fe15aff501dc4d6375bf0d4174c142cd01ee42ffe2e73
-      #       resources:
-      #         limits:
-      #           memory: 30Mi
-      #         requests:
-      #           cpu: 10m
-      #           memory: 30Mi
-      # tika:
-      #   containers:
-      #     tika:
-      #       image:
-      #         repository: ghcr.io/paperless-ngx/tika
-      #         tag: 2.9.1-minimal@sha256:20db3df89eaeb1b271dd840888fe909b88b12f4b86ef641ec07a1d45d4c5168f
-      #       resources:
-      #         limits:
-      #           memory: 220Mi
-      #         requests:
-      #           cpu: 10m
-      #           memory: 220Mi
