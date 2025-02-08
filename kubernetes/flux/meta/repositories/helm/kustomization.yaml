@@ -17,3 +17,4 @@ resources:
   - ./stakater.yaml
   - ./longhorn.yaml
   - ./bitnami.yaml
+  - ./cnpg.yaml
