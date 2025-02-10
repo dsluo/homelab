@@ -23,13 +23,24 @@ additionalMachineCertSans: *sans
 cniConfig:
   name: none
 
-nodes:
-  - hostname: "talos0"
-    ipAddress: "192.168.40.28"
+templates:
+  - &base
+    hostname: "talosX" # override
+    ipAddress: "192.168.40.0" # override
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
     # todo: update task talos:upgrade-node to use schematic if available
+    schematic:
+      customization:
+        extraKernelArgs: &kernelArgs
+          - console=ttyS0
+        systemExtensions:
+          officialExtensions: [] # override
+    talosImageURL: <todo> # override
+  - &virtual
+    <<: *base
+    talosImageURL: factory.talos.dev/installer/ba6068d6ff06ad172c42a80bcb879416efd13425b12b01e0ee9aa61464fb39e2
     schematic:
       customization:
         extraKernelArgs:
@@ -39,20 +50,91 @@ nodes:
             - siderolabs/iscsi-tools
             - siderolabs/util-linux-tools
             - siderolabs/qemu-guest-agent
-    talosImageURL: factory.talos.dev/installer/ba6068d6ff06ad172c42a80bcb879416efd13425b12b01e0ee9aa61464fb39e2
+  - &physical
+    <<: *base
+    talosImageURL: <todo> # todo
+    schematic:
+      customization:
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/iscsi-tools
+            - siderolabs/util-linux-tools
+  - &worker
+    controlPlane: false
+  - &control
     controlPlane: true
+  - &workerNic
+    deviceSelector:
+      hardwareAddr: "00:00:00:00:00:00" # override
+    dhcp: false
+    addresses:
+      - "192.168.40.0/23" # override
+    routes:
+      - network: "0.0.0.0/0"
+        gateway: "192.168.40.1"
+    mtu: 1500
+  - &controlNic
+    <<: *workerNic
+    vip:
+      ip: "192.168.40.2"
+
+nodes:
+  - <<:
+      - *virtual
+      - *control
+    hostname: "talos0"
+    ipAddress: "192.168.40.28"
     networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "bc:24:11:7b:d7:ee"
-        dhcp: false
+      - <<: *controlNic
         addresses:
           - "192.168.40.28/23"
-        routes:
-          - network: "0.0.0.0/0"
-            gateway: "192.168.40.1"
-        mtu: 1500
-        vip:
-          ip: "192.168.40.2"
+        deviceSelector:
+          hardwareAddr: "bc:24:11:7b:d7:ee"
+  - <<:
+      - *virtual
+      - *control
+    hostname: "talos1"
+    ipAddress: "192.168.40.29"
+    networkInterfaces:
+      - <<: *controlNic
+        addresses:
+          - "192.168.40.29/23"
+        deviceSelector:
+          hardwareAddr: "bc:24:11:4b:a7:fc"
+  - <<:
+      - *virtual
+      - *control
+    hostname: "talos2"
+    ipAddress: "192.168.40.30"
+    networkInterfaces:
+      - <<: *controlNic
+        addresses:
+          - "192.168.40.30/23"
+        deviceSelector:
+          hardwareAddr: "bc:24:11:eb:84:10"
+  - <<:
+      - *virtual
+      - *worker
+    hostname: "talos3"
+    ipAddress: "192.168.40.31"
+    networkInterfaces:
+      - <<: *workerNic
+        addresses:
+          - "192.168.40.31/23"
+        deviceSelector:
+          hardwareAddr: "bc:24:11:89:29:c9"
+  - <<:
+      - *virtual
+      - *worker
+    hostname: "talos4"
+    ipAddress: "192.168.40.32"
+    networkInterfaces:
+      - <<: *workerNic
+        addresses:
+          - "192.168.40.32/23"
+        deviceSelector:
+          hardwareAddr: "bc:24:11:5b:85:e2"
+    
 
 # Global patches
 patches:
@@ -67,4 +149,3 @@ controlPlane:
   patches:
     - "@./patches/controller/admission-controller-patch.yaml"
     - "@./patches/controller/cluster.yaml"
-
