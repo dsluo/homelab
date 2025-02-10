@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 3.6.1
+      version: 3.7.0
       sourceRef:
         kind: HelmRepository
         name: bjw-s
@@ -31,7 +31,7 @@ spec:
           app:
             image:
               repository: docker.io/cloudflare/cloudflared
-              tag: 2025.1.1
+              tag: 2025.2.0
             env:
               NO_AUTOUPDATE: true
               TUNNEL_CRED_FILE: /etc/cloudflared/creds/credentials.json
