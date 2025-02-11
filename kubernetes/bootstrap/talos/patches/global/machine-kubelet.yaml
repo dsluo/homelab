@@ -1,9 +1,9 @@
 machine:
   kubelet:
     extraMounts:
-      - destination: /var/openebs/local
+      - destination: /var/csi-local-hostpath
         type: bind
-        source: /var/openebs/local
+        source: /var/csi-local-hostpath
         options:
           - bind
           - rshared
