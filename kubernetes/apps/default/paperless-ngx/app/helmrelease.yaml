@@ -15,7 +15,6 @@ spec:
         name: bjw-s
         namespace: flux-system
   dependsOn:
-    - name: paperless-postgres
     - name: paperless-valkey
   values:
     controllers:
@@ -34,14 +33,30 @@ spec:
                     name: paperless-valkey-secret
                     key: valkeyUrl
               PAPERLESS_DBENGINE: postgres
-              PAPERLESS_DBHOST: paperless-postgres-postgresql
-              PAPERLESS_DBPORT: 5432
-              PAPERLESS_DBNAME: paperless
-              PAPERLESS_DBUSER: paperless
+              PAPERLESS_DBHOST:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-postgres-app
+                    key: host
+              PAPERLESS_DBPORT:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-postgres-app
+                    key: port
+              PAPERLESS_DBNAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-postgres-app
+                    key: dbname
+              PAPERLESS_DBUSER:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-postgres-app
+                    key: username
               PAPERLESS_DBPASS:
                 valueFrom:
                   secretKeyRef:
-                    name: paperless-postgres-secret
+                    name: paperless-postgres-app
                     key: password
               PAPERLESS_TIKA_ENABLED: true
               PAPERLESS_TIKA_ENDPOINT: http://paperless-ngx-tika:9998
