@@ -18,3 +18,4 @@ resources:
   - ./longhorn.yaml
   - ./bitnami.yaml
   - ./cnpg.yaml
+  - ./democratic-csi.yaml
