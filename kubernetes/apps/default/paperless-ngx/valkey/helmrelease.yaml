@@ -16,7 +16,7 @@ spec:
         namespace: flux-system
   dependsOn:
     - name: longhorn
-      namespace: longhorn-system
+      namespace: storage
   values:
     architecture: standalone
     auth:

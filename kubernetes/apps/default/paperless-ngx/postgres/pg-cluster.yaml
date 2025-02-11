@@ -8,3 +8,10 @@ spec:
   storage:
     size: 8Gi
     storageClass: local-hostpath
+  
+  bootstrap:
+    initdb:
+      database: paperless
+      owner: paperless
+      secret:
+        name: paperless-postgres-secret
