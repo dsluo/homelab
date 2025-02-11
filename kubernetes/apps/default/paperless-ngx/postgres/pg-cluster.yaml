@@ -4,3 +4,7 @@ metadata:
   name: paperless-postgres
 spec:
   instances: 3
+
+  storage:
+    size: 8Gi
+    storageClass: local-hostpath
