@@ -11,6 +11,6 @@ patches:
     patch: |
       - op: add
         path: /metadata/name
-        value: longhorn-system
+        value: storage
     target:
       kind: Namespace
