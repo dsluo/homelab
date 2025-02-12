@@ -1,0 +1,54 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/refs/heads/main/charts/other/app-template/schemas/helmrelease-helm-v2beta2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: paperless-ingest
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.7.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  values:
+    controllers:
+      app:
+        type: deployment
+        containers:
+          app:
+            image:
+              repository: ghcr.io/dockur/samba
+              tag: 4.21.3@sha256:f4cc730c52c8847bd99b9e6d1e2a65bc2fee3c4c1c3e78952f73d9f12e16a4d2
+            env:
+              NAME: "paperless-ingest"
+              USER: paperless
+              PASS: paperless # idc, really
+    service:
+      app:
+        controller: app
+        ports:
+          smb:
+            port: 445
+            protocol: TCP
+    ingress:
+      app:
+        className: internal
+        hosts:
+          - host: paperless-ingress.${SECRET_DOMAIN}
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: smb
+    persistence:
+      app:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteMany
+        size: 1Gi
+        retain: true
+        globalMounts:
+          - path: /storage
