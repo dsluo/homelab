@@ -168,3 +168,4 @@ spec:
           app:
             app:
               - path: *consume
+                subPath: consume
