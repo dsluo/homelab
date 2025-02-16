@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -15,3 +16,11 @@ spec:
         kind: HelmRepository
         name: longhorn
         namespace: flux-system
+  valuesFrom:
+    - kind: Secret
+      name: &secret "longhorn-backup-secret"
+      valuesKey: target
+      targetPath: defaultBackupStore.backupTarget
+  values:
+    defaultBackupStore:
+      backupTargetCredentialSecret: *secret
