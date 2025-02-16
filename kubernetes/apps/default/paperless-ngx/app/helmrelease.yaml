@@ -82,10 +82,10 @@ spec:
                 type: HTTP
             resources:
               limits:
-                memory: 1.2Gi
+                memory: 4Gi
               requests:
-                cpu: 40m
-                memory: 1.2Gi
+                cpu: 500m
+                memory: 1Gi
       gotenburg:
         containers:
           gotenburg:
