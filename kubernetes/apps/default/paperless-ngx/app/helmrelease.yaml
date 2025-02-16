@@ -157,9 +157,13 @@ spec:
         advancedMounts:
           app: # controller
             app: # container
-              - path: *consume
-                subPath: consume
               - path: *data
                 subPath: data
               - path: *media
                 subPath: media
+      ingest:
+        existingClaim: paperless-ingest-app
+        advancedMounts:
+          app:
+            app:
+              - path: *consume
