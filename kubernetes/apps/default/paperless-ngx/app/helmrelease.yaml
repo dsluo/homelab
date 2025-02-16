@@ -69,6 +69,7 @@ spec:
                   secretKeyRef:
                     name: paperless-secret
                     key: secretKey
+              PAPERLESS_CONSUMER_POLLING: 5
             probes:
               liveness:
                 enabled: true
