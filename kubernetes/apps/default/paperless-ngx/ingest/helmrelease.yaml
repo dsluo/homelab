@@ -34,16 +34,9 @@ spec:
           smb:
             port: 445
             protocol: TCP
-    ingress:
-      app:
-        className: internal
-        hosts:
-          - host: paperless-ingress.${SECRET_DOMAIN}
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: smb
+        type: LoadBalancer
+        annotations:
+          external-dns.alpha.kubernetes.io/hostname: paperless-ingest.${SECRET_DOMAIN}
     persistence:
       app:
         type: persistentVolumeClaim
