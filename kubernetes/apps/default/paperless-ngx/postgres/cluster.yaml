@@ -1,0 +1,31 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: paperless-postgres
+spec:
+  instances: 3
+
+  storage:
+    size: 8Gi
+    storageClass: local-hostpath
+  
+  bootstrap:
+    initdb:
+      database: paperless
+      owner: paperless
+  
+  backup:
+    barmanObjectStore:
+      destinationPath: "s3://potatobread-homelab-backup/cnpg/paperless"
+      endpointURL: s3.us-west-000.backblazeb2.com
+      s3Credentials:
+        accessKeyId:
+          name: cnpg-backup-secret
+          key: AWS_ACCESS_KEY_ID
+        secretAccessKey:
+          name: cnpg-backup-secret
+          key: AWS_SECRET_ACCESS_KEY
+      wal:
+        compression: bzip2
+      data:
+        compression: bzip2
