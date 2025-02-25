@@ -1,0 +1,70 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: immich
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: immich
+      sourceRef:
+        kind: HelmRepository
+        name: immich
+        namespace: flux-system
+  values:
+    image:
+      # renovate: datasource=docker depName=ghcr.io/immich-app/immich-server
+      tag: "v1.126.1"
+    
+    env:
+      DB_HOSTNAME:
+        valueFrom:
+          secretKeyRef:
+            name: immich-postgres-app
+            key: host
+      DB_DATABASE_NAME:
+        valueFrom:
+          secretKeyRef:
+            name: immich-postgres-app
+            key: dbname
+      DB_USERNAME:
+        valueFrom:
+          secretKeyRef:
+            name: immich-postgres-app
+            key: user
+      DB_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: immich-postgres-app
+            key: password
+
+    immich:
+      metrics:
+        enabled: true
+      persistence:
+        library:
+          existingClaim:
+
+    # configuration is immich-config.json converted to yaml
+    # ref: https://immich.app/docs/install/config-file/
+    configuration: {}
+
+    redis:
+      enabled: true
+
+    server:
+      ingress:
+        main:
+          enabled: true
+          className: internal
+          hosts:
+            - host: immich.${SECRET_DOMAIN}
+              paths:
+                - path: "/"
+
+    machine-learning:
+      persistence:
+        cache:
+          type: persistentVolumeClaim
