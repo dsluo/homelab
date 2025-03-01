@@ -4,6 +4,7 @@ metadata:
   name: paperless-postgres
 spec:
   instances: 3
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.4@sha256:9d25659c5b879b48695af426065b0aa81d64ed0a07ac31daef00f2afebb03d08
 
   storage:
     size: 8Gi
