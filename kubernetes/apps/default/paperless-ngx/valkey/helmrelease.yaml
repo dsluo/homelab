@@ -21,7 +21,6 @@ spec:
     architecture: standalone
     auth:
       existingSecret: paperless-valkey-secret
-      existingSecretPasswordKey: valkeyPassword
     primary:
       persistence:
         enabled: true
