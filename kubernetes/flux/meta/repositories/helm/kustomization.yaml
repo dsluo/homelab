@@ -19,3 +19,4 @@ resources:
   - ./bitnami.yaml
   - ./cnpg.yaml
   - ./democratic-csi.yaml
+  - ./immich.yaml
