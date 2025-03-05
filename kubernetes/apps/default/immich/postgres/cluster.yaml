@@ -24,6 +24,9 @@ spec:
       database: immich
       owner: immich
       postInitSQL:
+        # Immich expects its user to have superuser privileges
+        # https://immich.app/docs/administration/postgres-standalone/#with-superuser-permission
+        - ALTER USER immich WITH SUPERUSER;
         - ALTER SYSTEM SET search_path TO "$user", public, vectors;
         - CREATE EXTENSION IF NOT EXISTS "vectors";
 
