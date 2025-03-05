@@ -5,7 +5,11 @@ metadata:
   name: immich-postgres
 spec:
   instances: 3
-  imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:17.4@sha256:617b2ef2238fa48069b763200b88d5a04f52f4eefedbda90716a37bf8a8b8066
+  # immich only officially supports PG 14,15,16 and pgvecto.rs >=0.2.0, <0.4.0
+  # plans to move to vectorchord in the future
+  # see: https://immich.app/docs/administration/postgres-standalone/#prerequisites
+  # see: https://github.com/immich-app/immich/discussions/14280#discussioncomment-11726072
+  imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:16.5-v0.3.0@sha256:be3f025d79aa1b747817f478e07e71be43236e14d00d8a9eb3914146245035ba
 
   postgresql:
     shared_preload_libraries:
