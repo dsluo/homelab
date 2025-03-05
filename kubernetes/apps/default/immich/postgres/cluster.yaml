@@ -1,9 +1,15 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/postgresql.cnpg.io/cluster_v1.json
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: immich-postgres
 spec:
   instances: 3
+  imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:17.4@sha256:617b2ef2238fa48069b763200b88d5a04f52f4eefedbda90716a37bf8a8b8066
+
+  postgresql:
+    shared_preload_libraries:
+      - "vectors.so"
 
   storage:
     size: 8Gi
@@ -13,6 +19,9 @@ spec:
     initdb:
       database: immich
       owner: immich
+      postInitSQL:
+        - ALTER SYSTEM SET search_path TO "$user", public, vectors;
+        - CREATE EXTENSION IF NOT EXISTS "vectors";
 
   backup:
     barmanObjectStore:

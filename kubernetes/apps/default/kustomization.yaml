@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - ./echo-server/ks.yaml
   - ./paperless-ngx/ks.yaml
+  - ./immich/ks.yaml
 components:
   - ../../flux/components/namespace
 patches:
