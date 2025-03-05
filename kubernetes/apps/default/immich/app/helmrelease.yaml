@@ -16,7 +16,7 @@ spec:
         namespace: flux-system
   values:
     image:
-      # renovate: datasource=docker depName=ghcr.io/immich-app/immich-server
+      # renovate: datasource=github-releases depName=immich-app/immich
       tag: "v1.126.1"
     
     env:
