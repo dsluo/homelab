@@ -67,4 +67,4 @@ spec:
     machine-learning:
       persistence:
         cache:
-          type: persistentVolumeClaim
+          type: pvc
