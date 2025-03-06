@@ -16,4 +16,4 @@ spec:
         namespace: flux-system
   values:
     manageCRDs: true
-    replicaCount: 3
+    replicaCount: 2
