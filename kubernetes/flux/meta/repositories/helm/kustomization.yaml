@@ -21,3 +21,4 @@ resources:
   - ./democratic-csi.yaml
   - ./immich.yaml
   - ./backube.yaml
+  - ./piraeus.yaml
