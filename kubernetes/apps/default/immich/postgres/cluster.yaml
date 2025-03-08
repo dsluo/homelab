@@ -34,7 +34,7 @@ spec:
   backup:
     barmanObjectStore:
       destinationPath: "s3://potatobread-homelab-backup/cnpg/immich"
-      endpointURL: s3.us-west-000.backblazeb2.com
+      endpointURL: https://s3.us-west-000.backblazeb2.com
       s3Credentials:
         accessKeyId:
           name: cnpg-paperless-backup
