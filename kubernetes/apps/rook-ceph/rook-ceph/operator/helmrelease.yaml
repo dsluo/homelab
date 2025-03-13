@@ -1,0 +1,31 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: rook-ceph-operator
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: rook-ceph
+      version: 1.16.5
+      reconcileStrategy: ChartVersion
+      sourceRef:
+        kind: HelmRepository
+        name: rook
+        namespace: flux-system
+  values:
+    image:
+      repository: ghcr.io/rook/ceph
+    crds:
+      enabled: true
+    monitoring:
+      enabled: false # todo
+    # csi:
+    #   csiAddons:
+    #     enabled: true
+    #   enableLiveness: true
+    #   serviceMonitor:
+    #     enable: true
+    # enableDiscoveryDaemon: true
