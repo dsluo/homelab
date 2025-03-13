@@ -26,13 +26,12 @@ metadata:
   name: &app rook-ceph-cluster
   namespace: flux-system
 spec:
-  targetNamespace: &namespace rook-ceph
+  targetNamespace: rook-ceph
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: rook-ceph-operator
-      namespace: *namespace
   path: ./kubernetes/apps/rook-ceph/rook-ceph/cluster
   prune: true
   sourceRef:
