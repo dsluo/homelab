@@ -22,3 +22,4 @@ resources:
   - ./immich.yaml
   - ./backube.yaml
   - ./piraeus.yaml
+  - ./rook.yaml
