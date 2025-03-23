@@ -37,10 +37,10 @@ spec:
       endpointURL: https://s3.us-west-000.backblazeb2.com
       s3Credentials:
         accessKeyId:
-          name: cnpg-paperless-backup
+          name: cnpg-immich-backup
           key: AWS_ACCESS_KEY_ID
         secretAccessKey:
-          name: cnpg-paperless-backup
+          name: cnpg-immich-backup
           key: AWS_SECRET_ACCESS_KEY
       wal:
         compression: bzip2
