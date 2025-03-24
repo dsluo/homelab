@@ -32,3 +32,14 @@ spec:
       # end https://github.com/rook/rook/blob/release-1.16/deploy/charts/rook-ceph-cluster/values-external.yaml
     monitoring:
       enabled: false # todo
+    # -- A list of CephBlockPool configurations to deploy
+    # @default -- See [below](#ceph-block-pools)
+    cephBlockPools: {}
+
+    # -- A list of CephFileSystem configurations to deploy
+    # @default -- See [below](#ceph-file-systems)
+    cephFileSystems: {}
+
+    # -- A list of CephObjectStore configurations to deploy
+    # @default -- See [below](#ceph-object-stores)
+    cephObjectStores: {}
