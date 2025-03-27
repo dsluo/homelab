@@ -2,6 +2,11 @@
 
 The Geist RCURN082-101D15ST5-OD is an outlet-level monitored, switched PDU made by Geist Global, which was later acquired by Vertiv in February 2018. The documentation and firmware for it and similar models has thus become hard to find.
 
+## Notes:
+
+- If upgrading from v4, you need to first use the Automated Smart Updater (ASU) to upgrade from v4 to v5.2.1, then to v5.8.0.
+- Be sure to reset all settings in the UI after upgrading. Some settings like SSH/serial may not show up until you do.
+
 ## References
 
 Product Page: https://web.archive.org/web/20161105151136/http://www.geistglobal.com:80/power-distribution-unit/RCURN082-101D15ST5-OD
