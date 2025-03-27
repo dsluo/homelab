@@ -6,7 +6,8 @@
 | 24 port keystone patch panel | 1 | $30 | Amazon | | |
 | USW-24-POE | 1 | $380 | Microcenter | | |
 | USW-24-G2 | 1 | $free | Auvik promotion | | |
-| USW-Aggregation | 1 | $free + $20 | Auvik promo credit + Microcenter (open box) | | |
+| ~~USW-Aggregation~~ | ~~1~~ | ~~$free + $20~~ | ~~Auvik promo credit + Microcenter (open box)~~ | | |
+| MikroTik CRS317-1G-16S+RM | 1 | $250 | ebay | | |
 | UAP-AC-Lite | 1 | $80 | Microcenter | |
 | CKL 9116H 16 port HDMI KVM | 1 | $90 | ebay | |
 | Lenovo M720q Tiny | 4 | $70 | /r/homelabsales (1), ebay (3) | each has i5-8500T + the below: |
