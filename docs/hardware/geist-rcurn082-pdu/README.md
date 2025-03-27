@@ -11,3 +11,9 @@ Manual (latest revision): https://web.archive.org/web/20250319033315/https://www
 Firmware Download Page: https://web.archive.org/web/2/https://www.vertiv.com/en-us/support/software-download/power-distribution/geist-r-series-v5-firmware/
 
 Firmware v5.8.0: https://web.archive.org/web/20250319020219/https://www.vertiv.com/497462/globalassets/documents/firmware/geist/geist-r05-5_8_0-03082021.zip
+
+Firmware v5.2.1 and Automated Smart Updater (ASU) Download Page (for upgrade from v4): https://web.archive.org/web/20171219003313/http://www.geistglobal.com/supportfirmware-updates/power-firmware
+
+Firmware v5.2.1: http://www.geistglobal.com/sites/all/files/site/Firmware/RS/geist-r04-5_2_1-12122017.zip
+
+ASU: https://web.archive.org/web/20171219003313/http://www.geistglobal.com/sites/all/files/site/Firmware/ASU/geistasu_1.20.0.5.zip
