@@ -40,6 +40,7 @@ spec:
     persistence:
       app:
         type: persistentVolumeClaim
+        storageClass: cephfs
         accessMode: ReadWriteMany
         size: 1Gi
         retain: true
