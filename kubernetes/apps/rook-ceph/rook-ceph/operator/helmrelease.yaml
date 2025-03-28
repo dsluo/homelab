@@ -35,7 +35,7 @@ spec:
       enabled: false # todo
     csi:
       csiAddons:
-        enabled: true
+        enabled: false
       # enableLiveness: true
       # serviceMonitor:
       #   enable: true
