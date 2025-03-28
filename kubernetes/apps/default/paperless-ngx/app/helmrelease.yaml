@@ -151,7 +151,7 @@ spec:
     persistence:
       app:
         type: persistentVolumeClaim
-        # storageClass: null # the default
+        storageClass: cephfs
         accessMode: ReadWriteMany
         size: 8Gi
         retain: true
