@@ -6,7 +6,7 @@ metadata:
   name: &app immich
   namespace: flux-system
 spec:
-  targetNamespace: default
+  targetNamespace: immich
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -26,7 +26,7 @@ metadata:
   name: &app immich-postgres
   namespace: flux-system
 spec:
-  targetNamespace: default
+  targetNamespace: immich
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
