@@ -15,7 +15,6 @@ resources:
   - ./prometheus-community.yaml
   - ./spegel.yaml
   - ./stakater.yaml
-  - ./longhorn.yaml
   - ./bitnami.yaml
   - ./cnpg.yaml
   - ./democratic-csi.yaml
