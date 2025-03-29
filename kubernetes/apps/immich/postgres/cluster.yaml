@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: immich-postgres
+spec:
+  instances: 3
+  # immich only officially supports PG 14,15,16 and pgvecto.rs >=0.2.0, <0.4.0
+  # plans to move to vectorchord in the future
+  # see: https://immich.app/docs/administration/postgres-standalone/#prerequisites
+  # see: https://github.com/immich-app/immich/discussions/14280#discussioncomment-11726072
+  # todo: figure out how to get renovate to track this
+  imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:16.5-v0.3.0@sha256:be3f025d79aa1b747817f478e07e71be43236e14d00d8a9eb3914146245035ba
+
+  postgresql:
+    shared_preload_libraries:
+      - "vectors.so"
+
+  storage:
+    size: 8Gi
+    storageClass: local-hostpath
+  
+  bootstrap:
+    initdb:
+      database: immich
+      owner: immich
+      postInitSQL:
+        # Immich expects its user to have superuser privileges
+        # https://immich.app/docs/administration/postgres-standalone/#with-superuser-permission
+        - ALTER USER immich WITH SUPERUSER;
+        - ALTER SYSTEM SET search_path TO "$user", public, vectors;
+        - CREATE EXTENSION IF NOT EXISTS "vectors";
+
+  backup:
+    barmanObjectStore:
+      destinationPath: "s3://potatobread-homelab-backup/cnpg/immich"
+      endpointURL: https://s3.us-west-000.backblazeb2.com
+      s3Credentials:
+        accessKeyId:
+          name: cnpg-immich-backup
+          key: AWS_ACCESS_KEY_ID
+        secretAccessKey:
+          name: cnpg-immich-backup
+          key: AWS_SECRET_ACCESS_KEY
+      wal:
+        compression: bzip2
+      data:
+        compression: bzip2
