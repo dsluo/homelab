@@ -15,8 +15,8 @@ spec:
         name: bitnami
         namespace: flux-system
   dependsOn:
-    - name: longhorn
-      namespace: storage
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
   values:
     architecture: standalone
     auth:
