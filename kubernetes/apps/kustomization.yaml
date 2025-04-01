@@ -1,15 +1,15 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- cert-manager
-- cnpg-system
-- echo-server
-- flux-system
-- immich
-- paperless-ngx
-- kube-system
-- network
-- observability
-- rook-ceph
-- storage
-- volsync-system
+  - kube-system
+  - network
+  - cert-manager
+  - flux-system
+  - rook-ceph
+  - storage
+  - observability
+  - cnpg-system
+  - echo-server
+  - immich
+  - paperless-ngx
+  - volsync-system
