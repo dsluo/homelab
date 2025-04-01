@@ -15,6 +15,10 @@ spec:
     # initdb:
     #   database: paperless
     #   owner: paperless
+
+    # note to self:
+    # When restoring, the backup config cannot have a serverName that targets a directory
+    # that already exists in S3. Will complain about "expecting empty archive".
     recovery:
       source: *dbName
       database: paperless
@@ -39,4 +43,6 @@ spec:
 
   externalClusters:
     - name: *dbName
-      barmanObjectStore: *barman
+      barmanObjectStore:
+        <<: *barman
+        # serverName: paperless-postgres-old
