@@ -6,6 +6,7 @@ resources:
 - default
 - flux-system
 - immich
+- paperless-ngx
 - kube-system
 - network
 - observability
