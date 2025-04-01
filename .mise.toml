@@ -1,11 +1,11 @@
 [env]
 _.python.venv = { path = "{{config_root}}/.venv", create = true }
+_.file = '.env'
 KUBECONFIG = "{{config_root}}/kubeconfig"
 SOPS_AGE_KEY_FILE = "{{config_root}}/age.key"
 TALOSCONFIG = "{{config_root}}/kubernetes/bootstrap/talos/clusterconfig/talosconfig"
 TASK_X_ENV_PRECEDENCE = 1
 TASK_X_MAP_VARIABLES = 0
-_.file = '.env'
 
 [tasks.deps]
 description = "Install dependencies"
@@ -33,3 +33,4 @@ uv = "0.6.10"
 "aqua:siderolabs/talos" = "1.9.4"
 "aqua:yannh/kubeconform" = "0.6.7"
 "aqua:utkuozdemir/pv-migrate" = "2.2.1"
+"aqua:rclone/rclone" = "1.69.1"
