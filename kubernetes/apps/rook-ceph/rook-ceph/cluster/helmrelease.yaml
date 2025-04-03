@@ -17,9 +17,16 @@ spec:
         namespace: flux-system
   dependsOn:
     - name: rook-ceph-operator
+    - name: snapshot-controller
+      namespace: storage
   values:
+    monitoring:
+      enabled: false # todo
+    # begin https://github.com/rook/rook/blob/release-1.16/deploy/charts/rook-ceph-cluster/values-external.yaml
+    # All values below are taken from the CephCluster CRD
+    # -- Cluster configuration.
+    # @default -- See [below](#ceph-cluster-spec)
     cephClusterSpec:
-      # begin https://github.com/rook/rook/blob/release-1.16/deploy/charts/rook-ceph-cluster/values-external.yaml
       external:
         enable: true
       crashCollector:
@@ -29,9 +36,6 @@ spec:
           mon:
             disabled: false
             interval: 45s
-      # end https://github.com/rook/rook/blob/release-1.16/deploy/charts/rook-ceph-cluster/values-external.yaml
-    monitoring:
-      enabled: false # todo
     # -- A list of CephBlockPool configurations to deploy
     # @default -- See [below](#ceph-block-pools)
     cephBlockPools: {}
@@ -43,3 +47,30 @@ spec:
     # -- A list of CephObjectStore configurations to deploy
     # @default -- See [below](#ceph-object-stores)
     cephObjectStores: {}
+    # end https://github.com/rook/rook/blob/release-1.16/deploy/charts/rook-ceph-cluster/values-external.yaml
+
+    # https://github.com/rook/rook/blob/2348ff689c6d31387370dc9445c73dd327f2b685/deploy/charts/rook-ceph-cluster/values.yaml#L555-L577
+    # -- Settings for the block pool snapshot class
+    # @default -- See [RBD Snapshots](../Storage-Configuration/Ceph-CSI/ceph-csi-snapshot.md#rbd-snapshots)
+    cephBlockPoolsVolumeSnapshotClass:
+      enabled: true
+      name: ceph-rbd-snapshot
+      isDefault: false
+      deletionPolicy: Delete
+      annotations: {}
+      labels: {}
+      # see https://rook.io/docs/rook/latest-release/Storage-Configuration/Ceph-CSI/ceph-csi-snapshot/#rbd-snapshots for available configuration
+      parameters:
+        pool: k8s-rbd_pool
+
+    # -- Settings for the filesystem snapshot class
+    # @default -- See [CephFS Snapshots](../Storage-Configuration/Ceph-CSI/ceph-csi-snapshot.md#cephfs-snapshots)
+    cephFileSystemVolumeSnapshotClass:
+      enabled: true
+      name: cephfs-snapshot
+      isDefault: true
+      deletionPolicy: Delete
+      annotations: {}
+      labels: {}
+      # see https://rook.io/docs/rook/latest-release/Storage-Configuration/Ceph-CSI/ceph-csi-snapshot/#cephfs-snapshots for available configuration
+      parameters: {}
