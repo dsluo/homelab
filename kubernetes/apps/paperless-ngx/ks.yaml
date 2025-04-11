@@ -18,6 +18,20 @@ spec:
   wait: false
   interval: 30m
   timeout: 5m
+  dependsOn:
+    - name: rook-ceph-cluster
+      namespace: flux-system
+    - name: volsync
+      namespace: flux-system
+    - name: paperless-postgres
+      namespace: flux-system
+    - name: paperless-ingest # for the ingest pvc
+      namespace: flux-system
+  components:
+    - ../../../flux/components/volsync
+  postBuild:
+    substitute:
+      APP: paperless
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -78,3 +92,16 @@ spec:
   wait: false
   interval: 30m
   timeout: 5m
+  dependsOn:
+    - name: rook-ceph-cluster
+      namespace: flux-system
+    - name: volsync
+      namespace: flux-system
+    - name: paperless-postgres
+      namespace: flux-system
+  components:
+    - ../../../flux/components/volsync
+  postBuild:
+    substitute:
+      APP: paperless-ingest
+      VOLSYNC_STORAGECLASS: cephfs
