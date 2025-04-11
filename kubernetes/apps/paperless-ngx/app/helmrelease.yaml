@@ -151,10 +151,7 @@ spec:
     persistence:
       app:
         type: persistentVolumeClaim
-        storageClass: cephfs
-        accessMode: ReadWriteMany
-        size: 8Gi
-        retain: true
+        existingClaim: paperless
         advancedMounts:
           app: # controller
             app: # container
@@ -163,7 +160,7 @@ spec:
               - path: *media
                 subPath: media
       ingest:
-        existingClaim: paperless-ingest-app
+        existingClaim: paperless-ingest
         advancedMounts:
           app:
             app:
