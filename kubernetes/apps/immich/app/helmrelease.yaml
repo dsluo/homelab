@@ -64,6 +64,10 @@ spec:
             - host: immich.${SECRET_DOMAIN}
               paths:
                 - path: "/"
+      resources:
+        requests:
+          cpu: 1500m
+          memory: 4096Mi
 
     machine-learning:
       persistence:
