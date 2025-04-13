@@ -11,5 +11,7 @@
           "./kubeconfig"
       ]
     },
-    "python.defaultInterpreterPath": "${workspaceFolder}/.venv"
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
+    "sops.configPath": "./.sops.yaml",
+    "sops.creationEnabled": true
 }
