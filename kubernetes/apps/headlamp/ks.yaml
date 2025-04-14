@@ -18,11 +18,11 @@ spec:
   wait: false
   interval: 30m
   timeout: 5m
-  # dependsOn:
-  #   - name: volsync
-  #     namespace: flux-system
-  # components:
-  #   - ../../../flux/components/volsync
+  dependsOn:
+    - name: volsync
+      namespace: flux-system
+  components:
+    - ../../../flux/components/volsync
   postBuild:
     substitute:
       APP: headlamp
