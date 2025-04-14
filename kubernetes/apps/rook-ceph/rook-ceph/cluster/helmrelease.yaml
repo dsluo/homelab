@@ -21,7 +21,7 @@ spec:
       namespace: storage
   values:
     monitoring:
-      enabled: false # todo
+      enabled: true
     # begin https://github.com/rook/rook/blob/release-1.16/deploy/charts/rook-ceph-cluster/values-external.yaml
     # All values below are taken from the CephCluster CRD
     # -- Cluster configuration.
