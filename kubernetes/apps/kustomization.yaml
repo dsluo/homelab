@@ -8,6 +8,7 @@ resources:
   - rook-ceph
   - storage
   - observability
+  - victoria-system
   - cnpg-system
   - echo-server
   - immich

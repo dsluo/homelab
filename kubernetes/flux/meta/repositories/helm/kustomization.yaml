@@ -22,3 +22,5 @@ resources:
   - ./backube.yaml
   - ./piraeus.yaml
   - ./rook.yaml
+  - ./grafana.yaml
+  - ./victoria.yaml
