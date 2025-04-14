@@ -12,6 +12,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: snapshot-controller
+    - name: rook-ceph-cluster
   path: ./kubernetes/apps/volsync-system/volsync/app
   prune: true
   sourceRef:

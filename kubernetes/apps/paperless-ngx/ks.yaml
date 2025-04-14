@@ -19,8 +19,6 @@ spec:
   interval: 30m
   timeout: 5m
   dependsOn:
-    - name: rook-ceph-cluster
-      namespace: flux-system
     - name: volsync
       namespace: flux-system
     - name: paperless-postgres
@@ -93,8 +91,6 @@ spec:
   interval: 30m
   timeout: 5m
   dependsOn:
-    - name: rook-ceph-cluster
-      namespace: flux-system
     - name: volsync
       namespace: flux-system
     - name: paperless-postgres
