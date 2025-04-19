@@ -34,6 +34,11 @@ spec:
           paths:
             - path: /
               pathType: Prefix
+              backend:
+                service:
+                  name: headlamp
+                  port:
+                    number: 80
     
     volumeMounts:
       - mountPath: /build/plugins
