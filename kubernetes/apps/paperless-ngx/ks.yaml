@@ -102,3 +102,4 @@ spec:
       APP: paperless-ingest
       VOLSYNC_STORAGECLASS: cephfs
       VOLSYNC_SNAPSHOTCLASS: cephfs-snapshot
+      VOLSYNC_ACCESSMODES: ReadWriteMany
