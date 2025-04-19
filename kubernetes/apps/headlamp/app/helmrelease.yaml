@@ -33,7 +33,7 @@ spec:
         - host: "headlamp.${SECRET_DOMAIN}"
           paths:
             - path: /
-              pathType: Prefix
+              type: Prefix
     
     volumeMounts:
       - mountPath: /build/plugins
