@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: democratic-csi
-      version: 0.14.7
+      version: 0.15.0
       reconcileStrategy: ChartVersion
       sourceRef:
         kind: HelmRepository
@@ -52,6 +52,9 @@ spec:
       enabled: true
       strategy: node
       externalProvisioner:
+        image:
+          registry: registry.k8s.io/sig-storage/csi-provisioner
+          tag: v3.6.0
         extraArgs:
           - --leader-election=false
           - --node-deployment=true
@@ -70,6 +73,9 @@ spec:
 
       externalSnapshotter:
         enabled: true
+        image:
+          registry: registry.k8s.io/sig-storage/csi-snapshotter
+          tag: v8.2.1
         extraArgs:
           - --leader-election=false
           - --node-deployment=true
@@ -88,6 +94,9 @@ spec:
             type: DirectoryOrCreate
 
     driver:
+      image:
+        registry: docker.io/democraticcsi/democratic-csi
+        tag: v1.9.3
       config:
         # please see the most up-to-date example of the corresponding config here:
         # https://github.com/democratic-csi/democratic-csi/tree/master/examples
