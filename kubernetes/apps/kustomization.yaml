@@ -5,6 +5,7 @@ resources:
   - network
   - cert-manager
   - flux-system
+  - node-feature-discovery
   - rook-ceph
   - storage
   - observability
