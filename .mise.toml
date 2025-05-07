@@ -1,6 +1,5 @@
 [env]
 _.python.venv = { path = "{{config_root}}/.venv", create = true }
-_.file = '.env'
 KUBECONFIG = "{{config_root}}/kubeconfig"
 SOPS_AGE_KEY_CMD = "op read 'op://kube/kube age key/credential'"
 TALOSCONFIG = "{{config_root}}/kubernetes/bootstrap/talos/clusterconfig/talosconfig"
