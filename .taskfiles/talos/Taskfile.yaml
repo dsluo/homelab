@@ -10,7 +10,6 @@ tasks:
     preconditions:
       - test -f {{.TALHELPER_CONFIG_FILE}}
       - test -f {{.SOPS_CONFIG_FILE}}
-      - test -f {{.SOPS_AGE_KEY_FILE}}
       - which talhelper
 
   apply-node:
