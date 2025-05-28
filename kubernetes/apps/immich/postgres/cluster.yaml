@@ -10,7 +10,7 @@ spec:
   # see: https://immich.app/docs/administration/postgres-standalone/#prerequisites
   # see: https://github.com/immich-app/immich/discussions/14280#discussioncomment-11726072
   # todo: figure out how to get renovate to track this
-  imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16-0.4.1@sha256:ed5ff8a789eaa88d1bde2e879a75dd02c104bc4f7a18c341848dde673db90d13
+  imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16-0.3.0@sha256:69c827b85380454b46260219a93c9fd13942453200d1d07f856a17d7af0df8b2
 
   postgresql:
     shared_preload_libraries:
