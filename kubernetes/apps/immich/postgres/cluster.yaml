@@ -5,10 +5,7 @@ metadata:
   name: immich-postgres
 spec:
   instances: 3
-  # immich only officially supports PG 14,15,16 and pgvecto.rs >=0.2.0, <0.4.0
-  # plans to move to vectorchord in the future
-  # see: https://immich.app/docs/administration/postgres-standalone/#prerequisites
-  # see: https://github.com/immich-app/immich/discussions/14280#discussioncomment-11726072
+  # immich only officially supports PG 14,15,16 and vectorchord >=0.2.0, <0.4.0
   # todo: figure out how to get renovate to track this
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16-0.3.0@sha256:69c827b85380454b46260219a93c9fd13942453200d1d07f856a17d7af0df8b2
 
@@ -23,19 +20,38 @@ spec:
   monitoring:
     disableDefaultQueries: false
     enablePodMonitor: true
-  
+
+  managed:
+    roles:
+      - name: immich
+        ensure: present
+        connectionLimit: -1
+        superuser: true
+        login: true
+
   bootstrap:
-    initdb:
+    recovery:
+      backup:
+        name: immich-postgres-20250528013533
       database: immich
       owner: immich
-      postInitSQL:
-        # Immich expects its user to have superuser privileges
-        # https://immich.app/docs/administration/postgres-standalone/#with-superuser-permission
-        - ALTER USER immich WITH SUPERUSER;
-        - CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
+
+    #   source: clusterBackup
+    #   recoveryTarget:
+    #     targetTime: "2025-05-27 23:07:39.0000+00"
+    # initdb:
+    #   database: immich
+    #   owner: immich
+    #   postInitSQL:
+    #     # Immich expects its user to have superuser privileges
+    #     # https://immich.app/docs/administration/postgres-standalone/#with-superuser-permission
+    #     - ALTER USER immich WITH SUPERUSER;
+    #     - ALTER SYSTEM SET search_path TO "$user", public, vectors;
+    #     - CREATE EXTENSION IF NOT EXISTS "vectors";
 
   backup:
-    barmanObjectStore:
+    barmanObjectStore: &backupConfig
+      serverName: immich-postgres-v3
       destinationPath: "s3://potatobread-homelab-backup/cnpg/immich"
       endpointURL: https://s3.us-west-000.backblazeb2.com
       s3Credentials:
@@ -49,3 +65,9 @@ spec:
         compression: bzip2
       data:
         compression: bzip2
+
+  externalClusters:
+    - name: clusterBackup
+      barmanObjectStore:
+        <<: *backupConfig
+        serverName: immich-postgres-v2
