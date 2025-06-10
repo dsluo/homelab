@@ -22,7 +22,7 @@ spec:
           app:
             image:
               repository: ghcr.io/dockur/samba
-              tag: 4.21.4@sha256:dbd8ebd6392cc1e8e98312d96d163f0039b644b84aee741d89efdd0abd3d32bf
+              tag: 4.21.6@sha256:ed9d7fb9cb4f586d9eab74c0dfc0800bb7c8487baa0b0ee2b046a6594f383263
             env:
               NAME: "paperless-ingest"
               USER: paperless
