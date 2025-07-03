@@ -16,7 +16,7 @@ python = "3.13"
 uv = "0.7.19"
 # Operations tools
 "aqua:budimanjojo/talhelper" = "3.0.29"
-"aqua:cloudflare/cloudflared" = "2025.6.0"
+"aqua:cloudflare/cloudflared" = "2025.6.1"
 "aqua:cloudnative-pg/cloudnative-pg/kubectl-cnpg" = "1.26.0"
 "aqua:derailed/k9s" = "0.50.6"
 "aqua:FiloSottile/age" = "1.2.1"
