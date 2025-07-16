@@ -2,7 +2,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: &dbName paperless-postgres
+  name: paperless-postgres
 spec:
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:17.4@sha256:9d25659c5b879b48695af426065b0aa81d64ed0a07ac31daef00f2afebb03d08
@@ -10,12 +10,17 @@ spec:
   storage:
     size: 8Gi
     storageClass: local-hostpath
-  
+
   monitoring:
     disableDefaultQueries: false
     enablePodMonitor: true
 
   bootstrap:
+    recovery:
+      source: clusterBackup
+      database: paperless
+      owner: paperless
+
     # initdb:
     #   database: paperless
     #   owner: paperless
@@ -23,13 +28,10 @@ spec:
     # note to self:
     # When restoring, the backup config cannot have a serverName that targets a directory
     # that already exists in S3. Will complain about "expecting empty archive".
-    recovery:
-      source: *dbName
-      database: paperless
-      owner: paperless
 
   backup:
-    barmanObjectStore: &barman
+    barmanObjectStore: &backupConfig
+      serverName: paperless-postgres-v2
       destinationPath: "s3://potatobread-homelab-backup/cnpg/paperless"
       endpointURL: https://s3.us-west-000.backblazeb2.com
       s3Credentials:
@@ -46,7 +48,7 @@ spec:
         compression: bzip2
 
   externalClusters:
-    - name: *dbName
+    - name: clusterBackup
       barmanObjectStore:
-        <<: *barman
-        # serverName: paperless-postgres-old
+        <<: *backupConfig
+        serverName: paperless-postgres

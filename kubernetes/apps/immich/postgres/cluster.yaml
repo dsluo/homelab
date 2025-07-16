@@ -4,6 +4,15 @@ kind: Cluster
 metadata:
   name: immich-postgres
 spec:
+  # todo: wtf is wrong with talos2?
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: NotIn
+                values: ["talos2"]
   instances: 3
   # immich only officially supports PG 14,15,16 and vectorchord >=0.2.0, <0.4.0
   # todo: figure out how to get renovate to track this
@@ -31,8 +40,7 @@ spec:
 
   bootstrap:
     recovery:
-      backup:
-        name: immich-postgres-20250528013533
+      source: clusterBackup
       database: immich
       owner: immich
 
@@ -51,7 +59,7 @@ spec:
 
   backup:
     barmanObjectStore: &backupConfig
-      serverName: immich-postgres-v3
+      serverName: immich-postgres-v4
       destinationPath: "s3://potatobread-homelab-backup/cnpg/immich"
       endpointURL: https://s3.us-west-000.backblazeb2.com
       s3Credentials:
@@ -70,4 +78,4 @@ spec:
     - name: clusterBackup
       barmanObjectStore:
         <<: *backupConfig
-        serverName: immich-postgres-v2
+        serverName: immich-postgres-v3
