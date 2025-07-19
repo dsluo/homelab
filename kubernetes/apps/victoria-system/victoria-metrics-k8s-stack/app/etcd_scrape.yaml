@@ -1,0 +1,16 @@
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMNodeScrape
+metadata:
+  name: etcd
+  namespace: victoria-system
+spec:
+  scheme: http
+  port: "2381"
+  path: /metrics
+  interval: 30s
+  scrapeTimeout: 10s
+  honorLabels: true
+  selector:
+    matchLabels:
+      node-role.kubernetes.io/control-plane: ""
