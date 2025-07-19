@@ -15,6 +15,10 @@ spec:
         name: victoria
         namespace: flux-system
   values:
+    vmsingle:
+      persistentVolume:
+        enabled: true
+        existingClaim: "${APP}"
     grafana:
       ingress:
         enabled: true
