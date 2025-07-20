@@ -22,7 +22,7 @@ spec:
     - name: volsync
       namespace: flux-system
   components:
-    - ../../../flux/components/volsync
+    - ../../../../flux/components/volsync
   postBuild:
     substitute:
       APP: victoria-metrics
