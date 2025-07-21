@@ -45,7 +45,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app external-ingress-nginx
+  name: &app external-gateway-api
   namespace: flux-system
 spec:
   targetNamespace: network
@@ -54,7 +54,8 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: cert-manager-tls
-  path: ./kubernetes/apps/network/external/ingress-nginx
+    - name: cilium
+  path: ./kubernetes/apps/network/external/gateway-api
   prune: true
   sourceRef:
     kind: GitRepository
