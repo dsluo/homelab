@@ -17,7 +17,7 @@ uv = "0.8.9"
 # Operations tools
 "aqua:budimanjojo/talhelper" = "3.0.32"
 "aqua:cloudflare/cloudflared" = "2025.8.0"
-"aqua:cloudnative-pg/cloudnative-pg/kubectl-cnpg" = "1.26.1"
+"aqua:cloudnative-pg/cloudnative-pg/kubectl-cnpg" = "1.27.0"
 "aqua:derailed/k9s" = "0.50.9"
 "aqua:FiloSottile/age" = "1.2.1"
 "aqua:fluxcd/flux2" = "2.6.4"
