@@ -15,7 +15,7 @@ run = "uv pip install -r requirements.txt"
 python = "3.13"
 uv = "0.8.15"
 # Operations tools
-"aqua:budimanjojo/talhelper" = "3.0.32"
+"aqua:budimanjojo/talhelper" = "3.0.34"
 "aqua:cloudflare/cloudflared" = "2025.8.1"
 "aqua:cloudnative-pg/cloudnative-pg/kubectl-cnpg" = "1.27.0"
 "aqua:derailed/k9s" = "0.50.9"
