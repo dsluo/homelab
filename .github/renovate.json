@@ -84,6 +84,24 @@
     },
     {
       "description": [
+        "Auto-merge aqua tool updates for minor and patch"
+      ],
+      "matchManagers": [
+        "mise"
+      ],
+      "matchDepPatterns": [
+        "^aqua:"
+      ],
+      "automerge": true,
+      "automergeType": "branch",
+      "ignoreTests": true,
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
+    },
+    {
+      "description": [
         "Flux Operator Group"
       ],
       "groupName": "Flux Operator",
