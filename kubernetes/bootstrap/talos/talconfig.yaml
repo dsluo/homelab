@@ -112,29 +112,6 @@ nodes:
           - "192.168.40.30/23"
         deviceSelector:
           hardwareAddr: "bc:24:11:eb:84:10"
-  - <<:
-      - *virtual
-      - *worker
-    hostname: "talos3"
-    ipAddress: "192.168.40.31"
-    networkInterfaces:
-      - <<: *workerNic
-        addresses:
-          - "192.168.40.31/23"
-        deviceSelector:
-          hardwareAddr: "bc:24:11:89:29:c9"
-  - <<:
-      - *virtual
-      - *worker
-    hostname: "talos4"
-    ipAddress: "192.168.40.32"
-    networkInterfaces:
-      - <<: *workerNic
-        addresses:
-          - "192.168.40.32/23"
-        deviceSelector:
-          hardwareAddr: "bc:24:11:5b:85:e2"
-    
 
 # Global patches
 patches:
