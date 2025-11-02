@@ -3,7 +3,17 @@
     "allow": [
       "Bash(kubectl get:*)",
       "Bash(kubectl logs:*)",
-      "Bash(kubectl describe:*)"
+      "Bash(kubectl describe:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh run view:*)",
+      "Bash(talosctl version:*)",
+      "Bash(talosctl get:*)",
+      "Bash(talosctl health:*)",
+      "Bash(git log:*)",
+      "Bash(docker manifest inspect:*)",
+      "Bash(task --list:*)"
     ],
     "deny": []
   }
