@@ -1,0 +1,38 @@
+## Uncomment the poll configuration section here and in the service `environment:` section if you want to enable polling of a repository.
+x-poll-config: &poll-config
+ POLL_CONFIG: |
+   - url: https://github.com/dsluo/homelab.git  # This is the repository to poll
+     reference: feat/compose  # Optional: specify the branch or tag to poll, defaults to 'main'
+     interval: 180  # Optional: specify the interval in seconds to poll the repository, defaults to 180 seconds (3 minutes)
+     target: ""  # Optional: use to target a specific deployment config file, e.g., "test" -> .doco-cd.test.yaml
+
+services:
+  app:
+    container_name: doco-cd
+    # You can also pin to a specific tag (version)
+    # Available tags can be found here: https://github.com/kimdre/doco-cd/pkgs/container/doco-cd
+    image: ghcr.io/kimdre/doco-cd:latest
+    restart: unless-stopped
+    ports:
+      - "80:80" # Webhook endpoint
+      - "9120:9120" # Prometheus metrics
+    # For all available environment variables and explanations, see https://github.com/kimdre/doco-cd/wiki/App-Settings
+    environment:
+      TZ: America/Detroit
+      # WEBHOOK_SECRET: xxx  # Uncomment this line and the webhook port above and set a secure secret if you want to use webhooks.
+      <<: *poll-config  # Uncomment this line to use the poll configuration from above (the `x-poll-config` section).
+    env_file: .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # The data volume (left side) can also be replaced with a bind mount to a local directory, for example:
+      # - ./data:/data
+      - data:/data
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/v1/health" ]  # Also change the port here if you change the default HTTP_PORT env var
+      start_period: 15s
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  data:
