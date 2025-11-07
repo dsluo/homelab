@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://relativ-it.github.io/Butane-Schemas/Butane-Schema.json
+variant: fcos
+version: 1.6.0
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - "op://Private/primary key - ed25519/public key"
+storage:
+  files:
+    - path: /etc/hostname
+      mode: 0644
+      overwrite: true
+      contents:
+        inline: coreos

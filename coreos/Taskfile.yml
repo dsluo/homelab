@@ -1,0 +1,14 @@
+version: "3"
+
+tasks:
+  default: task --list-all
+
+  build:
+    vars:
+      CONFIG: coreos.bu
+      OUTPUT: coreos.ign
+    cmds:
+      - >
+        op inject -i {{.CONFIG}} 
+        | docker run --rm -i -v $PWD:/pwd quay.io/coreos/butane:release 
+        > {{.OUTPUT}}

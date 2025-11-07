@@ -1,0 +1,7 @@
+[hooks.enter]
+shell = "fish"
+script = "alias butane='docker run --rm -it -v \"$PWD\":/pwd quay.io/coreos/butane:release'"
+
+[hooks.leave]
+shell = "fish"
+script = "functions --erase butane"
