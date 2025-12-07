@@ -10,5 +10,6 @@ tasks:
     cmds:
       - >
         op inject -i {{.CONFIG}} 
-        | docker run --rm -i -v $PWD:/pwd quay.io/coreos/butane:release 
+        | docker run --rm -i -v $PWD:/pwd quay.io/coreos/butane:release
+        | jq
         > {{.OUTPUT}}

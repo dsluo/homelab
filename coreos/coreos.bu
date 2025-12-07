@@ -13,3 +13,25 @@ storage:
       overwrite: true
       contents:
         inline: coreos
+systemd:
+  units:
+    # Install docker compose
+    - name: rpm-ostree-install-packages.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Install additional packages
+        Wants=network-online.target
+        After=network-online.target
+        Before=zincati.service
+        ConditionPathExists=!/var/lib/%N.stamp
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/usr/bin/rpm-ostree install docker-compose qemu-guest-agent
+        ExecStart=/usr/bin/touch /var/lib/%N.stamp
+        ExecStart=/usr/bin/systemctl --no-block reboot
+
+        [Install]
+        WantedBy=multi-user.target

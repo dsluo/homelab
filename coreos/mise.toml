@@ -5,3 +5,6 @@ script = "alias butane='docker run --rm -it -v \"$PWD\":/pwd quay.io/coreos/buta
 [hooks.leave]
 shell = "fish"
 script = "functions --erase butane"
+
+[tools]
+jq = "latest"
