@@ -1,0 +1,19 @@
+---
+- name: Setup CoreOS
+  hosts: coreos
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Ensure python3 is installed
+      ansible.builtin.raw: sudo rpm-ostree install --idempotent -y --apply-live python3
+      register: python3
+      changed_when: "'No change.' not in python3.stdout_lines"
+
+    - name: Ensure packages are installed
+      community.general.rpm_ostree_pkg:
+        apply_live: true
+        pkg:
+          - qemu-guest-agent
+          - docker-compose
+      register: ostree
