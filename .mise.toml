@@ -1,12 +1,13 @@
 [env]
-_.python.venv = { path = "{{config_root}}/.venv", create = true }
+'_'.file = { path = ".env" }
 
 [tools]
 pipx = "latest"
 python = "latest"
+task = "latest"
 
 [tasks.deps]
 run = [
     "pipx install --include-deps ansible",
-    "pipx inject --include-apps ansible ansible-lint"
+    "pipx inject --include-apps ansible ansible-lint",
 ]
