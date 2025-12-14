@@ -4,20 +4,41 @@
   become: true
   gather_facts: false
 
+  vars:
+    base_dir: /var/lib/appdata
+
+  handlers:
+    - name: Reboot, if necessary.
+      ansible.builtin.reboot:
+
   tasks:
-    - name: Ensure python3 is installed
+    - name: Ensure python3 is installed.
       ansible.builtin.raw: sudo rpm-ostree install --idempotent -y --apply-live python3
       register: python3
       changed_when: "'No change.' not in python3.stdout_lines"
+      notify: Reboot, if necessary.
 
-    - name: Ensure packages are installed
+    - name: Ensure packages are installed.
       community.general.rpm_ostree_pkg:
         apply_live: true
         pkg:
           - qemu-guest-agent
           - docker-compose
       register: ostree
+      notify: Reboot, if necessary.
 
-    - name: Reboot, if necessary
-      ansible.builtin.reboot:
-      when: python3.changed or ostree.changed
+    - name: Ensure apps and data directories exist
+      ansible.builtin.file:
+        path: "{{ base_dir }}/{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - apps
+        - data
+
+    - name: Ensure compose files are deployed.
+      ansible.builtin.copy:
+        src: ../../compose/
+        dest: "{{ base_dir }}/apps/"
+        mode: "0644"
+        directory_mode: "0755"

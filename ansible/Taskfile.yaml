@@ -1,0 +1,8 @@
+version: "3"
+
+tasks:
+  default: task --list-all
+
+  setup:
+    cmds:
+      - ansible-playbook playbooks/coreos-setup.yml
