@@ -22,7 +22,7 @@ storage:
           label: appdata
   filesystems:
     - device: /dev/disk/by-partlabel/appdata
-      path: /var/lib/services
+      path: /var/lib/appdata
       format: xfs
       options:
         - -b
