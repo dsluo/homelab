@@ -17,3 +17,7 @@
           - qemu-guest-agent
           - docker-compose
       register: ostree
+
+    - name: Reboot, if necessary
+      ansible.builtin.reboot:
+      when: python3.changed or ostree.changed
