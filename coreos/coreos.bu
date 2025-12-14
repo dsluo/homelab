@@ -13,3 +13,18 @@ storage:
       overwrite: true
       contents:
         inline: coreos
+
+  disks:
+    - device: /dev/sdb
+      wipe_table: true
+      partitions:
+        - number: 0
+          label: appdata
+  filesystems:
+    - device: /dev/disk/by-partlabel/appdata
+      path: /var/lib/services
+      format: xfs
+      options:
+        - -b
+        - size=4096
+      with_mount_unit: true
