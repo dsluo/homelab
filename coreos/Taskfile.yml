@@ -1,15 +1,46 @@
 version: "3"
 
+vars:
+  CONFIG: coreos.bu
+  OUTPUT: coreos.ign
+
 tasks:
   default: task --list-all
 
   build:
-    vars:
-      CONFIG: coreos.bu
-      OUTPUT: coreos.ign
     cmds:
       - >
         op inject -i {{.CONFIG}} 
         | docker run --rm -i -v $PWD:/pwd quay.io/coreos/butane:release
         | jq
         > {{.OUTPUT}}
+    sources:
+      - "{{.CONFIG}}"
+    generates:
+      - "{{.OUTPUT}}"
+
+  deploy:
+    requires:
+      vars:
+        - PVE_HOST
+        - REMOTE_SNIPPETS_PATH
+    cmds:
+      - scp {{.OUTPUT}} {{.PVE_HOST}}:{{.REMOTE_SNIPPETS_PATH}}
+    deps: [build]
+
+  ssh:
+    requires:
+      vars:
+        - PVE_HOST
+    cmd: ssh {{.PVE_HOST}}
+
+  reset:
+    requires:
+      vars:
+        - PVE_HOST
+        - COREOS_VM_ID
+        - ROLLBACK_SNAPSHOT
+    cmds:
+      - >
+        ssh {{.PVE_HOST}}
+        qm rollback {{.COREOS_VM_ID}} {{.ROLLBACK_SNAPSHOT}} --start 1
