@@ -1,4 +1,5 @@
 [env]
+'_'.file = { path = ".env" }
 KUBECONFIG = "{{config_root}}/kubeconfig"
 SOPS_AGE_KEY_CMD = "op read 'op://kube/kube age key/credential'"
 TALOSCONFIG = "{{config_root}}/kubernetes/bootstrap/clusterconfig/talosconfig"
