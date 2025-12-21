@@ -1,0 +1,33 @@
+---
+clusterName: homelab
+talosVersion: v1.11.5
+kubernetesVersion: v1.34.1
+endpoint: https://10.0.42.2:6443
+allowSchedulingOnControlPlanes: true
+clusterPodNets:
+  - 10.244.0.0/16
+clusterSvcNets:
+  - 10.96.0.0/12
+
+nodes:
+  - hostname: talos0
+    ipAddress: "10.0.42.3"
+    controlPlane: true
+    installDisk: /dev/sda
+    schematic:
+      customization:
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/qemu-guest-agent
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:e6:44:8b"
+        dhcp: false
+        addresses:
+          - "10.0.42.3/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.0.42.1"
+        mtu: 1500
+        vip:
+          ip: "10.0.42.2"
