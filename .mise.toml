@@ -1,7 +1,27 @@
 [env]
 KUBECONFIG = "{{config_root}}/kubeconfig"
 SOPS_AGE_KEY_CMD = "op read 'op://kube/kube age key/credential'"
-TALOSCONFIG = "{{config_root}}/kubernetes/bootstrap/talos/clusterconfig/talosconfig"
+TALOSCONFIG = "{{config_root}}/kubernetes/bootstrap/clusterconfig/talosconfig"
+
+LOCAL_FISH_COMPLETE_PATH = "{{config_root}}/.completions/fish"
+
+[hooks.enter]
+shell = "fish"
+script = """
+if not contains -- $LOCAL_FISH_COMPLETE_PATH $fish_complete_path
+    set -p fish_complete_path $LOCAL_FISH_COMPLETE_PATH
+end
+"""
+
+[hooks.leave]
+shell = "fish"
+script = """
+set -l path_index (contains -i $LOCAL_FISH_COMPLETE_PATH $fish_complete_path)
+and set -e fish_complete_path[$path_index]
+"""
+
+[hooks]
+postinstall = "./gen-completions.sh fish"
 
 [tools]
 "aqua:budimanjojo/talhelper" = "3.0.41"
