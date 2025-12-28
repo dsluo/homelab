@@ -13,6 +13,19 @@ clusterSvcNets:
 cniConfig:
   name: none
 
+# Controller patches
+controlPlane:
+  patches:
+    - |-
+      cluster:
+        # Disable built-in CoreDNS to use Helm-managed CoreDNS
+        coreDNS:
+          disabled: true
+
+        # Disable kube-proxy since Cilium replaces it
+        proxy: 
+          disabled: true
+
 nodes:
   - hostname: talos0
     ipAddress: "10.0.42.3"
