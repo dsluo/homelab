@@ -11,7 +11,7 @@ clusterSvcNets:
 
 nodes:
   - hostname: talos0
-    ipAddress: "10.0.42.10"
+    ipAddress: "10.0.42.3"
     controlPlane: true
     installDisk: /dev/sda
     schematic:
@@ -24,7 +24,7 @@ nodes:
           hardwareAddr: "bc:24:11:e6:44:8b"
         dhcp: false
         addresses:
-          - "10.0.42.10/24"
+          - "10.0.42.3/24"
         routes:
           - network: "0.0.0.0/0"
             gateway: "10.0.42.1"
