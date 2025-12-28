@@ -29,3 +29,6 @@ wiki
 
 # Generated completions
 .completions/
+
+# Claude
+.claude/*.local.*

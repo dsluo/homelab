@@ -1,7 +1,21 @@
 {
   "permissions": {
     "allow": [
-      "mcp__github__get_file_contents"
-    ]
+      "mcp__github__get_file_contents",
+      "Bash(kubectl get:*)",
+      "Bash(kubectl logs:*)",
+      "Bash(kubectl describe:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh run view:*)",
+      "Bash(talosctl version:*)",
+      "Bash(talosctl get:*)",
+      "Bash(talosctl health:*)",
+      "Bash(git log:*)",
+      "Bash(docker manifest inspect:*)",
+      "Bash(task --list:*)"
+    ],
+    "deny": []
   }
 }
