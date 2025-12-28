@@ -1,7 +1,7 @@
 [env]
 '_'.file = { path = ".env" }
 KUBECONFIG = "{{config_root}}/kubeconfig"
-SOPS_AGE_KEY_CMD = "op read 'op://kube/kube age key/credential'"
+SOPS_AGE_KEY_CMD = "op read 'op://homelab/kube age key/password'"
 TALOSCONFIG = "{{config_root}}/bootstrap/clusterconfig/talosconfig"
 
 LOCAL_FISH_COMPLETE_PATH = "{{config_root}}/.completions/fish"
