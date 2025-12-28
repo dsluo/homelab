@@ -1,13 +1,11 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: kube-system
+namespace: network
 
 components:
   - ../../components/sops
 
 resources:
   - ./namespace.yaml
-  - ./cilium/ks.yaml
-  - ./coredns/ks.yaml
-  - ./reloader/ks.yaml
+  - ./k8s-gateway/ks.yaml
