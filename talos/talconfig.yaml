@@ -9,6 +9,10 @@ clusterPodNets:
 clusterSvcNets:
   - 10.96.0.0/12
 
+# Disable built-in CNI to use Cilium
+cniConfig:
+  name: none
+
 nodes:
   - hostname: talos0
     ipAddress: "10.0.42.3"
