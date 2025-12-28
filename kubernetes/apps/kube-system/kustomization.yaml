@@ -8,4 +8,5 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./coredns/ks.yaml
   - ./reloader/ks.yaml
