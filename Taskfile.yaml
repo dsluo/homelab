@@ -1,0 +1,8 @@
+version: "3"
+
+tasks:
+  default: task --list-all
+
+  reconcile:
+    desc: Force Flux to pull changes from Git repo.
+    cmd: flux --namespace flux-system reconcile kustomization flux-system --with-source
