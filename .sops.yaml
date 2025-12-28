@@ -5,13 +5,13 @@ creation_rules:
     mac_only_encrypted: true
     key_groups:
       - age:
-          - "age1hkggfdsuse44s5aw3wulvq45h9u93lgvgarm8leqxnesf6knyffsgnh78f"
-  - path_regex: kubernetes/.*\.sops\.ya?ml
+          - "age1pw3ushyk74yquev7sc7wu0sw6sfku0nfswpqua8ljm0e8vmpxsjslmgv75"
+  - path_regex: (kubernetes|bootstrap|talos)/.*\.sops\.ya?ml
     encrypted_regex: "^(data|stringData|crt|key|token|bootstraptoken|secretboxencryptionsecret|secret|id)$"
     mac_only_encrypted: true
     key_groups:
       - age:
-          - "age1hkggfdsuse44s5aw3wulvq45h9u93lgvgarm8leqxnesf6knyffsgnh78f"
+          - "age1pw3ushyk74yquev7sc7wu0sw6sfku0nfswpqua8ljm0e8vmpxsjslmgv75"
 stores:
   yaml:
     indent: 2

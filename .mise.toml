@@ -1,7 +1,7 @@
 [env]
 '_'.file = { path = ".env" }
 KUBECONFIG = "{{config_root}}/kubeconfig"
-SOPS_AGE_KEY_CMD = "op read 'op://kube/kube age key/credential'"
+SOPS_AGE_KEY_CMD = "op read 'op://homelab/kube age key/password'"
 TALOSCONFIG = "{{config_root}}/bootstrap/clusterconfig/talosconfig"
 
 LOCAL_FISH_COMPLETE_PATH = "{{config_root}}/.completions/fish"
@@ -35,3 +35,7 @@ postinstall = "./gen-completions.sh fish"
 "aqua:kubernetes/kubectl" = "1.34.3"
 "aqua:siderolabs/talos" = "1.11.5"
 "aqua:utkuozdemir/pv-migrate" = "2.2.1"
+"aqua:helm/helm" = "4.0.4"
+"aqua:helmfile/helmfile" = "1.2.3"
+"aqua:kubernetes-sigs/kustomize" = "5.8.0"
+"aqua:mikefarah/yq" = "4.50.1"
