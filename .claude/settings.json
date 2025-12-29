@@ -2,6 +2,7 @@
   "permissions": {
     "allow": [
       "mcp__github__get_file_contents",
+      "mcp__github__pull_request_read",
       "Bash(kubectl get:*)",
       "Bash(kubectl logs:*)",
       "Bash(kubectl describe:*)",
@@ -14,7 +15,9 @@
       "Bash(talosctl health:*)",
       "Bash(git log:*)",
       "Bash(docker manifest inspect:*)",
-      "Bash(task --list:*)"
+      "Bash(task --list:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }
