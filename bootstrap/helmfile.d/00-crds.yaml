@@ -9,10 +9,10 @@ helmDefaults:
     - --include-crds
     - --no-hooks
 releases:
-  # - name: cloudflare-dns
-  #   namespace: network
-  #   chart: oci://ghcr.io/home-operations/charts-mirror/external-dns
-  #   version: 1.19.0
+  - name: cloudflare-dns
+    namespace: network
+    chart: oci://ghcr.io/home-operations/charts-mirror/external-dns
+    version: 1.19.0
 
   - name: envoy-gateway
     namespace: network
