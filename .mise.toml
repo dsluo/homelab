@@ -25,7 +25,7 @@ and set -e fish_complete_path[$path_index]
 postinstall = "./scripts/gen-completions.sh fish"
 
 [tools]
-"aqua:budimanjojo/talhelper" = "3.0.41"
+"aqua:budimanjojo/talhelper" = "3.0.43"
 "aqua:derailed/k9s" = "0.50.16"
 "aqua:FiloSottile/age" = "1.2.1"
 "aqua:fluxcd/flux2" = "2.7.5"
