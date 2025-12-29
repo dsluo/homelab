@@ -8,4 +8,5 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./envoy-gateway/ks.yaml
   - ./k8s-gateway/ks.yaml
