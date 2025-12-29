@@ -1,4 +1,5 @@
 {
+  "editor.bracketPairColorization.enabled": true,
   "files.associations": {
     "*.json5": "json5"
   },
