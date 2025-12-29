@@ -95,7 +95,10 @@ function apply_crds() {
         log fatal "File does not exist" "file" "${helmfile_file}"
     fi
 
-    if ! crds=$(helmfile --file "${helmfile_file}" template --quiet) || [[ -z "${crds}" ]]; then
+    if ! crds=$(
+        helmfile --file "${helmfile_file}" template --quiet \
+        | yq eval-all --exit-status 'select(.kind == "CustomResourceDefinition")' \
+    ) || [[ -z "${crds}" ]]; then
         log fatal "Failed to render CRDs from Helmfile" "file" "${helmfile_file}"
     fi
 
@@ -136,7 +139,7 @@ function main() {
     wait_for_nodes
     apply_namespaces
     apply_sops_secrets
-    # apply_crds
+    apply_crds
     sync_helm_releases
 
     log info "Congrats! The cluster is bootstrapped and Flux is syncing the Git repository"
