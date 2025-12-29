@@ -40,48 +40,49 @@ spec:
     kind: EnvoyProxy
     name: envoy
     namespace: network
-# ---
-# apiVersion: gateway.networking.k8s.io/v1
-# kind: Gateway
-# metadata:
-#   name: envoy-external
-#   annotations:
-#     external-dns.alpha.kubernetes.io/target: external.${SECRET_DOMAIN}
-# spec:
-#   gatewayClassName: envoy
-#   infrastructure:
-#     annotations:
-#       external-dns.alpha.kubernetes.io/hostname: external.${SECRET_DOMAIN}
-#       lbipam.cilium.io/ips: "#{ cloudflare_gateway_addr }#"
-#   listeners:
-#     - name: http
-#       protocol: HTTP
-#       port: 80
-#       allowedRoutes:
-#         namespaces:
-#           from: Same
-#     - name: https
-#       protocol: HTTPS
-#       port: 443
-#       allowedRoutes:
-#         namespaces:
-#           from: All
-#       tls:
-#         certificateRefs:
-#           - kind: Secret
-#             name: ${SECRET_DOMAIN/./-}-production-tls
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: envoy-external
+  annotations:
+    external-dns.alpha.kubernetes.io/target: external.${SECRET_DOMAIN}
+spec:
+  gatewayClassName: envoy
+  infrastructure:
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: external.${SECRET_DOMAIN}
+      lbipam.cilium.io/ips: "10.0.42.130"
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          # from: Same
+          from: All
+    # - name: https
+    #   protocol: HTTPS
+    #   port: 443
+    #   allowedRoutes:
+    #     namespaces:
+    #       from: All
+    #   tls:
+    #     certificateRefs:
+    #       - kind: Secret
+    #         name: ${SECRET_DOMAIN/./-}-production-tls
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: envoy-internal
-  # annotations:
-  #   external-dns.alpha.kubernetes.io/target: internal.${SECRET_DOMAIN}
+  annotations:
+    external-dns.alpha.kubernetes.io/target: internal.${SECRET_DOMAIN}
 spec:
   gatewayClassName: envoy
   infrastructure:
     annotations:
-      # external-dns.alpha.kubernetes.io/hostname: internal.${SECRET_DOMAIN}
+      external-dns.alpha.kubernetes.io/hostname: internal.${SECRET_DOMAIN}
       lbipam.cilium.io/ips: "10.0.42.129"
   listeners:
     - name: http
