@@ -22,7 +22,7 @@ and set -e fish_complete_path[$path_index]
 """
 
 [hooks]
-postinstall = "./scripts/gen-completions.sh fish"
+postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
 
 [tools]
 "aqua:budimanjojo/talhelper" = "3.0.43"
