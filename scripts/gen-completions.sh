@@ -13,6 +13,7 @@ else
     COMPLETION_EXT="sh"
 fi
 
+export MISE_QUIET=true
 # this ensures that we only get the tools defined in the local config.
 TOOLS=$(mise config get tools | cut -d'"' -f2)
 
