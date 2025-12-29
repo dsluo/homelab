@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 TARGET_SHELL="${1:-$(basename $SHELL)}"
-COMPLETIONS_DIR="./.completions/${TARGET_SHELL}"
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+COMPLETIONS_DIR="${REPO_ROOT}/.completions/${TARGET_SHELL}"
 mkdir -p $COMPLETIONS_DIR
 
 if [[ "$TARGET_SHELL" -eq "fish" ]]; then
