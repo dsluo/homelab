@@ -20,6 +20,13 @@ releases:
     values: ["./templates/values.yaml.gotmpl"]
     needs: ["kube-system/cilium"]
 
+  - name: cert-manager
+    namespace: cert-manager
+    chart: oci://quay.io/jetstack/charts/cert-manager
+    version: v1.19.2
+    values: ["./templates/values.yaml.gotmpl"]
+    needs: ["kube-system/coredns"]
+
   - name: flux-operator
     namespace: flux-system
     chart: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator
