@@ -1,7 +1,11 @@
 ---
 clusterName: homelab
+
+# renovate: datasource=docker depName=ghcr.io/siderolabs/installer
 talosVersion: v1.11.5
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 kubernetesVersion: v1.34.1
+
 endpoint: https://10.0.42.2:6443
 allowSchedulingOnControlPlanes: true
 clusterPodNets:
