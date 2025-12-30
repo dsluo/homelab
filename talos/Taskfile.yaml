@@ -1,0 +1,15 @@
+version: "3"
+
+tasks:
+  genconfig:
+    desc: Generate Talos config
+    cmd: talhelper genconfig
+
+  apply:
+    cmd: talhelper gencommand apply | sh
+
+  upgrade-talos:
+    cmd: talhelper gencommand upgrade | sh
+
+  upgrade-k8s:
+    cmd: talhelper gencommand upgrade-k8s | sh
