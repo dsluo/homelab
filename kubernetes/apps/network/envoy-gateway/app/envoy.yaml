@@ -59,18 +59,17 @@ spec:
       port: 80
       allowedRoutes:
         namespaces:
-          # from: Same
+          from: Same
+    - name: https
+      protocol: HTTPS
+      port: 443
+      allowedRoutes:
+        namespaces:
           from: All
-    # - name: https
-    #   protocol: HTTPS
-    #   port: 443
-    #   allowedRoutes:
-    #     namespaces:
-    #       from: All
-    #   tls:
-    #     certificateRefs:
-    #       - kind: Secret
-    #         name: ${SECRET_DOMAIN/./-}-production-tls
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: ${SECRET_DOMAIN/./-}-production-tls
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
@@ -90,18 +89,17 @@ spec:
       port: 80
       allowedRoutes:
         namespaces:
-          # from: Same
+          from: Same
+    - name: https
+      protocol: HTTPS
+      port: 443
+      allowedRoutes:
+        namespaces:
           from: All
-    # - name: https
-    #   protocol: HTTPS
-    #   port: 443
-    #   allowedRoutes:
-    #     namespaces:
-    #       from: All
-    #   tls:
-    #     certificateRefs:
-    #       - kind: Secret
-    #         name: ${SECRET_DOMAIN/./-}-production-tls
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: ${SECRET_DOMAIN/./-}-production-tls
 ---
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: BackendTrafficPolicy
@@ -145,29 +143,29 @@ spec:
   timeout:
     http:
       requestReceivedTimeout: 0s
-  # tls:
-  #   minVersion: "1.2"
-  #   alpnProtocols:
-  #     - h2
-  #     - http/1.1
-# ---
-# apiVersion: gateway.networking.k8s.io/v1
-# kind: HTTPRoute
-# metadata:
-#   name: https-redirect
-#   # annotations:
-#   #   external-dns.alpha.kubernetes.io/controller: none
-# spec:
-#   parentRefs:
-#     # - name: envoy-external
-#     #   namespace: network
-#     #   sectionName: http
-#     - name: envoy-internal
-#       namespace: network
-#       sectionName: http
-#   rules:
-#     - filters:
-#         - type: RequestRedirect
-#           requestRedirect:
-#             scheme: https
-#             statusCode: 301
+  tls:
+    minVersion: "1.2"
+    alpnProtocols:
+      - h2
+      - http/1.1
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: https-redirect
+  annotations:
+    external-dns.alpha.kubernetes.io/controller: none
+spec:
+  parentRefs:
+    - name: envoy-external
+      namespace: network
+      sectionName: http
+    - name: envoy-internal
+      namespace: network
+      sectionName: http
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
