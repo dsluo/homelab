@@ -50,7 +50,7 @@ spec:
         rawhide:
           enabled: false
       replicated:
-        maystor:
+        mayastor:
           enabled: false
     loki:
       enabled: false
