@@ -18,10 +18,6 @@ spec:
     localpv-provisioner:
       localpv:
         basePath: &basePath "/var/openebs/local"
-        tolerations: &tolerations
-          - key: node-role.kubernetes.io/control-plane
-            operator: Exists
-            effect: NoSchedule
       hostpathClass:
         basePath: *basePath
       analytics:
@@ -33,10 +29,6 @@ spec:
     zfs-localpv:
       zfsNode:
         encrKeysDir: "/var/openebs/zfs"
-        tolerations: *tolerations
-
-      zfsController:
-        tolerations: *tolerations
 
       analytics:
         enabled: false
