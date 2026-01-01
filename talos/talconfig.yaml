@@ -17,29 +17,29 @@ clusterSvcNets:
 cniConfig:
   name: none
 
-# Controller patches
-controlPlane:
-  patches:
-    - |-
-      cluster:
-        # Disable built-in CoreDNS to use Helm-managed CoreDNS
-        coreDNS:
-          disabled: true
-
-        # Disable kube-proxy since Cilium replaces it
-        proxy: 
-          disabled: true
-
 nodes:
   - hostname: talos0
     ipAddress: "10.0.42.3"
     controlPlane: true
-    installDisk: /dev/sda
+    installDiskSelector:
+      size: "960197124096"
+      model: "SAMSUNG*"
+    kernelModules:
+      - name: zfs
     schematic:
       customization:
         systemExtensions:
           officialExtensions:
             - siderolabs/qemu-guest-agent
+            - siderolabs/zfs
+        bootloader: sd-boot
+    # todo: state and ephemeral disk encryption
+    volumes:
+      - name: EPHEMERAL
+        provisioning:
+          diskSelector:
+            match: disk.pretty_size == "960 GB" && disk.model.startsWith("SAMSUNG")
+          maxSize: 100GB
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "bc:24:11:e6:44:8b"
@@ -52,3 +52,25 @@ nodes:
         mtu: 1500
         vip:
           ip: "10.0.42.2"
+    patches:
+      - |-
+        apiVersion: v1alpha1
+        kind: RawVolumeConfig
+        name: openebs-zpool
+        provisioning:
+          diskSelector:
+            match: disk.pretty_size == "960 GB" && disk.model.startsWith("SAMSUNG")
+          minSize: "500GB"
+          grow: true
+
+controlPlane:
+  patches:
+    - |-
+      cluster:
+        # Disable built-in CoreDNS to use Helm-managed CoreDNS
+        coreDNS:
+          disabled: true
+
+        # Disable kube-proxy since Cilium replaces it
+        proxy: 
+          disabled: true

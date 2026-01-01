@@ -1,0 +1,68 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: openebs
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: openebs
+  interval: 1h
+  values:
+    openebs-crds:
+      csi:
+        volumeSnapshots:
+          enabled: false # snapshot-controller manages those CRDs
+          keep: false
+
+    localpv-provisioner:
+      localpv:
+        basePath: &basePath "/var/openebs/local"
+        tolerations: &tolerations
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
+            effect: NoSchedule
+      hostpathClass:
+        basePath: *basePath
+      analytics:
+        enabled: false
+      helperPod:
+        image:
+          registry: quay.io/
+
+    zfs-localpv:
+      zfsNode:
+        encrKeysDir: "/var/openebs/zfs"
+        tolerations: *tolerations
+
+      zfsController:
+        tolerations: *tolerations
+
+      analytics:
+        enabled: false
+
+      zfs:
+        bin: /usr/local/sbin/zfs
+
+      crds:
+        csi:
+          volumeSnapshots:
+            enabled: false
+
+    engines:
+      local:
+        lvm:
+          enabled: false
+        zfs:
+          enabled: true
+        rawhide:
+          enabled: false
+      replicated:
+        maystor:
+          enabled: false
+    loki:
+      enabled: false
+    minio:
+      enabled: false
+    alloy:
+      enabled: false

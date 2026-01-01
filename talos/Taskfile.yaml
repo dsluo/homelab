@@ -5,6 +5,13 @@ tasks:
     desc: Generate Talos config
     cmd: talhelper genconfig
 
+  bootstrap:
+    cmds:
+      - talhelper genconfig
+      - talhelper gencommand apply --extra-flags="--insecure" | sh
+      - until talhelper gencommand bootstrap | sh; do sleep 10; done
+      - until talhelper gencommand kubeconfig --extra-flags="--force" | sh; do sleep 10; done
+
   apply:
     cmd: talhelper gencommand apply | sh
 
@@ -13,3 +20,12 @@ tasks:
 
   upgrade-k8s:
     cmd: talhelper gencommand upgrade-k8s | sh
+
+  reset:
+    cmd: >
+      talhelper gencommand reset 
+      --extra-flags="--reboot 
+      {{- if eq .CLI_FORCE false }} --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL{{ end }}
+      --graceful=false 
+      --wait=false" 
+      | sh
