@@ -109,7 +109,7 @@ spec:
                 name: "repository",
                 nfs: Object.spec.template.spec.volumes.nfs{
                   server: "storage.lan",
-                  path: "/mnt/tank/backups/volsync"
+                  path: "/mnt/tank/backup/volsync"
                 }
               }
             }
