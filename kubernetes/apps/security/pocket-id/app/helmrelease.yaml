@@ -31,11 +31,12 @@ spec:
           probes:
             liveness:
               enabled: true
-              custom: true
-              spec:
-                httpGet:
-                  path: /health
-                  port: &port 1411
+              # todo: figure out how app-template does this
+              # custom: true
+              # spec:
+              #   httpGet:
+              #     path: /health
+              #     port: &port 1411
     persistence:
       data:
         existingClaim: "${APP}"
@@ -50,7 +51,7 @@ spec:
             namespace: network
         rules:
           - backendRefs:
-              - port: *port
+              - port: &port 1411
                 name: pocket-id
     service:
       pocket-id:
