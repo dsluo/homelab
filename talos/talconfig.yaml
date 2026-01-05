@@ -74,3 +74,9 @@ controlPlane:
         # Disable kube-proxy since Cilium replaces it
         proxy: 
           disabled: true
+        
+        # Enable MutatingAdmissionPolicy (and friends)
+        apiServer:
+          extraArgs:
+            feature-gates: MutatingAdmissionPolicy=true
+            runtime-config: admissionregistration.k8s.io/v1beta1=true
