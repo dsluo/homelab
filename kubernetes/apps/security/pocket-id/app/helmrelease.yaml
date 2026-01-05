@@ -26,7 +26,6 @@ spec:
                 name: pocket-id-secret
           env:
             APP_URL: https://pocket-id.${SECRET_DOMAIN}
-            ENCRYPTION_KEY_FILE: # todo
             TRUST_PROXY: true
             TZ: America/Detroit
             METRICS_ENABLED: "true"
