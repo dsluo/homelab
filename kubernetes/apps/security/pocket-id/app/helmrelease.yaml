@@ -52,9 +52,9 @@ spec:
           - backendRefs:
               - port: *port
                 name: pocket-id
-      service:
-        pocket-id:
-          controllers: pocket-id
-          ports:
-            http:
-              port: *port
+    service:
+      pocket-id:
+        controllers: pocket-id
+        ports:
+          http:
+            port: *port
