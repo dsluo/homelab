@@ -7,7 +7,7 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/security/pocket-id/app
   components:
-    - ../../../components/volsync
+    - ../../../../components/volsync
   postBuild:
     substitute:
       APP: *app
