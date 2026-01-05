@@ -16,8 +16,11 @@ spec:
           reloader.stakater.com/auto: "true"
         containers:
           pocket-id:
-            image: ghcr.io/pocket-id/pocket-id
-            tag: v2.1.0@sha256:f8ed26e8012ae60d5320735dcdecf7347778e2a31c69a147f5c030e017cb32d9
+            image:
+              repository: ghcr.io/pocket-id/pocket-id
+              tag: v2.1.0
+              digest: sha256:f8ed26e8012ae60d5320735dcdecf7347778e2a31c69a147f5c030e017cb32d9
+              pullPolicy: IfNotPresent
           envFrom:
             - secretRef:
                 name: pocket-id-secret
