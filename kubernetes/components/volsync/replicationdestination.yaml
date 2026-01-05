@@ -9,7 +9,7 @@ metadata:
 spec:
   trigger:
     manual: restore-once
-  kopia:
+  restic:
     accessModes:
       - ${VOLSYNC_ACCESSMODES:=ReadWriteOnce}
     cacheAccessModes:
@@ -21,12 +21,6 @@ spec:
     cleanupTempPVC: true
     copyMethod: Snapshot
     enableFileDeletion: true
-    moverSecurityContext:
-      runAsUser: ${VOLSYNC_PUID:=1000}
-      runAsGroup: ${VOLSYNC_PGID:=1000}
-      fsGroup: ${VOLSYNC_PGID:=1000}
     repository: ${APP}-volsync-secret
-    sourceIdentity:
-      sourceName: ${APP}
     storageClassName: ${VOLSYNC_STORAGECLASS:=openebs-zfspv}
     volumeSnapshotClassName: ${VOLSYNC_SNAPSHOTCLASS:=openebs-zfs-snapshot}
