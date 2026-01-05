@@ -4,6 +4,9 @@ kind: Kustomization
 metadata:
   name: &app pocket-id
 spec:
+  dependsOn:
+    - name: volsync
+      namespace: volsync-system
   interval: 1h
   path: ./kubernetes/apps/security/pocket-id/app
   components:
