@@ -6,7 +6,7 @@ metadata:
 spec:
   chartRef:
     kind: OCIRepository
-    name: echo
+    name: pocket-id
   interval: 1h
   values:
     controllers:
