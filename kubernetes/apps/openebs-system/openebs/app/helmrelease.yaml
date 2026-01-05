@@ -17,7 +17,7 @@ spec:
 
     localpv-provisioner:
       localpv:
-        basePath: &basePath "/var/openebs/local"
+        basePath: &basePath "/var/mnt/local-hostpath"
       hostpathClass:
         basePath: *basePath
       analytics:
