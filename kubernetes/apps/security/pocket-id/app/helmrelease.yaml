@@ -54,7 +54,7 @@ spec:
                 name: pocket-id
     service:
       pocket-id:
-        controllers: pocket-id
+        controller: pocket-id
         ports:
           http:
             port: *port
