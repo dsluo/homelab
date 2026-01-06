@@ -41,7 +41,7 @@ spec:
 
     defaultDatasources:
       grafanaOperator:
-        enable: true
+        enabled: true
 
     prometheus-node-exporter:
       enabled: true
