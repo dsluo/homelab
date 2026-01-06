@@ -1,0 +1,59 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vmks
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: victoria-metrics-k8s-stack
+  interval: 1h
+  values:
+    victoria-metrics-operator:
+      enabled: false # deployed separately
+    vmsingle:
+      enabled: true
+    vmcluster:
+      enabled: false
+    alertmanager:
+      enabled: true
+    vmalert:
+      enabled: true
+    vmauth:
+      enabled: false # todo: oidc
+    vmagent:
+      enabled: true
+
+    grafana:
+      enabled: false # deployed separately
+
+    defaultDashboards:
+      defaultTimezone: America/Detroit
+      grafanaOperator:
+        enabled: false # todo: after grafana operator
+
+    defaultDatasources:
+      grafanaOperator:
+        enable: false # todo: after grafana operator
+
+    prometheus-node-exporter:
+      enabled: true
+    kube-state-metrics:
+      enabled: true
+    kubelet:
+      enabled: true
+    kubeApiServer:
+      enabled: true
+    kubeControllerManager:
+      enabled: true
+    kubeDns:
+      enabled: false # coredns
+    coreDns:
+      enabled: true
+    kubeEtcd:
+      enabled: true
+    kubeScheduler:
+      enabled: true
+    kubeProxy:
+      enabled: false # cilium replaces it
