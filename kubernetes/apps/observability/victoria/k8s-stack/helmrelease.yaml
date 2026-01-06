@@ -32,7 +32,10 @@ spec:
       enabled: true
 
     grafana:
-      enabled: false # deployed separately
+      # deployed separately
+      enabled: false
+      # create GrafanaDataSources even though we're not using the grafana provided by VMKS
+      forceDeployDatasource: true
 
     defaultDashboards:
       defaultTimezone: America/Detroit
