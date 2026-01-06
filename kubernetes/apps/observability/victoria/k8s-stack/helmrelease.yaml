@@ -15,13 +15,11 @@ spec:
     vmsingle:
       enabled: true
       spec:
-        storage:
-          storageClassName: "" # empty string = use existing PVC
-          volumeName: "${APP}"
-          accessModes: [ReadWriteOnce]
-          resources:
-            requests:
-              storage: "${VOLSYNC_CAPACITY}"
+        storageDataPath: /victoria-metrics-data
+        volumes:
+          - name: data
+            persistentVolumeClaim:
+              claimName: "${APP}"
     vmcluster:
       enabled: false
     alertmanager:
