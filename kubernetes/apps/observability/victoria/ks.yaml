@@ -30,7 +30,7 @@ metadata:
 spec:
   dependsOn:
     - name: victoria-metrics-operator
-    # todo: depend on grafana
+    - name: grafana-instance
   interval: 1h
   path: ./kubernetes/apps/observability/victoria/k8s-stack
   postBuild:
