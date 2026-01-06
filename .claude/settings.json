@@ -11,14 +11,18 @@
       "Bash(kubectl describe:*)",
       "Bash(kubectl get:*)",
       "Bash(kubectl logs:*)",
+      "Bash(talosctl containers:*)",
       "Bash(talosctl get:*)",
       "Bash(talosctl health:*)",
+      "Bash(talosctl ls:*)",
+      "Bash(talosctl read:*)",
       "Bash(talosctl version:*)",
       "Bash(task --list:*)",
       "mcp__github__get_file_contents",
       "mcp__github__pull_request_read",
       "mcp__github__search_code",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "WebSearch"
     ],
     "deny": []
   }
