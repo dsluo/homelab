@@ -9,3 +9,4 @@ components:
 resources:
   - ./namespace.yaml
   - ./victoria/ks.yaml
+  - ./grafana/ks.yaml
