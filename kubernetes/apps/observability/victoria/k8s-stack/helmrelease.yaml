@@ -14,6 +14,11 @@ spec:
       enabled: false # deployed separately
     vmsingle:
       enabled: true
+      spec:
+        storage:
+          storageClassName: "" # empty string = use existing PVC
+          volumeName: "${APP}"
+          accessModes: [ReadWriteOnce]
     vmcluster:
       enabled: false
     alertmanager:

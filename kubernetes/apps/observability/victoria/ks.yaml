@@ -26,14 +26,21 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: vmks
+  name: &app vmks
 spec:
   dependsOn:
     - name: victoria-metrics-operator
     - name: grafana-instance
+    - name: volsync
+      namespace: volsync-system
   interval: 1h
   path: ./kubernetes/apps/observability/victoria/k8s-stack
+  components:
+    - ../../../../components/volsync
   postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CAPACITY: 20Gi
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
