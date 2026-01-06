@@ -31,11 +31,11 @@ spec:
     defaultDashboards:
       defaultTimezone: America/Detroit
       grafanaOperator:
-        enabled: false # todo: after grafana operator
+        enabled: true
 
     defaultDatasources:
       grafanaOperator:
-        enable: false # todo: after grafana operator
+        enable: true
 
     prometheus-node-exporter:
       enabled: true
