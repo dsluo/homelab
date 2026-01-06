@@ -1,0 +1,66 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/grafana.integreatly.org/grafana_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana
+spec:
+  config:
+    analytics:
+      reporting_enabled: "false"
+      check_for_updates: "false"
+      check_for_plugin_updates: "false"
+      feedback_links_enabled: "false"
+    # auth: {} # todo
+    auth.anonymous:
+      enabled: "true"
+      org_name: "Main Org."
+      org_role: "Viewer"
+      hide_version: "true"
+    log:
+      mode: console
+    metrics:
+      enabled: "true"
+    news:
+      news_feed_enabled: "false"
+    plugins:
+      plugin_admin_enabled: "false"
+    security:
+      angular_support_enabled: "true"
+    server:
+      enable_gzip: "true"
+      root_url: https://grafana.${SECRET_DOMAIN}
+  deployment:
+    spec:
+      strategy:
+        type: Recreate
+      template:
+        spec:
+          containers:
+            - name: grafana
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities: { drop: ["ALL"] }
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+          volumes:
+            - name: grafana-data
+              persistentVolumeClaim:
+                claimName: grafana-instance
+  httpRoute:
+    spec:
+      hostnames:
+        - "grafana.${SECRET_DOMAIN}"
+      parentRefs:
+        - name: envoy-internal
+          namespace: network
+      rules:
+        - backendRefs:
+            - name: grafana-service
+              port: 3000
+  disableDefaultSecurityContext: All
