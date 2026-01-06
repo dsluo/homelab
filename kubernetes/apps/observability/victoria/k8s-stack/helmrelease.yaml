@@ -19,6 +19,9 @@ spec:
           storageClassName: "" # empty string = use existing PVC
           volumeName: "${APP}"
           accessModes: [ReadWriteOnce]
+          resources:
+            requests:
+              storage: "${VOLSYNC_CAPACITY}"
     vmcluster:
       enabled: false
     alertmanager:
