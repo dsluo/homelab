@@ -13,3 +13,6 @@ spec:
       enable_converter_ownership: true
     serviceMonitor:
       enabled: true
+    crds:
+      enabled: true
+      plain: true
