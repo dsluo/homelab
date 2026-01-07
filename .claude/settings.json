@@ -3,6 +3,8 @@
     "allow": [
       "Bash(cat:*)",
       "Bash(docker manifest inspect:*)",
+      "Bash(ls:*)",
+      "Bash(kubectl api-resources:*)",
       "Bash(gh pr diff:*)",
       "Bash(gh pr list:*)",
       "Bash(gh pr view:*)",
