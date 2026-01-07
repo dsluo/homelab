@@ -1,15 +1,24 @@
 {
   "permissions": {
     "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+
       "Bash(cat:*)",
-      "Bash(docker manifest inspect:*)",
       "Bash(ls:*)",
-      "Bash(kubectl api-resources:*)",
+
+      "Bash(task --list:*)",
+
       "Bash(gh pr diff:*)",
       "Bash(gh pr list:*)",
       "Bash(gh pr view:*)",
       "Bash(gh run view:*)",
       "Bash(git log:*)",
+
+      "Bash(docker manifest inspect:*)",
+      "Bash(docker ps:*)",
+      "Bash(docker images:*)",
+      "Bash(kubectl api-resources:*)",
       "Bash(kubectl describe:*)",
       "Bash(kubectl get:*)",
       "Bash(kubectl logs:*)",
@@ -19,14 +28,24 @@
       "Bash(talosctl ls:*)",
       "Bash(talosctl read:*)",
       "Bash(talosctl version:*)",
-      "Bash(task --list:*)",
-      "mcp__github__get_commit",
-      "mcp__github__get_file_contents",
+
+      "mcp__github__get_*",
+      "mcp__github__list_*",
+      "mcp__github__search_*",
+      "mcp__github__issue_read",
       "mcp__github__pull_request_read",
-      "mcp__github__search_code",
-      "WebFetch(domain:github.com)",
-      "WebSearch"
+
+      "mcp__grafana__get_*",
+      "mcp__grafana__list_*",
+      "mcp__grafana__query_*",
+      "mcp__grafana__search_*",
+      "mcp__grafana__find_*",
+      "mcp__grafana__fetch_*",
+      "mcp__grafana__generate_deeplink",
+      "mcp__grafana__find_*"
     ],
-    "deny": []
+    "ask": ["mcp__grafana__update_dashboard"],
+    "deny": ["Read(*.env)", "Read(talos/clusterconfig/*)", "Read(kubeconfig)"],
+    "disableBypassPermissionsMode": "disable"
   }
 }
