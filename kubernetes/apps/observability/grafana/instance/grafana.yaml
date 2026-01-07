@@ -7,13 +7,13 @@ metadata:
   labels:
     dashboards: grafana
 spec:
+  disableDefaultAdminSecret: true
   config:
     analytics:
       reporting_enabled: "false"
       check_for_updates: "false"
       check_for_plugin_updates: "false"
       feedback_links_enabled: "false"
-    # auth: {} # todo
     auth.anonymous:
       enabled: "true"
       org_name: "Main Org."
@@ -38,6 +38,17 @@ spec:
         spec:
           containers:
             - name: grafana
+              env:
+                - name: GF_SECURITY_ADMIN_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-credentials
+                      key: GF_SECURITY_ADMIN_USER
+                - name: GF_SECURITY_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-credentials
+                      key: GF_SECURITY_ADMIN_PASSWORD
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
