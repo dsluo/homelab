@@ -15,6 +15,7 @@ spec:
     vmsingle:
       enabled: true
       spec:
+        retentionPeriod: "100y"
         storageDataPath: /victoria-metrics-data
         volumes:
           - name: data
