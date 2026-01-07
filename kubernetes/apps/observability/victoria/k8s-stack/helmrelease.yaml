@@ -28,7 +28,7 @@ spec:
     vmalert:
       enabled: true
     vmauth:
-      enabled: false # todo: oidc
+      enabled: false
     vmagent:
       enabled: true
 
@@ -58,7 +58,7 @@ spec:
     kubeControllerManager:
       enabled: true
     kubeDns:
-      enabled: false # coredns
+      enabled: false # because coredns instead
     coreDns:
       enabled: true
     kubeEtcd:

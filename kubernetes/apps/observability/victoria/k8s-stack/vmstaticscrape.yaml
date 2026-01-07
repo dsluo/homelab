@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/operator.victoriametrics.com/vmstaticscrape_v1beta1.json
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: homeassistant
+spec:
+  jobName: homeassistant
+
+  targetEndpoints:
+    - targets:
+        - "homeassistant.lan:8123"
+      scheme: http
+      path: /api/prometheus
+
+      bearerTokenSecret:
+        name: homeassistant-token
+        key: token
+
+      labels:
+        source: homeassistant
+      interval: 10s
+      scrapeTimeout: 10s
