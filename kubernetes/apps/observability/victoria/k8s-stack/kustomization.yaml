@@ -4,3 +4,5 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
+  - ./vmstaticscrape.yaml
+  - ./secret.sops.yaml
