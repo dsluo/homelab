@@ -1,0 +1,5201 @@
+# WARNING: This file was auto-generated using snmp_exporter generator, manual changes will be lost.
+auths:
+  public_v1:
+    community: public
+    security_level: noAuthNoPriv
+    auth_protocol: MD5
+    priv_protocol: DES
+    version: 1
+  public_v2:
+    community: public
+    security_level: noAuthNoPriv
+    auth_protocol: MD5
+    priv_protocol: DES
+    version: 2
+modules:
+  geist_pdu:
+    walk:
+    - 1.3.6.1.4.1.21239.5
+    metrics:
+    - name: productTitle
+      oid: 1.3.6.1.4.1.21239.5.2.1.1
+      type: DisplayString
+      help: Product name - 1.3.6.1.4.1.21239.5.2.1.1
+    - name: productVersion
+      oid: 1.3.6.1.4.1.21239.5.2.1.2
+      type: DisplayString
+      help: Product version - 1.3.6.1.4.1.21239.5.2.1.2
+    - name: productFriendlyName
+      oid: 1.3.6.1.4.1.21239.5.2.1.3
+      type: DisplayString
+      help: User-assigned name - 1.3.6.1.4.1.21239.5.2.1.3
+    - name: productMacAddress
+      oid: 1.3.6.1.4.1.21239.5.2.1.4
+      type: PhysAddress48
+      help: Product's unique MAC address - 1.3.6.1.4.1.21239.5.2.1.4
+    - name: deviceCount
+      oid: 1.3.6.1.4.1.21239.5.2.1.6
+      type: gauge
+      help: Total number of devices on unit - 1.3.6.1.4.1.21239.5.2.1.6
+    - name: temperatureUnits
+      oid: 1.3.6.1.4.1.21239.5.2.1.7
+      type: gauge
+      help: 'Current units for temperature/dewpoint values: 0 = Degrees Fahrenheit
+        1 = Degrees Celsius - 1.3.6.1.4.1.21239.5.2.1.7'
+      enum_values:
+        0: fahrenheit
+        1: celsius
+    - name: productModelNumber
+      oid: 1.3.6.1.4.1.21239.5.2.1.8
+      type: DisplayString
+      help: Product model number (factory-assigned) - 1.3.6.1.4.1.21239.5.2.1.8
+    - name: productPartNumber
+      oid: 1.3.6.1.4.1.21239.5.2.1.9
+      type: DisplayString
+      help: Product part number (factory-assigned) - 1.3.6.1.4.1.21239.5.2.1.9
+    - name: productSerialNumber
+      oid: 1.3.6.1.4.1.21239.5.2.1.10
+      type: DisplayString
+      help: Product serial number (factory-assigned) - 1.3.6.1.4.1.21239.5.2.1.10
+    - name: productPlatform
+      oid: 1.3.6.1.4.1.21239.5.2.1.11
+      type: DisplayString
+      help: Product platform - 1.3.6.1.4.1.21239.5.2.1.11
+    - name: productHostname
+      oid: 1.3.6.1.4.1.21239.5.2.1.12
+      type: DisplayString
+      help: Product hostname - 1.3.6.1.4.1.21239.5.2.1.12
+    - name: productAlarmCount
+      oid: 1.3.6.1.4.1.21239.5.2.1.13
+      type: gauge
+      help: Number of alarms currently tripped - 1.3.6.1.4.1.21239.5.2.1.13
+    - name: productWarnCount
+      oid: 1.3.6.1.4.1.21239.5.2.1.14
+      type: gauge
+      help: Number of warnings currently tripped - 1.3.6.1.4.1.21239.5.2.1.14
+    - name: productManufacturer
+      oid: 1.3.6.1.4.1.21239.5.2.1.15
+      type: DisplayString
+      help: Product manufacturer - 1.3.6.1.4.1.21239.5.2.1.15
+    - name: pduMainIndex
+      oid: 1.3.6.1.4.1.21239.5.2.3.1.1.1
+      type: gauge
+      help: Table entry index value - 1.3.6.1.4.1.21239.5.2.3.1.1.1
+      indexes:
+      - labelname: pduMainIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduMainIndex
+        labelname: pduMainName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.3
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduMainLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.4
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.7
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.8
+        type: DisplayString
+    - name: pduMainSerial
+      oid: 1.3.6.1.4.1.21239.5.2.3.1.1.2
+      type: DisplayString
+      help: Serial number - 1.3.6.1.4.1.21239.5.2.3.1.1.2
+      indexes:
+      - labelname: pduMainIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduMainIndex
+        labelname: pduMainName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.3
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduMainLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.4
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.7
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.8
+        type: DisplayString
+    - name: pduMainAvail
+      oid: 1.3.6.1.4.1.21239.5.2.3.1.1.5
+      type: gauge
+      help: 'Device availability: 0 = Unavailable 1 = Available 2 = Partially Unavailable
+        - 1.3.6.1.4.1.21239.5.2.3.1.1.5'
+      indexes:
+      - labelname: pduMainIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduMainIndex
+        labelname: pduMainName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.3
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduMainLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.4
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.7
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.8
+        type: DisplayString
+    - name: pduMeterType
+      oid: 1.3.6.1.4.1.21239.5.2.3.1.1.6
+      type: gauge
+      help: 'Current meter type: 0 = Wye 1 = Delta - 1.3.6.1.4.1.21239.5.2.3.1.1.6'
+      indexes:
+      - labelname: pduMainIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduMainIndex
+        labelname: pduMainName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.3
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduMainLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.4
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.7
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.8
+        type: DisplayString
+      enum_values:
+        0: wye
+        1: delta
+    - name: pduTotalRealPower
+      oid: 1.3.6.1.4.1.21239.5.2.3.1.1.9
+      type: gauge
+      help: PDU total real power - 1.3.6.1.4.1.21239.5.2.3.1.1.9
+      indexes:
+      - labelname: pduMainIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduMainIndex
+        labelname: pduMainName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.3
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduMainLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.4
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.7
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.8
+        type: DisplayString
+    - name: pduTotalApparentPower
+      oid: 1.3.6.1.4.1.21239.5.2.3.1.1.10
+      type: gauge
+      help: PDU total apparent power - 1.3.6.1.4.1.21239.5.2.3.1.1.10
+      indexes:
+      - labelname: pduMainIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduMainIndex
+        labelname: pduMainName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.3
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduMainLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.4
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.7
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.8
+        type: DisplayString
+    - name: pduTotalPowerFactor
+      oid: 1.3.6.1.4.1.21239.5.2.3.1.1.11
+      type: gauge
+      help: PDU total power factor - 1.3.6.1.4.1.21239.5.2.3.1.1.11
+      indexes:
+      - labelname: pduMainIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduMainIndex
+        labelname: pduMainName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.3
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduMainLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.4
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.7
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.8
+        type: DisplayString
+    - name: pduTotalEnergy
+      oid: 1.3.6.1.4.1.21239.5.2.3.1.1.12
+      type: gauge
+      help: PDU total accumulated energy in watt-hours - 1.3.6.1.4.1.21239.5.2.3.1.1.12
+      indexes:
+      - labelname: pduMainIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduMainIndex
+        labelname: pduMainName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.3
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduMainLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.4
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalName
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.7
+        type: DisplayString
+      - labels:
+        - pduMainIndex
+        labelname: pduTotalLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.1.1.8
+        type: DisplayString
+    - name: pduPhaseIndex
+      oid: 1.3.6.1.4.1.21239.5.2.3.2.1.1
+      type: gauge
+      help: Table entry index value - 1.3.6.1.4.1.21239.5.2.3.2.1.1
+      indexes:
+      - labelname: pduPhaseIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseName
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.2
+        type: DisplayString
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.3
+        type: DisplayString
+    - name: pduPhaseVoltage
+      oid: 1.3.6.1.4.1.21239.5.2.3.2.1.4
+      type: gauge
+      help: PDU phase voltage in tenths of a volt - 1.3.6.1.4.1.21239.5.2.3.2.1.4
+      indexes:
+      - labelname: pduPhaseIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseName
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.2
+        type: DisplayString
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.3
+        type: DisplayString
+      scale: 0.1
+    - name: pduPhaseCurrent
+      oid: 1.3.6.1.4.1.21239.5.2.3.2.1.8
+      type: gauge
+      help: PDU phase current reading in hundredths of an amp - 1.3.6.1.4.1.21239.5.2.3.2.1.8
+      indexes:
+      - labelname: pduPhaseIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseName
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.2
+        type: DisplayString
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.3
+        type: DisplayString
+      scale: 0.01
+    - name: pduPhaseRealPower
+      oid: 1.3.6.1.4.1.21239.5.2.3.2.1.12
+      type: gauge
+      help: Real power for phase in watts - 1.3.6.1.4.1.21239.5.2.3.2.1.12
+      indexes:
+      - labelname: pduPhaseIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseName
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.2
+        type: DisplayString
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.3
+        type: DisplayString
+    - name: pduPhaseApparentPower
+      oid: 1.3.6.1.4.1.21239.5.2.3.2.1.13
+      type: gauge
+      help: Apparent power for phase in volt-amps - 1.3.6.1.4.1.21239.5.2.3.2.1.13
+      indexes:
+      - labelname: pduPhaseIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseName
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.2
+        type: DisplayString
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.3
+        type: DisplayString
+    - name: pduPhasePowerFactor
+      oid: 1.3.6.1.4.1.21239.5.2.3.2.1.14
+      type: gauge
+      help: Power factor for phase - 1.3.6.1.4.1.21239.5.2.3.2.1.14
+      indexes:
+      - labelname: pduPhaseIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseName
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.2
+        type: DisplayString
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.3
+        type: DisplayString
+    - name: pduPhaseEnergy
+      oid: 1.3.6.1.4.1.21239.5.2.3.2.1.15
+      type: gauge
+      help: Accumulated energy for phase in watt-hours - 1.3.6.1.4.1.21239.5.2.3.2.1.15
+      indexes:
+      - labelname: pduPhaseIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseName
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.2
+        type: DisplayString
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.3
+        type: DisplayString
+    - name: pduPhaseBalance
+      oid: 1.3.6.1.4.1.21239.5.2.3.2.1.17
+      type: gauge
+      help: Phase balance as percent - 1.3.6.1.4.1.21239.5.2.3.2.1.17
+      indexes:
+      - labelname: pduPhaseIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseName
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.2
+        type: DisplayString
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.3
+        type: DisplayString
+    - name: pduPhaseCurrentCrestFactor
+      oid: 1.3.6.1.4.1.21239.5.2.3.2.1.19
+      type: gauge
+      help: Current crest factor for phase, in hundredths - 1.3.6.1.4.1.21239.5.2.3.2.1.19
+      indexes:
+      - labelname: pduPhaseIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseName
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.2
+        type: DisplayString
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.3
+        type: DisplayString
+    - name: pduPhaseResCurrentDetected
+      oid: 1.3.6.1.4.1.21239.5.2.3.2.1.20
+      type: gauge
+      help: Tells if residual current was detected - 1.3.6.1.4.1.21239.5.2.3.2.1.20
+      indexes:
+      - labelname: pduPhaseIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseName
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.2
+        type: DisplayString
+      - labels:
+        - pduPhaseIndex
+        labelname: pduPhaseLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.2.1.3
+        type: DisplayString
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: pduBreakerIndex
+      oid: 1.3.6.1.4.1.21239.5.2.3.3.1.1
+      type: gauge
+      help: Table entry index value - 1.3.6.1.4.1.21239.5.2.3.3.1.1
+      indexes:
+      - labelname: pduBreakerIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerName
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.2
+        type: DisplayString
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.3
+        type: DisplayString
+    - name: pduBreakerCurrent
+      oid: 1.3.6.1.4.1.21239.5.2.3.3.1.4
+      type: gauge
+      help: PDU breaker current reading in hundredths of an amp - 1.3.6.1.4.1.21239.5.2.3.3.1.4
+      indexes:
+      - labelname: pduBreakerIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerName
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.2
+        type: DisplayString
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.3
+        type: DisplayString
+      scale: 0.01
+    - name: pduBreakerVoltage
+      oid: 1.3.6.1.4.1.21239.5.2.3.3.1.8
+      type: gauge
+      help: PDU breaker voltage in tenths of a volt - 1.3.6.1.4.1.21239.5.2.3.3.1.8
+      indexes:
+      - labelname: pduBreakerIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerName
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.2
+        type: DisplayString
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.3
+        type: DisplayString
+      scale: 0.1
+    - name: pduBreakerRealPower
+      oid: 1.3.6.1.4.1.21239.5.2.3.3.1.12
+      type: gauge
+      help: Real power for breaker in watts - 1.3.6.1.4.1.21239.5.2.3.3.1.12
+      indexes:
+      - labelname: pduBreakerIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerName
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.2
+        type: DisplayString
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.3
+        type: DisplayString
+    - name: pduBreakerApparentPower
+      oid: 1.3.6.1.4.1.21239.5.2.3.3.1.13
+      type: gauge
+      help: Apparent power for breaker in volt-amps - 1.3.6.1.4.1.21239.5.2.3.3.1.13
+      indexes:
+      - labelname: pduBreakerIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerName
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.2
+        type: DisplayString
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.3
+        type: DisplayString
+    - name: pduBreakerPowerFactor
+      oid: 1.3.6.1.4.1.21239.5.2.3.3.1.14
+      type: gauge
+      help: Power factor for breaker - 1.3.6.1.4.1.21239.5.2.3.3.1.14
+      indexes:
+      - labelname: pduBreakerIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerName
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.2
+        type: DisplayString
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.3
+        type: DisplayString
+    - name: pduBreakerEnergy
+      oid: 1.3.6.1.4.1.21239.5.2.3.3.1.15
+      type: gauge
+      help: Accumulated energy for breaker in watt-hours - 1.3.6.1.4.1.21239.5.2.3.3.1.15
+      indexes:
+      - labelname: pduBreakerIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerName
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.2
+        type: DisplayString
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.3
+        type: DisplayString
+    - name: pduBreakerResCurrentDetected
+      oid: 1.3.6.1.4.1.21239.5.2.3.3.1.20
+      type: gauge
+      help: Tells if residual current was detected - 1.3.6.1.4.1.21239.5.2.3.3.1.20
+      indexes:
+      - labelname: pduBreakerIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerName
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.2
+        type: DisplayString
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.3
+        type: DisplayString
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: pduBreakerLossOfLoadDetected
+      oid: 1.3.6.1.4.1.21239.5.2.3.3.1.21
+      type: gauge
+      help: Tells if a loss of load was detected - 1.3.6.1.4.1.21239.5.2.3.3.1.21
+      indexes:
+      - labelname: pduBreakerIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerName
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.2
+        type: DisplayString
+      - labels:
+        - pduBreakerIndex
+        labelname: pduBreakerLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.3.1.3
+        type: DisplayString
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: pduLineIndex
+      oid: 1.3.6.1.4.1.21239.5.2.3.4.1.1
+      type: gauge
+      help: Table entry index value - 1.3.6.1.4.1.21239.5.2.3.4.1.1
+      indexes:
+      - labelname: pduLineIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduLineIndex
+        labelname: pduLineName
+        oid: 1.3.6.1.4.1.21239.5.2.3.4.1.2
+        type: DisplayString
+      - labels:
+        - pduLineIndex
+        labelname: pduLineLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.4.1.3
+        type: DisplayString
+    - name: pduLineCurrent
+      oid: 1.3.6.1.4.1.21239.5.2.3.4.1.4
+      type: gauge
+      help: PDU line current reading in hundredths of an amp - 1.3.6.1.4.1.21239.5.2.3.4.1.4
+      indexes:
+      - labelname: pduLineIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduLineIndex
+        labelname: pduLineName
+        oid: 1.3.6.1.4.1.21239.5.2.3.4.1.2
+        type: DisplayString
+      - labels:
+        - pduLineIndex
+        labelname: pduLineLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.4.1.3
+        type: DisplayString
+      scale: 0.01
+    - name: pduOutletSwitchIndex
+      oid: 1.3.6.1.4.1.21239.5.2.3.5.1.1
+      type: gauge
+      help: Table entry index value - 1.3.6.1.4.1.21239.5.2.3.5.1.1
+      indexes:
+      - labelname: pduOutletSwitchIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchName
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.3
+        type: DisplayString
+    - name: pduOutletSwitchState
+      oid: 1.3.6.1.4.1.21239.5.2.3.5.1.4
+      type: gauge
+      help: 'Switch state of the outlet: 1 = Outlet is on 2 = Outlet is off 3 = Outlet
+        is on, but will turn off after a delay 4 = Outlet is off, but will turn on
+        after a delay 5 = Starting reboot cycle, outlet is on, but will go to the
+        rebootOff(6) state after a delay 6 = Rebooting, outlet is off, but it will
+        turn on after a delay 7 = Cannot get outlet state - 1.3.6.1.4.1.21239.5.2.3.5.1.4'
+      indexes:
+      - labelname: pduOutletSwitchIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchName
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.3
+        type: DisplayString
+      enum_values:
+        1: "on"
+        2: "off"
+        3: on2off
+        4: off2on
+        5: rebootOn
+        6: rebootOff
+        7: unavailable
+    - name: pduOutletSwitchRelayFailure
+      oid: 1.3.6.1.4.1.21239.5.2.3.5.1.5
+      type: gauge
+      help: Tells if the outlet relay has failed - 1.3.6.1.4.1.21239.5.2.3.5.1.5
+      indexes:
+      - labelname: pduOutletSwitchIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchName
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.3
+        type: DisplayString
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: pduOutletSwitchControl
+      oid: 1.3.6.1.4.1.21239.5.2.3.5.1.6
+      type: gauge
+      help: Used for manual control of the outlet - 1.3.6.1.4.1.21239.5.2.3.5.1.6
+      indexes:
+      - labelname: pduOutletSwitchIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchName
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.3
+        type: DisplayString
+      enum_values:
+        1: cancel
+        2: "on"
+        3: onAfterDelay
+        4: "off"
+        5: offAfterDelay
+        6: reboot
+        7: rebootAfterDelay
+        8: none
+    - name: pduOutletSwitchTimeToAction
+      oid: 1.3.6.1.4.1.21239.5.2.3.5.1.7
+      type: gauge
+      help: Seconds until an outlet state change - 1.3.6.1.4.1.21239.5.2.3.5.1.7
+      indexes:
+      - labelname: pduOutletSwitchIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchName
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.3
+        type: DisplayString
+    - name: pduOutletSwitchOnDelay
+      oid: 1.3.6.1.4.1.21239.5.2.3.5.1.8
+      type: gauge
+      help: Seconds to wait before powering on the outlet, during onAfterDelay(3)
+        operation - 1.3.6.1.4.1.21239.5.2.3.5.1.8
+      indexes:
+      - labelname: pduOutletSwitchIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchName
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.3
+        type: DisplayString
+    - name: pduOutletSwitchOffDelay
+      oid: 1.3.6.1.4.1.21239.5.2.3.5.1.9
+      type: gauge
+      help: Seconds to wait before powering off the outlet, during offAfterDelay(5)
+        operation - 1.3.6.1.4.1.21239.5.2.3.5.1.9
+      indexes:
+      - labelname: pduOutletSwitchIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchName
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.3
+        type: DisplayString
+    - name: pduOutletSwitchRebootDelay
+      oid: 1.3.6.1.4.1.21239.5.2.3.5.1.10
+      type: gauge
+      help: Seconds to wait before powering off the outlet, during rebootAfterDelay(7)
+        operation - 1.3.6.1.4.1.21239.5.2.3.5.1.10
+      indexes:
+      - labelname: pduOutletSwitchIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchName
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.3
+        type: DisplayString
+    - name: pduOutletSwitchRebootHoldDelay
+      oid: 1.3.6.1.4.1.21239.5.2.3.5.1.11
+      type: gauge
+      help: Seconds to hold the outlet off, before powering on the outlet, during
+        rebootAfterDelay(7) operation - 1.3.6.1.4.1.21239.5.2.3.5.1.11
+      indexes:
+      - labelname: pduOutletSwitchIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchName
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.3
+        type: DisplayString
+    - name: pduOutletSwitchPoaAction
+      oid: 1.3.6.1.4.1.21239.5.2.3.5.1.12
+      type: gauge
+      help: The outlet is set to this state during power-up - 1.3.6.1.4.1.21239.5.2.3.5.1.12
+      indexes:
+      - labelname: pduOutletSwitchIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchName
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.3
+        type: DisplayString
+      enum_values:
+        1: "on"
+        2: "off"
+        3: last
+    - name: pduOutletSwitchPoaDelay
+      oid: 1.3.6.1.4.1.21239.5.2.3.5.1.13
+      type: gauge
+      help: Seconds to wait before setting the outlet to the pduOutletSwitchPoaAction
+        state - 1.3.6.1.4.1.21239.5.2.3.5.1.13
+      indexes:
+      - labelname: pduOutletSwitchIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchName
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletSwitchIndex
+        labelname: pduOutletSwitchLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.5.1.3
+        type: DisplayString
+    - name: pduOutletMeterIndex
+      oid: 1.3.6.1.4.1.21239.5.2.3.6.1.1
+      type: gauge
+      help: Table entry index value - 1.3.6.1.4.1.21239.5.2.3.6.1.1
+      indexes:
+      - labelname: pduOutletMeterIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterName
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.3
+        type: DisplayString
+    - name: pduOutletMeterVoltage
+      oid: 1.3.6.1.4.1.21239.5.2.3.6.1.4
+      type: gauge
+      help: PDU outlet voltage in tenths of a volt - 1.3.6.1.4.1.21239.5.2.3.6.1.4
+      indexes:
+      - labelname: pduOutletMeterIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterName
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.3
+        type: DisplayString
+      scale: 0.1
+    - name: pduOutletMeterCurrent
+      oid: 1.3.6.1.4.1.21239.5.2.3.6.1.8
+      type: gauge
+      help: PDU outlet current reading in hundredths of an amp - 1.3.6.1.4.1.21239.5.2.3.6.1.8
+      indexes:
+      - labelname: pduOutletMeterIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterName
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.3
+        type: DisplayString
+      scale: 0.01
+    - name: pduOutletMeterRealPower
+      oid: 1.3.6.1.4.1.21239.5.2.3.6.1.12
+      type: gauge
+      help: Real power for outlet in watts - 1.3.6.1.4.1.21239.5.2.3.6.1.12
+      indexes:
+      - labelname: pduOutletMeterIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterName
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.3
+        type: DisplayString
+    - name: pduOutletMeterApparentPower
+      oid: 1.3.6.1.4.1.21239.5.2.3.6.1.13
+      type: gauge
+      help: Apparent power for outlet in volt-amps - 1.3.6.1.4.1.21239.5.2.3.6.1.13
+      indexes:
+      - labelname: pduOutletMeterIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterName
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.3
+        type: DisplayString
+    - name: pduOutletMeterPowerFactor
+      oid: 1.3.6.1.4.1.21239.5.2.3.6.1.14
+      type: gauge
+      help: Power factor for outlet - 1.3.6.1.4.1.21239.5.2.3.6.1.14
+      indexes:
+      - labelname: pduOutletMeterIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterName
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.3
+        type: DisplayString
+    - name: pduOutletMeterEnergy
+      oid: 1.3.6.1.4.1.21239.5.2.3.6.1.15
+      type: gauge
+      help: Accumulated energy for outlet in watt-hours - 1.3.6.1.4.1.21239.5.2.3.6.1.15
+      indexes:
+      - labelname: pduOutletMeterIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterName
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.3
+        type: DisplayString
+    - name: pduOutletMeterReset
+      oid: 1.3.6.1.4.1.21239.5.2.3.6.1.16
+      type: gauge
+      help: Used to reset energy - 1.3.6.1.4.1.21239.5.2.3.6.1.16
+      indexes:
+      - labelname: pduOutletMeterIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterName
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.3
+        type: DisplayString
+      enum_values:
+        1: resetEnergy
+        8: none
+    - name: pduOutletCurrentCrestFactor
+      oid: 1.3.6.1.4.1.21239.5.2.3.6.1.19
+      type: gauge
+      help: Current crest factor for outlet, in hundredths - 1.3.6.1.4.1.21239.5.2.3.6.1.19
+      indexes:
+      - labelname: pduOutletMeterIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterName
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.2
+        type: DisplayString
+      - labels:
+        - pduOutletMeterIndex
+        labelname: pduOutletMeterLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.6.1.3
+        type: DisplayString
+    - name: pduResidualCurrentIndex
+      oid: 1.3.6.1.4.1.21239.5.2.3.7.1.1
+      type: gauge
+      help: Table entry index value - 1.3.6.1.4.1.21239.5.2.3.7.1.1
+      indexes:
+      - labelname: pduResidualCurrentIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduResidualCurrentIndex
+        labelname: pduResidualCurrentName
+        oid: 1.3.6.1.4.1.21239.5.2.3.7.1.2
+        type: DisplayString
+      - labels:
+        - pduResidualCurrentIndex
+        labelname: pduResidualCurrentLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.7.1.3
+        type: DisplayString
+    - name: pduResidualCurrentAggregate
+      oid: 1.3.6.1.4.1.21239.5.2.3.7.1.4
+      type: gauge
+      help: PDU residual current aggregate value in milliamps - 1.3.6.1.4.1.21239.5.2.3.7.1.4
+      indexes:
+      - labelname: pduResidualCurrentIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduResidualCurrentIndex
+        labelname: pduResidualCurrentName
+        oid: 1.3.6.1.4.1.21239.5.2.3.7.1.2
+        type: DisplayString
+      - labels:
+        - pduResidualCurrentIndex
+        labelname: pduResidualCurrentLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.7.1.3
+        type: DisplayString
+    - name: pduResidualCurrentDc
+      oid: 1.3.6.1.4.1.21239.5.2.3.7.1.5
+      type: gauge
+      help: PDU residual current DC value in milliamps - 1.3.6.1.4.1.21239.5.2.3.7.1.5
+      indexes:
+      - labelname: pduResidualCurrentIndex
+        type: gauge
+      lookups:
+      - labels:
+        - pduResidualCurrentIndex
+        labelname: pduResidualCurrentName
+        oid: 1.3.6.1.4.1.21239.5.2.3.7.1.2
+        type: DisplayString
+      - labels:
+        - pduResidualCurrentIndex
+        labelname: pduResidualCurrentLabel
+        oid: 1.3.6.1.4.1.21239.5.2.3.7.1.3
+        type: DisplayString
+    - name: tempSensorIndex
+      oid: 1.3.6.1.4.1.21239.5.2.4.1.1
+      type: gauge
+      help: Table entry index value - 1.3.6.1.4.1.21239.5.2.4.1.1
+      indexes:
+      - labelname: tempSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - tempSensorIndex
+        labelname: tempSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.4.1.3
+        type: DisplayString
+    - name: tempSensorSerial
+      oid: 1.3.6.1.4.1.21239.5.2.4.1.2
+      type: DisplayString
+      help: Serial number - 1.3.6.1.4.1.21239.5.2.4.1.2
+      indexes:
+      - labelname: tempSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - tempSensorIndex
+        labelname: tempSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.4.1.3
+        type: DisplayString
+    - name: tempSensorAvail
+      oid: 1.3.6.1.4.1.21239.5.2.4.1.4
+      type: gauge
+      help: 'Device availability: 0 = Unavailable 1 = Available 2 = Partially Unavailable
+        - 1.3.6.1.4.1.21239.5.2.4.1.4'
+      indexes:
+      - labelname: tempSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - tempSensorIndex
+        labelname: tempSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.4.1.3
+        type: DisplayString
+    - name: tempSensorTemp
+      oid: 1.3.6.1.4.1.21239.5.2.4.1.5
+      type: gauge
+      help: Temperature in tenths of a degree - 1.3.6.1.4.1.21239.5.2.4.1.5
+      indexes:
+      - labelname: tempSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - tempSensorIndex
+        labelname: tempSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.4.1.3
+        type: DisplayString
+      scale: 0.1
+    - name: airFlowSensorIndex
+      oid: 1.3.6.1.4.1.21239.5.2.5.1.1
+      type: gauge
+      help: Table entry index value - 1.3.6.1.4.1.21239.5.2.5.1.1
+      indexes:
+      - labelname: airFlowSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - airFlowSensorIndex
+        labelname: airFlowSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.5.1.3
+        type: DisplayString
+    - name: airFlowSensorSerial
+      oid: 1.3.6.1.4.1.21239.5.2.5.1.2
+      type: DisplayString
+      help: Serial number - 1.3.6.1.4.1.21239.5.2.5.1.2
+      indexes:
+      - labelname: airFlowSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - airFlowSensorIndex
+        labelname: airFlowSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.5.1.3
+        type: DisplayString
+    - name: airFlowSensorAvail
+      oid: 1.3.6.1.4.1.21239.5.2.5.1.4
+      type: gauge
+      help: 'Device availability: 0 = Unavailable 1 = Available 2 = Partially Unavailable
+        - 1.3.6.1.4.1.21239.5.2.5.1.4'
+      indexes:
+      - labelname: airFlowSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - airFlowSensorIndex
+        labelname: airFlowSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.5.1.3
+        type: DisplayString
+    - name: airFlowSensorTemp
+      oid: 1.3.6.1.4.1.21239.5.2.5.1.5
+      type: gauge
+      help: Temperature reading in tenths of a degree - 1.3.6.1.4.1.21239.5.2.5.1.5
+      indexes:
+      - labelname: airFlowSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - airFlowSensorIndex
+        labelname: airFlowSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.5.1.3
+        type: DisplayString
+      scale: 0.1
+    - name: airFlowSensorFlow
+      oid: 1.3.6.1.4.1.21239.5.2.5.1.6
+      type: gauge
+      help: Airflow reading - 1.3.6.1.4.1.21239.5.2.5.1.6
+      indexes:
+      - labelname: airFlowSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - airFlowSensorIndex
+        labelname: airFlowSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.5.1.3
+        type: DisplayString
+    - name: airFlowSensorHumidity
+      oid: 1.3.6.1.4.1.21239.5.2.5.1.7
+      type: gauge
+      help: Humidity reading - 1.3.6.1.4.1.21239.5.2.5.1.7
+      indexes:
+      - labelname: airFlowSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - airFlowSensorIndex
+        labelname: airFlowSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.5.1.3
+        type: DisplayString
+    - name: airFlowSensorDewPoint
+      oid: 1.3.6.1.4.1.21239.5.2.5.1.8
+      type: gauge
+      help: Dewpoint reading in tenths of a degree - 1.3.6.1.4.1.21239.5.2.5.1.8
+      indexes:
+      - labelname: airFlowSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - airFlowSensorIndex
+        labelname: airFlowSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.5.1.3
+        type: DisplayString
+      scale: 0.1
+    - name: t3hdSensorIndex
+      oid: 1.3.6.1.4.1.21239.5.2.8.1.1
+      type: gauge
+      help: Table entry index value - 1.3.6.1.4.1.21239.5.2.8.1.1
+      indexes:
+      - labelname: t3hdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - t3hdSensorIndex
+        labelname: t3hdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.8.1.3
+        type: DisplayString
+    - name: t3hdSensorSerial
+      oid: 1.3.6.1.4.1.21239.5.2.8.1.2
+      type: DisplayString
+      help: Serial number - 1.3.6.1.4.1.21239.5.2.8.1.2
+      indexes:
+      - labelname: t3hdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - t3hdSensorIndex
+        labelname: t3hdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.8.1.3
+        type: DisplayString
+    - name: t3hdSensorAvail
+      oid: 1.3.6.1.4.1.21239.5.2.8.1.4
+      type: gauge
+      help: 'Device availability: 0 = Unavailable 1 = Available 2 = Partially Unavailable
+        - 1.3.6.1.4.1.21239.5.2.8.1.4'
+      indexes:
+      - labelname: t3hdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - t3hdSensorIndex
+        labelname: t3hdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.8.1.3
+        type: DisplayString
+    - name: t3hdSensorIntLabel
+      oid: 1.3.6.1.4.1.21239.5.2.8.1.5
+      type: DisplayString
+      help: Internal label (user-defined) - 1.3.6.1.4.1.21239.5.2.8.1.5
+      indexes:
+      - labelname: t3hdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - t3hdSensorIndex
+        labelname: t3hdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.8.1.3
+        type: DisplayString
+    - name: t3hdSensorIntTemp
+      oid: 1.3.6.1.4.1.21239.5.2.8.1.6
+      type: gauge
+      help: Internal temperature in tenths of a degree - 1.3.6.1.4.1.21239.5.2.8.1.6
+      indexes:
+      - labelname: t3hdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - t3hdSensorIndex
+        labelname: t3hdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.8.1.3
+        type: DisplayString
+      scale: 0.1
+    - name: t3hdSensorIntHumidity
+      oid: 1.3.6.1.4.1.21239.5.2.8.1.7
+      type: gauge
+      help: Internal humidity - 1.3.6.1.4.1.21239.5.2.8.1.7
+      indexes:
+      - labelname: t3hdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - t3hdSensorIndex
+        labelname: t3hdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.8.1.3
+        type: DisplayString
+    - name: t3hdSensorIntDewPoint
+      oid: 1.3.6.1.4.1.21239.5.2.8.1.8
+      type: gauge
+      help: Internal dewpoint in tenths of a degree - 1.3.6.1.4.1.21239.5.2.8.1.8
+      indexes:
+      - labelname: t3hdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - t3hdSensorIndex
+        labelname: t3hdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.8.1.3
+        type: DisplayString
+      scale: 0.1
+    - name: t3hdSensorExtAAvail
+      oid: 1.3.6.1.4.1.21239.5.2.8.1.9
+      type: gauge
+      help: 'External A status: 0 = Unavailable 1 = Available - 1.3.6.1.4.1.21239.5.2.8.1.9'
+      indexes:
+      - labelname: t3hdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - t3hdSensorIndex
+        labelname: t3hdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.8.1.3
+        type: DisplayString
+    - name: t3hdSensorExtALabel
+      oid: 1.3.6.1.4.1.21239.5.2.8.1.10
+      type: DisplayString
+      help: External A label (user-defined) - 1.3.6.1.4.1.21239.5.2.8.1.10
+      indexes:
+      - labelname: t3hdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - t3hdSensorIndex
+        labelname: t3hdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.8.1.3
+        type: DisplayString
+    - name: t3hdSensorExtATemp
+      oid: 1.3.6.1.4.1.21239.5.2.8.1.11
+      type: gauge
+      help: External A temperature in tenths of a degree - 1.3.6.1.4.1.21239.5.2.8.1.11
+      indexes:
+      - labelname: t3hdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - t3hdSensorIndex
+        labelname: t3hdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.8.1.3
+        type: DisplayString
+      scale: 0.1
+    - name: t3hdSensorExtBAvail
+      oid: 1.3.6.1.4.1.21239.5.2.8.1.12
+      type: gauge
+      help: 'External B status: 0 = Unavailable 1 = Available - 1.3.6.1.4.1.21239.5.2.8.1.12'
+      indexes:
+      - labelname: t3hdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - t3hdSensorIndex
+        labelname: t3hdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.8.1.3
+        type: DisplayString
+    - name: t3hdSensorExtBLabel
+      oid: 1.3.6.1.4.1.21239.5.2.8.1.13
+      type: DisplayString
+      help: External B label (user-defined) - 1.3.6.1.4.1.21239.5.2.8.1.13
+      indexes:
+      - labelname: t3hdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - t3hdSensorIndex
+        labelname: t3hdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.8.1.3
+        type: DisplayString
+    - name: t3hdSensorExtBTemp
+      oid: 1.3.6.1.4.1.21239.5.2.8.1.14
+      type: gauge
+      help: External B temperature in tenths of a degree - 1.3.6.1.4.1.21239.5.2.8.1.14
+      indexes:
+      - labelname: t3hdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - t3hdSensorIndex
+        labelname: t3hdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.8.1.3
+        type: DisplayString
+      scale: 0.1
+    - name: thdSensorIndex
+      oid: 1.3.6.1.4.1.21239.5.2.9.1.1
+      type: gauge
+      help: Table entry index value - 1.3.6.1.4.1.21239.5.2.9.1.1
+      indexes:
+      - labelname: thdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - thdSensorIndex
+        labelname: thdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.9.1.3
+        type: DisplayString
+    - name: thdSensorSerial
+      oid: 1.3.6.1.4.1.21239.5.2.9.1.2
+      type: DisplayString
+      help: Serial number - 1.3.6.1.4.1.21239.5.2.9.1.2
+      indexes:
+      - labelname: thdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - thdSensorIndex
+        labelname: thdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.9.1.3
+        type: DisplayString
+    - name: thdSensorAvail
+      oid: 1.3.6.1.4.1.21239.5.2.9.1.4
+      type: gauge
+      help: 'Device availability: 0 = Unavailable 1 = Available 2 = Partially Unavailable
+        - 1.3.6.1.4.1.21239.5.2.9.1.4'
+      indexes:
+      - labelname: thdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - thdSensorIndex
+        labelname: thdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.9.1.3
+        type: DisplayString
+    - name: thdSensorTemp
+      oid: 1.3.6.1.4.1.21239.5.2.9.1.5
+      type: gauge
+      help: Temperature value in tenths of a degree - 1.3.6.1.4.1.21239.5.2.9.1.5
+      indexes:
+      - labelname: thdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - thdSensorIndex
+        labelname: thdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.9.1.3
+        type: DisplayString
+      scale: 0.1
+    - name: thdSensorHumidity
+      oid: 1.3.6.1.4.1.21239.5.2.9.1.6
+      type: gauge
+      help: Humidity value - 1.3.6.1.4.1.21239.5.2.9.1.6
+      indexes:
+      - labelname: thdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - thdSensorIndex
+        labelname: thdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.9.1.3
+        type: DisplayString
+    - name: thdSensorDewPoint
+      oid: 1.3.6.1.4.1.21239.5.2.9.1.7
+      type: gauge
+      help: Dewpoint value in tenths of a degree - 1.3.6.1.4.1.21239.5.2.9.1.7
+      indexes:
+      - labelname: thdSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - thdSensorIndex
+        labelname: thdSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.9.1.3
+        type: DisplayString
+      scale: 0.1
+    - name: a2dSensorIndex
+      oid: 1.3.6.1.4.1.21239.5.2.11.1.1
+      type: gauge
+      help: Table entry index value - 1.3.6.1.4.1.21239.5.2.11.1.1
+      indexes:
+      - labelname: a2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - a2dSensorIndex
+        labelname: a2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.11.1.3
+        type: DisplayString
+    - name: a2dSensorSerial
+      oid: 1.3.6.1.4.1.21239.5.2.11.1.2
+      type: DisplayString
+      help: Serial number - 1.3.6.1.4.1.21239.5.2.11.1.2
+      indexes:
+      - labelname: a2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - a2dSensorIndex
+        labelname: a2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.11.1.3
+        type: DisplayString
+    - name: a2dSensorAvail
+      oid: 1.3.6.1.4.1.21239.5.2.11.1.4
+      type: gauge
+      help: 'Device availability: 0 = Unavailable 1 = Available 2 = Partially Unavailable
+        - 1.3.6.1.4.1.21239.5.2.11.1.4'
+      indexes:
+      - labelname: a2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - a2dSensorIndex
+        labelname: a2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.11.1.3
+        type: DisplayString
+    - name: a2dSensorValue
+      oid: 1.3.6.1.4.1.21239.5.2.11.1.5
+      type: gauge
+      help: Analog measurement value, within either a user-defined or preset range,
+        depending on a2dSensorMode. - 1.3.6.1.4.1.21239.5.2.11.1.5
+      indexes:
+      - labelname: a2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - a2dSensorIndex
+        labelname: a2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.11.1.3
+        type: DisplayString
+    - name: a2dSensorDisplayValue
+      oid: 1.3.6.1.4.1.21239.5.2.11.1.6
+      type: DisplayString
+      help: For current/voltage modes, the analog value is given as a string - 1.3.6.1.4.1.21239.5.2.11.1.6
+      indexes:
+      - labelname: a2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - a2dSensorIndex
+        labelname: a2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.11.1.3
+        type: DisplayString
+    - name: a2dSensorMode
+      oid: 1.3.6.1.4.1.21239.5.2.11.1.7
+      type: gauge
+      help: Binary modes have two states represented by the values 0 (low) or 1 (high)
+        - 1.3.6.1.4.1.21239.5.2.11.1.7
+      indexes:
+      - labelname: a2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - a2dSensorIndex
+        labelname: a2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.11.1.3
+        type: DisplayString
+      enum_values:
+        1: door
+        2: powerFailure
+        3: flood
+        4: wscLeak
+        5: wscFault
+        6: smoke
+        7: ivsNegGnd
+        8: ivsPosGnd
+        9: customVoltage
+        10: customBinary
+        11: customCurrent
+    - name: a2dSensorUnits
+      oid: 1.3.6.1.4.1.21239.5.2.11.1.8
+      type: DisplayString
+      help: The units for the analog value - 1.3.6.1.4.1.21239.5.2.11.1.8
+      indexes:
+      - labelname: a2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - a2dSensorIndex
+        labelname: a2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.11.1.3
+        type: DisplayString
+    - name: a2dSensorMin
+      oid: 1.3.6.1.4.1.21239.5.2.11.1.9
+      type: gauge
+      help: Minimum analog value, given as an integer - 1.3.6.1.4.1.21239.5.2.11.1.9
+      indexes:
+      - labelname: a2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - a2dSensorIndex
+        labelname: a2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.11.1.3
+        type: DisplayString
+    - name: a2dSensorMax
+      oid: 1.3.6.1.4.1.21239.5.2.11.1.10
+      type: gauge
+      help: Maximum analog value, given as an integer - 1.3.6.1.4.1.21239.5.2.11.1.10
+      indexes:
+      - labelname: a2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - a2dSensorIndex
+        labelname: a2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.11.1.3
+        type: DisplayString
+    - name: a2dSensorLowLabel
+      oid: 1.3.6.1.4.1.21239.5.2.11.1.11
+      type: DisplayString
+      help: Label for 0 (low) binary value - 1.3.6.1.4.1.21239.5.2.11.1.11
+      indexes:
+      - labelname: a2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - a2dSensorIndex
+        labelname: a2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.11.1.3
+        type: DisplayString
+    - name: a2dSensorHighLabel
+      oid: 1.3.6.1.4.1.21239.5.2.11.1.12
+      type: DisplayString
+      help: Label for 1 (high) binary value - 1.3.6.1.4.1.21239.5.2.11.1.12
+      indexes:
+      - labelname: a2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - a2dSensorIndex
+        labelname: a2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.11.1.3
+        type: DisplayString
+    - name: a2dSensorAnalogLabel
+      oid: 1.3.6.1.4.1.21239.5.2.11.1.13
+      type: DisplayString
+      help: Label for the analog measurement - 1.3.6.1.4.1.21239.5.2.11.1.13
+      indexes:
+      - labelname: a2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - a2dSensorIndex
+        labelname: a2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.11.1.3
+        type: DisplayString
+    - name: humiditySensorIndex
+      oid: 1.3.6.1.4.1.21239.5.2.12.1.1
+      type: gauge
+      help: Table entry index value - 1.3.6.1.4.1.21239.5.2.12.1.1
+      indexes:
+      - labelname: humiditySensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - humiditySensorIndex
+        labelname: humiditySensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.12.1.3
+        type: DisplayString
+    - name: humiditySensorSerial
+      oid: 1.3.6.1.4.1.21239.5.2.12.1.2
+      type: DisplayString
+      help: Serial number - 1.3.6.1.4.1.21239.5.2.12.1.2
+      indexes:
+      - labelname: humiditySensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - humiditySensorIndex
+        labelname: humiditySensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.12.1.3
+        type: DisplayString
+    - name: humiditySensorAvail
+      oid: 1.3.6.1.4.1.21239.5.2.12.1.4
+      type: gauge
+      help: 'Device availability: 0 = Unavailable 1 = Available 2 = Partially Unavailable
+        - 1.3.6.1.4.1.21239.5.2.12.1.4'
+      indexes:
+      - labelname: humiditySensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - humiditySensorIndex
+        labelname: humiditySensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.12.1.3
+        type: DisplayString
+    - name: humiditySensorValue
+      oid: 1.3.6.1.4.1.21239.5.2.12.1.5
+      type: gauge
+      help: Humidity value - 1.3.6.1.4.1.21239.5.2.12.1.5
+      indexes:
+      - labelname: humiditySensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - humiditySensorIndex
+        labelname: humiditySensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.12.1.3
+        type: DisplayString
+    - name: sn2dSensorIndex
+      oid: 1.3.6.1.4.1.21239.5.2.13.1.1
+      type: gauge
+      help: Table entry index value - 1.3.6.1.4.1.21239.5.2.13.1.1
+      indexes:
+      - labelname: sn2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - sn2dSensorIndex
+        labelname: sn2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.13.1.3
+        type: DisplayString
+    - name: sn2dSensorSerial
+      oid: 1.3.6.1.4.1.21239.5.2.13.1.2
+      type: DisplayString
+      help: Serial number - 1.3.6.1.4.1.21239.5.2.13.1.2
+      indexes:
+      - labelname: sn2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - sn2dSensorIndex
+        labelname: sn2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.13.1.3
+        type: DisplayString
+    - name: sn2dSensorAvail
+      oid: 1.3.6.1.4.1.21239.5.2.13.1.4
+      type: gauge
+      help: 'Device availability: 0 = Unavailable 1 = Available 2 = Partially Unavailable
+        - 1.3.6.1.4.1.21239.5.2.13.1.4'
+      indexes:
+      - labelname: sn2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - sn2dSensorIndex
+        labelname: sn2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.13.1.3
+        type: DisplayString
+    - name: sn2dSensorDoor1Label
+      oid: 1.3.6.1.4.1.21239.5.2.13.1.5
+      type: DisplayString
+      help: Door switch 1 label - 1.3.6.1.4.1.21239.5.2.13.1.5
+      indexes:
+      - labelname: sn2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - sn2dSensorIndex
+        labelname: sn2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.13.1.3
+        type: DisplayString
+    - name: sn2dSensorDoor1State
+      oid: 1.3.6.1.4.1.21239.5.2.13.1.6
+      type: gauge
+      help: 'Door switch 1 state: 1 = open 2 = closed - 1.3.6.1.4.1.21239.5.2.13.1.6'
+      indexes:
+      - labelname: sn2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - sn2dSensorIndex
+        labelname: sn2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.13.1.3
+        type: DisplayString
+      enum_values:
+        1: open
+        2: closed
+    - name: sn2dSensorDoor1DisplayState
+      oid: 1.3.6.1.4.1.21239.5.2.13.1.7
+      type: DisplayString
+      help: Door switch 1 state given as a string - 1.3.6.1.4.1.21239.5.2.13.1.7
+      indexes:
+      - labelname: sn2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - sn2dSensorIndex
+        labelname: sn2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.13.1.3
+        type: DisplayString
+    - name: sn2dSensorDoor2Label
+      oid: 1.3.6.1.4.1.21239.5.2.13.1.8
+      type: DisplayString
+      help: Door switch 2 label - 1.3.6.1.4.1.21239.5.2.13.1.8
+      indexes:
+      - labelname: sn2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - sn2dSensorIndex
+        labelname: sn2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.13.1.3
+        type: DisplayString
+    - name: sn2dSensorDoor2State
+      oid: 1.3.6.1.4.1.21239.5.2.13.1.9
+      type: gauge
+      help: 'Door switch 2 state: 1 = open 2 = closed - 1.3.6.1.4.1.21239.5.2.13.1.9'
+      indexes:
+      - labelname: sn2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - sn2dSensorIndex
+        labelname: sn2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.13.1.3
+        type: DisplayString
+      enum_values:
+        1: open
+        2: closed
+    - name: sn2dSensorDoor2DisplayState
+      oid: 1.3.6.1.4.1.21239.5.2.13.1.10
+      type: DisplayString
+      help: Door switch 2 state given as a string - 1.3.6.1.4.1.21239.5.2.13.1.10
+      indexes:
+      - labelname: sn2dSensorIndex
+        type: gauge
+      lookups:
+      - labels:
+        - sn2dSensorIndex
+        labelname: sn2dSensorLabel
+        oid: 1.3.6.1.4.1.21239.5.2.13.1.3
+        type: DisplayString
+    - name: vrcMainIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.1.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.1.1.1
+      indexes:
+      - labelname: vrcMainIndex
+        type: gauge
+    - name: vrcMainSerial
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.1.1.2
+      type: DisplayString
+      help: Serial number - 1.3.6.1.4.1.21239.5.2.30.1.1.1.2
+      indexes:
+      - labelname: vrcMainIndex
+        type: gauge
+    - name: vrcMainName
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.1.1.3
+      type: DisplayString
+      help: VRC name (factory-assigned) - 1.3.6.1.4.1.21239.5.2.30.1.1.1.3
+      indexes:
+      - labelname: vrcMainIndex
+        type: gauge
+    - name: vrcMainLabel
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.1.1.4
+      type: DisplayString
+      help: VRC label (user-defined) - 1.3.6.1.4.1.21239.5.2.30.1.1.1.4
+      indexes:
+      - labelname: vrcMainIndex
+        type: gauge
+    - name: vrcMainAvail
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.1.1.5
+      type: gauge
+      help: 'Device availability: 0 = Unavailable 1 = Available 2 = Partially Unavailable
+        - 1.3.6.1.4.1.21239.5.2.30.1.1.1.5'
+      indexes:
+      - labelname: vrcMainIndex
+        type: gauge
+    - name: vrcMainPtIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.2.1.1
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+    - name: vrcMainPtRunState
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.2
+      type: gauge
+      help: 'VRC run state: 1 = on 2 = off - 1.3.6.1.4.1.21239.5.2.30.1.2.1.2'
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "on"
+        2: "off"
+    - name: vrcMainPtEevOpened
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.3
+      type: gauge
+      help: Eev opened value (percent) - 1.3.6.1.4.1.21239.5.2.30.1.2.1.3
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+    - name: vrcMainPtAlarmNumbers
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.4
+      type: gauge
+      help: Alarm numbers value - 1.3.6.1.4.1.21239.5.2.30.1.2.1.4
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+    - name: vrcMainPtHistoryAlarmNumbers
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.5
+      type: gauge
+      help: History alarm numbers value - 1.3.6.1.4.1.21239.5.2.30.1.2.1.5
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+    - name: vrcMainPtHpAbnRecordCnt
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.6
+      type: gauge
+      help: Hp Abnormal record count - 1.3.6.1.4.1.21239.5.2.30.1.2.1.6
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+    - name: vrcMainPtMonitorBaudrate
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.7
+      type: gauge
+      help: 'Monitor baud rate: 1 = error 2 = 1200 3 = 2400 4 = 4800 5 = 9600 6 =
+        19200 - 1.3.6.1.4.1.21239.5.2.30.1.2.1.7'
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: error
+        2: baud1200
+        3: baud2400
+        4: baud4800
+        5: baud9600
+        6: baud19200
+    - name: vrcMainPtMonitorAddress
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.8
+      type: gauge
+      help: Monitor address - 1.3.6.1.4.1.21239.5.2.30.1.2.1.8
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+    - name: vrcMainPtLp
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.9
+      type: gauge
+      help: Lp status - 1.3.6.1.4.1.21239.5.2.30.1.2.1.9
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtFilterMaintRemind
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.10
+      type: gauge
+      help: Filter maintenance reminder status - 1.3.6.1.4.1.21239.5.2.30.1.2.1.10
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtCoolingFlag
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.11
+      type: gauge
+      help: Cooling flag - 1.3.6.1.4.1.21239.5.2.30.1.2.1.11
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtFirstOnFlag
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.12
+      type: gauge
+      help: First on flag - 1.3.6.1.4.1.21239.5.2.30.1.2.1.12
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtNewAlarmFlag
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.13
+      type: gauge
+      help: New alarm flag - 1.3.6.1.4.1.21239.5.2.30.1.2.1.13
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtComAlarmOutState
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.14
+      type: gauge
+      help: Common alarm output state - 1.3.6.1.4.1.21239.5.2.30.1.2.1.14
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtHighWaterInput
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.15
+      type: gauge
+      help: High water input - 1.3.6.1.4.1.21239.5.2.30.1.2.1.15
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtHighWaterAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.16
+      type: gauge
+      help: High water alarm status - 1.3.6.1.4.1.21239.5.2.30.1.2.1.16
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtWaterUnderFloorAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.17
+      type: gauge
+      help: Water under floor alarm status - 1.3.6.1.4.1.21239.5.2.30.1.2.1.17
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtSwShutDownStatus
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.18
+      type: gauge
+      help: Software shutdown status - 1.3.6.1.4.1.21239.5.2.30.1.2.1.18
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtRemoteShutdown
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.19
+      type: gauge
+      help: Remote shutdown status - 1.3.6.1.4.1.21239.5.2.30.1.2.1.19
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtRemoteShutDownFlag
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.20
+      type: gauge
+      help: Remote shutdown flag - 1.3.6.1.4.1.21239.5.2.30.1.2.1.20
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtRemoteShutDownAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.21
+      type: gauge
+      help: Remote shutdown alarm status - 1.3.6.1.4.1.21239.5.2.30.1.2.1.21
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtHmiShutDownFlag
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.22
+      type: gauge
+      help: Hmi shutdown flag - 1.3.6.1.4.1.21239.5.2.30.1.2.1.22
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtLpAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.23
+      type: gauge
+      help: Low pressure alarm status - 1.3.6.1.4.1.21239.5.2.30.1.2.1.23
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtHpAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.24
+      type: gauge
+      help: High pressure alarm status - 1.3.6.1.4.1.21239.5.2.30.1.2.1.24
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtLpFreqAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.25
+      type: gauge
+      help: Low pressure frequently alarm status - 1.3.6.1.4.1.21239.5.2.30.1.2.1.25
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtHpFreqAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.26
+      type: gauge
+      help: High pressure frequently alarm status - 1.3.6.1.4.1.21239.5.2.30.1.2.1.26
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtLpSensorFailAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.27
+      type: gauge
+      help: Low pressure sensor failure alarm status - 1.3.6.1.4.1.21239.5.2.30.1.2.1.27
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtHpSensorFailAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.28
+      type: gauge
+      help: High pressure sensor failure alarm status - 1.3.6.1.4.1.21239.5.2.30.1.2.1.28
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainPtEevCommFailAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.2.1.29
+      type: gauge
+      help: Eev communication failure alarm status - 1.3.6.1.4.1.21239.5.2.30.1.2.1.29
+      indexes:
+      - labelname: vrcMainPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainCfgIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.3.1.1
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+    - name: vrcMainCfgModelSelect
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.2
+      type: gauge
+      help: 'Model Selection: 1 = TMM-Local 220V 50/60HZ 2 = TMM-Global 208/230V 50/60HZ
+        3 = TMM-Global 120V 50/60HZ 4 = SC 220V 50/60HZ 5 = 0U 220V 50/60HZ 6 = SS
+        208/230V 50/60HZ 7 = SS 120V 50/60HZ - 1.3.6.1.4.1.21239.5.2.30.1.3.1.2'
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        1: tmLoc
+        2: r035Ap
+        3: r035Ak
+        4: scLoc
+        5: zeroULoc
+        6: r035Ep
+        7: r035Ek
+    - name: vrcMainCfgSystemTimeYear
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.3
+      type: gauge
+      help: System time - year - 1.3.6.1.4.1.21239.5.2.30.1.3.1.3
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+    - name: vrcMainCfgSystemTimeMonth
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.4
+      type: gauge
+      help: System time - month - 1.3.6.1.4.1.21239.5.2.30.1.3.1.4
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+    - name: vrcMainCfgSystemTimeDay
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.5
+      type: gauge
+      help: System time - day - 1.3.6.1.4.1.21239.5.2.30.1.3.1.5
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+    - name: vrcMainCfgSystemTimeHour
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.6
+      type: gauge
+      help: System time - hour - 1.3.6.1.4.1.21239.5.2.30.1.3.1.6
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+    - name: vrcMainCfgSystemTimeMin
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.7
+      type: gauge
+      help: System time - minutes - 1.3.6.1.4.1.21239.5.2.30.1.3.1.7
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+    - name: vrcMainCfgSystemTimeSec
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.8
+      type: gauge
+      help: System time - seconds - 1.3.6.1.4.1.21239.5.2.30.1.3.1.8
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+    - name: vrcMainCfgEevShtSettingMin
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.9
+      type: gauge
+      help: Min Eev sht in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.3.1.9
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcMainCfgEevShtSettingMax
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.10
+      type: gauge
+      help: Max Eev sht in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.3.1.10
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcMainCfgEevValveCloseSht
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.11
+      type: gauge
+      help: Eev valve close sht in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.3.1.11
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcMainCfgEevMopPressSetting
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.12
+      type: gauge
+      help: Eev mop pressure setting in tenths of a bar. - 1.3.6.1.4.1.21239.5.2.30.1.3.1.12
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcMainCfgLpdt
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.13
+      type: gauge
+      help: Low pressure dt in seconds - 1.3.6.1.4.1.21239.5.2.30.1.3.1.13
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+    - name: vrcMainCfgDeadBand
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.14
+      type: gauge
+      help: Dead band in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.3.1.14
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcMainCfgOnOffSwitch
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.15
+      type: gauge
+      help: On-off switch - 1.3.6.1.4.1.21239.5.2.30.1.3.1.15
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainCfgVacuumState
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.16
+      type: gauge
+      help: Vacuum state - 1.3.6.1.4.1.21239.5.2.30.1.3.1.16
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainCfgControlMode
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.17
+      type: gauge
+      help: 'Control mode: 1 = supply 2 = return - 1.3.6.1.4.1.21239.5.2.30.1.3.1.17'
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        1: supply
+        2: return
+    - name: vrcMainCfgManualRunEnable
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.18
+      type: gauge
+      help: Manual run enable - 1.3.6.1.4.1.21239.5.2.30.1.3.1.18
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainCfgRemShutdownInput
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.19
+      type: gauge
+      help: Remote shutdown input - 1.3.6.1.4.1.21239.5.2.30.1.3.1.19
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainCfgMonitorShutDownFlag
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.20
+      type: gauge
+      help: Monitor shutdown flag - 1.3.6.1.4.1.21239.5.2.30.1.3.1.20
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainCfgFirstOnPassword
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.21
+      type: gauge
+      help: First on password value - 1.3.6.1.4.1.21239.5.2.30.1.3.1.21
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+    - name: vrcMainCfgFilterMaintSetting
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.22
+      type: gauge
+      help: Filter maintenance setting - 1.3.6.1.4.1.21239.5.2.30.1.3.1.22
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainCfgFilterMaintRemindTime
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.23
+      type: gauge
+      help: Time between filter maintenance reminders in days - 1.3.6.1.4.1.21239.5.2.30.1.3.1.23
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+    - name: vrcMainCfgFilterMaintRemindCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.24
+      type: gauge
+      help: 'Filter maintenance reminder: 1 = close 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.3.1.24'
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        1: close
+        2: suspend
+        3: open
+    - name: vrcMainCfgCommonAlarmOutputDir
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.25
+      type: gauge
+      help: Common alarm output direction - 1.3.6.1.4.1.21239.5.2.30.1.3.1.25
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcMainCfgHpAbnAlarmSetting
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.26
+      type: gauge
+      help: Abnormal high pressure alarm value in tenths of a bar - 1.3.6.1.4.1.21239.5.2.30.1.3.1.26
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+    - name: vrcMainCfgLpAlarmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.27
+      type: gauge
+      help: 'Low pressure alarm control: 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.3.1.27'
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+    - name: vrcMainCfgHpAlarmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.28
+      type: gauge
+      help: 'High pressure alarm control: 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.3.1.28'
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+    - name: vrcMainCfgLpFreqAlarmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.29
+      type: gauge
+      help: 'Low pressure frequently alarm control: 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.3.1.29'
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+    - name: vrcMainCfgHpFreqAlarmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.30
+      type: gauge
+      help: 'High pressure frequently alarm control: 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.3.1.30'
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+    - name: vrcMainCfgLpSensorFailAlarmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.31
+      type: gauge
+      help: 'Low pressure sensor failure alarm control: 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.3.1.31'
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+    - name: vrcMainCfgHpSensorFailAlarmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.32
+      type: gauge
+      help: 'High pressure sensor failure alarm control: 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.3.1.32'
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+    - name: vrcMainCfgHighWaterAlarmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.33
+      type: gauge
+      help: 'High water alarm control: 1 = close 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.3.1.33'
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        1: close
+        2: suspend
+        3: open
+    - name: vrcMainCfgRemShutdownAlarmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.34
+      type: gauge
+      help: 'Remote shutdown alarm control: 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.3.1.34'
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+    - name: vrcMainCfgEevCommFailAlarmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.3.1.35
+      type: gauge
+      help: 'Eev communication failure alarm: 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.3.1.35'
+      indexes:
+      - labelname: vrcMainCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+    - name: vrcOutFanPtIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.4.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.4.1.1
+      indexes:
+      - labelname: vrcOutFanPtIndex
+        type: gauge
+    - name: vrcOutFanPtName
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.4.1.2
+      type: DisplayString
+      help: Out-fan name (factory-assigned) - 1.3.6.1.4.1.21239.5.2.30.1.4.1.2
+      indexes:
+      - labelname: vrcOutFanPtIndex
+        type: gauge
+    - name: vrcOutFanPtSpeed
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.4.1.3
+      type: gauge
+      help: Fan speed (percent) - 1.3.6.1.4.1.21239.5.2.30.1.4.1.3
+      indexes:
+      - labelname: vrcOutFanPtIndex
+        type: gauge
+    - name: vrcOutFanCfgIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.5.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.5.1.1
+      indexes:
+      - labelname: vrcOutFanCfgIndex
+        type: gauge
+    - name: vrcOutFanCfgStartPress
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.5.1.2
+      type: gauge
+      help: Out-fan start pressure in tenths of a bar - 1.3.6.1.4.1.21239.5.2.30.1.5.1.2
+      indexes:
+      - labelname: vrcOutFanCfgIndex
+        type: gauge
+    - name: vrcOutFanCfgPressSetting
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.5.1.3
+      type: gauge
+      help: Out-fan pressure setting in tenths of a bar - 1.3.6.1.4.1.21239.5.2.30.1.5.1.3
+      indexes:
+      - labelname: vrcOutFanCfgIndex
+        type: gauge
+    - name: vrcOutFanCfgMinPowerVoltage
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.5.1.4
+      type: gauge
+      help: Min out-fan voltage (percent) - 1.3.6.1.4.1.21239.5.2.30.1.5.1.4
+      indexes:
+      - labelname: vrcOutFanCfgIndex
+        type: gauge
+    - name: vrcOutFanCfgMaxPowerVoltage
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.5.1.5
+      type: gauge
+      help: Max out-fan voltage (percent) - 1.3.6.1.4.1.21239.5.2.30.1.5.1.5
+      indexes:
+      - labelname: vrcOutFanCfgIndex
+        type: gauge
+    - name: vrcOutFanCfgSpeed
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.5.1.6
+      type: gauge
+      help: Out-fan speed (percent) - 1.3.6.1.4.1.21239.5.2.30.1.5.1.6
+      indexes:
+      - labelname: vrcOutFanCfgIndex
+        type: gauge
+    - name: vrcInFanPtIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.6.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.6.1.1
+      indexes:
+      - labelname: vrcInFanPtIndex
+        type: gauge
+    - name: vrcInFanPtName
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.6.1.2
+      type: DisplayString
+      help: In-fan name (factory-assigned) - 1.3.6.1.4.1.21239.5.2.30.1.6.1.2
+      indexes:
+      - labelname: vrcInFanPtIndex
+        type: gauge
+    - name: vrcInFanPtRunTimeHours
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.6.1.3
+      type: gauge
+      help: In-fan run time in hours - 1.3.6.1.4.1.21239.5.2.30.1.6.1.3
+      indexes:
+      - labelname: vrcInFanPtIndex
+        type: gauge
+    - name: vrcInFanPtStartStopCount
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.6.1.4
+      type: gauge
+      help: In-fan start/stop count - 1.3.6.1.4.1.21239.5.2.30.1.6.1.4
+      indexes:
+      - labelname: vrcInFanPtIndex
+        type: gauge
+    - name: vrcInFanCfgIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.7.1.1
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgOutputStatus
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.2
+      type: gauge
+      help: In-fan output status - 1.3.6.1.4.1.21239.5.2.30.1.7.1.2
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcInFanCfgLowSpeedStep
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.3
+      type: gauge
+      help: In-fan low speed step in tenths of a percent per second - 1.3.6.1.4.1.21239.5.2.30.1.7.1.3
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgHighSpeedStep
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.4
+      type: gauge
+      help: In-fan high speed step in tenths of a percent per second - 1.3.6.1.4.1.21239.5.2.30.1.7.1.4
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgMinSpeed
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.5
+      type: gauge
+      help: Min in-fan speed (percent) - 1.3.6.1.4.1.21239.5.2.30.1.7.1.5
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgStandardSpeed
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.6
+      type: gauge
+      help: Standard in-fan speed (percent) - 1.3.6.1.4.1.21239.5.2.30.1.7.1.6
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgMinCfc
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.7
+      type: gauge
+      help: Min in-fan cfc (percent) - 1.3.6.1.4.1.21239.5.2.30.1.7.1.7
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgStandardCfc
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.8
+      type: gauge
+      help: Standard in-fan cfc (percent) - 1.3.6.1.4.1.21239.5.2.30.1.7.1.8
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgStartDelay
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.9
+      type: gauge
+      help: In-fan start delay in seconds - 1.3.6.1.4.1.21239.5.2.30.1.7.1.9
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgStopDelay
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.10
+      type: gauge
+      help: In-fan stop delay in seconds - 1.3.6.1.4.1.21239.5.2.30.1.7.1.10
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgReduceSpeedDelay
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.11
+      type: gauge
+      help: In-fan reduce speed delay in seconds - 1.3.6.1.4.1.21239.5.2.30.1.7.1.11
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgJumpBand1
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.12
+      type: gauge
+      help: In-fan jump band 1 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.7.1.12
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgJumpBand2
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.13
+      type: gauge
+      help: In-fan jump band 2 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.7.1.13
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgJumpBand3
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.14
+      type: gauge
+      help: In-fan jump band 3 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.7.1.14
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgJumpBand4
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.15
+      type: gauge
+      help: In-fan jump band 4 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.7.1.15
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgJumpBand5
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.16
+      type: gauge
+      help: In-fan jump band 5 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.7.1.16
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgJumpFreq1
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.17
+      type: gauge
+      help: In-fan jump frequency 1 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.7.1.17
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgJumpFreq2
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.18
+      type: gauge
+      help: In-fan jump frequency 2 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.7.1.18
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgJumpFreq3
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.19
+      type: gauge
+      help: In-fan jump frequency 3 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.7.1.19
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgJumpFreq4
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.20
+      type: gauge
+      help: In-fan jump frequency 4 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.7.1.20
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgJumpFreq5
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.21
+      type: gauge
+      help: In-fan jump frequency 5 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.7.1.21
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgTempP
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.22
+      type: gauge
+      help: In-fan temperature P in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.7.1.22
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcInFanCfgTempI
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.23
+      type: gauge
+      help: In-fan temperature I in seconds - 1.3.6.1.4.1.21239.5.2.30.1.7.1.23
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcInFanCfgTempD
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.7.1.24
+      type: gauge
+      help: In-fan temperature D in seconds - 1.3.6.1.4.1.21239.5.2.30.1.7.1.24
+      indexes:
+      - labelname: vrcInFanCfgIndex
+        type: gauge
+    - name: vrcCompPtIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.8.1.1
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+    - name: vrcCompPtName
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.2
+      type: DisplayString
+      help: Compressor name (factory-assigned) - 1.3.6.1.4.1.21239.5.2.30.1.8.1.2
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+    - name: vrcCompPtCapacity
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.3
+      type: gauge
+      help: Compressor capacity value (percent) - 1.3.6.1.4.1.21239.5.2.30.1.8.1.3
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+    - name: vrcCompPtRunTimeHours
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.4
+      type: gauge
+      help: Compressor run time in hours - 1.3.6.1.4.1.21239.5.2.30.1.8.1.4
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+    - name: vrcCompPtStartStopCount
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.5
+      type: gauge
+      help: Compressor start/stop count - 1.3.6.1.4.1.21239.5.2.30.1.8.1.5
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+    - name: vrcCompPtDriverFaultU00
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.6
+      type: gauge
+      help: Compressor driver fault alarm U00 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.6
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU01
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.7
+      type: gauge
+      help: Compressor driver fault alarm U01 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.7
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU02
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.8
+      type: gauge
+      help: Compressor driver fault alarm U02 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.8
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU03
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.9
+      type: gauge
+      help: Compressor driver fault alarm U03 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.9
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU04
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.10
+      type: gauge
+      help: Compressor driver fault alarm U04 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.10
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU05
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.11
+      type: gauge
+      help: Compressor driver fault alarm U05 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.11
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU06
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.12
+      type: gauge
+      help: Compressor driver fault alarm U06 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.12
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU07
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.13
+      type: gauge
+      help: Compressor driver fault alarm U07 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.13
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU08
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.14
+      type: gauge
+      help: Compressor driver fault alarm U08 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.14
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU09
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.15
+      type: gauge
+      help: Compressor driver fault alarm U09 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.15
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU10
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.16
+      type: gauge
+      help: Compressor driver fault alarm U10 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.16
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU11
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.17
+      type: gauge
+      help: Compressor driver fault alarm U11 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.17
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU12
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.18
+      type: gauge
+      help: Compressor driver fault alarm U12 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.18
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU13
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.19
+      type: gauge
+      help: Compressor driver fault alarm U13 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.19
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU14
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.20
+      type: gauge
+      help: Compressor driver fault alarm U14 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.20
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverFaultU15
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.21
+      type: gauge
+      help: Compressor driver fault alarm U15 state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.21
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtDriverCommFailAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.22
+      type: gauge
+      help: Compressor driver communication failure alarm state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.22
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompPtFaultLockAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.8.1.23
+      type: gauge
+      help: Compressor fault lock alarm state - 1.3.6.1.4.1.21239.5.2.30.1.8.1.23
+      indexes:
+      - labelname: vrcCompPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompCfgIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.9.1.1
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgOutputStatus
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.2
+      type: gauge
+      help: Compressor output status - 1.3.6.1.4.1.21239.5.2.30.1.9.1.2
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcCompCfgOutputDeadBand
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.3
+      type: gauge
+      help: Compressor output dead band in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.9.1.3
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgCapacityOutputValue
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.4
+      type: gauge
+      help: Compressor capacity output (percent) - 1.3.6.1.4.1.21239.5.2.30.1.9.1.4
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgMinCapacity
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.5
+      type: gauge
+      help: Compressor min capacity (percent) - 1.3.6.1.4.1.21239.5.2.30.1.9.1.5
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgStartCapacity
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.6
+      type: gauge
+      help: Compressor start capacity (percent) - 1.3.6.1.4.1.21239.5.2.30.1.9.1.6
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgStandardCapacity
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.7
+      type: gauge
+      help: Compressor standard capacity (percent) - 1.3.6.1.4.1.21239.5.2.30.1.9.1.7
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgStartCfc
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.8
+      type: gauge
+      help: Compressor start cfc (percent) - 1.3.6.1.4.1.21239.5.2.30.1.9.1.8
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgStopCfc
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.9
+      type: gauge
+      help: Compressor stop cfc (percent) - 1.3.6.1.4.1.21239.5.2.30.1.9.1.9
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgMinRunTime
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.10
+      type: gauge
+      help: Compressor min run time in minutes - 1.3.6.1.4.1.21239.5.2.30.1.9.1.10
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgMinStopTime
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.11
+      type: gauge
+      help: Compressor min stop time in minutes - 1.3.6.1.4.1.21239.5.2.30.1.9.1.11
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgJumpBand1
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.12
+      type: gauge
+      help: Compressor jump band 1 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.9.1.12
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgJumpBand2
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.13
+      type: gauge
+      help: Compressor jump band 2 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.9.1.13
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgJumpBand3
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.14
+      type: gauge
+      help: Compressor jump band 3 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.9.1.14
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgJumpBand4
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.15
+      type: gauge
+      help: Compressor jump band 4 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.9.1.15
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgJumpBand5
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.16
+      type: gauge
+      help: Compressor jump band 5 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.9.1.16
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgJumpFreq1
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.17
+      type: gauge
+      help: Compressor jump frequency 1 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.9.1.17
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgJumpFreq2
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.18
+      type: gauge
+      help: Compressor jump frequency 2 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.9.1.18
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgJumpFreq3
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.19
+      type: gauge
+      help: Compressor jump frequency 3 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.9.1.19
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgJumpFreq4
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.20
+      type: gauge
+      help: Compressor jump frequency 4 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.9.1.20
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgJumpFreq5
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.21
+      type: gauge
+      help: Compressor jump frequency 5 in tenths of a percent - 1.3.6.1.4.1.21239.5.2.30.1.9.1.21
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgTempP
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.22
+      type: gauge
+      help: Compressor temperature P in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.9.1.22
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcCompCfgTempI
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.23
+      type: gauge
+      help: Compressor temperature I in seconds - 1.3.6.1.4.1.21239.5.2.30.1.9.1.23
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgTempD
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.24
+      type: gauge
+      help: Compressor temperature D in seconds - 1.3.6.1.4.1.21239.5.2.30.1.9.1.24
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+    - name: vrcCompCfgDriverFaultAlmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.25
+      type: gauge
+      help: 'Compressor driver fault alarm control: 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.9.1.25'
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+    - name: vrcCompCfgDriverCommFailAlmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.26
+      type: gauge
+      help: 'Compressor driver communication failure alarm control: 2 = suspend 3
+        = open - 1.3.6.1.4.1.21239.5.2.30.1.9.1.26'
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+    - name: vrcCompCfgFaultLockAlmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.9.1.27
+      type: gauge
+      help: 'Compressor fault lock alarm control: 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.9.1.27'
+      indexes:
+      - labelname: vrcCompCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+    - name: vrcReturnPtIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.10.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.10.1.1
+      indexes:
+      - labelname: vrcReturnPtIndex
+        type: gauge
+    - name: vrcReturnPtName
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.10.1.2
+      type: DisplayString
+      help: Return name (factory-assigned) - 1.3.6.1.4.1.21239.5.2.30.1.10.1.2
+      indexes:
+      - labelname: vrcReturnPtIndex
+        type: gauge
+    - name: vrcReturnPtTemp
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.10.1.3
+      type: gauge
+      help: Return temperature value in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.10.1.3
+      indexes:
+      - labelname: vrcReturnPtIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcReturnPtHighTempAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.10.1.4
+      type: gauge
+      help: Return high temperature alarm state - 1.3.6.1.4.1.21239.5.2.30.1.10.1.4
+      indexes:
+      - labelname: vrcReturnPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcReturnPtTempSensorFailAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.10.1.5
+      type: gauge
+      help: Return temperature sensor failure alarm state - 1.3.6.1.4.1.21239.5.2.30.1.10.1.5
+      indexes:
+      - labelname: vrcReturnPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcReturnCfgIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.11.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.11.1.1
+      indexes:
+      - labelname: vrcReturnCfgIndex
+        type: gauge
+    - name: vrcReturnCfgOilCycle
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.11.1.2
+      type: gauge
+      help: Return oil cycle in tenths of an hour - 1.3.6.1.4.1.21239.5.2.30.1.11.1.2
+      indexes:
+      - labelname: vrcReturnCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcReturnCfgOilRunCapacity
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.11.1.3
+      type: gauge
+      help: Return Oil run capacity (percent) - 1.3.6.1.4.1.21239.5.2.30.1.11.1.3
+      indexes:
+      - labelname: vrcReturnCfgIndex
+        type: gauge
+    - name: vrcReturnCfgOilRunTime
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.11.1.4
+      type: gauge
+      help: Return oil run time in minutes - 1.3.6.1.4.1.21239.5.2.30.1.11.1.4
+      indexes:
+      - labelname: vrcReturnCfgIndex
+        type: gauge
+    - name: vrcReturnCfgTempCalValue
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.11.1.5
+      type: gauge
+      help: Return temperature calibration value in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.11.1.5
+      indexes:
+      - labelname: vrcReturnCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcReturnCfgTempSetting
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.11.1.6
+      type: gauge
+      help: Return temperature setting in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.11.1.6
+      indexes:
+      - labelname: vrcReturnCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcReturnCfgHighTempAlarmValue
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.11.1.7
+      type: gauge
+      help: Return high temperature alarm value in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.11.1.7
+      indexes:
+      - labelname: vrcReturnCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcReturnCfgHighTempAlarmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.11.1.8
+      type: gauge
+      help: 'Return high temperature alarm control: 1 = close 2 = suspend 3 = open
+        - 1.3.6.1.4.1.21239.5.2.30.1.11.1.8'
+      indexes:
+      - labelname: vrcReturnCfgIndex
+        type: gauge
+      enum_values:
+        1: close
+        2: suspend
+        3: open
+    - name: vrcReturnCfgTempSensFailAlmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.11.1.9
+      type: gauge
+      help: 'Return temperature sensor failure alarm control: 1 = close 2 = suspend
+        3 = open - 1.3.6.1.4.1.21239.5.2.30.1.11.1.9'
+      indexes:
+      - labelname: vrcReturnCfgIndex
+        type: gauge
+      enum_values:
+        1: close
+        2: suspend
+        3: open
+    - name: vrcSupplyPtIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.12.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.12.1.1
+      indexes:
+      - labelname: vrcSupplyPtIndex
+        type: gauge
+    - name: vrcSupplyPtName
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.12.1.2
+      type: DisplayString
+      help: Supply name (factory-assigned) - 1.3.6.1.4.1.21239.5.2.30.1.12.1.2
+      indexes:
+      - labelname: vrcSupplyPtIndex
+        type: gauge
+    - name: vrcSupplyPtTemp
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.12.1.3
+      type: gauge
+      help: Supply temperature value in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.12.1.3
+      indexes:
+      - labelname: vrcSupplyPtIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcSupplyPtLowTempAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.12.1.4
+      type: gauge
+      help: Supply low temperature alarm state - 1.3.6.1.4.1.21239.5.2.30.1.12.1.4
+      indexes:
+      - labelname: vrcSupplyPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcSupplyPtHighTempAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.12.1.5
+      type: gauge
+      help: Supply high temperature alarm state - 1.3.6.1.4.1.21239.5.2.30.1.12.1.5
+      indexes:
+      - labelname: vrcSupplyPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcSupplyPtTempSensorFailAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.12.1.6
+      type: gauge
+      help: Supply temperature sensor failure alarm state - 1.3.6.1.4.1.21239.5.2.30.1.12.1.6
+      indexes:
+      - labelname: vrcSupplyPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcSupplyCfgIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.13.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.13.1.1
+      indexes:
+      - labelname: vrcSupplyCfgIndex
+        type: gauge
+    - name: vrcSupplyCfgTempCalValue
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.13.1.2
+      type: gauge
+      help: Supply temperature calibration value in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.13.1.2
+      indexes:
+      - labelname: vrcSupplyCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcSupplyCfgTempSetting
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.13.1.3
+      type: gauge
+      help: Supply temperature setting in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.13.1.3
+      indexes:
+      - labelname: vrcSupplyCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcSupplyCfgLowTempAlarmValue
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.13.1.4
+      type: gauge
+      help: Supply low temperature alarm value in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.13.1.4
+      indexes:
+      - labelname: vrcSupplyCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcSupplyCfgHighTempAlarmValue
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.13.1.5
+      type: gauge
+      help: Supply high temperature alarm value in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.13.1.5
+      indexes:
+      - labelname: vrcSupplyCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcSupplyCfgLowTempAlmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.13.1.6
+      type: gauge
+      help: 'Supply low temperature alarm control: 1 = close 2 = suspend 3 = open
+        - 1.3.6.1.4.1.21239.5.2.30.1.13.1.6'
+      indexes:
+      - labelname: vrcSupplyCfgIndex
+        type: gauge
+      enum_values:
+        1: close
+        2: suspend
+        3: open
+    - name: vrcSupplyCfgHighTempAlmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.13.1.7
+      type: gauge
+      help: 'Supply high temperature alarm control: 1 = close 2 = suspend 3 = open
+        - 1.3.6.1.4.1.21239.5.2.30.1.13.1.7'
+      indexes:
+      - labelname: vrcSupplyCfgIndex
+        type: gauge
+      enum_values:
+        1: close
+        2: suspend
+        3: open
+    - name: vrcSupplyCfgTempSensFailAlmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.13.1.8
+      type: gauge
+      help: 'Supply temperature sensor failure alarm control: 1 = close 2 = suspend
+        3 = open - 1.3.6.1.4.1.21239.5.2.30.1.13.1.8'
+      indexes:
+      - labelname: vrcSupplyCfgIndex
+        type: gauge
+      enum_values:
+        1: close
+        2: suspend
+        3: open
+    - name: vrcPowerPtIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.14.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.14.1.1
+      indexes:
+      - labelname: vrcPowerPtIndex
+        type: gauge
+    - name: vrcPowerPtName
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.14.1.2
+      type: DisplayString
+      help: Power name (factory-assigned) - 1.3.6.1.4.1.21239.5.2.30.1.14.1.2
+      indexes:
+      - labelname: vrcPowerPtIndex
+        type: gauge
+    - name: vrcPowerPtVoltage
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.14.1.3
+      type: gauge
+      help: Power voltage measurement in tenths of a volt - 1.3.6.1.4.1.21239.5.2.30.1.14.1.3
+      indexes:
+      - labelname: vrcPowerPtIndex
+        type: gauge
+    - name: vrcPowerPtFrequency
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.14.1.4
+      type: gauge
+      help: Power frequency measurement in tenths of hertz - 1.3.6.1.4.1.21239.5.2.30.1.14.1.4
+      indexes:
+      - labelname: vrcPowerPtIndex
+        type: gauge
+    - name: vrcPowerPtLowVoltageAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.14.1.5
+      type: gauge
+      help: Power low voltage alarm state - 1.3.6.1.4.1.21239.5.2.30.1.14.1.5
+      indexes:
+      - labelname: vrcPowerPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcPowerPtHighVoltageAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.14.1.6
+      type: gauge
+      help: Power high voltage alarm state - 1.3.6.1.4.1.21239.5.2.30.1.14.1.6
+      indexes:
+      - labelname: vrcPowerPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcPowerPtLossOfPhasePowerAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.14.1.7
+      type: gauge
+      help: Phase power loss alarm state - 1.3.6.1.4.1.21239.5.2.30.1.14.1.7
+      indexes:
+      - labelname: vrcPowerPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcPowerPtLossOfPowerAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.14.1.8
+      type: gauge
+      help: Power loss alarm state - 1.3.6.1.4.1.21239.5.2.30.1.14.1.8
+      indexes:
+      - labelname: vrcPowerPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcPowerPtFrequencyErrorAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.14.1.9
+      type: gauge
+      help: Power frequency error alarm state - 1.3.6.1.4.1.21239.5.2.30.1.14.1.9
+      indexes:
+      - labelname: vrcPowerPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcPowerCfgIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.15.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.15.1.1
+      indexes:
+      - labelname: vrcPowerCfgIndex
+        type: gauge
+    - name: vrcPowerCfgLowVoltageSetting
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.15.1.2
+      type: gauge
+      help: Power low voltage setting in volts - 1.3.6.1.4.1.21239.5.2.30.1.15.1.2
+      indexes:
+      - labelname: vrcPowerCfgIndex
+        type: gauge
+    - name: vrcPowerCfgHighVoltageSetting
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.15.1.3
+      type: gauge
+      help: Power high voltage setting in volts - 1.3.6.1.4.1.21239.5.2.30.1.15.1.3
+      indexes:
+      - labelname: vrcPowerCfgIndex
+        type: gauge
+    - name: vrcPowerCfgLowVoltageAlarmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.15.1.4
+      type: gauge
+      help: 'Power low voltage alarm control: 1 = close 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.15.1.4'
+      indexes:
+      - labelname: vrcPowerCfgIndex
+        type: gauge
+      enum_values:
+        1: close
+        2: suspend
+        3: open
+    - name: vrcPowerCfgHighVoltageAlarmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.15.1.5
+      type: gauge
+      help: 'Power high voltage alarm control: 1 = close 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.15.1.5'
+      indexes:
+      - labelname: vrcPowerCfgIndex
+        type: gauge
+      enum_values:
+        1: close
+        2: suspend
+        3: open
+    - name: vrcPowerCfgLossOfPowerAlarmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.15.1.6
+      type: gauge
+      help: 'Power loss alarm control: 1 = close 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.15.1.6'
+      indexes:
+      - labelname: vrcPowerCfgIndex
+        type: gauge
+      enum_values:
+        1: close
+        2: suspend
+        3: open
+    - name: vrcPowerCfgFreqErrorAlarmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.15.1.7
+      type: gauge
+      help: 'Power frequency error alarm control: 1 = close 2 = suspend 3 = open -
+        1.3.6.1.4.1.21239.5.2.30.1.15.1.7'
+      indexes:
+      - labelname: vrcPowerCfgIndex
+        type: gauge
+      enum_values:
+        1: close
+        2: suspend
+        3: open
+    - name: vrcOutdoorPtIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.16.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.16.1.1
+      indexes:
+      - labelname: vrcOutdoorPtIndex
+        type: gauge
+    - name: vrcOutdoorPtName
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.16.1.2
+      type: DisplayString
+      help: Outdoor name (factory-assigned) - 1.3.6.1.4.1.21239.5.2.30.1.16.1.2
+      indexes:
+      - labelname: vrcOutdoorPtIndex
+        type: gauge
+    - name: vrcOutdoorPtTemp
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.16.1.3
+      type: gauge
+      help: Outdoor temperature value in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.16.1.3
+      indexes:
+      - labelname: vrcOutdoorPtIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcDischPtIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.18.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.18.1.1
+      indexes:
+      - labelname: vrcDischPtIndex
+        type: gauge
+    - name: vrcDischPtName
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.18.1.2
+      type: DisplayString
+      help: Discharge name (factory-assigned) - 1.3.6.1.4.1.21239.5.2.30.1.18.1.2
+      indexes:
+      - labelname: vrcDischPtIndex
+        type: gauge
+    - name: vrcDischPtTemp
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.18.1.3
+      type: gauge
+      help: Discharge temperature value in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.18.1.3
+      indexes:
+      - labelname: vrcDischPtIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcDischPtPressure
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.18.1.4
+      type: gauge
+      help: Discharge air pressure value in tenths of a bar - 1.3.6.1.4.1.21239.5.2.30.1.18.1.4
+      indexes:
+      - labelname: vrcDischPtIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcDischPtHighTempAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.18.1.5
+      type: gauge
+      help: Discharge high temperature alarm state - 1.3.6.1.4.1.21239.5.2.30.1.18.1.5
+      indexes:
+      - labelname: vrcDischPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcDischPtHighTempFreqAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.18.1.6
+      type: gauge
+      help: Discharge high temperature frequently alarm state - 1.3.6.1.4.1.21239.5.2.30.1.18.1.6
+      indexes:
+      - labelname: vrcDischPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcDischPtTempSensorFailAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.18.1.7
+      type: gauge
+      help: Discharge temperature sensor failure alarm state - 1.3.6.1.4.1.21239.5.2.30.1.18.1.7
+      indexes:
+      - labelname: vrcDischPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcDischCfgIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.19.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.19.1.1
+      indexes:
+      - labelname: vrcDischCfgIndex
+        type: gauge
+    - name: vrcDischCfgTempCalValue
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.19.1.2
+      type: gauge
+      help: Discharge temperature calibration value in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.19.1.2
+      indexes:
+      - labelname: vrcDischCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcDischCfgPressCalValue
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.19.1.3
+      type: gauge
+      help: Discharge pressure calibration value in tenths of a bar - 1.3.6.1.4.1.21239.5.2.30.1.19.1.3
+      indexes:
+      - labelname: vrcDischCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcDischCfgHighTempAlmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.19.1.4
+      type: gauge
+      help: 'Discharge high temperature alarm control: 2 = suspend 3 = open - 1.3.6.1.4.1.21239.5.2.30.1.19.1.4'
+      indexes:
+      - labelname: vrcDischCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+    - name: vrcDischCfgHighTempFreqAlmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.19.1.5
+      type: gauge
+      help: 'Discharge high temperature frequenctly alarm control: 2 = suspend 3 =
+        open - 1.3.6.1.4.1.21239.5.2.30.1.19.1.5'
+      indexes:
+      - labelname: vrcDischCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+    - name: vrcDischCfgTempSensFailAlmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.19.1.6
+      type: gauge
+      help: 'Discharge temperature sensor failure alarm control: 2 = suspend 3 = open
+        - 1.3.6.1.4.1.21239.5.2.30.1.19.1.6'
+      indexes:
+      - labelname: vrcDischCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+    - name: vrcSuctPtIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.20.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.20.1.1
+      indexes:
+      - labelname: vrcSuctPtIndex
+        type: gauge
+    - name: vrcSuctPtName
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.20.1.2
+      type: DisplayString
+      help: Suction name (factory-assigned) - 1.3.6.1.4.1.21239.5.2.30.1.20.1.2
+      indexes:
+      - labelname: vrcSuctPtIndex
+        type: gauge
+    - name: vrcSuctPtTemp
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.20.1.3
+      type: gauge
+      help: Suction temperature in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.20.1.3
+      indexes:
+      - labelname: vrcSuctPtIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcSuctPtPressure
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.20.1.4
+      type: gauge
+      help: Suction air pressure in tenths of a bar - 1.3.6.1.4.1.21239.5.2.30.1.20.1.4
+      indexes:
+      - labelname: vrcSuctPtIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcSuctPtSuperHeatTemp
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.20.1.5
+      type: gauge
+      help: Suction super heat temperature in tenths of a degree - 1.3.6.1.4.1.21239.5.2.30.1.20.1.5
+      indexes:
+      - labelname: vrcSuctPtIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcSuctPtTempSensorFailAlarm
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.20.1.6
+      type: gauge
+      help: Suction temperature sensor failure alarm state - 1.3.6.1.4.1.21239.5.2.30.1.20.1.6
+      indexes:
+      - labelname: vrcSuctPtIndex
+        type: gauge
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: vrcSuctCfgIndex
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.21.1.1
+      type: gauge
+      help: Unique id for each entry in the table - 1.3.6.1.4.1.21239.5.2.30.1.21.1.1
+      indexes:
+      - labelname: vrcSuctCfgIndex
+        type: gauge
+    - name: vrcSuctCfgPressCalValue
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.21.1.2
+      type: gauge
+      help: Suction pressure calibration value in tenths of a bar - 1.3.6.1.4.1.21239.5.2.30.1.21.1.2
+      indexes:
+      - labelname: vrcSuctCfgIndex
+        type: gauge
+      scale: 0.1
+    - name: vrcSuctCfgTempSensFailAlmCtrl
+      oid: 1.3.6.1.4.1.21239.5.2.30.1.21.1.3
+      type: gauge
+      help: 'Suction temperature sensor failure alarm control: 2 = suspend 3 = open
+        - 1.3.6.1.4.1.21239.5.2.30.1.21.1.3'
+      indexes:
+      - labelname: vrcSuctCfgIndex
+        type: gauge
+      enum_values:
+        2: suspend
+        3: open
+  if_mib:
+    walk:
+    - 1.3.6.1.2.1.2
+    - 1.3.6.1.2.1.31.1.1
+    metrics:
+    - name: ifNumber
+      oid: 1.3.6.1.2.1.2.1
+      type: gauge
+      help: The number of network interfaces (regardless of their current state) present
+        on this system. - 1.3.6.1.2.1.2.1
+    - name: ifIndex
+      oid: 1.3.6.1.2.1.2.2.1.1
+      type: gauge
+      help: A unique value, greater than zero, for each interface - 1.3.6.1.2.1.2.2.1.1
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifType
+      oid: 1.3.6.1.2.1.2.2.1.3
+      type: EnumAsInfo
+      help: The type of interface - 1.3.6.1.2.1.2.2.1.3
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+      enum_values:
+        1: other
+        2: regular1822
+        3: hdh1822
+        4: ddnX25
+        5: rfc877x25
+        6: ethernetCsmacd
+        7: iso88023Csmacd
+        8: iso88024TokenBus
+        9: iso88025TokenRing
+        10: iso88026Man
+        11: starLan
+        12: proteon10Mbit
+        13: proteon80Mbit
+        14: hyperchannel
+        15: fddi
+        16: lapb
+        17: sdlc
+        18: ds1
+        19: e1
+        20: basicISDN
+        21: primaryISDN
+        22: propPointToPointSerial
+        23: ppp
+        24: softwareLoopback
+        25: eon
+        26: ethernet3Mbit
+        27: nsip
+        28: slip
+        29: ultra
+        30: ds3
+        31: sip
+        32: frameRelay
+        33: rs232
+        34: para
+        35: arcnet
+        36: arcnetPlus
+        37: atm
+        38: miox25
+        39: sonet
+        40: x25ple
+        41: iso88022llc
+        42: localTalk
+        43: smdsDxi
+        44: frameRelayService
+        45: v35
+        46: hssi
+        47: hippi
+        48: modem
+        49: aal5
+        50: sonetPath
+        51: sonetVT
+        52: smdsIcip
+        53: propVirtual
+        54: propMultiplexor
+        55: ieee80212
+        56: fibreChannel
+        57: hippiInterface
+        58: frameRelayInterconnect
+        59: aflane8023
+        60: aflane8025
+        61: cctEmul
+        62: fastEther
+        63: isdn
+        64: v11
+        65: v36
+        66: g703at64k
+        67: g703at2mb
+        68: qllc
+        69: fastEtherFX
+        70: channel
+        71: ieee80211
+        72: ibm370parChan
+        73: escon
+        74: dlsw
+        75: isdns
+        76: isdnu
+        77: lapd
+        78: ipSwitch
+        79: rsrb
+        80: atmLogical
+        81: ds0
+        82: ds0Bundle
+        83: bsc
+        84: async
+        85: cnr
+        86: iso88025Dtr
+        87: eplrs
+        88: arap
+        89: propCnls
+        90: hostPad
+        91: termPad
+        92: frameRelayMPI
+        93: x213
+        94: adsl
+        95: radsl
+        96: sdsl
+        97: vdsl
+        98: iso88025CRFPInt
+        99: myrinet
+        100: voiceEM
+        101: voiceFXO
+        102: voiceFXS
+        103: voiceEncap
+        104: voiceOverIp
+        105: atmDxi
+        106: atmFuni
+        107: atmIma
+        108: pppMultilinkBundle
+        109: ipOverCdlc
+        110: ipOverClaw
+        111: stackToStack
+        112: virtualIpAddress
+        113: mpc
+        114: ipOverAtm
+        115: iso88025Fiber
+        116: tdlc
+        117: gigabitEthernet
+        118: hdlc
+        119: lapf
+        120: v37
+        121: x25mlp
+        122: x25huntGroup
+        123: transpHdlc
+        124: interleave
+        125: fast
+        126: ip
+        127: docsCableMaclayer
+        128: docsCableDownstream
+        129: docsCableUpstream
+        130: a12MppSwitch
+        131: tunnel
+        132: coffee
+        133: ces
+        134: atmSubInterface
+        135: l2vlan
+        136: l3ipvlan
+        137: l3ipxvlan
+        138: digitalPowerline
+        139: mediaMailOverIp
+        140: dtm
+        141: dcn
+        142: ipForward
+        143: msdsl
+        144: ieee1394
+        145: if-gsn
+        146: dvbRccMacLayer
+        147: dvbRccDownstream
+        148: dvbRccUpstream
+        149: atmVirtual
+        150: mplsTunnel
+        151: srp
+        152: voiceOverAtm
+        153: voiceOverFrameRelay
+        154: idsl
+        155: compositeLink
+        156: ss7SigLink
+        157: propWirelessP2P
+        158: frForward
+        159: rfc1483
+        160: usb
+        161: ieee8023adLag
+        162: bgppolicyaccounting
+        163: frf16MfrBundle
+        164: h323Gatekeeper
+        165: h323Proxy
+        166: mpls
+        167: mfSigLink
+        168: hdsl2
+        169: shdsl
+        170: ds1FDL
+        171: pos
+        172: dvbAsiIn
+        173: dvbAsiOut
+        174: plc
+        175: nfas
+        176: tr008
+        177: gr303RDT
+        178: gr303IDT
+        179: isup
+        180: propDocsWirelessMaclayer
+        181: propDocsWirelessDownstream
+        182: propDocsWirelessUpstream
+        183: hiperlan2
+        184: propBWAp2Mp
+        185: sonetOverheadChannel
+        186: digitalWrapperOverheadChannel
+        187: aal2
+        188: radioMAC
+        189: atmRadio
+        190: imt
+        191: mvl
+        192: reachDSL
+        193: frDlciEndPt
+        194: atmVciEndPt
+        195: opticalChannel
+        196: opticalTransport
+        197: propAtm
+        198: voiceOverCable
+        199: infiniband
+        200: teLink
+        201: q2931
+        202: virtualTg
+        203: sipTg
+        204: sipSig
+        205: docsCableUpstreamChannel
+        206: econet
+        207: pon155
+        208: pon622
+        209: bridge
+        210: linegroup
+        211: voiceEMFGD
+        212: voiceFGDEANA
+        213: voiceDID
+        214: mpegTransport
+        215: sixToFour
+        216: gtp
+        217: pdnEtherLoop1
+        218: pdnEtherLoop2
+        219: opticalChannelGroup
+        220: homepna
+        221: gfp
+        222: ciscoISLvlan
+        223: actelisMetaLOOP
+        224: fcipLink
+        225: rpr
+        226: qam
+        227: lmp
+        228: cblVectaStar
+        229: docsCableMCmtsDownstream
+        230: adsl2
+        231: macSecControlledIF
+        232: macSecUncontrolledIF
+        233: aviciOpticalEther
+        234: atmbond
+        235: voiceFGDOS
+        236: mocaVersion1
+        237: ieee80216WMAN
+        238: adsl2plus
+        239: dvbRcsMacLayer
+        240: dvbTdm
+        241: dvbRcsTdma
+        242: x86Laps
+        243: wwanPP
+        244: wwanPP2
+        245: voiceEBS
+        246: ifPwType
+        247: ilan
+        248: pip
+        249: aluELP
+        250: gpon
+        251: vdsl2
+        252: capwapDot11Profile
+        253: capwapDot11Bss
+        254: capwapWtpVirtualRadio
+        255: bits
+        256: docsCableUpstreamRfPort
+        257: cableDownstreamRfPort
+        258: vmwareVirtualNic
+        259: ieee802154
+        260: otnOdu
+        261: otnOtu
+        262: ifVfiType
+        263: g9981
+        264: g9982
+        265: g9983
+        266: aluEpon
+        267: aluEponOnu
+        268: aluEponPhysicalUni
+        269: aluEponLogicalLink
+        270: aluGponOnu
+        271: aluGponPhysicalUni
+        272: vmwareNicTeam
+        277: docsOfdmDownstream
+        278: docsOfdmaUpstream
+        279: gfast
+        280: sdci
+        281: xboxWireless
+        282: fastdsl
+        283: docsCableScte55d1FwdOob
+        284: docsCableScte55d1RetOob
+        285: docsCableScte55d2DsOob
+        286: docsCableScte55d2UsOob
+        287: docsCableNdf
+        288: docsCableNdr
+        289: ptm
+        290: ghn
+        291: otnOtsi
+        292: otnOtuc
+        293: otnOduc
+        294: otnOtsig
+        295: microwaveCarrierTermination
+        296: microwaveRadioLinkTerminal
+        297: ieee8021axDrni
+        298: ax25
+        299: ieee19061nanocom
+        300: cpri
+        301: omni
+        302: roe
+        303: p2pOverLan
+    - name: ifMtu
+      oid: 1.3.6.1.2.1.2.2.1.4
+      type: gauge
+      help: The size of the largest packet which can be sent/received on the interface,
+        specified in octets - 1.3.6.1.2.1.2.2.1.4
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifSpeed
+      oid: 1.3.6.1.2.1.2.2.1.5
+      type: gauge
+      help: An estimate of the interface's current bandwidth in bits per second -
+        1.3.6.1.2.1.2.2.1.5
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifPhysAddress
+      oid: 1.3.6.1.2.1.2.2.1.6
+      type: PhysAddress48
+      help: The interface's address at its protocol sub-layer - 1.3.6.1.2.1.2.2.1.6
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifAdminStatus
+      oid: 1.3.6.1.2.1.2.2.1.7
+      type: gauge
+      help: The desired state of the interface - 1.3.6.1.2.1.2.2.1.7
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+      enum_values:
+        1: up
+        2: down
+        3: testing
+    - name: ifOperStatus
+      oid: 1.3.6.1.2.1.2.2.1.8
+      type: gauge
+      help: The current operational state of the interface - 1.3.6.1.2.1.2.2.1.8
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+      enum_values:
+        1: up
+        2: down
+        3: testing
+        4: unknown
+        5: dormant
+        6: notPresent
+        7: lowerLayerDown
+    - name: ifLastChange
+      oid: 1.3.6.1.2.1.2.2.1.9
+      type: gauge
+      help: The value of sysUpTime at the time the interface entered its current operational
+        state - 1.3.6.1.2.1.2.2.1.9
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifInOctets
+      oid: 1.3.6.1.2.1.2.2.1.10
+      type: counter
+      help: The total number of octets received on the interface, including framing
+        characters - 1.3.6.1.2.1.2.2.1.10
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifInUcastPkts
+      oid: 1.3.6.1.2.1.2.2.1.11
+      type: counter
+      help: The number of packets, delivered by this sub-layer to a higher (sub-)layer,
+        which were not addressed to a multicast or broadcast address at this sub-layer
+        - 1.3.6.1.2.1.2.2.1.11
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifInNUcastPkts
+      oid: 1.3.6.1.2.1.2.2.1.12
+      type: counter
+      help: The number of packets, delivered by this sub-layer to a higher (sub-)layer,
+        which were addressed to a multicast or broadcast address at this sub-layer
+        - 1.3.6.1.2.1.2.2.1.12
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifInDiscards
+      oid: 1.3.6.1.2.1.2.2.1.13
+      type: counter
+      help: The number of inbound packets which were chosen to be discarded even though
+        no errors had been detected to prevent their being deliverable to a higher-layer
+        protocol - 1.3.6.1.2.1.2.2.1.13
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifInErrors
+      oid: 1.3.6.1.2.1.2.2.1.14
+      type: counter
+      help: For packet-oriented interfaces, the number of inbound packets that contained
+        errors preventing them from being deliverable to a higher-layer protocol -
+        1.3.6.1.2.1.2.2.1.14
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifInUnknownProtos
+      oid: 1.3.6.1.2.1.2.2.1.15
+      type: counter
+      help: For packet-oriented interfaces, the number of packets received via the
+        interface which were discarded because of an unknown or unsupported protocol
+        - 1.3.6.1.2.1.2.2.1.15
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifOutOctets
+      oid: 1.3.6.1.2.1.2.2.1.16
+      type: counter
+      help: The total number of octets transmitted out of the interface, including
+        framing characters - 1.3.6.1.2.1.2.2.1.16
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifOutUcastPkts
+      oid: 1.3.6.1.2.1.2.2.1.17
+      type: counter
+      help: The total number of packets that higher-level protocols requested be transmitted,
+        and which were not addressed to a multicast or broadcast address at this sub-layer,
+        including those that were discarded or not sent - 1.3.6.1.2.1.2.2.1.17
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifOutNUcastPkts
+      oid: 1.3.6.1.2.1.2.2.1.18
+      type: counter
+      help: The total number of packets that higher-level protocols requested be transmitted,
+        and which were addressed to a multicast or broadcast address at this sub-layer,
+        including those that were discarded or not sent - 1.3.6.1.2.1.2.2.1.18
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifOutDiscards
+      oid: 1.3.6.1.2.1.2.2.1.19
+      type: counter
+      help: The number of outbound packets which were chosen to be discarded even
+        though no errors had been detected to prevent their being transmitted - 1.3.6.1.2.1.2.2.1.19
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifOutErrors
+      oid: 1.3.6.1.2.1.2.2.1.20
+      type: counter
+      help: For packet-oriented interfaces, the number of outbound packets that could
+        not be transmitted because of errors - 1.3.6.1.2.1.2.2.1.20
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifOutQLen
+      oid: 1.3.6.1.2.1.2.2.1.21
+      type: gauge
+      help: The length of the output packet queue (in packets). - 1.3.6.1.2.1.2.2.1.21
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifSpecific
+      oid: 1.3.6.1.2.1.2.2.1.22
+      type: OctetString
+      help: A reference to MIB definitions specific to the particular media being
+        used to realize the interface - 1.3.6.1.2.1.2.2.1.22
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifInMulticastPkts
+      oid: 1.3.6.1.2.1.31.1.1.1.2
+      type: counter
+      help: The number of packets, delivered by this sub-layer to a higher (sub-)layer,
+        which were addressed to a multicast address at this sub-layer - 1.3.6.1.2.1.31.1.1.1.2
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifInBroadcastPkts
+      oid: 1.3.6.1.2.1.31.1.1.1.3
+      type: counter
+      help: The number of packets, delivered by this sub-layer to a higher (sub-)layer,
+        which were addressed to a broadcast address at this sub-layer - 1.3.6.1.2.1.31.1.1.1.3
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifOutMulticastPkts
+      oid: 1.3.6.1.2.1.31.1.1.1.4
+      type: counter
+      help: The total number of packets that higher-level protocols requested be transmitted,
+        and which were addressed to a multicast address at this sub-layer, including
+        those that were discarded or not sent - 1.3.6.1.2.1.31.1.1.1.4
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifOutBroadcastPkts
+      oid: 1.3.6.1.2.1.31.1.1.1.5
+      type: counter
+      help: The total number of packets that higher-level protocols requested be transmitted,
+        and which were addressed to a broadcast address at this sub-layer, including
+        those that were discarded or not sent - 1.3.6.1.2.1.31.1.1.1.5
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifHCInOctets
+      oid: 1.3.6.1.2.1.31.1.1.1.6
+      type: counter
+      help: The total number of octets received on the interface, including framing
+        characters - 1.3.6.1.2.1.31.1.1.1.6
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifHCInUcastPkts
+      oid: 1.3.6.1.2.1.31.1.1.1.7
+      type: counter
+      help: The number of packets, delivered by this sub-layer to a higher (sub-)layer,
+        which were not addressed to a multicast or broadcast address at this sub-layer
+        - 1.3.6.1.2.1.31.1.1.1.7
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifHCInMulticastPkts
+      oid: 1.3.6.1.2.1.31.1.1.1.8
+      type: counter
+      help: The number of packets, delivered by this sub-layer to a higher (sub-)layer,
+        which were addressed to a multicast address at this sub-layer - 1.3.6.1.2.1.31.1.1.1.8
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifHCInBroadcastPkts
+      oid: 1.3.6.1.2.1.31.1.1.1.9
+      type: counter
+      help: The number of packets, delivered by this sub-layer to a higher (sub-)layer,
+        which were addressed to a broadcast address at this sub-layer - 1.3.6.1.2.1.31.1.1.1.9
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifHCOutOctets
+      oid: 1.3.6.1.2.1.31.1.1.1.10
+      type: counter
+      help: The total number of octets transmitted out of the interface, including
+        framing characters - 1.3.6.1.2.1.31.1.1.1.10
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifHCOutUcastPkts
+      oid: 1.3.6.1.2.1.31.1.1.1.11
+      type: counter
+      help: The total number of packets that higher-level protocols requested be transmitted,
+        and which were not addressed to a multicast or broadcast address at this sub-layer,
+        including those that were discarded or not sent - 1.3.6.1.2.1.31.1.1.1.11
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifHCOutMulticastPkts
+      oid: 1.3.6.1.2.1.31.1.1.1.12
+      type: counter
+      help: The total number of packets that higher-level protocols requested be transmitted,
+        and which were addressed to a multicast address at this sub-layer, including
+        those that were discarded or not sent - 1.3.6.1.2.1.31.1.1.1.12
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifHCOutBroadcastPkts
+      oid: 1.3.6.1.2.1.31.1.1.1.13
+      type: counter
+      help: The total number of packets that higher-level protocols requested be transmitted,
+        and which were addressed to a broadcast address at this sub-layer, including
+        those that were discarded or not sent - 1.3.6.1.2.1.31.1.1.1.13
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifLinkUpDownTrapEnable
+      oid: 1.3.6.1.2.1.31.1.1.1.14
+      type: gauge
+      help: Indicates whether linkUp/linkDown traps should be generated for this interface
+        - 1.3.6.1.2.1.31.1.1.1.14
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+      enum_values:
+        1: enabled
+        2: disabled
+    - name: ifHighSpeed
+      oid: 1.3.6.1.2.1.31.1.1.1.15
+      type: gauge
+      help: An estimate of the interface's current bandwidth in units of 1,000,000
+        bits per second - 1.3.6.1.2.1.31.1.1.1.15
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+    - name: ifPromiscuousMode
+      oid: 1.3.6.1.2.1.31.1.1.1.16
+      type: gauge
+      help: This object has a value of false(2) if this interface only accepts packets/frames
+        that are addressed to this station - 1.3.6.1.2.1.31.1.1.1.16
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: ifConnectorPresent
+      oid: 1.3.6.1.2.1.31.1.1.1.17
+      type: gauge
+      help: This object has the value 'true(1)' if the interface sublayer has a physical
+        connector and the value 'false(2)' otherwise. - 1.3.6.1.2.1.31.1.1.1.17
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+      enum_values:
+        1: "true"
+        2: "false"
+    - name: ifCounterDiscontinuityTime
+      oid: 1.3.6.1.2.1.31.1.1.1.19
+      type: gauge
+      help: The value of sysUpTime on the most recent occasion at which any one or
+        more of this interface's counters suffered a discontinuity - 1.3.6.1.2.1.31.1.1.1.19
+      indexes:
+      - labelname: ifIndex
+        type: gauge
+      lookups:
+      - labels:
+        - ifIndex
+        labelname: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+      - labels:
+        - ifIndex
+        labelname: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+  ip_mib:
+    walk:
+    - 1.3.6.1.2.1.4.28
+    metrics:
+    - name: ipv4InterfaceIfIndex
+      oid: 1.3.6.1.2.1.4.28.1.1
+      type: gauge
+      help: The index value that uniquely identifies the interface to which this entry
+        is applicable - 1.3.6.1.2.1.4.28.1.1
+      indexes:
+      - labelname: ipv4InterfaceIfIndex
+        type: gauge
+    - name: ipv4InterfaceReasmMaxSize
+      oid: 1.3.6.1.2.1.4.28.1.2
+      type: gauge
+      help: The size of the largest IPv4 datagram that this entity can re-assemble
+        from incoming IPv4 fragmented datagrams received on this interface. - 1.3.6.1.2.1.4.28.1.2
+      indexes:
+      - labelname: ipv4InterfaceIfIndex
+        type: gauge
+    - name: ipv4InterfaceEnableStatus
+      oid: 1.3.6.1.2.1.4.28.1.3
+      type: gauge
+      help: The indication of whether IPv4 is enabled (up) or disabled (down) on this
+        interface - 1.3.6.1.2.1.4.28.1.3
+      indexes:
+      - labelname: ipv4InterfaceIfIndex
+        type: gauge
+      enum_values:
+        1: up
+        2: down
+    - name: ipv4InterfaceRetransmitTime
+      oid: 1.3.6.1.2.1.4.28.1.4
+      type: gauge
+      help: The time between retransmissions of ARP requests to a neighbor when resolving
+        the address or when probing the reachability of a neighbor. - 1.3.6.1.2.1.4.28.1.4
+      indexes:
+      - labelname: ipv4InterfaceIfIndex
+        type: gauge
+  system:
+    walk:
+    - 1.3.6.1.2.1.1
+    metrics:
+    - name: sysDescr
+      oid: 1.3.6.1.2.1.1.1
+      type: DisplayString
+      help: A textual description of the entity - 1.3.6.1.2.1.1.1
+    - name: sysObjectID
+      oid: 1.3.6.1.2.1.1.2
+      type: OctetString
+      help: The vendor's authoritative identification of the network management subsystem
+        contained in the entity - 1.3.6.1.2.1.1.2
+    - name: sysUpTime
+      oid: 1.3.6.1.2.1.1.3
+      type: gauge
+      help: The time (in hundredths of a second) since the network management portion
+        of the system was last re-initialized. - 1.3.6.1.2.1.1.3
+    - name: sysContact
+      oid: 1.3.6.1.2.1.1.4
+      type: DisplayString
+      help: The textual identification of the contact person for this managed node,
+        together with information on how to contact this person - 1.3.6.1.2.1.1.4
+    - name: sysName
+      oid: 1.3.6.1.2.1.1.5
+      type: DisplayString
+      help: An administratively-assigned name for this managed node - 1.3.6.1.2.1.1.5
+    - name: sysLocation
+      oid: 1.3.6.1.2.1.1.6
+      type: DisplayString
+      help: The physical location of this node (e.g., 'telephone closet, 3rd floor')
+        - 1.3.6.1.2.1.1.6
+    - name: sysServices
+      oid: 1.3.6.1.2.1.1.7
+      type: gauge
+      help: A value which indicates the set of services that this entity may potentially
+        offer - 1.3.6.1.2.1.1.7
+    - name: sysORLastChange
+      oid: 1.3.6.1.2.1.1.8
+      type: gauge
+      help: The value of sysUpTime at the time of the most recent change in state
+        or value of any instance of sysORID. - 1.3.6.1.2.1.1.8
+    - name: sysORIndex
+      oid: 1.3.6.1.2.1.1.9.1.1
+      type: gauge
+      help: The auxiliary variable used for identifying instances of the columnar
+        objects in the sysORTable. - 1.3.6.1.2.1.1.9.1.1
+      indexes:
+      - labelname: sysORIndex
+        type: gauge
+      lookups:
+      - labels:
+        - sysORIndex
+        labelname: sysORDescr
+        oid: 1.3.6.1.2.1.1.9.1.3
+        type: DisplayString
+    - name: sysORID
+      oid: 1.3.6.1.2.1.1.9.1.2
+      type: OctetString
+      help: An authoritative identification of a capabilities statement with respect
+        to various MIB modules supported by the local SNMP application acting as a
+        command responder. - 1.3.6.1.2.1.1.9.1.2
+      indexes:
+      - labelname: sysORIndex
+        type: gauge
+      lookups:
+      - labels:
+        - sysORIndex
+        labelname: sysORDescr
+        oid: 1.3.6.1.2.1.1.9.1.3
+        type: DisplayString
+    - name: sysORDescr
+      oid: 1.3.6.1.2.1.1.9.1.3
+      type: DisplayString
+      help: A textual description of the capabilities identified by the corresponding
+        instance of sysORID. - 1.3.6.1.2.1.1.9.1.3
+      indexes:
+      - labelname: sysORIndex
+        type: gauge
+      lookups:
+      - labels:
+        - sysORIndex
+        labelname: sysORDescr
+        oid: 1.3.6.1.2.1.1.9.1.3
+        type: DisplayString
+    - name: sysORUpTime
+      oid: 1.3.6.1.2.1.1.9.1.4
+      type: gauge
+      help: The value of sysUpTime at the time this conceptual row was last instantiated.
+        - 1.3.6.1.2.1.1.9.1.4
+      indexes:
+      - labelname: sysORIndex
+        type: gauge
+      lookups:
+      - labels:
+        - sysORIndex
+        labelname: sysORDescr
+        oid: 1.3.6.1.2.1.1.9.1.3
+        type: DisplayString

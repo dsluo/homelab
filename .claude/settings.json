@@ -6,6 +6,7 @@
 
       "Bash(cat:*)",
       "Bash(ls:*)",
+      "Bash(tree:*)",
 
       "Bash(task --list:*)",
 

@@ -1,0 +1,47 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: snmp-exporter
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: snmp-exporter
+  interval: 1h
+  values:
+    extraConfigmapMounts:
+      - name: snmp-exporter-config
+        configMap: snmp-exporter-config
+        mountPath: /etc/snmp_exporter
+        readOnly: true
+
+    extraArgs:
+      - --config.file=/etc/snmp_exporter/snmp.yml
+
+    configmapReload:
+      enabled: true
+      extraArgs:
+        - --watched-dir=/etc/snmp_exporter
+      extraVolumeMounts:
+        - name: snmp-exporter-config
+          mountPath: /etc/snmp_exporter
+          readOnly: true
+
+    serviceMonitor:
+      enabled: true
+      auth: [public_v2]
+      params:
+        - name: compute-pdu
+          target: compute-pdu.lan
+          module: &modules
+            - system
+            - if_mib
+            - ip_mib
+            - geist_pdu
+        - name: network-pdu
+          target: network-pdu.lan
+          module: *modules
+        - name: backup-pdu
+          target: backup-pdu.lan
+          module: *modules
