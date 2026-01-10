@@ -85,3 +85,18 @@ controlPlane:
           extraArgs:
             feature-gates: MutatingAdmissionPolicy=true
             runtime-config: admissionregistration.k8s.io/v1beta1=true
+
+        # Expose controller manager metrics for Prometheus scraping
+        controllerManager:
+          extraArgs:
+            bind-address: "0.0.0.0"
+
+        # Expose scheduler metrics for Prometheus scraping
+        scheduler:
+          extraArgs:
+            bind-address: "0.0.0.0"
+
+        # Expose etcd metrics for Prometheus scraping on port 2381
+        etcd:
+          extraArgs:
+            listen-metrics-urls: http://0.0.0.0:2381
