@@ -22,23 +22,24 @@ and set -e fish_complete_path[$path_index]
 """
 
 [hooks]
+# fyi, this ALWAYS runs using `sh`
 postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
 
 [tools]
 "aqua:budimanjojo/talhelper" = "3.0.45"
 "aqua:derailed/k9s" = "0.50.16"
-"aqua:FiloSottile/age" = "1.3.1"
+"aqua:FiloSottile/age" = { version = "1.3.1", completions = false }
 "aqua:fluxcd/flux2" = "2.7.5"
-"aqua:getsops/sops" = "3.11.0"
-"aqua:go-task/task" = "3.46.4"
-"aqua:jqlang/jq" = "1.8.1"
+"aqua:getsops/sops" = { version = "3.11.0", completions = false }
+"aqua:go-task/task" = { version = "3.46.4", completions = true, completion_flag = "--completion" }
+"aqua:jqlang/jq" = { version = "1.8.1", completions = false }
 "aqua:kubernetes/kubectl" = "1.34.3"
 "aqua:siderolabs/talos" = "1.12.1"
 "aqua:utkuozdemir/pv-migrate" = "2.2.1"
 "aqua:helm/helm" = "4.0.4"
 "aqua:helmfile/helmfile" = "1.2.3"
 "aqua:kubernetes-sigs/kustomize" = "5.8.0"
-"aqua:mikefarah/yq" = "4.50.1"
+"aqua:mikefarah/yq" = { version = "4.50.1", completions = false }
 "aqua:cilium/cilium-cli" = "0.18.9"
-"aqua:cloudflare/cloudflared" = "2025.11.1"
-"github:grafana/mcp-grafana" = "0.7.10"
+"aqua:cloudflare/cloudflared" = { version = "2025.11.1", completions = false }
+"github:grafana/mcp-grafana" = { version = "0.7.10", completions = false }
