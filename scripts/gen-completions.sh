@@ -64,7 +64,7 @@ while read -r TOOL; do
             continue
         fi
         EXEC_NAME=$(basename $ITEM)
-        COMPLETION_FILE="$COMPLETIONS_DIR/$EXEC_NAME-v$VERSION.$COMPLETION_EXT"
+        COMPLETION_FILE="$COMPLETIONS_DIR/$EXEC_NAME.$COMPLETION_EXT"
 
         if [[ -f "$COMPLETION_FILE" && "$CACHE_COMPLETIONS" == "true" ]]; then
             log debug "Skipping $EXEC_NAME v$VERSION; already exists"
