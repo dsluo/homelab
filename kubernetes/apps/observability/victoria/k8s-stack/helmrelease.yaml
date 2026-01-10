@@ -57,6 +57,14 @@ spec:
       enabled: true
     kubeControllerManager:
       enabled: true
+      vmScrape:
+        spec:
+          endpoints:
+            - port: http-metrics
+              scheme: https
+              bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+              tlsConfig:
+                insecureSkipVerify: true
     kubeDns:
       enabled: false # because coredns instead
     coreDns:
@@ -76,5 +84,13 @@ spec:
               scheme: http
     kubeScheduler:
       enabled: true
+      vmScrape:
+        spec:
+          endpoints:
+            - port: http-metrics
+              scheme: https
+              bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+              tlsConfig:
+                insecureSkipVerify: true
     kubeProxy:
       enabled: false # cilium replaces it
