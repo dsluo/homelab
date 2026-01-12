@@ -6,6 +6,6 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
-    configMapRef:
-      name: cnpg-grafana-dashboard
-      key: cnp.json
+  configMapRef:
+    name: cnpg-grafana-dashboard
+    key: cnp.json
