@@ -6,6 +6,7 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
+  allowCrossNamespaceImport: true
   configMapRef:
     name: cnpg-grafana-dashboard
     key: cnp.json
