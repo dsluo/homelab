@@ -7,8 +7,10 @@
     "Kubernetes": "./kubernetes/*.yaml"
   },
   "vs-kubernetes": {
-    "vs-kubernetes.kubeconfig": "./kubeconfig",
-    "vs-kubernetes.knownKubeconfigs": ["./kubeconfig"]
+    "vs-kubernetes.knownKubeconfigs": [
+      "${workspaceFolder}/kubeconfig"
+    ],
+    "vs-kubernetes.kubeconfig": "${workspaceFolder}/kubeconfig"
   },
   "sops.configPath": "./.sops.yaml",
   "sops.creationEnabled": true
