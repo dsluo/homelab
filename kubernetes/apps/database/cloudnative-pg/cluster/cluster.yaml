@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres
+  annotations:
+    cnpg.io/skipEmptyWalArchiveCheck: enabled
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:18@sha256:c835ea1053376ab101e3528cd9d3712c8f760378af6f6a4b5bd74c119e35e190
+
+  primaryUpdateStrategy: unsupervised
+  # switch to switchover when instances > 1
+  primaryUpdateMethod: restart
+
+  storage:
+    storageClass: openebs-hostpath
+    size: 20Gi
+
+  bootstrap:
+    initdb: {}
+    # recovery: {}
+
+  # we're single node anyway
+  managed:
+    services:
+      disabledDefaultServices: ["ro", "r"]
+    roles:
+      - name: app
+        ensure: absent
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      memory: 1Gi
+
+  monitoring:
+    enablePodMonitor: true
