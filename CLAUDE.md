@@ -1,0 +1,1 @@
+- use MCPs over command line tools when possible
