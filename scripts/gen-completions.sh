@@ -30,27 +30,26 @@ fi
 if [[ LOG_LEVEL != "debug" ]]; then
     export MISE_QUIET=true
 fi
-TOOLS=$(
-  # this ensures that we only get the tools defined in the local config.
-  mise config get tools \
-  | yq -ptoml -oj -I0 \
-  'to_entries
-  | .[]
-  | {
-    "tool": .key,
-    "version": .value.version // .value,
-    "completion_flag": .value.completion_flag // "completion",
-    "completions": with(select(.value.completions == null); . = true) 
-        | with(select(.value.completions != null); . = .value.completions)
-  }'
-)
+
+# this ensures that we only get the tools defined in the local config.
+TOOLS=$(mise config get tools | yq -ptoml -oj -I0 'to_entries | .[]')
 
 # todo: make use of MISE_INSTALLED_TOOLS to only run this for tools that were newly installed.
 while read -r TOOL; do
-    TOOL_NAME=$(echo "$TOOL" | jq -r '.tool')
-    VERSION=$(echo "$TOOL" | jq -r '.version')
-    DO_COMPLETIONS=$(echo "$TOOL" | jq -r '.completions')
-    COMPLETION_FLAG=$(echo "$TOOL" | jq -r '.completion_flag')
+    TOOL_NAME=$(echo "$TOOL" | jq -r '.key')
+    VERSION=$(echo "$TOOL" | jq -r '.value.version? // .value')
+    DO_COMPLETIONS=$(
+        echo "$TOOL" \
+        | jq -r '
+            .value 
+            | if . | type == "object" and has("completions") 
+            then 
+                .completions 
+            else 
+                true 
+            end'
+    )
+    COMPLETION_FLAG=$(echo "$TOOL" | jq -r '.value.completion_flag? // "completion"')
 
     if [[ "$DO_COMPLETIONS" == "false" ]]; then
         log debug "Skipping $TOOL_NAME $VERSION; disabled"
