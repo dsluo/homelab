@@ -18,17 +18,19 @@ spec:
     storageClass: openebs-hostpath
     size: 20Gi
 
-  bootstrap:
-    initdb: {}
-    # recovery: {}
-
   # we're single node anyway
   managed:
     services:
       disabledDefaultServices: ["ro", "r"]
     roles:
-      - name: app
-        ensure: absent
+      - name: &default app
+        login: false
+
+  bootstrap:
+    initdb:
+      database: *default
+      owner: *default
+    # recovery: {}
 
   resources:
     requests:
