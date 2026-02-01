@@ -12,6 +12,11 @@ creation_rules:
     key_groups:
       - age:
           - "age1pw3ushyk74yquev7sc7wu0sw6sfku0nfswpqua8ljm0e8vmpxsjslmgv75"
+  - path_regex: \.sops\.env$
+    mac_only_encrypted: true
+    key_groups:
+      - age:
+          - "age1pw3ushyk74yquev7sc7wu0sw6sfku0nfswpqua8ljm0e8vmpxsjslmgv75"
 stores:
   yaml:
     indent: 2
