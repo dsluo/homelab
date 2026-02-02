@@ -1,0 +1,11 @@
+version: 3
+
+vars:
+  SOPS_EXEC: sops exec-env .sops.env
+
+tasks:
+  plan:
+    cmd: "{{.SOPS_EXEC}} 'tofu plan -out plan.tfplan'"
+
+  apply:
+    cmd: "{{.SOPS_EXEC}} 'tofu apply plan.tfplan'"
