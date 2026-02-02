@@ -1,6 +1,8 @@
 module "sw_core" {
   source = "./sw_core"
-  providers = {
-    routeros = routeros
-  }
+}
+
+module "backblaze" {
+  source             = "./backblaze"
+  backup_bucket_name = var.backup_bucket_name
 }
