@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vmagent-graphite-relabel
+data:
+  graphite-relabel.yaml: |
+    # Network bytes: truenas.<instance>.net.<interface>.<direction>
+    - action: graphite
+      match: "truenas.*.net.*.*"
+      labels:
+        __name__: truenas_network_bytes_total
+        instance: "$1"
+        interface: "$2"
+        direction: "$3"
+    # Network drops: truenas.<instance>.net_drops.<interface>.<direction>
+    - action: graphite
+      match: "truenas.*.net_drops.*.*"
+      labels:
+        __name__: truenas_network_drops_total
+        instance: "$1"
+        interface: "$2"
+        direction: "$3"
+    # Network carrier: truenas.<instance>.net_carrier.<interface>.<state>
+    - action: graphite
+      match: "truenas.*.net_carrier.*.*"
+      labels:
+        __name__: truenas_network_carrier
+        instance: "$1"
+        interface: "$2"
+        state: "$3"
+    # CPU temperatures: truenas.<instance>.cputemp.temperatures.<cpu>
+    - action: graphite
+      match: "truenas.*.cputemp.temperatures.*"
+      labels:
+        __name__: truenas_cpu_temperature_celsius
+        instance: "$1"
+        cpu: "$2"
+    # Cgroup CPU: truenas.<instance>.cgroup_<id>.cpu.<mode>
+    - action: graphite
+      match: "truenas.*.cgroup_*.cpu.*"
+      labels:
+        __name__: truenas_cgroup_cpu_seconds_total
+        instance: "$1"
+        cgroup: "$2"
+        mode: "$3"
+    # Cgroup memory usage: truenas.<instance>.cgroup_<id>.mem_usage.<type>
+    - action: graphite
+      match: "truenas.*.cgroup_*.mem_usage.*"
+      labels:
+        __name__: truenas_cgroup_memory_bytes
+        instance: "$1"
+        cgroup: "$2"
+        type: "$3"
+    # Cgroup IO: truenas.<instance>.cgroup_<id>.io.<direction>
+    - action: graphite
+      match: "truenas.*.cgroup_*.io.*"
+      labels:
+        __name__: truenas_cgroup_io_bytes_total
+        instance: "$1"
+        cgroup: "$2"
+        direction: "$3"

@@ -6,3 +6,4 @@ resources:
   - ./ocirepository.yaml
   - ./vmstaticscrape.yaml
   - ./secret.sops.yaml
+  - ./graphite-relabel-configmap.yaml

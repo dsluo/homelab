@@ -35,6 +35,10 @@ spec:
         # Enable Graphite ingestion for TrueNAS
         insertPorts:
           graphitePort: "2003"
+        # Relabel Graphite metrics to Prometheus data model
+        relabelConfig:
+          name: vmagent-graphite-relabel
+          key: graphite-relabel.yaml
         # LoadBalancer service for external Graphite access (TrueNAS)
         serviceSpec:
           metadata:
