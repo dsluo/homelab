@@ -21,3 +21,41 @@ spec:
         source: homeassistant
       interval: 10s
       scrapeTimeout: 10s
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/operator.victoriametrics.com/vmstaticscrape_v1beta1.json
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: &job truenas-node-exporter
+spec:
+  jobName: *job
+
+  targetEndpoints:
+    - targets:
+        - "storage.lan:9100"
+      scheme: http
+      path: /metrics
+
+      labels:
+        source: storage
+      interval: 10s
+      scrapeTimeout: 10s
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/operator.victoriametrics.com/vmstaticscrape_v1beta1.json
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: &job truenas-smartctl-exporter
+spec:
+  jobName: *job
+
+  targetEndpoints:
+    - targets:
+        - "storage.lan:9633"
+      scheme: http
+      path: /metrics
+
+      labels:
+        source: storage
+      interval: 10s
+      scrapeTimeout: 10s
