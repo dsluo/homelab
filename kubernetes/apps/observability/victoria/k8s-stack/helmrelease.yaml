@@ -32,31 +32,25 @@ spec:
     vmagent:
       enabled: true
       spec:
-        # Enable Graphite ingestion for TrueNAS
-        insertPorts:
-          graphitePort: "2003"
-        # Relabel Graphite metrics to Prometheus data model
-        relabelConfig:
-          name: vmagent-graphite-relabel
-          key: graphite-relabel.yaml
-        # LoadBalancer service for external Graphite access (TrueNAS)
-        serviceSpec:
-          metadata:
-            name: vmsingle-metrics-ingest
-            annotations:
-              lbipam.cilium.io/ips: "10.0.42.131"
-              external-dns.alpha.kubernetes.io/hostname: metrics-ingest.${SECRET_DOMAIN}
-          spec:
-            type: LoadBalancer
-            ports:
-              - name: graphite-tcp
-                port: 2003
-                targetPort: 2003
-                protocol: TCP
-              - name: graphite-udp
-                port: 2003
-                targetPort: 2003
-                protocol: UDP
+        # insertPorts:
+        #   graphitePort: "2003"
+        # serviceSpec:
+        #   metadata:
+        #     name: vmsingle-metrics-ingest
+        #     annotations:
+        #       lbipam.cilium.io/ips: "10.0.42.131"
+        #       external-dns.alpha.kubernetes.io/hostname: metrics-ingest.${SECRET_DOMAIN}
+        #   spec:
+        #     type: LoadBalancer
+        #     ports:
+        #       - name: graphite-tcp
+        #         port: 2003
+        #         targetPort: 2003
+        #         protocol: TCP
+        #       - name: graphite-udp
+        #         port: 2003
+        #         targetPort: 2003
+        #         protocol: UDP
 
     grafana:
       # deployed separately
