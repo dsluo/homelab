@@ -41,7 +41,7 @@ postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
 "aqua:kubernetes-sigs/kustomize" = "5.8.0"
 "aqua:mikefarah/yq" = { version = "4.52.2", completions = false }
 "aqua:cilium/cilium-cli" = "0.19.0"
-"aqua:cloudflare/cloudflared" = { version = "2026.1.2", completions = false }
+"aqua:cloudflare/cloudflared" = { version = "2026.2.0", completions = false }
 "github:grafana/mcp-grafana" = { version = "0.7.10", completions = false }
 "github:cloudnative-pg/cloudnative-pg" = "1.28.0"
 "github:Handfish/talos-pilot" = { version = "0.1.7", completions = false }
