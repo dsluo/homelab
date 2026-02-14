@@ -25,6 +25,13 @@ spec:
     roles:
       - name: &default app
         login: false
+  
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      enabled: true
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: garage
 
   bootstrap:
     initdb:
