@@ -5,3 +5,4 @@ resources:
   - ./cluster.yaml
   - ./secret.sops.yaml
   - ./objectstore.yaml
+  - ./scheduledbackup.yaml
