@@ -18,9 +18,9 @@ spec:
     storageClass: openebs-hostpath
     size: 20Gi
 
-  # we're single node anyway
   managed:
     services:
+      # we're single node anyway
       disabledDefaultServices: ["ro", "r"]
     roles:
       - name: &default app
@@ -34,10 +34,21 @@ spec:
         barmanObjectName: garage
 
   bootstrap:
-    initdb:
+    # initdb:
+    #   database: *default
+    #   owner: *default
+    recovery:
       database: *default
       owner: *default
-    # recovery: {}
+      source: garage
+
+  externalClusters:
+    - name: garage
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: garage
+          serverName: postgres
 
   resources:
     requests:
