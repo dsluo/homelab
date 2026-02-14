@@ -1,0 +1,22 @@
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: garage
+spec:
+  configuration:
+    destinationPath: s3://cnpg/
+    endpointURL: "${GARAGE_ENDPOINT_URL}"
+    s3Credentials:
+      accessKeyId:
+        key: garage-cnpg
+        name: ACCESS_KEY_ID
+      secretAccessKey:
+        key: garage-cnpg
+        name: SECRET_ACCESS_KEY
+    wal:
+      compression: zstd
+      maxParallel: 8
+    data:
+      compression: gzip
+      maxParallel: 8
+    retentionPolicy: 15d
