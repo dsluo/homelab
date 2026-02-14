@@ -5,7 +5,8 @@ kind: ScheduledBackup
 metadata:
   name: postgres-daily
 spec:
-  schedule: "0 30 2 * * *"
+  # 7:30 AM UTC => 2:30 EST/3:30 EDT
+  schedule: "0 30 7 * * *"
   backupOwnerReference: cluster
   cluster:
     name: postgres
