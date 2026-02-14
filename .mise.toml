@@ -39,7 +39,7 @@ postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
 "aqua:helm/helm" = "4.1.1"
 "aqua:helmfile/helmfile" = "1.2.3"
 "aqua:kubernetes-sigs/kustomize" = "5.8.0"
-"aqua:mikefarah/yq" = { version = "4.52.2", completions = false }
+"aqua:mikefarah/yq" = { version = "4.52.3", completions = false }
 "aqua:cilium/cilium-cli" = "0.19.1"
 "aqua:cloudflare/cloudflared" = { version = "2026.2.0", completions = false }
 "github:grafana/mcp-grafana" = { version = "0.7.10", completions = false }
