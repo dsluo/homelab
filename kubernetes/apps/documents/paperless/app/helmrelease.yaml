@@ -128,7 +128,7 @@ spec:
               - path: /data/local
       nas:
         type: nfs
-        path: /mnt/flash/apps/paperless
+        path: /mnt/flash/scans
         server: storage.lan
         advancedMounts:
           paperless:
