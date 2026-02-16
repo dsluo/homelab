@@ -6,7 +6,7 @@ metadata:
 spec:
   chartRef:
     kind: OCIRepository
-    name: paperless-ngx
+    name: paperless
   interval: 1h
   values:
     controllers:
