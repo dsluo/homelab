@@ -28,4 +28,13 @@ spec:
     name: flux-system
     namespace: flux-system
   targetNamespace: documents
+  # todo: remove this; replace with database component
+  patches:
+    - target:
+        kind: Database
+        name: paperless
+      patch: |
+        - op: replace
+          path: /metadata/namespace
+          value: database
   wait: false
