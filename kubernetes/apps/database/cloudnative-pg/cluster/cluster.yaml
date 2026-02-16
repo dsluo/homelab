@@ -25,6 +25,11 @@ spec:
     roles:
       - name: &default app
         login: false
+      - name: paperless
+        ensure: present
+        login: true
+        passwordSecret:
+          name: paperless-postgres-secret
   
   plugins:
     - name: barman-cloud.cloudnative-pg.io

@@ -1,0 +1,147 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: paperless-ngx
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: paperless-ngx
+  interval: 1h
+  values:
+    controllers:
+      paperless:
+        annotations:
+          reloader.stakater.com/auto: "true"
+
+        containers:
+          paperless:
+            image:
+              repository: ghcr.io/paperless-ngx/paperless-ngx
+              tag: 2.20.6
+            env:
+              # host
+              PAPERLESS_URL: https://paperless.${SECRET_DOMAIN}
+              PAPERLESS_PORT: &port 8000
+
+              PAPERLESS_SECRET_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-secret
+                    key: PAPERLESS_SECRET_KEY
+
+              # database
+              PAPERLESS_DBENGINE: postgresql
+              PAPERLESS_DBHOST: postgres-rw.database.svc.cluster.local
+              PAPERLESS_DBPORT: "5432"
+              PAPERLESS_DBNAME: paperless
+              PAPERLESS_DBUSER:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-postgres-secret
+                    key: username
+              PAPERLESS_DBPASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-postgres-secret
+                    key: password
+
+              PAPERLESS_REDIS: redis://paperless-valkey.documents.svc.cluster.local:6379
+
+              # admin
+              PAPERLESS_ADMIN_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-secret
+                    key: PAPERLESS_ADMIN_USER
+              PAPERLESS_ADMIN_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-secret
+                    key: PAPERLESS_ADMIN_PASSWORD
+
+              # app settings
+              PAPERLESS_TIME_ZONE: America/Detroit
+              PAPERLESS_OCR_LANGUAGE: eng
+              PAPERLESS_TASK_WORKERS: "2"
+              PAPERLESS_WEBSERVER_WORKERS: "2"
+
+              USERMAP_UID: "1000"
+              USERMAP_GID: "1000"
+
+              # directories
+              PAPERLESS_CONSUMPTION_DIR: /data/nas/paperless-ingest
+              PAPERLESS_EXPORT_DIR: /data/nas/paperless-export
+              PAPERLESS_DATA_DIR: /data/local/data
+              PAPERLESS_MEDIA_ROOT: /data/local/media
+              # importing
+              PAPERLESS_CONSUMER_POLLING: 10
+              PAPERLESS_CONSUMER_RECURSIVE: "true"
+
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 5
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 1Gi
+      valkey:
+        containers:
+          valkey:
+            image:
+              repository: ghcr.io/valkey-io/valkey
+              tag: 9.0.2
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+    service:
+      paperless:
+        controller: paperless
+        primary: true
+        ports:
+          http:
+            port: *port
+      valkey:
+        controller: valkey
+        ports:
+          valkey:
+            port: 6379
+
+    persistence:
+      data:
+        existingClaim: paperless-data
+        advancedMounts:
+          paperless:
+            paperless:
+              - path: /data/local
+      nas:
+        type: nfs
+        path: /mnt/flash/apps/paperless
+        server: storage.lan
+        advancedMounts:
+          paperless:
+            paperless:
+              - path: /data/nas
+    route:
+      paperless:
+        hostnames:
+          - "paperless.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: paperless
+                port: http
