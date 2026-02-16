@@ -34,7 +34,7 @@ postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
 "aqua:go-task/task" = { version = "3.48.0", completions = true, completion_flag = "--completion" }
 "aqua:jqlang/jq" = { version = "1.8.1", completions = false }
 "aqua:kubernetes/kubectl" = "1.34.3"
-"aqua:siderolabs/talos" = "1.12.3"
+"aqua:siderolabs/talos" = "1.12.4"
 "aqua:utkuozdemir/pv-migrate" = "2.2.1"
 "aqua:helm/helm" = "4.1.1"
 "aqua:helmfile/helmfile" = "1.2.3"
