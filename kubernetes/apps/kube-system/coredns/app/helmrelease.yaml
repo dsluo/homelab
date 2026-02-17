@@ -39,6 +39,8 @@ spec:
           - name: autopath
             parameters: "@kubernetes"
           - name: forward
+            parameters: ${SECRET_DOMAIN} 10.0.42.128
+          - name: forward
             parameters: . /etc/resolv.conf
           - name: cache
             configBlock: |-
