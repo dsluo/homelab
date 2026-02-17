@@ -44,5 +44,5 @@ postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
 "aqua:cloudflare/cloudflared" = { version = "2026.2.0", completions = false }
 "github:grafana/mcp-grafana" = { version = "0.7.10", completions = false }
 "github:cloudnative-pg/cloudnative-pg" = "1.28.1"
-"github:Handfish/talos-pilot" = { version = "0.1.7", completions = false }
+"github:Handfish/talos-pilot" = { version = "0.1.8", completions = false }
 "aqua:opentofu" = "1.11.5"
