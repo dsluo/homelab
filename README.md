@@ -2,7 +2,8 @@
 
 - Single node kubernetes
 - Talos as OS
-- flannel as CNI
+- Cilium as CNI
+- openebs-zfs and openebs-localhostpath as CSI
 - fluxcd for GitOps
 
 ## Todo:
