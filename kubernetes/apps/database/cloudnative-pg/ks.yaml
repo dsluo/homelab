@@ -28,6 +28,7 @@ metadata:
 spec:
   dependsOn:
     - name: cnpg-operator
+    - name: plugin-barman-cloud
   interval: 1h
   path: ./kubernetes/apps/database/cloudnative-pg/cluster
   postBuild:
