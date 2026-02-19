@@ -1,0 +1,15 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: vmagent-metrics-ingest
+spec:
+  hostnames:
+    - "metrics-ingest.${SECRET_DOMAIN}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+  rules:
+    - backendRefs:
+        - name: vmagent-vmks-victoria-metrics-k8s-stack
+          port: 8429
