@@ -1,0 +1,17 @@
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMUser
+metadata:
+  name: homeassistant
+spec:
+  generatePassword: true
+  username: homeassistant
+  targetRefs:
+    - crd:
+        kind: VMAgent
+        name: vmks-victoria-metrics-k8s-stack
+        namespace: observability
+      paths:
+        - /influx/.*
+        - /write
+        - /api/v2/write
