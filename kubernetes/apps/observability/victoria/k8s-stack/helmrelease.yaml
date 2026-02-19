@@ -31,31 +31,6 @@ spec:
       enabled: false
     vmagent:
       enabled: true
-      spec:
-        insertPorts:
-          # graphitePort: "2003"
-          influxPort: "8086"
-        serviceSpec:
-          metadata:
-            name: vmagent-metrics-ingest
-            annotations:
-              lbipam.cilium.io/ips: "10.0.42.131"
-              external-dns.alpha.kubernetes.io/hostname: metrics-ingest.${SECRET_DOMAIN}
-          spec:
-            type: LoadBalancer
-            ports:
-              # - name: graphite-tcp
-              #   port: 2003
-              #   targetPort: 2003
-              #   protocol: TCP
-              # - name: graphite-udp
-              #   port: 2003
-              #   targetPort: 2003
-              #   protocol: UDP
-              - name: influx-tcp
-                port: 8086
-                targetPort: 8086
-                protocol: TCP
 
     grafana:
       # deployed separately
