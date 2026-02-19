@@ -5,4 +5,5 @@ resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
   - ./vmstaticscrape.yaml
+  - ./vmuser.yaml
   - ./secret.sops.yaml

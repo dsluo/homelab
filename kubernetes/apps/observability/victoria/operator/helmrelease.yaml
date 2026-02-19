@@ -11,6 +11,10 @@ spec:
   values:
     operator:
       enable_converter_ownership: true
+    env:
+      # required for the operator to create HTTPRoutes specified on CRs
+      - name: VM_GATEWAY_API_ENABLED
+        value: "true"
     serviceMonitor:
       enabled: true
     crds:

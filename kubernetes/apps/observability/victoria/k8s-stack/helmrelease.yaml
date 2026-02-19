@@ -28,7 +28,17 @@ spec:
     vmalert:
       enabled: true
     vmauth:
-      enabled: false
+      enabled: true
+      spec:
+        selectAllByDefault: true
+        unauthorizedUserAccessSpec:
+          disabled: true
+        httpRoute:
+          hostnames:
+            - "metrics-ingest.${SECRET_DOMAIN}"
+          parentRefs:
+            - name: envoy-internal
+              namespace: network
     vmagent:
       enabled: true
 
