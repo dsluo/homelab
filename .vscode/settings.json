@@ -1,7 +1,8 @@
 {
   "editor.bracketPairColorization.enabled": true,
   "files.associations": {
-    "*.json5": "json5"
+    "*.json5": "json5",
+    "*.sops.env": "dotenv"
   },
   "yaml.schemas": {
     "Kubernetes": "./kubernetes/*.yaml"
