@@ -17,10 +17,14 @@ spec:
       spec:
         retentionPeriod: "100y"
         storageDataPath: /victoria-metrics-data
+        storage: null # override chart default; use existing PVC via volumes instead
         volumes:
           - name: data
             persistentVolumeClaim:
               claimName: "${APP}"
+        volumeMounts:
+          - name: data
+            mountPath: /victoria-metrics-data
     vmcluster:
       enabled: false
     alertmanager:
