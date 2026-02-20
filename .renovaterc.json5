@@ -91,6 +91,7 @@
         "minor",
         "patch"
       ],
+      minimumReleaseAge: "1 day",
       ignoreTests: true,
     },
     {
