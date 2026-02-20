@@ -6,6 +6,7 @@ provider "registry.opentofu.org/backblaze/b2" {
   constraints = "0.12.0"
   hashes = [
     "h1:SoC8zRtT6vvj36+MzzKEtEV0qn3e9L+img9+H7+RBDY=",
+    "h1:fjzLuFdzPOIkIhqKaym88SzolT+zTgkUFTLx7gUpOxs=",
     "zh:24da39a69137bae1c2634f051f7714e02fab2fac54361ce774700cb7988e8910",
     "zh:43b763b4caa9780d1dc788fab1eb09857d01f30d6b8f646d14c235f86471e633",
     "zh:c0e45d4951ef710c556fa707665e1e1017980bf221b20c463312b9f6b1bc411c",
@@ -19,6 +20,7 @@ provider "registry.opentofu.org/terraform-routeros/routeros" {
   constraints = "1.99.0"
   hashes = [
     "h1:j5LBBuLkFQdNcWNibEGrHWajqwx/2uX4cMLJNq6/wrg=",
+    "h1:jiaUMfmA+uYmUsA42bBRTWhmlyy0woTJjTtkdweR+lE=",
     "zh:0febcfb0a6d7fdb69918cab178ce023bc4d71570351910b9b125ab5e2d71cf2b",
     "zh:1430b923edb3ad236350618334e5ff066c9c89c255f43599ab24a99ca558bfdc",
     "zh:2682fe11d6ffc19d14137a27ed7ef5b6fb21dc9916a6dba7e9a7a5ba4648a860",
