@@ -1,6 +1,6 @@
 # bridge
 resource "routeros_interface_bridge" "bridge" {
-  name           = "bridge1"
+  name           = "bridge"
   vlan_filtering = true
   pvid           = 1
   priority       = "0x4000"
