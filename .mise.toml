@@ -37,7 +37,7 @@ postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
 "aqua:siderolabs/talos" = "1.12.4"
 "aqua:utkuozdemir/pv-migrate" = "2.2.1"
 "aqua:helm/helm" = "4.1.1"
-"aqua:helmfile/helmfile" = "1.2.3"
+"aqua:helmfile/helmfile" = "1.3.0"
 "aqua:kubernetes-sigs/kustomize" = "5.8.0"
 "aqua:mikefarah/yq" = { version = "4.52.4", completions = false }
 "aqua:cilium/cilium-cli" = "0.19.1"
