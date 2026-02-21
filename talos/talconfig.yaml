@@ -30,7 +30,10 @@ nodes:
       customization:
         systemExtensions:
           officialExtensions:
-            - siderolabs/qemu-guest-agent
+            - siderolabs/intel-ucode
+            - siderolabs/mei
+            - siderolabs/util-linux-tools
+            - siderolabs/xe
             - siderolabs/zfs
         bootloader: sd-boot
     # todo: state and ephemeral disk encryption
