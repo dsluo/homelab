@@ -40,19 +40,26 @@ locals {
     "trunk-native40" = {
       comment = "services"
       interfaces = [
-        "sfp-sfpplus15", # pve0
-        "sfp-sfpplus16", # pve0
         "sfp-sfpplus17", # storage
         "sfp-sfpplus18", # storage
       ]
       vlan  = 40
       trunk = true
     }
+    "trunk-native42" = {
+      comment = "kubernetes"
+      interfaces = [
+        "sfp-sfpplus15", # talos0
+        "sfp-sfpplus16", # talos0
+      ]
+      vlan  = 42
+      trunk = true
+    }
   }
   interface_comments = {
     "ether1"        = "management"
-    "sfp-sfpplus15" = "pve0"
-    "sfp-sfpplus16" = "pve0"
+    "sfp-sfpplus15" = "talos0"
+    "sfp-sfpplus16" = "talos0"
     "sfp-sfpplus17" = "storage"
     "sfp-sfpplus18" = "storage"
     "sfp-sfpplus19" = "david-desktop"
