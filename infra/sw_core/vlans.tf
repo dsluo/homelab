@@ -17,9 +17,13 @@ locals {
       vlan_ids = ["30-39"]
       tagged   = ["trunk-native20"]
     }
-    "vlan40-49" = {
-      vlan_ids = ["40-49"]
+    "vlan40-41,43-49" = {
+      vlan_ids = ["40-41","43-49"]
       tagged   = ["trunk-native20", "trunk-native40"]
+    }
+    "vlan42" = {
+      vlan_ids = ["42"]
+      tagged   = ["trunk-native20", "trunk-native40", "trunk-native42"]
     }
     "vlan50-59" = {
       vlan_ids = ["50-59"]
@@ -32,7 +36,7 @@ resource "routeros_interface_bridge_vlan" "vlans" {
   for_each = local.bridge_vlans
 
   bridge   = routeros_interface_bridge.bridge.name
-  tagged   = [for t in each.value.tagged : routeros_interface_list.lists[t].name]
+  tagged   = [for t in try(each.value.tagged, []) : routeros_interface_list.lists[t].name]
   untagged = [for u in try(each.value.untagged, []) : routeros_interface_list.lists[u].name]
   vlan_ids = each.value.vlan_ids
 }

@@ -6,7 +6,7 @@ talosVersion: v1.12.4
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 kubernetesVersion: v1.35.1
 
-endpoint: https://10.0.42.2:6443
+endpoint: https://10.0.42.3:6443
 allowSchedulingOnControlPlanes: true
 clusterPodNets:
   - 10.244.0.0/16
@@ -20,6 +20,8 @@ cniConfig:
 nodes:
   - hostname: talos0
     ipAddress: "10.0.42.3"
+    nameservers:
+      - 10.0.42.1
     controlPlane: true
     installDiskSelector:
       size: "960197124096"
@@ -30,7 +32,10 @@ nodes:
       customization:
         systemExtensions:
           officialExtensions:
-            - siderolabs/qemu-guest-agent
+            - siderolabs/intel-ucode
+            - siderolabs/mei
+            - siderolabs/util-linux-tools
+            - siderolabs/xe
             - siderolabs/zfs
         bootloader: sd-boot
     # todo: state and ephemeral disk encryption
@@ -41,17 +46,23 @@ nodes:
             match: disk.pretty_size == "960 GB" && disk.model.startsWith("SAMSUNG")
           maxSize: 100GB
     networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "bc:24:11:e6:44:8b"
-        dhcp: false
-        addresses:
-          - "10.0.42.3/24"
-        routes:
-          - network: "0.0.0.0/0"
-            gateway: "10.0.42.1"
+      - interface: bond0
+        bond:
+          interfaces: 
+            - enp1s0f0np0
+            - enp1s0f1np1
+          mode: active-backup
         mtu: 1500
-        vip:
-          ip: "10.0.42.2"
+        vlans:
+          - vlanId: 42
+            dhcp: false
+            addresses:
+              - "10.0.42.3/24"
+            routes:
+              - network: "0.0.0.0/0"
+                gateway: "10.0.42.1"
+            # vip:
+            #   ip: "10.0.42.2"
     patches:
       - |-
         apiVersion: v1alpha1
