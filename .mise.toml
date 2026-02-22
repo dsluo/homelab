@@ -42,7 +42,7 @@ postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
 "aqua:mikefarah/yq" = { version = "4.52.4", completions = false }
 "aqua:cilium/cilium-cli" = "0.19.1"
 "aqua:cloudflare/cloudflared" = { version = "2026.2.0", completions = false }
-"github:grafana/mcp-grafana" = { version = "0.10.0", completions = false }
+"github:grafana/mcp-grafana" = { version = "0.11.0", completions = false }
 "github:cloudnative-pg/cloudnative-pg" = "1.28.1"
 "github:Handfish/talos-pilot" = { version = "0.1.9", completions = false }
 "aqua:opentofu" = { version = "1.11.5", completions = false }
