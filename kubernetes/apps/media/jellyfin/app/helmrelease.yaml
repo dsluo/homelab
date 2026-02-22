@@ -1,0 +1,89 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: jellyfin
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: jellyfin
+  interval: 1h
+  values:
+    controllers:
+      jellyfin:
+        annotations:
+          reloader.stakater.com/auto: "true"
+
+        pod:
+          resourceClaims:
+            - name: gpu
+              resourceClaimTemplateName: jellyfin
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+
+        containers:
+          jellyfin:
+            image:
+              repository: ghcr.io/jellyfin/jellyfin
+              tag: 10.11.5
+            env:
+              JELLYFIN_CONFIG_DIR: /config
+              JELLYFIN_CACHE_DIR: /cache
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 5
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+              claims:
+                - name: gpu
+    service:
+      jellyfin:
+        controller: jellyfin
+        primary: true
+        ports:
+          http:
+            port: 8096
+    route:
+      jellyfin:
+        hostnames:
+          - "jellyfin.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: jellyfin
+                port: http
+
+    persistence:
+      config:
+        existingClaim: jellyfin
+        globalMounts:
+          - path: /config
+      media:
+        type: nfs
+        path: /mnt/tank/media
+        server: storage.lan
+        advancedMounts:
+          jellyfin:
+            jellyfin:
+              - path: /media
+                subPath: media
+                readOnly: true
+      cache:
+        type: emptyDir
+        globalMounts:
+          - path: /cache
