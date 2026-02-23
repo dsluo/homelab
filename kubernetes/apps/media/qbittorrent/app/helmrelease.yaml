@@ -167,11 +167,11 @@ spec:
       media:
         type: nfs
         server: storage.lan
-        path: /mnt/tank/media
+        path: /mnt/tank/media/torrents
         advancedMounts:
           *app :
             *app :
-              - path: /media
+              - path: /torrents
       coredns:
         type: configMap
         name: qbittorrent-coredns-configmap
