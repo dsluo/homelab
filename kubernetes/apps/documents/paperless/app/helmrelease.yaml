@@ -17,9 +17,9 @@ spec:
 
         pod:
           securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
-            supplementalGroups: [13004]
+            runAsUser: 4001
+            runAsGroup: 4001
+            supplementalGroups: [5000]
 
         containers:
           paperless:
@@ -80,8 +80,8 @@ spec:
               PAPERLESS_TASK_WORKERS: "2"
               PAPERLESS_WEBSERVER_WORKERS: "2"
 
-              USERMAP_UID: "1000"
-              USERMAP_GID: "1000"
+              USERMAP_UID: "4001"
+              USERMAP_GID: "4001"
 
               # directories
               PAPERLESS_CONSUMPTION_DIR: /data/nas/paperless-ingest

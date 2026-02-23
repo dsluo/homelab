@@ -13,8 +13,9 @@ spec:
     # mostly yoinked from @m00nwatcher/homelab-cluster
     defaultPodOptions:
       securityContext:
-        fsGroup: &uid 1000
+        fsGroup: 5001
         fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups: [5001]
     controllers:
       *app :
         strategy: Recreate
@@ -91,8 +92,8 @@ spec:
               TZ: America/Detroit
             securityContext: &ctx
               runAsNonRoot: true
-              runAsUser: *uid
-              runAsGroup: *uid
+              runAsUser: 4005
+              runAsGroup: 4005
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: { drop: [ALL] }

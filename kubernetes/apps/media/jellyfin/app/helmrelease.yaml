@@ -20,9 +20,10 @@ spec:
             - name: gpu
               resourceClaimTemplateName: jellyfin
           securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
-            supplementalGroups: [13008]
+            runAsNonRoot: true
+            runAsUser: 4006
+            runAsGroup: 4006
+            supplementalGroups: [5001]
 
         containers:
           jellyfin:
