@@ -1,0 +1,189 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app qbittorrent
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    # mostly yoinked from @m00nwatcher/homelab-cluster
+    defaultPodOptions:
+      securityContext:
+        fsGroup: &uid 1000
+        fsGroupChangePolicy: OnRootMismatch
+    controllers:
+      *app :
+        strategy: Recreate
+
+        annotations:
+          reloader.stakater.com/auto: "true"
+
+        initContainers:
+          coredns:
+            image:
+              repository: mirror.gcr.io/coredns/coredns
+              tag: 1.14.1@sha256:82b57287b29beb757c740dbbe68f2d4723da94715b563fffad5c13438b71b14a
+            args:
+              - -conf
+              - /etc/coredns/Corefile
+            restartPolicy: Always
+
+          gluetun:
+            dependsOn: [coredns]
+            image:
+              repository: ghcr.io/qdm12/gluetun
+              tag: v3.41.0@sha256:6b54856716d0de56e5bb00a77029b0adea57284cf5a466f23aad5979257d3045
+            restartPolicy: Always
+            env:
+              VPN_TYPE: wireguard
+              VPN_INTERFACE: wg0
+              PORT_FORWARD_ONLY: "on"
+              BLOCK_MALICIOUS: "off" # https://github.com/qdm12/gluetun/issues/2054
+              DOT: "off"
+              DNS_ADDRESS: 127.0.0.2
+              FIREWALL_INPUT_PORTS: "8080,9999" # webui, healthcheck
+              HEALTH_SERVER_ADDRESS: ":9999"
+              FIREWALL_OUTBOUND_SUBNETS: 10.244.0.0/16,10.96.0.0/12
+            envFrom:
+              - secretRef:
+                  name: qbittorrent-secret
+            lifecycle:
+              postStart:
+                exec:
+                  command:
+                    - "/bin/sh"
+                    - "-c"
+                    - "(ip rule del table 51820; ip -6 rule del table 51820) || true"
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec: &probeSpec
+                  exec:
+                    command: ["/gluetun-entrypoint", "healthcheck"]
+              readiness: *probe
+              startup:
+                <<: *probe
+                spec:
+                  <<: *probeSpec
+                  failureThreshold: 30
+                  periodSeconds: 5
+            securityContext:
+              capabilities: { add: ["NET_ADMIN"] }
+              allowPrivilegeEscalation: false
+            # TODO: give access to /dev/net/tun this way rather than a hostpath volume
+            # resources:
+            #   limits:
+            #     squat.ai/tun: "1"
+
+        containers:
+          *app :
+            image:
+              repository: ghcr.io/home-operations/qbittorrent
+              tag: 5.1.4@sha256:56ecd30a7f5e1357daf5eea2a6935134d329b7b268a3a9b9c67041b65fb87fc6
+            env:
+              QBT_WEBUI_PORT: &port 8080
+              TZ: America/Detroit
+            securityContext: &ctx
+              runAsNonRoot: true
+              runAsUser: *uid
+              runAsGroup: *uid
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: [ALL] }
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            resources:
+              requests:
+                cpu: 200m
+                memory: 1Gi
+              limits:
+                memory: 4Gi
+          portForward:
+            image:
+              repository: ghcr.io/bjw-s-labs/gluetun-qb-port-sync
+              tag: 0.0.4@sha256:14ce24f2e054abf06f695f35c8c33612e49d6d0fe80a33896403d85b09a9d329
+            resources:
+              requests:
+                cpu: 10m
+                memory: 100Mi
+              limits:
+                memory: 100Mi
+            env:
+              GLUETUN_CONTROL_SERVER_HOST: localhost
+              GLUETUN_CONTROL_SERVER_PORT: 8000
+              QBITTORRENT_HOST: localhost
+              QBITTORRENT_WEBUI_PORT: *port
+              CRON_ENABLED: true
+              CRON_SCHEDULE: "*/5 * * * *"
+              LOG_TIMESTAMP: false
+            securityContext: *ctx
+    service:
+      *app :
+        primary: true
+        ports:
+          http:
+            port: *port
+    route:
+      *app :
+        hostnames:
+          - qb.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: *app
+                port: http
+
+    persistence:
+      tun:
+        type: hostPath
+        hostPath: /dev/net/tun
+        hostPathType: CharDevice
+        advancedMounts:
+          *app :
+            gluetun:
+              - path: /dev/net/tun
+      config:
+        existingClaim: *app
+        advancedMounts:
+          *app :
+            *app :
+              - path: /config
+      media:
+        type: nfs
+        server: storage.lan
+        path: /mnt/tank/media
+        advancedMounts:
+          *app :
+            *app :
+              - path: /media
+      coredns:
+        type: configMap
+        name: qbittorrent-coredns-configmap
+        advancedMounts:
+          *app :
+            coredns:
+              - path: /etc/coredns/Corefile
+                subPath: Corefile
+      tmp:
+        type: emptyDir
+      emptyConfig:
+        type: emptyDir
+        advancedMounts:
+          *app :
+            portForward:
+              - path: /config
