@@ -42,6 +42,7 @@ spec:
               VPN_TYPE: wireguard
               VPN_INTERFACE: wg0
               PORT_FORWARD_ONLY: "on"
+              VPN_PORT_FORWARDING: "on"
               BLOCK_MALICIOUS: "off" # https://github.com/qdm12/gluetun/issues/2054
               DOT: "off"
               DNS_ADDRESS: 127.0.0.2
