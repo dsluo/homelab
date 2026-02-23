@@ -80,9 +80,6 @@ spec:
               PAPERLESS_TASK_WORKERS: "2"
               PAPERLESS_WEBSERVER_WORKERS: "2"
 
-              USERMAP_UID: "4001"
-              USERMAP_GID: "4001"
-
               # directories
               PAPERLESS_CONSUMPTION_DIR: /data/nas/paperless-ingest
               PAPERLESS_EXPORT_DIR: /data/nas/paperless-export
