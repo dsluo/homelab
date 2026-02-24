@@ -10,7 +10,7 @@ spec:
       namespace: volsync-system
   components:
     - ../../../../components/volsync
-  {% endif -%}
+  {%- endif %}
   interval: 1h
   path: ./kubernetes/apps/{{namespace}}/{{app}}/{{component}}
   postBuild:
@@ -18,7 +18,7 @@ spec:
       APP: *app
       {% if volsync -%}
       VOLSYNC_CAPACITY: 5Gi
-      {% endif -%}
+      {%- endif %}
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
