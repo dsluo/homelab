@@ -22,7 +22,7 @@ spec:
               tag: {{tag}}@{{hash}}
     persistence:
       data:
-        existingClaim: "{{app}}"
+        existingClaim: *app
     service:
       *app :
         ports:
