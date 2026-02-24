@@ -33,7 +33,7 @@ component:
   help: Component name?
 secret:
   type: bool
-  default: false
+  default: true
   help: Generate secret?
 volsync:
   type: bool
