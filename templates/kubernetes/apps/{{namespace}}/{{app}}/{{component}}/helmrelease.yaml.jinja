@@ -1,0 +1,42 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app {{app}}
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    {% if app_template -%}
+    controllers:
+      *app : 
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          *app :
+            image:
+              repository: {{image}}
+              tag: {{tag}}@{{hash}}
+    persistence:
+      data:
+        existingClaim: "{{app}}"
+    service:
+      *app :
+        ports:
+          http:
+            port: &port 80
+    route:
+      *app :
+        hostnames:
+          - "{{app}}.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+            - identifier: *app
+              port: *port
+    {% endif -%}

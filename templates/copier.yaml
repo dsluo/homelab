@@ -1,0 +1,67 @@
+_skip_if_exists:
+  - kubernetes/apps/*/kustomization.yaml
+  - kubernetes/apps/*/namespace.yaml
+_tasks:
+  - "yq -i '.resources |= ([\"./namespace.yaml\"] + (. + [\"./{{ app }}/ks.yaml\"] | unique | map(select(. != \"./namespace.yaml\")) | sort))' kubernetes/apps/{{ namespace }}/kustomization.yaml"
+_exclude:
+  - CLAUDE.md
+  - .gitignore
+  - extensions/
+_jinja_extensions:
+  - copier_template_extensions.TemplateExtensionLoader
+  - extensions/namespaces.py:NamespacesHook
+
+namespace_select:
+  type: str
+  choices: "{{ existing_namespaces + ['(new)'] }}"
+  help: Target namespace?
+namespace_new:
+  type: str
+  when: "{{ namespace_select == '(new)' }}"
+  help: New namespace name?
+namespace:
+  type: str
+  default: "{{ namespace_new if namespace_select == '(new)' else namespace_select }}"
+  when: false
+app:
+  type: str
+  help: App name?
+component:
+  type: str
+  default: app
+  help: Component name?
+secret:
+  type: bool
+  default: false
+  help: Generate secret?
+volsync:
+  type: bool
+  default: true
+  help: Use volsync managed PVC?
+app_template:
+  type: bool
+  default: true
+  help: Use app-template?
+oci_repo:
+  type: str
+  default: oci://ghcr.io/bjw-s-labs/helm/app-template
+  help: OCI Repo?
+  when: "{{ not app_template }}"
+version:
+  type: str
+  # todo: update this with renovate
+  default: 4.6.2
+  help: OCI artifact version?
+  when: "{{ not app_template }}"
+image:
+  type: str
+  help: Container image?
+  when: "{{ app_template }}"
+tag:
+  type: str
+  help: Container tag?
+  when: "{{ app_template }}"
+hash:
+  type: str
+  help: Container hash?
+  when: "{{ app_template }}"
