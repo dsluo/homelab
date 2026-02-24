@@ -7,6 +7,7 @@ _exclude:
   - CLAUDE.md
   - .gitignore
   - extensions/
+  - copier.yaml
 _jinja_extensions:
   - copier_template_extensions.TemplateExtensionLoader
   - extensions/namespaces.py:NamespacesHook
