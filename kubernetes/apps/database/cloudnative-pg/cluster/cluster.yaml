@@ -30,6 +30,11 @@ spec:
         login: true
         passwordSecret:
           name: paperless-postgres-secret
+      - name: sonarr
+        ensure: present
+        login: true
+        passwordSecret:
+          name: sonarr-postgres-secret
   
   plugins:
     - name: barman-cloud.cloudnative-pg.io
