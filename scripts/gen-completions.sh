@@ -36,46 +36,49 @@ TOOLS=$(mise config get tools | yq -ptoml -oj -I0 'to_entries | .[]')
 
 # todo: make use of MISE_INSTALLED_TOOLS to only run this for tools that were newly installed.
 while read -r TOOL; do
-    TOOL_NAME=$(echo "$TOOL" | jq -r '.key')
-    VERSION=$(echo "$TOOL" | jq -r '.value.version? // .value')
-    DO_COMPLETIONS=$(
-        echo "$TOOL" \
-        | jq -r '
-            .value 
-            | if . | type == "object" and has("completions") 
-            then 
-                .completions 
-            else 
-                true 
-            end'
-    )
-    COMPLETION_FLAG=$(echo "$TOOL" | jq -r '.value.completion_flag? // "completion"')
+    (
+        TOOL_NAME=$(echo "$TOOL" | jq -r '.key')
+        VERSION=$(echo "$TOOL" | jq -r '.value.version? // .value')
+        DO_COMPLETIONS=$(
+            echo "$TOOL" \
+            | jq -r '
+                .value
+                | if . | type == "object" and has("completions")
+                then
+                    .completions
+                else
+                    true
+                end'
+        )
+        COMPLETION_FLAG=$(echo "$TOOL" | jq -r '.value.completion_flag? // "completion"')
 
-    if [[ "$DO_COMPLETIONS" == "false" ]]; then
-        log debug "Skipping $TOOL_NAME $VERSION; disabled"
-        continue
-    fi
-
-    BINPATH="$(mise bin-paths "$TOOL_NAME")"
-
-    for ITEM in $BINPATH/*; do
-        if [[ ! -f "$ITEM" || ! -x "$ITEM" ]]; then
-            continue
-        fi
-        EXEC_NAME=$(basename $ITEM)
-        COMPLETION_FILE="$COMPLETIONS_DIR/$EXEC_NAME.$COMPLETION_EXT"
-
-        if [[ -f "$COMPLETION_FILE" && "$CACHE_COMPLETIONS" == "true" ]]; then
-            log debug "Skipping $EXEC_NAME v$VERSION; already exists"
-            continue
+        if [[ "$DO_COMPLETIONS" == "false" ]]; then
+            log debug "Skipping $TOOL_NAME $VERSION; disabled"
+            exit 0
         fi
 
-        log info "Generating completions for $EXEC_NAME v$VERSION"
+        BINPATH="$(mise bin-paths "$TOOL_NAME")"
 
-        if COMPLETION="$($ITEM "$COMPLETION_FLAG" "$TARGET_SHELL")"; then
-            echo "$COMPLETION" > "$COMPLETION_FILE"
-        else
-            log warn "Failed to generate completion for $EXEC_NAME v$VERSION. Maybe disable it?"
-        fi
-    done
+        for ITEM in $BINPATH/*; do
+            if [[ ! -f "$ITEM" || ! -x "$ITEM" ]]; then
+                continue
+            fi
+            EXEC_NAME=$(basename $ITEM)
+            COMPLETION_FILE="$COMPLETIONS_DIR/$EXEC_NAME.$COMPLETION_EXT"
+
+            if [[ -f "$COMPLETION_FILE" && "$CACHE_COMPLETIONS" == "true" ]]; then
+                log debug "Skipping $EXEC_NAME v$VERSION; already exists"
+                continue
+            fi
+
+            log info "Generating completions for $EXEC_NAME v$VERSION"
+
+            if COMPLETION="$($ITEM "$COMPLETION_FLAG" "$TARGET_SHELL")"; then
+                echo "$COMPLETION" > "$COMPLETION_FILE"
+            else
+                log warn "Failed to generate completion for $EXEC_NAME v$VERSION. Maybe disable it?"
+            fi
+        done
+    ) &
 done <<< "$TOOLS"
+wait
