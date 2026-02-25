@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - ./database-paperless.yaml
   - ./database-sonarr.yaml
+  - ./database-prowlarr.yaml
