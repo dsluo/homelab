@@ -20,9 +20,6 @@ spec:
             image:
               repository: {{image}}
               tag: {{tag}}@{{hash}}
-    persistence:
-      data:
-        existingClaim: *app
     service:
       *app :
         ports:
@@ -39,4 +36,7 @@ spec:
           - backendRefs:
             - identifier: *app
               port: *port
+    persistence:
+      data:
+        existingClaim: *app
     {% endif -%}
