@@ -14,6 +14,13 @@ spec:
       *app :
         annotations:
           reloader.stakater.com/auto: "true"
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 4008
+            runAsGroup: 4008
+            fsGroup: 4008
+            fsGroupChangePolicy: OnRootMismatch
         containers:
           *app :
             image:
