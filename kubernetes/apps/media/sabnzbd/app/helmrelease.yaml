@@ -30,7 +30,7 @@ spec:
             env:
               TZ: America/Detroit
               SABNZBD__PORT: &port 8080
-              SABNZBD__LOCAL_RANGES_ENTRIES: "10.244.0.0/16,10.96.0.0/12"
+              SABNZBD__LOCAL_RANGES_ENTRIES: "10.244.0.0/16,10.96.0.0/12,10.0.42.0/24"
               SABNZBD__HOST_WHITELIST_ENTRIES: >-
                 sabnzbd,
                 sabnzbd.media,
