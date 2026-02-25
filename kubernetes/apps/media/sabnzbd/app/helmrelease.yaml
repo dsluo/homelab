@@ -96,7 +96,7 @@ spec:
         server: storage.lan
         path: /mnt/tank/media/usenet
         globalMounts:
-          - /usenet
+          - path: /usenet
       tmp:
         type: emptyDir
         globalMounts:
