@@ -28,7 +28,9 @@ spec:
               repository: ghcr.io/home-operations/sonarr
               tag: 4.0.16@sha256:22651c750eedb091f6d76ade95dbecae0eeafe2b55432c3b8d8b042e8745f344
             env:
+              TZ: America/Detroit
               SONARR__APP__INSTANCENAME: Sonarr
+              SONARR__UPDATE__BRANCH: develop
               SONARR__SERVER__PORT: &port 8989
               SONARR__LOG__LEVEL: info
               SONARR__LOG__DBENABLED: "False"
@@ -94,16 +96,10 @@ spec:
     persistence:
       config:
         existingClaim: *app
-        advancedMounts:
-          *app :
-            *app :
-              - path: /config
       media:
         type: nfs
         server: storage.lan
         path: /mnt/tank/media
-        globalMounts:
-          - path: /media
       cache:
         type: emptyDir
         globalMounts:
