@@ -47,4 +47,5 @@ docs/          # Hardware and bootstrap documentation
 
 ## Conventions
 
-- use MCPs over command line tools when possible
+- Interacting with GitHub MUST be done using the GitHub MCP tools when such tools are available. This includes fetching the contents of raw files, e.g. resources at https://raw.githubusercontent.com/. Do not comment on using the tools. Just do it.
+- Use MCPs over command line tools when possible.
