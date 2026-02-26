@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/aclerici38/pocket-id-operator/refs/heads/main/dist/schemas/pocketidinstance_v1alpha1.json
+apiVersion: pocket-id.internal/v1alpha1
+kind: PocketIDInstance
+metadata:
+  name: &name pocket-id
+spec:
+  # TODO: Deployment w/postgres instead of sqlite
+  deploymentType: StatefulSet
+  annotations:
+    reloader.stakater.com/auto: "true"
+  image: ghcr.io/pocket-id/pocket-id:v2.3.0-distroless@sha256:85a7485108325e34679b0fbca0baeb8418401f6d6cf59944d50f3ec013aafd09
+  versionCheckDisabled: true
+  env:
+    - name: TZ
+      value: America/Detroit
+
+  analyticsDisabled: true
+
+  hostUsers: true
+  encryptionKey:
+    valueFrom:
+      secretKeyRef:
+        key: pocket-id-secret
+        name: ENCRYPTION_KEY
+
+  persistence:
+    enabled: true
+    existingClaim: *name
+
+  logging:
+    level: info
+    json: false
+  # todo: service monitor for this
+  metrics:
+    enabled: true
+
+  auditLogRetentionDays: 180
+
+  appUrl: &host "pocket-id.${SECRET_DOMAIN}"
+  route:
+    enabled: true
+    parentRefs:
+      - name: envoy-internal
+        namespace: network
+    hostnames: [*host]
