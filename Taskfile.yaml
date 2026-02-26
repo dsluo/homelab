@@ -10,3 +10,7 @@ tasks:
   newapp:
     desc: Generate boilerplate for a new app.
     cmd: copier copy templates . --trust
+
+  test:
+    desc: Run flux-local tests
+    cmd: flux-local test --enable-helm --all-namespaces --path kubernetes/flux/cluster/ -v
