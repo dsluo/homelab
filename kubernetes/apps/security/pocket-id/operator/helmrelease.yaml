@@ -10,6 +10,8 @@ spec:
     name: pocket-id-operator
   interval: 1h
   values:
+    instance:
+      enabled: false
     metrics:
       enable: true
     prometheus:
