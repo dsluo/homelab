@@ -12,6 +12,8 @@ spec:
   values:
     instance:
       enabled: false
+      spec:
+        encryptionKey: {}
     metrics:
       enable: true
     prometheus:
