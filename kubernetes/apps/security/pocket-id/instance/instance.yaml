@@ -20,8 +20,8 @@ spec:
   encryptionKey:
     valueFrom:
       secretKeyRef:
-        key: pocket-id-secret
-        name: ENCRYPTION_KEY
+        name: pocket-id-secret
+        key: ENCRYPTION_KEY
 
   persistence:
     enabled: true
