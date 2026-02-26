@@ -5,7 +5,7 @@ metadata:
   name: &app pocket-id-operator
 spec:
   interval: 1h
-  path: ./kubernetes/apps/security/pocket-id/app
+  path: ./kubernetes/apps/security/pocket-id/operator
   postBuild:
     substitute:
       APP: *app
