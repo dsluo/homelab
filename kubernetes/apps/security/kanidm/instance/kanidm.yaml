@@ -8,6 +8,11 @@ spec:
 
   image: mirror.gcr.io/kanidm/server:1.9.1@sha256:b58f502c4fae012f1a0b3cf5fd4c8966c4c376e214c509bb4b3f808c8b653e3c
 
+  replicaGroups:
+    - name: default
+      replicas: 1
+      role: write_replica
+
   oauth2ClientNamespaceSelector: {}
   groupNamespaceSelector: {}
   personNamespaceSelector:
