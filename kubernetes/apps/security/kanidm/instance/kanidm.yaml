@@ -1,4 +1,4 @@
-apiVersion: kaniops.rs/v1beta1
+apiVersion: kaniop.rs/v1beta1
 kind: Kanidm
 metadata:
   name: kanidm
