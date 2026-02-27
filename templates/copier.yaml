@@ -51,7 +51,7 @@ oci_repo:
 version:
   type: str
   # todo: update this with renovate
-  default: 4.6.2
+  default: "{{ '4.6.2' if app_template }}"
   help: OCI artifact version?
   when: "{{ not app_template }}"
 image:
