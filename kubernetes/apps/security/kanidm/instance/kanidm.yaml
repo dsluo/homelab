@@ -1,0 +1,24 @@
+apiVersion: kaniops.rs/v1beta1
+kind: Kanidm
+metadata:
+  name: kanidm
+spec:
+  domain: idm.${SECRET_DOMAIN}
+  tlsSecretName: kanidm-tls
+
+  image: mirror.gcr.io/kanidm/server:1.9.1@sha256:b58f502c4fae012f1a0b3cf5fd4c8966c4c376e214c509bb4b3f808c8b653e3c
+
+  oauth2ClientNamespaceSelector: {}
+  groupNamespaceSelector: {}
+  personNamespaceSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: security
+  serviceAccountNamespaceSelector: {}
+
+  # # todo: volsync?
+  # storage:
+  #   volumeClaimTemplate:
+  #     storageClassName: openebs-zfspv
+  #     resources:
+  #       requests:
+  #         storage: 100Mi
