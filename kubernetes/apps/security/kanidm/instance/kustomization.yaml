@@ -6,3 +6,5 @@ resources:
   - ./certificate.yaml
   - ./httproute.yaml
   - ./kanidm.yaml
+  - ./personaccount.sops.yaml
+  - ./group.sops.yaml

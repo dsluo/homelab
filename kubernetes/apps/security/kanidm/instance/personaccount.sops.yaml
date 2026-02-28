@@ -1,0 +1,28 @@
+apiVersion: kaniop.rs/v1beta1
+kind: KanidmPersonAccount
+metadata:
+    name: ENC[AES256_GCM,data:zzHQSqw=,iv:yyVrqY9YKF2EwkFM9fSIxDwkeKkMOuvjqeKCrCtHEFQ=,tag:ktYNGnj69kq/10uhYZogoA==,type:str]
+spec:
+    kanidmRef:
+        name: ENC[AES256_GCM,data:UVnFcvRU,iv:REF0LV08X89d9IyvgKYk8kAB8GSi8tYyn6Ylk+WrWC8=,tag:5DQlNd2fmQPb+TK5X/rF9Q==,type:str]
+    personAttributes:
+        displayname: ENC[AES256_GCM,data:hvpleidSm3uq,iv:EzDkyX//8trIy+Nf1ceC7KQGE90HWRyhURphAfyiHiU=,tag:fH3NmZNz9JRii5NbXQm+Zw==,type:str]
+        mail:
+            - ENC[AES256_GCM,data:1LAz2A4zCJQrs8CvTgWvBQDEJcY=,iv:elPObGrh8UNEScQG3ezbP2iCa0nIfZrtrIKxeVfpLI8=,tag:zkvl8blbmeuf12F7XN8AOQ==,type:str]
+            - ENC[AES256_GCM,data:5ueUHTPOJ89jdkgD,iv:ZK0UYfynebRdpKAuRhduDGO9DymgYdiRilOQ91Nal/E=,tag:/DDbtIe7eIui6txuaxV2Lw==,type:str]
+sops:
+    age:
+        - recipient: age1pw3ushyk74yquev7sc7wu0sw6sfku0nfswpqua8ljm0e8vmpxsjslmgv75
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSA5Y0YyUXBEdUc4R25HZU5I
+            MUw2Y09jK1lzSkQyTFB2dzlCQjVRdUhVSVNzClhZVkNzVUZmZjBYSkY1cm9iMURi
+            UkxadTNBdVp6UFFIYjd5a2JXSWhRY0UKLS0tIE5ub253UHZTT0xyR1RJRkRvcXU4
+            VStWKzhodlY5RDlIaUoySzJxdHN4ZjAKlzQAXptpCq4fEANBkbE8ApDZ14+Wk7xR
+            YSCpMQ3/lOBog4WbaylUOmYKH4lhxC+qrly0IRU5XETrJOQN9qtuQQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-02-28T03:26:11Z"
+    mac: ENC[AES256_GCM,data:3ZLbmjNF28cpQ7KUhoiAGB7Rw7cYmKygWsPc+Xg/BC7D6ZUNsG1YA/K1LWvTTKyRBRucev0DEz3jdX5+9w/zn5G5r9r3C1wULw87OM3lw/pPnjO1fcw8Wy6X9nbjfp+ErTW4ieFn6JMCCCa9E4UCfCNQSZSHakAkO3zeEQgl17k=,iv:jnRjtNDJRH2ltcQio1RAfLiawRvZsmP+zjD7Qbh+DI4=,tag:GfipKftlJ7a5Yg9oqqDIKQ==,type:str]
+    encrypted_regex: ^(spec|metadata)$
+    mac_only_encrypted: true
+    version: 3.12.1

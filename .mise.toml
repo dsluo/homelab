@@ -48,3 +48,4 @@ postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
 "aqua:opentofu" = { version = "1.11.5", completions = false }
 "pipx:copier" = { version = "9.12.0", completions = false, uvx_args = "--with copier-template-extensions" }
 "pipx:flux-local" = "8.1.0"
+"cargo:kanidm_tools" = "latest"

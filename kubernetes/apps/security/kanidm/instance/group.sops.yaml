@@ -1,0 +1,28 @@
+apiVersion: kaniop.rs/v1beta1
+kind: KanidmGroup
+metadata:
+    name: ENC[AES256_GCM,data:D1yq7NbgvOTqjg==,iv:f1rjHwKx+N15NRydc9l/U+DbXhv9h43ttbTlqaVI1R8=,tag:lw+xiQves+K3GICWY8PCog==,type:str]
+spec:
+    kanidmRef:
+        name: ENC[AES256_GCM,data:jC/FmlAe,iv:jvCUx9330JpJTzaZ9+uNsCnGbsHeJq/jn3urLmihRzk=,tag:WcNplAlytmWI7GoRE6C84w==,type:str]
+    kanidmName: ENC[AES256_GCM,data:mZfKBWaJsRzlGw==,iv:t2g11Xe7cDqiYKA1gbHbrmouucHNeMK8LvYEuT/2aks=,tag:Mg8AvhhWNAJQ1qfXojAlLw==,type:str]
+    entryManagedBy: ENC[AES256_GCM,data:GQD9tnY=,iv:45dfNtKBDMslRBp9f0iL5d9P+Zm1x1XI8h+fzJEqp4U=,tag:wVThY6cYqP2pCBvZgUKNKA==,type:str]
+    members:
+        - ENC[AES256_GCM,data:Q3r2Cps=,iv:FhwlBVAUzMtaBtfysx+KXtDrZXMMDW2otNaEFksvA+E=,tag:HTWYOPXsv6H0S+w23fO+Jg==,type:str]
+    #ENC[AES256_GCM,data:hIAFveuvKtzU,iv:r+TWbVcLHG262t9CfH1ZBvoPUiaH8dw6xUF4ZOZLBSc=,tag:h8CBkRrrIMtE029MwBLuhA==,type:comment]
+sops:
+    age:
+        - recipient: age1pw3ushyk74yquev7sc7wu0sw6sfku0nfswpqua8ljm0e8vmpxsjslmgv75
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBZOFl4RmpmcklxMDArclFM
+            UFhxZEc5SjREYzE1ckxEd3MrRGlJMGdmNlJjClYvbkYvZGVGeE50UUVkQWlGY3Vw
+            ZVRQblVlblBxMWQzOVZtNVBmYUUrQWMKLS0tIGMxbkkvUjZWcWxuWVRPTGE0WmJr
+            SlJ3RXR3dXJscjduNURyZEtERGFPdGsK1qjFhcoMS63ADv8/7oMjcMyWYgSgmrWE
+            DN6qetk/5pNGbc33y9MYMA2fvoPbk07Qy+5wvsHCMWahX/R6UcxCuA==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-02-28T21:38:44Z"
+    mac: ENC[AES256_GCM,data:E0rEW4qIvY/Daps/HBmo0M6RjdyvQ5W6T2DQ2zK53Tshu8TKzL/xvmPbfTtUKhHG7QLZLMLoD3SOo3U9TQzvOkMqgs5not+yTVQHfbzdcFtJ1e35Ihd6AH0Qpd7pyRH0dsHsZlON2JOVKHtGkw+SAPffdDCYytczJXAp/hnxaoI=,iv:WItvaisqqFmZtsR+tugONUdrtijR8yrZ5gyLrbeZtQs=,tag:i7A0tgdiyMeHMqLjBTL/Gw==,type:str]
+    encrypted_regex: ^(spec|metadata)$
+    mac_only_encrypted: true
+    version: 3.12.1
