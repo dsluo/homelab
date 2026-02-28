@@ -20,10 +20,11 @@ spec:
       kubernetes.io/metadata.name: security
   serviceAccountNamespaceSelector: {}
 
-  # # todo: volsync?
-  # storage:
-  #   volumeClaimTemplate:
-  #     storageClassName: openebs-zfspv
-  #     resources:
-  #       requests:
-  #         storage: 100Mi
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes: [ ReadWriteOnce ]
+        resources:
+          requests:
+            storage: 100Mi
+        storageClassName: openebs-zfspv
