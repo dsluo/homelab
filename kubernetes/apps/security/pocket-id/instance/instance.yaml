@@ -36,10 +36,10 @@ spec:
 
   auditLogRetentionDays: 180
 
-  appUrl: &host "pocket-id.${SECRET_DOMAIN}"
+  appUrl: "https://pocket-id.${SECRET_DOMAIN}"
   route:
     enabled: true
     parentRefs:
       - name: envoy-internal
         namespace: network
-    hostnames: [*host]
+    hostnames: ["pocket-id.${SECRET_DOMAIN}"]
