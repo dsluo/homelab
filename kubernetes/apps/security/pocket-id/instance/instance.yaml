@@ -24,7 +24,7 @@ spec:
       secretKeyRef:
         name: pocket-id-secret
         key: databaseUrl
-  hostUsers: false
+  hostUsers: true
   fileBackend: database
 
   persistence:
