@@ -2,7 +2,7 @@
 apiVersion: pocketid.internal/v1alpha1
 kind: PocketIDInstance
 metadata:
-  name: &name pocket-id
+  name: pocket-id
 spec:
   annotations:
     reloader.stakater.com/auto: "true"
