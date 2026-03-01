@@ -40,6 +40,11 @@ spec:
         login: true
         passwordSecret:
           name: prowlarr-postgres-secret
+      - name: pocketid
+        ensure: present
+        login: true
+        passwordSecret:
+          name: pocketid-postgres-secret
   
   plugins:
     - name: barman-cloud.cloudnative-pg.io

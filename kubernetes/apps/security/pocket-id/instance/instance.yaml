@@ -4,8 +4,6 @@ kind: PocketIDInstance
 metadata:
   name: &name pocket-id
 spec:
-  # TODO: Deployment w/postgres instead of sqlite
-  deploymentType: StatefulSet
   annotations:
     reloader.stakater.com/auto: "true"
   image: ghcr.io/pocket-id/pocket-id:v2.3.0-distroless@sha256:85a7485108325e34679b0fbca0baeb8418401f6d6cf59944d50f3ec013aafd09
@@ -16,16 +14,21 @@ spec:
 
   analyticsDisabled: true
 
-  hostUsers: true
   encryptionKey:
     valueFrom:
       secretKeyRef:
         name: pocket-id-secret
         key: ENCRYPTION_KEY
+  databaseUrl:
+    valueFrom:
+      secretKeyRef:
+        name: pocket-id-secret
+        key: databaseUrl
+  hostUsers: false
+  fileBackend: database
 
   persistence:
-    enabled: true
-    existingClaim: *name
+    enabled: false
 
   logging:
     level: info
