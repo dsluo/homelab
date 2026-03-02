@@ -64,7 +64,7 @@ spec:
         existingClaim: *app
       media:
         type: nfs
-        server: stroage.lan
+        server: storage.lan
         path: /mnt/tank/media
       cache:
         type: emptyDir
