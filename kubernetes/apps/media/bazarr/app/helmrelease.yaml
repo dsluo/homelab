@@ -19,6 +19,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 4009
             runAsGroup: 4009
+            supplementalGroups: [5001]
             fsGroup: 4009
             fsGroupChangePolicy: OnRootMismatch
         containers:
