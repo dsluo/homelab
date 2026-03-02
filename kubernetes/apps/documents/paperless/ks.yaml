@@ -12,6 +12,7 @@ spec:
   postBuild:
     substitute:
       APP: paperless
+      OIDC_PKCE_ENABLED: "true"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
