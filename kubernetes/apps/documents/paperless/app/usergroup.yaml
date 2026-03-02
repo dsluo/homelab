@@ -4,6 +4,8 @@ metadata:
   name: paperless-users
 spec:
   friendlyName: Paperless Users
+  allowedOIDCClients:
+    - name: paperless
   users:
     userRefs:
       - name: david

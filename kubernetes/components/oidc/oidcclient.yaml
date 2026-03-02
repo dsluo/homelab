@@ -7,9 +7,6 @@ metadata:
 spec:
   clientID: ${APP}
   launchUrl: https://${APP_URL:=${APP}.${SECRET_DOMAIN}}
-  allowedUserGroups:
-    - name: ${APP}-users
-      # namespace: ${NS}
   secret:
     keys:
       clientID: OIDC_CLIENT_ID
