@@ -1,0 +1,9 @@
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUser
+metadata:
+  name: david
+spec:
+  userInfoSecretRef:
+    name: david-user-info
+  admin: true
+  locale: en

@@ -1,0 +1,9 @@
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: paperless-users
+spec:
+  friendlyName: Paperless Users
+  users:
+    userRefs:
+      - name: david
