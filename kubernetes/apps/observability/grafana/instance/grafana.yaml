@@ -29,7 +29,7 @@ spec:
       scopes: "openid email profile groups"
       email_attribute_path: "email:primary"
       use_pkce: "true"
-      allow_sign_up: "false"
+      allow_sign_up: "true"
       auto_login: "false"
       skip_org_role_sync: "true"
       role_attribute_path: "contains(groups[*], 'Grafana Admins') && 'Admin' || contains(groups[*], 'Grafana Editors') && 'Editor' || 'Viewer'"
