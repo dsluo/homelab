@@ -1,0 +1,18 @@
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: ${APP}
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: ${HTTPROUTE_NAME:=${APP}}
+  oidc:
+    provider:
+      issuer: "https://pocket-id.${SECRET_DOMAIN}/oauth2/openid/${OIDC_APP:=${APP}}"
+    clientID: "${OIDC_APP:=${APP}}"
+    clientSecret:
+      name: "${OIDC_APP:=${APP}}-oidc-credentials"
+    redirectURL: "https://${APP_URL:=${OIDC_APP:=${APP}}.${SECRET_DOMAIN}}/oauth2/callback"
+    logoutPath: "/logout"
