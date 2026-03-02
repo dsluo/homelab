@@ -1,0 +1,12 @@
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: sonarr-users
+spec:
+  friendlyName: Sonarr Users
+  allowedOIDCClients:
+    - name: sonarr
+  users:
+    userRefs:
+      - name: david
+        namespace: security
