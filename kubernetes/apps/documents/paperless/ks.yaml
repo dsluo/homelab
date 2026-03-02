@@ -2,57 +2,32 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: paperless-oidc
+  name: &app paperless
 spec:
   dependsOn:
     - name: pocket-id
       namespace: security
-  interval: 1h
-  path: ./kubernetes/components/oidc
-  postBuild:
-    substitute:
-      APP: paperless
-      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/paperless-ngx.svg"
-      OIDC_PKCE_ENABLED: "true"
-    substituteFrom:
-      - name: cluster-secrets
-        kind: Secret
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  targetNamespace: documents
-  healthChecks:
-    - apiVersion: v1
-      kind: Secret
-      name: paperless-oidc-credentials
-      namespace: documents
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: &app paperless
-spec:
-  dependsOn:
-    - name: paperless-oidc
     - name: volsync
       namespace: volsync-system
   interval: 1h
   path: ./kubernetes/apps/documents/paperless/app
   components:
+    - ../../../../components/oidc
     - ../../../../components/volsync
     # todo
     # - ../../../../components/database
   postBuild:
     substitute:
       APP: *app
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/paperless-ngx.svg"
+      OIDC_PKCE_ENABLED: "true"
       VOLSYNC_CAPACITY: 10Gi
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
       - name: paperless-oidc-credentials
         kind: Secret
+        optional: true
   prune: true
   sourceRef:
     kind: GitRepository
