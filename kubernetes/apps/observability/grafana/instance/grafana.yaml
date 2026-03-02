@@ -31,8 +31,8 @@ spec:
       use_pkce: "true"
       allow_sign_up: "true"
       auto_login: "false"
-      skip_org_role_sync: "true"
-      role_attribute_path: "contains(groups[*], 'Grafana Admins') && 'Admin' || contains(groups[*], 'Grafana Editors') && 'Editor' || 'Viewer'"
+      skip_org_role_sync: "false"
+      role_attribute_path: "contains(groups[*], 'grafana-admins') && 'Admin' || contains(groups[*], 'grafana-editors') && 'Editor' || 'Viewer'"
     log:
       mode: console
     metrics:
