@@ -22,10 +22,10 @@ spec:
     auth.generic_oauth:
       enabled: "true"
       name: Pocket ID
-      client_id: "${OIDC_CLIENT_ID}"
-      client_secret: "${OIDC_CLIENT_SECRET}"
-      auth_url: "${OIDC_AUTHORIZATION_URL}"
-      token_url: "${OIDC_TOKEN_URL}"
+      client_id: "$__env{OIDC_CLIENT_ID}"
+      client_secret: "$__env{OIDC_CLIENT_SECRET}"
+      auth_url: "$__env{OIDC_AUTHORIZATION_URL}"
+      token_url: "$__env{OIDC_TOKEN_URL}"
       scopes: "openid email profile groups"
       email_attribute_path: "email:primary"
       use_pkce: "true"
@@ -52,6 +52,9 @@ spec:
         spec:
           containers:
             - name: grafana
+              envFrom:
+                - secretRef:
+                    name: grafana-oidc-credentials
               env:
                 - name: GF_SECURITY_ADMIN_USER
                   valueFrom:
