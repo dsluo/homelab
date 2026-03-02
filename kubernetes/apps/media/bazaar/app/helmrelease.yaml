@@ -1,0 +1,77 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app bazaar
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    controllers:
+      *app :
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          *app :
+            image:
+              repository: ghcr.io/home-operations/bazarr
+              tag: 1.5.6@sha256:281a0199110fc02f6a28f32f6b3b1e306126bd2cc9626f9be84b67766d958706
+            env:
+              TZ: America/Detroit
+              BAZARR__PORT: &port 6767
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            resources:
+              requests:
+                cpu: 100m
+              limits:
+                memory: 1Gi
+            securityContext:
+              readOnlyRootFilesystem: true
+              capabilities: { drop: [ALL] }
+    service:
+      *app :
+        ports:
+          http:
+            port: *port
+    route:
+      *app :
+        hostnames:
+          - "bazaar.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: *app
+                port: *port
+    persistence:
+      config:
+        existingClaim: *app
+      media:
+        type: nfs
+        server: stroage.lan
+        path: /mnt/tank/media
+      cache:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+            subPath: tmp
+          - path: /config/cache
+            subPath: cache
+          - path: /config/log
+            subPath: log
