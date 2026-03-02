@@ -9,3 +9,4 @@ spec:
   users:
     userRefs:
       - name: david
+        namespace: security
