@@ -8,6 +8,7 @@ spec:
   clientID: ${APP}
   launchUrl: https://${APP_URL:=${APP}.${SECRET_DOMAIN}}
   pkceEnabled: ${OIDC_PKCE_ENABLED:=false}
+  logoUrl: ${APP_ICON_URL}
   secret:
     keys:
       clientID: OIDC_CLIENT_ID

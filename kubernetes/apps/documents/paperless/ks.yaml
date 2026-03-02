@@ -12,6 +12,7 @@ spec:
   postBuild:
     substitute:
       APP: paperless
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/paperless-ngx.svg"
       OIDC_PKCE_ENABLED: "true"
     substituteFrom:
       - name: cluster-secrets
