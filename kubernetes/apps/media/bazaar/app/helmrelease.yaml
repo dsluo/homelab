@@ -14,6 +14,13 @@ spec:
       *app :
         annotations:
           reloader.stakater.com/auto: "true"
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 4009
+            runAsGroup: 4009
+            fsGroup: 4009
+            fsGroupChangePolicy: OnRootMismatch
         containers:
           *app :
             image:
@@ -42,6 +49,7 @@ spec:
                 memory: 1Gi
             securityContext:
               readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
               capabilities: { drop: [ALL] }
     service:
       *app :
