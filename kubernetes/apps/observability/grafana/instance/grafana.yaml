@@ -19,6 +19,20 @@ spec:
       org_name: "Main Org."
       org_role: "Viewer"
       hide_version: "true"
+    auth.generic_oauth:
+      enabled: "true"
+      name: Pocket ID
+      client_id: "${OIDC_CLIENT_ID}"
+      client_secret: "${OIDC_CLIENT_SECRET}"
+      auth_url: "${OIDC_AUTHORIZATION_URL}"
+      token_url: "${OIDC_TOKEN_URL}"
+      scopes: "openid email profile groups"
+      email_attribute_path: "email:primary"
+      use_pkce: "true"
+      allow_sign_up: "false"
+      auto_login: "false"
+      skip_org_role_sync: "true"
+      role_attribute_path: "contains(groups[*], 'Grafana Admins') && 'Admin' || contains(groups[*], 'Grafana Editors') && 'Editor' || 'Viewer'"
     log:
       mode: console
     metrics:

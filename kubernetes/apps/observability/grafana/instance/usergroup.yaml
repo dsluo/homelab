@@ -1,0 +1,23 @@
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: grafana-admins
+spec:
+  friendlyName: Grafana Admins
+  allowedOIDCClients:
+    - name: grafana
+  users:
+    userRefs:
+      - name: david
+        namespace: security
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: grafana-editors
+spec:
+  friendlyName: Grafana Editors
+  allowedOIDCClients:
+    - name: grafana
+  users:
+    userRefs: []
