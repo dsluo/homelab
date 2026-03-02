@@ -2,7 +2,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app bazaar
+  name: &app bazarr
 spec:
   dependsOn:
     - name: volsync
@@ -10,7 +10,7 @@ spec:
   components:
     - ../../../../components/volsync
   interval: 1h
-  path: ./kubernetes/apps/media/bazaar/app
+  path: ./kubernetes/apps/media/bazarr/app
   postBuild:
     substitute:
       APP: *app

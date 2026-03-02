@@ -6,7 +6,7 @@ components:
   - ../../components/sops
 resources:
   - ./namespace.yaml
-  - ./bazaar/ks.yaml
+  - ./bazarr/ks.yaml
   - ./jellyfin/ks.yaml
   - ./prowlarr/ks.yaml
   - ./qbittorrent/ks.yaml

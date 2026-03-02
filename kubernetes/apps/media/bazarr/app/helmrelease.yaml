@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app bazaar
+  name: &app bazarr
 spec:
   chartRef:
     kind: OCIRepository
@@ -59,7 +59,7 @@ spec:
     route:
       *app :
         hostnames:
-          - "bazaar.${SECRET_DOMAIN}"
+          - "bazarr.${SECRET_DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network
