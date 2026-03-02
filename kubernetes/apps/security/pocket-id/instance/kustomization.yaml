@@ -4,3 +4,5 @@ kind: Kustomization
 resources:
   - ./secret.sops.yaml
   - ./instance.yaml
+  - ./pocketid-user.yaml
+  - ./user-info-secret.sops.yaml

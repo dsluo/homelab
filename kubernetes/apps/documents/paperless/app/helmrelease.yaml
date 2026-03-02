@@ -68,11 +68,24 @@ spec:
                     key: PAPERLESS_ADMIN_PASSWORD
 
               PAPERLESS_APPS: "allauth.socialaccount.providers.openid_connect"
-              PAPERLESS_SOCIALACCOUNT_PROVIDERS:
-                valueFrom:
-                  secretKeyRef:
-                    name: paperless-secret
-                    key: PAPERLESS_SOCIALACCOUNT_PROVIDERS
+              PAPERLESS_SOCIALACCOUNT_PROVIDERS: >-
+                {
+                  "openid_connect": {
+                    "SCOPE": ["openid", "profile", "email"],
+                    "OAUTH_PKCE_ENABLED": true,
+                    "APPS": [
+                      {
+                        "provider_id": "pocket-id",
+                        "name": "Pocket ID",
+                        "client_id": "${OIDC_CLIENT_ID}",
+                        "secret": "${OIDC_CLIENT_SECRET}",
+                        "settings": {
+                          "server_url": "${OIDC_ISSUER_URL}"
+                        }
+                      }
+                    ]
+                  }
+                }
 
               # app settings
               PAPERLESS_TIME_ZONE: America/Detroit

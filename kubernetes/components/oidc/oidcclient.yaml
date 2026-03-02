@@ -1,0 +1,25 @@
+---
+# yaml-language-server: $schema=https://github.com/aclerici38/pocket-id-operator/releases/latest/download/pocketidoidcclient_v1alpha1.json
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: ${APP}
+spec:
+  clientID: ${APP}
+  launchUrl: https://${APP_URL:=${APP}.${SECRET_DOMAIN}}
+  allowedUserGroups:
+    - name: ${APP}-users
+      # namespace: ${NS}
+  secret:
+    keys:
+      clientID: OIDC_CLIENT_ID
+      clientSecret: OIDC_CLIENT_SECRET
+      issuerUrl: OIDC_ISSUER_URL
+      callbackUrls: OIDC_CALLBACK_URLS
+      logoutCallbackUrls: OIDC_LOGOUT_CALLBACK_URLS
+      discoveryUrl: OIDC_DISCOVERY_URL
+      authorizationUrl: OIDC_AUTHORIZATION_URL
+      tokenUrl: OIDC_TOKEN_URL
+      userinfoUrl: OIDC_USERINFO_URL
+      jwksUrl: OIDC_JWKS_URL
+      endSessionUrl: OIDC_END_SESSION_URL
