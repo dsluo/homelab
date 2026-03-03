@@ -35,6 +35,11 @@ spec:
         login: true
         passwordSecret:
           name: sonarr-postgres-secret
+      - name: radarr
+        ensure: present
+        login: true
+        passwordSecret:
+          name: radarr-postgres-secret
       - name: prowlarr
         ensure: present
         login: true
@@ -50,7 +55,7 @@ spec:
         login: true
         passwordSecret:
           name: seerr-postgres-secret
-  
+
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       enabled: true
