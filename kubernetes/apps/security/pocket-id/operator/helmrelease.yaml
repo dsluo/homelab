@@ -12,11 +12,8 @@ spec:
   values:
     instance:
       enabled: false
-      spec:
-        encryptionKey: {}
     metrics:
       enabled: true
-      port: 8080
       serviceMonitor:
         enabled: true
       dashboard:
