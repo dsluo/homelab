@@ -20,6 +20,6 @@ spec:
           type: OAuth2
           oauth2:
             provider: OIDC
-            clientID: "${OIDC_CLIENT_ID}"
-            clientSecret: "${OIDC_CLIENT_SECRET}"
-            issuerURL: "${OIDC_ISSUER_URL}"
+            clientID: "${OIDC_CLIENT_ID:=placeholder}"
+            clientSecret: "${OIDC_CLIENT_SECRET:=placeholder}"
+            issuerURL: "${OIDC_ISSUER_URL:=https://placeholder.invalid}"
