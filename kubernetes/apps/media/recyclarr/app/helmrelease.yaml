@@ -1,0 +1,72 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app recyclarr
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    controllers:
+      *app :
+        type: cronjob
+        cronjob:
+          schedule: "@daily"
+          timeZone: America/Detroit
+          concurrencyPolicy: Forbid
+          successfulJobsHistory: 1
+          failedJobsHistory: 1
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          *app :
+            image:
+              repository: ghcr.io/recyclarr/recyclarr
+              tag: 8.3.2@sha256:55afe316d3e4e4e3b9120cef7c79436b1b5311f6a18d4ef4b7653e720499c90a
+            args:
+              - sync
+            env:
+              TZ: America/Detroit
+              RECYCLARR_DATA_DIR: /tmp
+              SONARR_API_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: sonarr-secret
+                    key: api_key
+              RADARR_API_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: radarr-secret
+                    key: api_key
+            securityContext:
+              readOnlyRootFilesystem: true
+              capabilities: { drop: [ALL] }
+    persistence:
+      config:
+        existingClaim: *app
+      config-file:
+        type: configMap
+        name: "recyclarr-configmap"
+        globalMounts:
+          - path: /config/recyclarr.yml
+            subPath: recyclarr.yml
+            readOnly: true
+      tmpfs:
+        type: emptyDir
+        globalMounts:
+          - path: /config/logs
+            subPath: logs
+          - path: /config/repositories
+            subPath: repositories
+          - path: /tmp
+            subPath: tmp
