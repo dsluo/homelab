@@ -1,0 +1,123 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app radarr
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    controllers:
+      *app :
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 4010
+            runAsGroup: 4010
+            supplementalGroups: [5001]
+            fsGroup: 4010
+            fsGroupChangePolicy: "OnRootMismatch"
+        containers:
+          *app :
+            image:
+              repository: ghcr.io/home-operations/radarr
+              tag: 6.1.1@sha256:5e08c0eefd2770d1d29395c4f84fe5bf7dfc3a986598021306a5d8ac017a3989
+            env:
+              TZ: America/Detroit
+              RADARR__APP__INSTANCENAME: Radarr
+              RADARR__UPDATE__BRANCH: develop
+              RADARR__SERVER__PORT: &port 7878
+              RADARR__LOG__LEVEL: info
+              RADARR__LOG__DBENABLED: "False"
+              RADARR__LOG__ANALYTICSENABLED: "False"
+
+              RADARR__AUTH__METHOD: External
+              RADARR__AUTH__REQUIRED: DisabledForLocalAddresses
+              RADARR__AUTH__APIKEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: radarr-secret
+                    key: api_key
+
+              RADARR__POSTGRES__HOST: postgres-rw.database.svc.cluster.local
+              RADARR__POSTGRES__PORT: 5432
+              RADARR__POSTGRES__USER: radarr
+              RADARR__POSTGRES__PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: radarr-postgres-secret
+                    key: password
+              RADARR__POSTGRES__MAINDB: radarr
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+            securityContext:
+              readOnlyRootFilesystem: true
+              capabilities: { drop: [ALL] }
+
+    service:
+      *app :
+        ports:
+          http:
+            port: *port
+    route:
+      *app :
+        hostnames:
+          - &host "radarr.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: *app
+                port: *port
+      api:
+        hostnames:
+          - *host
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /api
+            backendRefs:
+              - identifier: *app
+                port: *port
+
+    persistence:
+      config:
+        existingClaim: *app
+      media:
+        type: nfs
+        server: storage.lan
+        path: /mnt/tank/media
+      cache:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+            subPath: tmp
+          - path: /config/logs
+            subPath: logs
