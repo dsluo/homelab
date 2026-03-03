@@ -14,3 +14,12 @@ spec:
     web:
       networkPolicy:
         create: false
+      config:
+        baseURL: "https://flux.${SECRET_DOMAIN}"
+        authentication:
+          type: OAuth2
+          oauth2:
+            provider: OIDC
+            clientID: "${OIDC_CLIENT_ID}"
+            clientSecret: "${OIDC_CLIENT_SECRET}"
+            issuerURL: "${OIDC_ISSUER_URL}"

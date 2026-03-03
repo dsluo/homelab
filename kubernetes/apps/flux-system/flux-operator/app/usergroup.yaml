@@ -1,0 +1,12 @@
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: flux-admins
+spec:
+  friendlyName: Flux Admins
+  allowedOIDCClients:
+    - name: flux-operator
+  users:
+    userRefs:
+      - name: david
+        namespace: security
