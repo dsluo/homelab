@@ -35,7 +35,7 @@ spec:
               - sh
               - -c
               - |
-                PLUGIN_DIR=/config/data/plugins/SSO-Auth
+                PLUGIN_DIR="/config/plugins/SSO Authentication"
                 # renovate: datasource=github-releases depName=9p4/jellyfin-plugin-sso
                 PLUGIN_URL="https://github.com/9p4/jellyfin-plugin-sso/releases/download/v4.0.0.3/sso-authentication_4.0.0.3.zip"
                 mkdir -p "$PLUGIN_DIR"
