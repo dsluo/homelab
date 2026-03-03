@@ -25,6 +25,24 @@ spec:
             runAsGroup: 4006
             supplementalGroups: [5001]
 
+        initContainers:
+          install-sso-plugin:
+            image:
+              repository: busybox
+              tag: 1.37.0
+              digest: sha256:70ce0a747f09cd7c09c2d6eaeab69d60adb0398f569296e8c0e844599388ebd6
+            command:
+              - sh
+              - -c
+              - |
+                PLUGIN_DIR=/config/data/plugins/SSO-Auth
+                # renovate: datasource=github-releases depName=9p4/jellyfin-plugin-sso
+                PLUGIN_URL="https://github.com/9p4/jellyfin-plugin-sso/releases/download/v4.0.0.3/sso-authentication_4.0.0.3.zip"
+                mkdir -p "$PLUGIN_DIR"
+                wget -O /tmp/sso-plugin.zip "$PLUGIN_URL"
+                unzip -o /tmp/sso-plugin.zip -d "$PLUGIN_DIR"
+                rm /tmp/sso-plugin.zip
+
         containers:
           jellyfin:
             image:
