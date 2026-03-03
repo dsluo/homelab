@@ -1,9 +1,23 @@
+---
 apiVersion: pocketid.internal/v1alpha1
 kind: PocketIDUserGroup
 metadata:
   name: jellyfin-users
 spec:
   friendlyName: Jellyfin Users
+  allowedOIDCClients:
+    - name: jellyfin
+  users:
+    userRefs:
+      - name: david
+        namespace: security
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: jellyfin-admins
+spec:
+  friendlyName: Jellyfin Admins
   allowedOIDCClients:
     - name: jellyfin
   users:
