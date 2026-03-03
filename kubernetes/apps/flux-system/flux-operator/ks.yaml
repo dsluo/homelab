@@ -13,6 +13,7 @@ spec:
       APP: flux-operator
       SUBDOMAIN: flux
       APP_ICON_URL: "https://raw.githubusercontent.com/fluxcd/website/refs/heads/main/assets/icons/logo.svg"
+      OIDC_APP_NAME: Flux Operator
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

@@ -39,6 +39,7 @@ spec:
       APP: *app
       OIDC_APP: grafana
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/grafana.svg"
+      OIDC_APP_NAME: Grafana
       OIDC_PKCE_ENABLED: "true"
       VOLSYNC_CAPACITY: 5Gi
     substituteFrom:

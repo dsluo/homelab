@@ -13,6 +13,7 @@ spec:
     substitute:
       APP: *app
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/jellyfin.svg"
+      OIDC_APP_NAME: Jellyfin
       VOLSYNC_CAPACITY: 5Gi
     substituteFrom:
       - name: cluster-secrets

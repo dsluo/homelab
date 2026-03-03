@@ -19,6 +19,7 @@ spec:
       APP: *app
       SUBDOMAIN: qb
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/qbittorrent.svg"
+      OIDC_APP_NAME: qBittorrent
       VOLSYNC_CAPACITY: 5Gi
     substituteFrom:
       - name: cluster-secrets
