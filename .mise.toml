@@ -47,5 +47,5 @@ postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
 "github:Handfish/talos-pilot" = { version = "0.1.9", completions = false }
 "aqua:opentofu" = { version = "1.11.5", completions = false }
 "pipx:copier" = { version = "9.12.0", completions = false, uvx_args = "--with copier-template-extensions" }
-"pipx:flux-local" = "8.1.0"
-"cargo:kanidm_tools" = "latest"
+"pipx:flux-local" = { version = "8.1.0", completions = false }
+"cargo:kanidm_tools" = { version = "1.9.1", completions = false }
