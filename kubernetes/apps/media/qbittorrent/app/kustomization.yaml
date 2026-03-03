@@ -5,6 +5,7 @@ resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
   - ./secret.sops.yaml
+  - ./usergroup.yaml
 configMapGenerator:
   - name: qbittorrent-coredns-configmap
     files:

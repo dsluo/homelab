@@ -1,0 +1,12 @@
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: qbittorrent-users
+spec:
+  friendlyName: qBittorrent Users
+  allowedOIDCClients:
+    - name: qbittorrent
+  users:
+    userRefs:
+      - name: david
+        namespace: security

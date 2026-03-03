@@ -1,0 +1,12 @@
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: prowlarr-users
+spec:
+  friendlyName: Prowlarr Users
+  allowedOIDCClients:
+    - name: prowlarr
+  users:
+    userRefs:
+      - name: david
+        namespace: security

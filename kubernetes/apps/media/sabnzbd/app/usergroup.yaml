@@ -1,0 +1,12 @@
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: sabnzbd-users
+spec:
+  friendlyName: SABnzbd Users
+  allowedOIDCClients:
+    - name: sabnzbd
+  users:
+    userRefs:
+      - name: david
+        namespace: security

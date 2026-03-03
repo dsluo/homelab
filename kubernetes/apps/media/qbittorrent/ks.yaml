@@ -4,13 +4,21 @@ kind: Kustomization
 metadata:
   name: &app qbittorrent
 spec:
+  dependsOn:
+    - name: pocket-id
+      namespace: security
+    - name: volsync
+      namespace: volsync-system
+  components:
+    - ../../../../components/oidc/envoy
+    - ../../../../components/volsync
   interval: 1h
   path: ./kubernetes/apps/media/qbittorrent/app
-  components:
-    - ../../../../components/volsync
   postBuild:
     substitute:
       APP: *app
+      APP_URL: "qb.${SECRET_DOMAIN}"
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/qbittorrent.svg"
       VOLSYNC_CAPACITY: 5Gi
     substituteFrom:
       - name: cluster-secrets
@@ -22,6 +30,3 @@ spec:
     namespace: flux-system
   targetNamespace: media
   wait: false
-  dependsOn:
-    - name: volsync
-      namespace: volsync-system

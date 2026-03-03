@@ -5,15 +5,19 @@ metadata:
   name: &app prowlarr
 spec:
   dependsOn:
+    - name: pocket-id
+      namespace: security
     - name: volsync
       namespace: volsync-system
   components:
+    - ../../../../components/oidc/envoy
     - ../../../../components/volsync
   interval: 1h
   path: ./kubernetes/apps/media/prowlarr/app
   postBuild:
     substitute:
       APP: *app
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/prowlarr.svg"
       VOLSYNC_CAPACITY: 5Gi
     substituteFrom:
       - name: cluster-secrets

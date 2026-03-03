@@ -1,0 +1,12 @@
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: bazarr-users
+spec:
+  friendlyName: Bazarr Users
+  allowedOIDCClients:
+    - name: bazarr
+  users:
+    userRefs:
+      - name: david
+        namespace: security

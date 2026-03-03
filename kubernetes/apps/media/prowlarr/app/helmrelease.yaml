@@ -28,7 +28,7 @@ spec:
               PROWLARR__LOG__DBENABLED: "False"
               PROWLARR__LOG__ANALYTICSENABLED: "False"
 
-              PROWLARR__AUTH__METHOD: Forms
+              PROWLARR__AUTH__METHOD: External
               PROWLARR__AUTH__REQUIRED: DisabledForLocalAddresses
               PROWLARR__AUTH__APIKEY:
                 valueFrom:
@@ -76,12 +76,26 @@ spec:
     route:
       *app :
         hostnames:
-          - "prowlarr.${SECRET_DOMAIN}"
+          - &host "prowlarr.${SECRET_DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network
         rules:
           - backendRefs:
+              - identifier: *app
+                port: *port
+      api:
+        hostnames:
+          - *host
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /api
+            backendRefs:
               - identifier: *app
                 port: *port
 
