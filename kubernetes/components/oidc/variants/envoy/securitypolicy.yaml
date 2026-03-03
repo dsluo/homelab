@@ -10,7 +10,7 @@ spec:
       name: ${HTTPROUTE_NAME:=${APP}}
   oidc:
     provider:
-      issuer: "https://pocket-id.${SECRET_DOMAIN}/oauth2/openid/${OIDC_APP:=${APP}}"
+      issuer: "https://pocket-id.${SECRET_DOMAIN}"
     clientID: "${OIDC_APP:=${APP}}"
     clientSecret:
       name: "${OIDC_APP:=${APP}}-oidc-credentials"
