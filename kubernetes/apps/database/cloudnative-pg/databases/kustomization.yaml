@@ -6,3 +6,4 @@ resources:
   - ./database-sonarr.yaml
   - ./database-prowlarr.yaml
   - ./database-pocketid.yaml
+  - ./database-seerr.yaml
