@@ -14,5 +14,5 @@ spec:
     clientID: "${OIDC_APP:=${APP}}"
     clientSecret:
       name: "${OIDC_APP:=${APP}}-oidc-credentials"
-    redirectURL: "https://${APP_URL:=${OIDC_APP:=${APP}}.${SECRET_DOMAIN}}/oauth2/callback"
+    redirectURL: "https://${SUBDOMAIN:=${OIDC_APP:=${APP}}}.${SECRET_DOMAIN}/oauth2/callback"
     logoutPath: "/logout"

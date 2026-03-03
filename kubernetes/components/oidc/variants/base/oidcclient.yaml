@@ -6,7 +6,7 @@ metadata:
   name: ${OIDC_APP:=${APP}}
 spec:
   clientID: ${OIDC_APP:=${APP}}
-  launchUrl: https://${APP_URL:=${OIDC_APP:=${APP}}.${SECRET_DOMAIN}}
+  launchUrl: https://${SUBDOMAIN:=${OIDC_APP:=${APP}}}.${SECRET_DOMAIN}
   pkceEnabled: ${OIDC_PKCE_ENABLED:=false}
   logoUrl: ${APP_ICON_URL}
   secret:

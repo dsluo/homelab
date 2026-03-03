@@ -17,7 +17,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      APP_URL: "qb.${SECRET_DOMAIN}"
+      SUBDOMAIN: qb
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/qbittorrent.svg"
       VOLSYNC_CAPACITY: 5Gi
     substituteFrom:
