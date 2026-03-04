@@ -41,3 +41,6 @@ override.tofu.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Terragrunt cache
+**/.terragrunt-cache

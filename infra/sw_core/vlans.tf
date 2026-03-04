@@ -18,7 +18,7 @@ locals {
       tagged   = ["trunk-native20"]
     }
     "vlan40-41,43-49" = {
-      vlan_ids = ["40-41","43-49"]
+      vlan_ids = ["40-41", "43-49"]
       tagged   = ["trunk-native20", "trunk-native40"]
     }
     "vlan42" = {

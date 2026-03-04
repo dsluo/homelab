@@ -1,11 +1,20 @@
 version: 3
 
-vars:
-  SOPS_EXEC: sops exec-env .sops.env
-
 tasks:
+  decrypt:
+    internal: true
+    cmd: sops --decrypt .sops.env > .env
+    generates:
+      - .env
+    sources:
+      - .sops.env
+
   plan:
-    cmd: "{{.SOPS_EXEC}} 'tofu plan -out plan.tfplan'"
+    deps: [decrypt]
+    dotenv: [.env]
+    cmd: terragrunt run --all plan
 
   apply:
-    cmd: "{{.SOPS_EXEC}} 'tofu apply plan.tfplan'"
+    deps: [decrypt]
+    dotenv: [.env]
+    cmd: terragrunt run --all apply
