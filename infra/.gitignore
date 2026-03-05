@@ -44,3 +44,5 @@ terraform.rc
 
 # Terragrunt cache
 **/.terragrunt-cache
+
+**/backend.tf

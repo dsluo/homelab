@@ -5,8 +5,6 @@ terraform {
       version = "1.99.0"
     }
   }
-
-  backend "s3" {}
 }
 
 provider "routeros" {}
