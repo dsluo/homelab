@@ -1,20 +1,12 @@
 version: 3
 
 tasks:
-  decrypt:
-    internal: true
-    cmd: sops --decrypt .sops.env > .env
-    generates:
-      - .env
-    sources:
-      - .sops.env
-
   plan:
-    deps: [decrypt]
-    dotenv: [.env]
     cmd: terragrunt run --all plan
 
   apply:
-    deps: [decrypt]
-    dotenv: [.env]
     cmd: terragrunt run --all apply
+
+  format:
+    aliases: [fmt]
+    cmd: terragrunt hcl fmt
