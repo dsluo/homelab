@@ -6,5 +6,5 @@ components:
   - ../../components/sops
 resources:
   - ./namespace.yaml
-  - ./kanidm/ks.yaml
+  # - ./kanidm/ks.yaml
   - ./pocket-id/ks.yaml
