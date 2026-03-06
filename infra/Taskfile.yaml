@@ -1,6 +1,9 @@
 version: 3
 
 tasks:
+  init:
+    cmd: terragrunt run --all init
+
   plan:
     cmd: terragrunt run --all plan
 
