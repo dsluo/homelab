@@ -1,3 +1,10 @@
+# todo: change this to use ip address from unifi api if/when i don't manually apply this
+data "http" "my_ipv4" {
+  url = "https://ipv4.icanhazip.com"
+}
+locals {
+  my_ipv4_cidr = "${chomp(data.http.my_ipv4.response_body)}/32"
+}
 resource "oci_core_vcn" "main" {
   compartment_id = var.compartment_ocid
   cidr_blocks    = ["10.10.0.0/16"]
@@ -35,7 +42,7 @@ resource "oci_core_security_list" "public" {
 
   ingress_security_rules {
     protocol = "6" # TCP
-    source   = "0.0.0.0/0"
+    source   = local.my_ipv4_cidr
     tcp_options {
       min = 22
       max = 22
