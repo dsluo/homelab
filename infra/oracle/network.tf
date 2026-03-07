@@ -1,0 +1,154 @@
+# todo: change this to use ip address from unifi api if/when i don't manually apply this
+data "http" "my_ipv4" {
+  url = "https://ipv4.icanhazip.com"
+}
+data "http" "my_ipv6" {
+  url = "https://ipv6.icanhazip.com"
+}
+
+locals {
+  my_ipv4_cidr = "${chomp(data.http.my_ipv4.response_body)}/32"
+  my_ipv6_cidr = cidrsubnet("${chomp(data.http.my_ipv6.response_body)}/56", 0, 0)
+}
+
+resource "oci_core_vcn" "main" {
+  compartment_id = var.compartment_ocid
+  cidr_blocks    = ["10.10.0.0/16"]
+  is_ipv6enabled                 = true
+  is_oracle_gua_allocation_enabled = true
+  display_name   = "homelab-vcn"
+  dns_label      = "homelab"
+}
+
+resource "oci_core_internet_gateway" "main" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_vcn.main.id
+  display_name   = "homelab-igw"
+}
+
+resource "oci_core_route_table" "public" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_vcn.main.id
+  display_name   = "homelab-public-rt"
+
+  route_rules {
+    network_entity_id = oci_core_internet_gateway.main.id
+    destination       = "0.0.0.0/0"
+    destination_type  = "CIDR_BLOCK"
+  }
+
+  route_rules {
+    network_entity_id = oci_core_internet_gateway.main.id
+    destination       = "::/0"
+    destination_type  = "CIDR_BLOCK"
+  }
+}
+
+resource "oci_core_security_list" "public" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_vcn.main.id
+  display_name   = "homelab-public-sl"
+
+  egress_security_rules {
+    protocol    = "all"
+    destination = "0.0.0.0/0"
+  }
+
+  egress_security_rules {
+    protocol    = "all"
+    destination = "::/0"
+  }
+
+  ingress_security_rules {
+    protocol = "6" # TCP
+    source   = local.my_ipv4_cidr
+    tcp_options {
+      min = 22
+      max = 22
+    }
+  }
+
+  ingress_security_rules {
+    protocol = "6" # TCP
+    source   = local.my_ipv6_cidr
+    tcp_options {
+      min = 22
+      max = 22
+    }
+  }
+
+  ingress_security_rules {
+    protocol = "6" # TCP
+    source   = "0.0.0.0/0"
+    tcp_options {
+      min = 80
+      max = 80
+    }
+  }
+
+  ingress_security_rules {
+    protocol = "6" # TCP
+    source   = "::/0"
+    tcp_options {
+      min = 80
+      max = 80
+    }
+  }
+
+  ingress_security_rules {
+    protocol = "6" # TCP
+    source   = "0.0.0.0/0"
+    tcp_options {
+      min = 443
+      max = 443
+    }
+  }
+
+  ingress_security_rules {
+    protocol = "6" # TCP
+    source   = "::/0"
+    tcp_options {
+      min = 443
+      max = 443
+    }
+  }
+
+  # ICMP (ping)
+  ingress_security_rules {
+    protocol = "1" # ICMP
+    source   = "0.0.0.0/0"
+    icmp_options {
+      type = 3
+      code = 4
+    }
+  }
+
+  ingress_security_rules {
+    protocol = "1" # ICMP
+    source   = "10.10.0.0/16"
+    icmp_options {
+      type = 3
+    }
+  }
+
+  # ICMPv6
+  ingress_security_rules {
+    protocol = "58" # ICMPv6
+    source   = "::/0"
+    icmp_options {
+      type = 3
+      code = 0
+    }
+  }
+}
+
+resource "oci_core_subnet" "public" {
+  compartment_id    = var.compartment_ocid
+  vcn_id            = oci_core_vcn.main.id
+  cidr_block        = "10.10.0.0/24"
+  ipv6cidr_block    = cidrsubnet(oci_core_vcn.main.ipv6cidr_blocks[0], 8, 0)
+  display_name      = "homelab-public-subnet"
+  dns_label         = "public"
+  route_table_id    = oci_core_route_table.public.id
+  security_list_ids = [oci_core_security_list.public.id]
+}
