@@ -50,3 +50,4 @@ postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
 "pipx:flux-local" = { version = "8.1.0", completions = false }
 "cargo:kanidm_tools" = { version = "1.9.1", completions = false }
 "aqua:gruntwork-io/terragrunt" = { version = "0.99.4", completion_flag = "--install-autocomplete" }
+"asdf:mise-plugins/mise-oci" = "3.75.0"
