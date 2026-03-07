@@ -19,10 +19,11 @@ resource "oci_core_instance" "ubuntu" {
   }
 
   create_vnic_details {
-    subnet_id        = oci_core_subnet.public.id
-    assign_public_ip = true
-    display_name     = "homelab-ubuntu-vnic"
-    hostname_label   = "ubuntu"
+    subnet_id                 = oci_core_subnet.public.id
+    assign_public_ip          = true
+    assign_ipv6ip             = true
+    display_name              = "homelab-ubuntu-vnic"
+    hostname_label            = "ubuntu"
   }
 
   source_details {
