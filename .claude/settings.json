@@ -151,7 +151,7 @@
       "mcp__grafana__search_folders"
     ],
     "ask": ["mcp__grafana__update_dashboard", "Edit(/.claude/**/*)"],
-    "deny": ["Read(*.env)", "Read(talos/clusterconfig/*)", "Read(kubeconfig)"],
+    "deny": ["Read(*.env)", "Read(talos/clusterconfig/*)", "Read(kubeconfig)", "Read(.decrypted*.sops.*)"],
     "disableBypassPermissionsMode": "disable"
   }
 }
