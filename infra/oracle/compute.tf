@@ -7,11 +7,11 @@ data "oci_core_images" "ubuntu" {
   sort_order               = "DESC"
 }
 
-resource "oci_core_instance" "ubuntu" {
+resource "oci_core_instance" "gateway" {
   availability_domain = var.availability_domain
   compartment_id      = var.compartment_ocid
   shape               = "VM.Standard.A1.Flex"
-  display_name        = "homelab-ubuntu"
+  display_name        = "homelab-gateway"
 
   shape_config {
     ocpus         = 1
@@ -22,7 +22,7 @@ resource "oci_core_instance" "ubuntu" {
     subnet_id                 = oci_core_subnet.public.id
     assign_public_ip          = true
     assign_ipv6ip             = true
-    display_name              = "homelab-ubuntu-vnic"
+    display_name              = "homelab-gateway-vnic"
     hostname_label            = "ubuntu"
   }
 
