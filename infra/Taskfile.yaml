@@ -13,3 +13,6 @@ tasks:
   format:
     aliases: [fmt]
     cmd: terragrunt hcl fmt
+
+  auth:
+    cmd: oci session authenticate --region us-chicago-1 --profile-name DEFAULT
