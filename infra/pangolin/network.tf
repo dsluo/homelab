@@ -12,12 +12,12 @@ locals {
 }
 
 resource "oci_core_vcn" "main" {
-  compartment_id = var.compartment_ocid
-  cidr_blocks    = ["10.10.0.0/16"]
-  is_ipv6enabled                 = true
+  compartment_id                   = var.compartment_ocid
+  cidr_blocks                      = ["10.10.0.0/16"]
+  is_ipv6enabled                   = true
   is_oracle_gua_allocation_enabled = true
-  display_name   = "homelab-vcn"
-  dns_label      = "homelab"
+  display_name                     = "homelab-vcn"
+  dns_label                        = "homelab"
 }
 
 resource "oci_core_internet_gateway" "main" {
@@ -44,6 +44,17 @@ resource "oci_core_route_table" "public" {
   }
 }
 
+locals {
+  ingress_rules = {
+    tcp = [80, 443]
+    udp = [51820, 21820]
+  }
+  ingress_addresses = {
+    all_ipv4 = "0.0.0.0/0"
+    all_ipv6 = "::/0"
+  }
+}
+
 resource "oci_core_security_list" "public" {
   compartment_id = var.compartment_ocid
   vcn_id         = oci_core_vcn.main.id
@@ -67,7 +78,6 @@ resource "oci_core_security_list" "public" {
       max = 22
     }
   }
-
   ingress_security_rules {
     protocol = "6" # TCP
     source   = local.my_ipv6_cidr
@@ -77,39 +87,31 @@ resource "oci_core_security_list" "public" {
     }
   }
 
-  ingress_security_rules {
-    protocol = "6" # TCP
-    source   = "0.0.0.0/0"
-    tcp_options {
-      min = 80
-      max = 80
+  # TCP rules
+  dynamic "ingress_security_rules" {
+    for_each = setproduct(local.ingress_rules.tcp, values(local.ingress_addresses))
+    iterator = tcp_rule
+    content {
+      protocol = "6" # TCP
+      source   = tcp_rule.value[1]
+      tcp_options {
+        min = tcp_rule.value[0]
+        max = tcp_rule.value[0]
+      }
     }
   }
 
-  ingress_security_rules {
-    protocol = "6" # TCP
-    source   = "::/0"
-    tcp_options {
-      min = 80
-      max = 80
-    }
-  }
-
-  ingress_security_rules {
-    protocol = "6" # TCP
-    source   = "0.0.0.0/0"
-    tcp_options {
-      min = 443
-      max = 443
-    }
-  }
-
-  ingress_security_rules {
-    protocol = "6" # TCP
-    source   = "::/0"
-    tcp_options {
-      min = 443
-      max = 443
+  # UDP rules
+  dynamic "ingress_security_rules" {
+    for_each = setproduct(local.ingress_rules.tcp, values(local.ingress_addresses))
+    iterator = udp_rule
+    content {
+      protocol = "17" # UDP
+      source   = udp_rule.value[1]
+      udp_options {
+        min = udp_rule.value[0]
+        max = udp_rule.value[0]
+      }
     }
   }
 
@@ -117,28 +119,11 @@ resource "oci_core_security_list" "public" {
   ingress_security_rules {
     protocol = "1" # ICMP
     source   = "0.0.0.0/0"
-    icmp_options {
-      type = 3
-      code = 4
-    }
   }
-
-  ingress_security_rules {
-    protocol = "1" # ICMP
-    source   = "10.10.0.0/16"
-    icmp_options {
-      type = 3
-    }
-  }
-
   # ICMPv6
   ingress_security_rules {
     protocol = "58" # ICMPv6
     source   = "::/0"
-    icmp_options {
-      type = 3
-      code = 0
-    }
   }
 }
 
