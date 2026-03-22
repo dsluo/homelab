@@ -1,0 +1,58 @@
+name: pangolin
+services:
+  pangolin:
+    image: docker.io/fosrl/pangolin:latest # https://github.com/fosrl/pangolin/releases
+    container_name: pangolin
+    restart: unless-stopped
+    volumes:
+      - /opt/pangolin/config:/app/config
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/v1/"]
+      interval: "10s"
+      timeout: "10s"
+      retries: 15
+
+  gerbil:
+    image: docker.io/fosrl/gerbil:latest # https://github.com/fosrl/gerbil/releases
+    container_name: gerbil
+    restart: unless-stopped
+    depends_on:
+      pangolin:
+        condition: service_healthy
+    command:
+      - --reachableAt=http://gerbil:3004
+      - --generateAndSaveKeyTo=/var/config/key
+      - --remoteConfig=http://pangolin:3001/api/v1/
+    volumes:
+      - /opt/pangolin/config/:/var/config
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    ports:
+      - 51820:51820/udp
+      - 21820:21820/udp
+      - 443:443
+      - 80:80
+
+  traefik:
+    image: docker.io/traefik:v3.6
+    container_name: traefik
+    restart: unless-stopped
+
+    network_mode: service:gerbil # Ports appear on the gerbil service
+
+    depends_on:
+      pangolin:
+        condition: service_healthy
+    command:
+      - --configFile=/etc/traefik/traefik_config.yml
+    volumes:
+      - /opt/pangolin/config/traefik:/etc/traefik:ro # Volume to store the Traefik configuration
+      - /opt/pangolin/config/letsencrypt:/letsencrypt # Volume to store the Let's Encrypt certificates
+      - /opt/pangolin/config/traefik/logs:/var/log/traefik # Volume to store Traefik logs
+
+networks:
+  default:
+    driver: bridge
+    name: pangolin
+    enable_ipv6: true # activate if your system supports IPv6

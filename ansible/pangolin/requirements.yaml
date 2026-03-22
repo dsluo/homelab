@@ -1,0 +1,6 @@
+collections:
+  - name: oracle.oci
+  - name: community.sops
+
+roles:
+  - name: geerlingguy.docker

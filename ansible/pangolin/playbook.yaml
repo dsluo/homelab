@@ -1,0 +1,37 @@
+- name: Bootstrap Pangolin
+  hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    ansible_user: ubuntu
+
+  tasks:
+    - name: Harden sshd config
+      ansible.builtin.copy:
+        dest: /etc/ssh/sshd_config.d/01-hardening.conf
+        content: |
+          PermitRootLogin no
+          PasswordAuthentication no
+          MaxAuthTries 3
+          LoginGraceTime 30
+        mode: "0644"
+        validate: "sshd -t -f %s"
+      notify: Restart ssh.socket
+    - name: Ensure Docker is installed.
+      ansible.builtin.include_role:
+        name: geerlingguy.docker
+      vars:
+        docker_users:
+          - ubuntu
+    - name: Ensure Pangolin docker-compose.yaml exists.
+      ansible.builtin.copy:
+        src: opt/
+        dest: /opt/pangolin
+        mode: "0600"
+        directory_mode: "0700"
+
+  handlers:
+    - name: Restart ssh.socket
+      ansible.builtin.systemd:
+        name: ssh.socket
+        state: restarted

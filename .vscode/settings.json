@@ -8,11 +8,11 @@
     "Kubernetes": "./kubernetes/*.yaml"
   },
   "vs-kubernetes": {
-    "vs-kubernetes.knownKubeconfigs": [
-      "${workspaceFolder}/kubeconfig"
-    ],
+    "vs-kubernetes.knownKubeconfigs": ["${workspaceFolder}/kubeconfig"],
     "vs-kubernetes.kubeconfig": "${workspaceFolder}/kubeconfig"
   },
   "sops.configPath": "./.sops.yaml",
-  "sops.creationEnabled": true
+  "sops.creationEnabled": true,
+  "mise.configureExtensionsUseSymLinks": true,
+  "mise.configureExtensionsIncludeGlobalTools": false
 }

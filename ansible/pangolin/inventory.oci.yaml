@@ -1,0 +1,8 @@
+plugin: oracle.oci.oci
+
+regions:
+  - us-chicago-1
+
+hostname_format: public_ip
+
+auth_type: security_token

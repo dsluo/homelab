@@ -1,0 +1,6 @@
+version: 3
+
+tasks:
+  deps:
+    desc: Install Ansible collections and roles.
+    cmd: ansible-galaxy install -r requirements.yaml

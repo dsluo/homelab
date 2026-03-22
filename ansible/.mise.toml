@@ -1,0 +1,3 @@
+[tools]
+"pipx:ansible-core" = { version = "2.20.3", uvx = "true", uvx_args = "--with ansible --with oci" }
+"pipx:ansible-lint" = "26.3.0"
