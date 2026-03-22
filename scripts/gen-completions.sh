@@ -73,7 +73,7 @@ while read -r TOOL; do
 
             log info "Generating completions for $EXEC_NAME v$VERSION"
 
-            if COMPLETION="$($ITEM "$COMPLETION_FLAG" "$TARGET_SHELL")"; then
+            if COMPLETION="$($ITEM "$COMPLETION_FLAG" "$TARGET_SHELL" 2>/dev/null)"; then
                 echo "$COMPLETION" > "$COMPLETION_FILE"
             else
                 log warn "Failed to generate completion for $EXEC_NAME v$VERSION. Maybe disable it?"
