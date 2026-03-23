@@ -34,12 +34,24 @@ spec:
               # S6_READ_ONLY_ROOT: "1"
               PUID: 911
               PGID: 911
+            probes:
+              liveness: &probes
+                enabled: true
+                spec:
+                  failureThreshold: 10
+              startup: *probes
+              readiness: *probes
             securityContext:
               allowPrivilegeEscalation: false
               # readOnlyRootFilesystem: true
             resources:
               claims:
                 - name: gpu
+              requests:
+                cpu: 100m
+                memory: 1Gi
+              limits:
+                memory: 4Gi
 
     service:
       *app :
