@@ -28,8 +28,9 @@ spec:
               PIXELFLUX_WAYLAND: "true"
               DRINODE: &gpu /dev/dri/renderD128
               DRI_NODE: *gpu
-              PUID: 1000
-              PGID: 1000
+              S6_READ_ONLY_ROOT: "1"
+              PUID: 911
+              PGID: 911
             securityContext:
               allowPrivilegeEscalation: false
               capabilities: { drop: ["ALL"] }
@@ -62,3 +63,16 @@ spec:
         sizeLimit: 1Gi
         globalMounts:
           - path: /dev/shm
+      tmpfs:
+        type: emptyDir
+        globalMounts:
+          - path: /run
+            subPath: run
+          - path: /tmp
+            subPath: tmp
+          - path: /config
+            subPath: config
+          - path: /config/.config/OrcaSlicer/log
+            subPath: log
+          - path: /config/.config/OrcaSlicer/cache
+            subPath: cache
