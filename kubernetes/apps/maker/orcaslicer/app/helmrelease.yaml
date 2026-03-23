@@ -33,7 +33,7 @@ spec:
               PGID: 911
             securityContext:
               allowPrivilegeEscalation: false
-              capabilities: { drop: ["ALL"] }
+              readOnlyRootFileSystem: true
             resources:
               claims:
                 - name: gpu
