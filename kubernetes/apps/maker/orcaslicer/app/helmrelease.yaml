@@ -15,6 +15,8 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         pod:
+          securityContext:
+            supplementalGroups: [4003]
           resourceClaims:
             - name: gpu
               resourceClaimTemplateName: orcaslicer
