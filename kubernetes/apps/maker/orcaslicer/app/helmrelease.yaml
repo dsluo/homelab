@@ -57,6 +57,11 @@ spec:
     persistence:
       config:
         existingClaim: *app
+        globalMounts:
+          - path: /config/.config/OrcaSlicer
+            subPath: orcaslicer
+          - path: /config/Desktop
+            subPath: models
       shm:
         type: emptyDir
         medium: Memory
