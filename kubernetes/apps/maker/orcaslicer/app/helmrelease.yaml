@@ -28,12 +28,12 @@ spec:
               PIXELFLUX_WAYLAND: "true"
               DRINODE: &gpu /dev/dri/renderD128
               DRI_NODE: *gpu
-              S6_READ_ONLY_ROOT: "1"
+              # S6_READ_ONLY_ROOT: "1"
               PUID: 911
               PGID: 911
             securityContext:
               allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
+              # readOnlyRootFilesystem: true
             resources:
               claims:
                 - name: gpu
