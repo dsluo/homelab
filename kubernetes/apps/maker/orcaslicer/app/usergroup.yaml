@@ -1,0 +1,13 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: orcaslicer-users
+spec:
+  friendlyName: OrcaSlicer Users
+  allowedOIDCClients:
+    - name: orcaslicer
+  users:
+    userRefs:
+      - name: david
+        namespace: security

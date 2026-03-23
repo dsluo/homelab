@@ -10,12 +10,15 @@ spec:
     - name: intel-gpu-resource-driver
       namespace: kube-system
   components:
+    - ../../../../components/oidc/envoy
     - ../../../../components/volsync
   interval: 1h
   path: ./kubernetes/apps/maker/orcaslicer/app
   postBuild:
     substitute:
       APP: *app
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/orca-slicer.svg"
+      OIDC_APP_NAME: OrcaSlicer
       VOLSYNC_CAPACITY: 5Gi
     substituteFrom:
       - name: cluster-secrets
