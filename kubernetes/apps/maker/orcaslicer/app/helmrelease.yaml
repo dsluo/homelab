@@ -16,7 +16,8 @@ spec:
           reloader.stakater.com/auto: "true"
         pod:
           securityContext:
-            supplementalGroups: [4003]
+            fsGroup: 911
+            fsGroupChangePolicy: OnRootMismatch
           resourceClaims:
             - name: gpu
               resourceClaimTemplateName: orcaslicer
