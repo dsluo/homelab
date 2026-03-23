@@ -18,10 +18,6 @@ spec:
           resourceClaims:
             - name: gpu
               resourceClaimTemplateName: orcaslicer
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: &uid 1000
-            runAsGroup: &gid 1000
         containers:
           *app :
             image:
@@ -32,8 +28,8 @@ spec:
               PIXELFLUX_WAYLAND: "true"
               DRINODE: &gpu /dev/dri/renderD128
               DRI_NODE: *gpu
-              PUID: *uid
-              PGID: *gid
+              PUID: 1000
+              PGID: 1000
             securityContext:
               allowPrivilegeEscalation: false
               capabilities: { drop: ["ALL"] }
