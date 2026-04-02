@@ -46,7 +46,7 @@ postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
 "github:cloudnative-pg/cloudnative-pg" = "1.28.1"
 "github:Handfish/talos-pilot" = { version = "0.1.9", completions = false }
 "aqua:opentofu" = { version = "1.11.5", completions = false }
-"pipx:copier" = { version = "9.14.0", completions = false, uvx_args = "--with copier-template-extensions" }
+"pipx:copier" = { version = "9.14.1", completions = false, uvx_args = "--with copier-template-extensions" }
 "pipx:flux-local" = { version = "8.1.0", completions = false }
 "cargo:kanidm_tools" = { version = "1.9.1", completions = false }
 "aqua:gruntwork-io/terragrunt" = { version = "1.0.0", completion_flag = "--install-autocomplete" }
