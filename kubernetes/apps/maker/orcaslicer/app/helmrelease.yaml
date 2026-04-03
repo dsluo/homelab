@@ -25,7 +25,7 @@ spec:
           *app :
             image:
               repository: ghcr.io/linuxserver/orcaslicer
-              tag: 2.3.2@sha256:51daa3774b882cdc662cc1ad2bcbd08730dbd99e481b38743757d34271c14b8e
+              tag: 2.3.2@sha256:87f7f7ae2d2142b0948551157c7c01b39057542a59b226079a70c13c9c1688d6
             env:
               TZ: America/Detroit
               PIXELFLUX_WAYLAND: "true"
