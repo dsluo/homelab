@@ -1,0 +1,56 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app searxng-mcp
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+    controllers:
+      *app :
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          *app :
+            image:
+              repository: docker.io/isokoliuk/mcp-searxng
+              tag: 1.0.2@sha256:d3cf13c55311b04f96c8218061d17b0dad085b86d22739e74367c44bd1d71476
+            env:
+              TZ: America/Detroit
+              SEARXNG_URL: http://searxng.ai.svc.cluster.local:8080
+              MCP_HTTP_PORT: &port 3000
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+              limits:
+                memory: 256Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities: { drop: [ALL] }
+    service:
+      *app :
+        ports:
+          http:
+            port: *port
+    route:
+      *app :
+        hostnames:
+          - "search-mcp.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: *app
+                port: *port
