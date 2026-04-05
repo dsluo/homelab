@@ -32,12 +32,6 @@ preferences:
   lock:
     - method
 
-categories_as_tabs:
-  general:
-  images:
-  videos:
-  map:
-
 plugins:
   searx.plugins.calculator.SXNGPlugin:
     active: true
