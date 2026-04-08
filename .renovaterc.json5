@@ -40,6 +40,15 @@
   },
   packageRules: [
     {
+      description: "SearXNG uses calver versioning (YYYY.M.patch-commit)",
+      matchPackageNames: [
+        "ghcr.io/searxng/searxng",
+        "searxng/searxng",
+        "docker.io/searxng/searxng"
+      ],
+      versioning: "regex:^(?<major>\\d{4})\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-(?<build>.+))?$",
+    },
+    {
       description: "Override Helmfile Dependency Name",
       matchDatasources: [
         "docker"
