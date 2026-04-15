@@ -25,7 +25,7 @@ spec:
           paperless:
             image:
               repository: ghcr.io/paperless-ngx/paperless-ngx
-              tag: 2.20.13
+              tag: 2.20.14
             env:
               # host
               PAPERLESS_URL: https://paperless.${SECRET_DOMAIN}
