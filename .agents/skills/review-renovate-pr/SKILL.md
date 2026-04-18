@@ -12,7 +12,7 @@ Produce an evidence-backed verdict on whether a Renovate PR is safe to merge. De
 Accept any of:
 - PR number (e.g. `693`) → `owner/repo` is this repo
 - Full PR URL
-- "latest" / "all open" → list open Renovate PRs first via `mcp__github__list_pull_requests` filtered by `renovate[bot]` author, then ask which one(s)
+- "latest" / "all open" → list open Renovate PRs first via `gh pr list --author "app/renovate" --state open`, then ask which one(s)
 
 If the user did not specify a PR, list candidates and ask. Do not review all open PRs unless explicitly asked.
 
@@ -20,7 +20,7 @@ If the user did not specify a PR, list candidates and ask. Do not review all ope
 
 ### 1. Load the PR
 
-Use `mcp__github__pull_request_read` (summary + diff). Extract:
+Fetch the PR with `gh pr view <num>` (title, body, labels) and `gh pr diff <num>` (changed files). Extract:
 - Package name (`depName`) and datasource (container / helm / github-releases / mise / github-actions)
 - `currentValue` → `newValue` (and `currentDigest` → `newDigest` for digest bumps)
 - Update type from labels (`type/major`, `type/minor`, `type/patch`, `type/digest`)
@@ -32,10 +32,10 @@ The PR body that Renovate generates usually includes a **Release Notes** collaps
 
 Only go upstream if the PR body's release notes are missing, truncated, or ambiguous.
 
-- **Container / github-releases**: resolve the source repo (for `ghcr.io/owner/repo`, it's `owner/repo`; otherwise check the image's `org.opencontainers.image.source` label via `docker manifest inspect` or the registry's package page). Then `mcp__github__list_releases` and `mcp__github__get_release_by_tag` for each tag between `currentValue` and `newValue` (inclusive of the new, exclusive of the current).
-- **Helm charts**: the chart repo is in the manifest (`HelmRepository` or `sourceRef`). Most charts link to a GitHub repo in `Chart.yaml`; fetch the chart's `CHANGELOG.md` via `mcp__github__get_file_contents`, or the corresponding GitHub releases. For `app-template` and other common charts, the chart version ≠ app version — read the chart changelog, not the app's.
-- **Mise tools / GitHub Actions**: `mcp__github__list_releases` on the source repo.
-- **Digest-only bumps**: no version change — check if the new digest corresponds to a rebuild of the same tag (common for `:latest`-style pins or security rebuilds). If the tag is immutable and only the digest moved, the upstream likely republished; `mcp__github__get_commit` on the image's source-commit label can confirm.
+- **Container / github-releases**: resolve the source repo (for `ghcr.io/owner/repo`, it's `owner/repo`; otherwise check the image's `org.opencontainers.image.source` label via `docker manifest inspect` or the registry's package page). Then `gh release list -R <owner>/<repo>` and `gh release view <tag> -R <owner>/<repo>` for each tag between `currentValue` and `newValue` (inclusive of the new, exclusive of the current).
+- **Helm charts**: the chart repo is in the manifest (`HelmRepository` or `sourceRef`). Most charts link to a GitHub repo in `Chart.yaml`; fetch the chart's `CHANGELOG.md` via `gh api repos/<owner>/<repo>/contents/<path> --jq .content | base64 -d` (or just `gh browse`/WebFetch the raw URL), or the corresponding GitHub releases. For `app-template` and other common charts, the chart version ≠ app version — read the chart changelog, not the app's.
+- **Mise tools / GitHub Actions**: `gh release list -R <owner>/<repo>` on the source repo.
+- **Digest-only bumps**: no version change — check if the new digest corresponds to a rebuild of the same tag (common for `:latest`-style pins or security rebuilds). If the tag is immutable and only the digest moved, the upstream likely republished; `gh api repos/<owner>/<repo>/commits/<sha>` on the image's source-commit label can confirm.
 
 For multi-version jumps (e.g. `1.2.0 → 1.5.0`), walk every intermediate minor release — breaking changes often land in the middle.
 
