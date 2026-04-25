@@ -10,16 +10,16 @@ case "$ref" in
     ;;
 esac
 
-repo="${ref%:*}"
-quant="${ref##*:}"
+repo="$${ref%:*}"
+quant="$${ref##*:}"
 
 echo ">> $repo  quant=$quant"
-snap=$(hf download "$repo" --include "*${quant}*.gguf" --format quiet)
+snap=$(hf download "$repo" --include "*$${quant}*.gguf" --format quiet)
 snap=$(cd "$snap" && pwd)
 model_dir=$(dirname "$(dirname "$snap")")
 snap_rel="snapshots/$(basename "$snap")"
 
-main_gguf=$(ls "$snap"/*"${quant}"*.gguf 2>/dev/null | head -n1)
+main_gguf=$(ls "$snap"/*"$${quant}"*.gguf 2>/dev/null | head -n1)
 if [ -n "$main_gguf" ]; then
   ln -sfn "$snap_rel/$(basename "$main_gguf")" "$model_dir/model.gguf"
   echo ">> linked model.gguf -> $snap_rel/$(basename "$main_gguf")"
@@ -28,9 +28,9 @@ fi
 # Pick the mmproj whose bit-count is closest to the main quant's, matching
 # llama.cpp's find_best_mmproj in common/download.cpp.
 bits() {
-  tag=$(printf '%s' "${1%.gguf}" | sed -E 's/.*[-.]([A-Za-z0-9_]+)$/\1/')
+  tag=$(printf '%s' "$${1%.gguf}" | sed -E 's/.*[-.]([A-Za-z0-9_]+)$/\1/')
   n=$(printf '%s' "$tag" | grep -oE '[0-9]+' | head -n1)
-  printf '%s' "${n:-0}"
+  printf '%s' "$${n:-0}"
 }
 
 available=$(hf download "$repo" --dry-run --include "mmproj*.gguf" 2>/dev/null \
