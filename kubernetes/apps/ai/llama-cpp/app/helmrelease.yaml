@@ -88,7 +88,7 @@ spec:
       download-script:
         type: configMap
         name: llama-cpp-download-script
-        defaultMode: 755
+        defaultMode: 0o755
         advancedMounts:
           ? *app
           : download-models:
