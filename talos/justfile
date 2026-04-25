@@ -1,0 +1,24 @@
+_:
+    @just --list
+
+# Generate Talos config
+genconfig:
+    talhelper genconfig
+
+bootstrap:
+    talhelper genconfig
+    talhelper gencommand apply --extra-flags="--insecure" | sh
+    until talhelper gencommand bootstrap | sh; do sleep 10; done
+    until talhelper gencommand kubeconfig --extra-flags="--force" | sh; do sleep 10; done
+
+apply:
+    talhelper gencommand apply | sh
+
+upgrade-talos:
+    talhelper gencommand upgrade | sh
+
+upgrade-k8s:
+    talhelper gencommand upgrade-k8s | sh
+
+reset force="false":
+    talhelper gencommand reset --extra-flags="--reboot {{ if force == "false" { '--system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL' } else { '' } }} --graceful=false --wait=false" | sh
