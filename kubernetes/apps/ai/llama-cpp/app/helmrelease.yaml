@@ -52,6 +52,7 @@ spec:
             env:
               LLAMA_ARG_HOST: 0.0.0.0
               LLAMA_ARG_PORT: &port 8080
+              LLAMA_ARG_ENDPOINT_METRICS: "true"
               LLAMA_API_KEY:
                 valueFrom:
                   secretKeyRef:
