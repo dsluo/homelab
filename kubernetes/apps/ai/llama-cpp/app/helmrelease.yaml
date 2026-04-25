@@ -93,6 +93,7 @@ spec:
           ? *app
           : download-models:
               - path: /usr/bin/download-model
+                subPath: download-model.sh
                 readOnly: true
       models:
         existingClaim: *app
