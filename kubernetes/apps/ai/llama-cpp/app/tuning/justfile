@@ -1,0 +1,35 @@
+pod := "llama-tune"
+ns := "ai"
+deploy := "llama-cpp"
+
+_:
+    @just --list
+
+# Scale prod down, apply tune pod, wait for ready
+up:
+    kubectl -n {{ns}} scale deploy/{{deploy}} --replicas=0
+    kubectl apply -f tune-pod.yaml
+    kubectl -n {{ns}} wait --for=condition=Ready pod/{{pod}} --timeout=10m
+
+# Delete and recreate the tune pod (prod stays scaled down)
+restart:
+    -kubectl -n {{ns}} delete pod {{pod}} --wait=true
+    kubectl apply -f tune-pod.yaml
+    kubectl -n {{ns}} wait --for=condition=Ready pod/{{pod}} --timeout=10m
+
+# Exec a shell in the tune pod
+shell:
+    kubectl -n {{ns}} exec -it {{pod}} -- bash
+
+# Port-forward llama-server to localhost:8080
+forward:
+    kubectl -n {{ns}} port-forward pod/{{pod}} 8080:8080
+
+# Tail logs
+logs:
+    kubectl -n {{ns}} logs -f {{pod}}
+
+# Delete the tune pod and scale prod back up
+down:
+    -kubectl -n {{ns}} delete pod {{pod}} --wait=true
+    kubectl -n {{ns}} scale deploy/{{deploy}} --replicas=1

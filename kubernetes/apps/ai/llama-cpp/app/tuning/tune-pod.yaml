@@ -1,0 +1,59 @@
+---
+# Ad-hoc pod for llama.cpp parameter tuning. NOT managed by Flux.
+# Usage:
+#   kubectl -n ai scale deploy/llama-cpp --replicas=0   # PVC is RWO
+#   kubectl apply -f kubernetes/apps/ai/llama-cpp/app/tune-pod.yaml
+#   kubectl -n ai exec -it llama-tune -- bash
+#   kubectl -n ai port-forward pod/llama-tune 8080:8080
+#   kubectl -n ai delete pod llama-tune
+#   kubectl -n ai scale deploy/llama-cpp --replicas=1
+apiVersion: v1
+kind: Pod
+metadata:
+  name: llama-tune
+  namespace: ai
+spec:
+  resourceClaims:
+    - name: gpu
+      resourceClaimTemplateName: llama-cpp
+  containers:
+    - name: llama
+      image: ghcr.io/ggml-org/llama.cpp:full-intel
+      command:
+        - sleep
+        - infinity
+      env:
+        - name: HUGGINGFACE_HUB_CACHE
+          value: /models
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: llama-cpp-secret
+              key: HF_TOKEN
+
+        - name: LLAMA_ARG_HOST
+          value: "0.0.0.0"
+        - name: LLAMA_ARG_PORT
+          value: "8080"
+      resources:
+        claims:
+          - name: gpu
+      volumeMounts:
+        - name: models
+          mountPath: /models
+        - name: download-script
+          mountPath: /usr/bin/download-model
+          subPath: download-model.sh
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: models
+      persistentVolumeClaim:
+        claimName: llama-cpp
+    - name: download-script
+      configMap:
+        name: llama-cpp-download-script
+        defaultMode: 0o755
+    - name: tmp
+      emptyDir: {}
