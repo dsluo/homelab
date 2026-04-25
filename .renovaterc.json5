@@ -40,6 +40,13 @@
   },
   packageRules: [
     {
+      description: "llama.cpp uses bNNNN build numbers with variant prefix",
+      matchPackageNames: [
+        "ghcr.io/ggml-org/llama.cpp"
+      ],
+      versioning: "regex:^(?<compatibility>server-[a-z]+)-b(?<patch>\\d+)$",
+    },
+    {
       description: "SearXNG uses calver versioning (YYYY.M.patch-commit)",
       matchPackageNames: [
         "ghcr.io/searxng/searxng",

@@ -52,3 +52,4 @@ postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
 "aqua:gruntwork-io/terragrunt" = { version = "1.0.2", completion_flag = "--install-autocomplete" }
 "asdf:mise-plugins/mise-oci" = "3.75.0"
 just = "latest"
+"npm:renovate" = "latest"
