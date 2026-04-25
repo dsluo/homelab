@@ -21,8 +21,8 @@ spec:
         initContainers:
           download-models:
             image:
-              repository: python
-              tag: 3.14-slim
+              repository: ghcr.io/astral-sh/uv
+              tag: python3.14-alpine
             env:
               HUGGINGFACE_HUB_CACHE: /models
               HF_TOKEN:
@@ -34,7 +34,7 @@ spec:
               - /bin/sh
               - -ec
               - |
-                pip install --no-cache-dir huggingface_hub[cli]
+                uv pip install --system --no-cache huggingface_hub
                 for ref in \
                   unsloth/gemma-4-E4B-it-GGUF:UD-Q8_K_XL
                 do
