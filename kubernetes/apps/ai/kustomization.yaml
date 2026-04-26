@@ -8,3 +8,4 @@ resources:
   - ./namespace.yaml
   - ./llama-cpp/ks.yaml
   - ./searxng/ks.yaml
+  - ./toolhive/ks.yaml
