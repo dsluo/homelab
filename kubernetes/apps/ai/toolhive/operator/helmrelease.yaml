@@ -1,0 +1,10 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app toolhive-operator
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
