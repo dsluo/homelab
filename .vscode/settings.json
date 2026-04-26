@@ -14,5 +14,7 @@
   "sops.configPath": "./.sops.yaml",
   "sops.creationEnabled": true,
   "mise.configureExtensionsUseSymLinks": true,
-  "mise.configureExtensionsAutomatically": false
+  "mise.configureExtensionsAutomatically": false,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true
 }
