@@ -4,17 +4,11 @@ kind: Kustomization
 metadata:
   name: &app llama-cpp
 spec:
-  dependsOn:
-    - name: volsync
-      namespace: volsync-system
-  components:
-    - ../../../../components/volsync
   interval: 1h
   path: ./kubernetes/apps/ai/llama-cpp/app
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CAPACITY: 200Gi
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

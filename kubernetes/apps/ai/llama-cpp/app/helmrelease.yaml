@@ -132,7 +132,9 @@ spec:
                 subPath: download-model.sh
                 readOnly: true
       models:
-        existingClaim: *app
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 100Gi
         advancedMounts:
           ? *app
           : ? *app
