@@ -3,6 +3,7 @@ _skip_if_exists:
   - kubernetes/apps/*/namespace.yaml
 _tasks:
   - "yq -i '.resources |= ([\"./namespace.yaml\"] + (. + [\"./{{ app }}/ks.yaml\"] | unique | map(select(. != \"./namespace.yaml\")) | sort))' kubernetes/apps/{{ namespace }}/kustomization.yaml"
+  - "cat kubernetes/apps/{{ namespace }}/{{ app }}/.ks-fragment-{{ component }}.yaml >> kubernetes/apps/{{ namespace }}/{{ app }}/ks.yaml && rm kubernetes/apps/{{ namespace }}/{{ app }}/.ks-fragment-{{ component }}.yaml"
 _exclude:
   - CLAUDE.md
   - .gitignore

@@ -38,7 +38,7 @@ kubernetes/apps/
     kustomization.yaml        # skip_if_exists — adds namespace.yaml + app ks.yaml
     namespace.yaml            # skip_if_exists — Namespace resource
     <app>/
-      ks.yaml                 # Flux Kustomization (with optional VolSync wiring)
+      ks.yaml                 # Multi-doc Flux Kustomizations — appended to per component
       <component>/
         kustomization.yaml    # Kustomize root listing HelmRelease, OCIRepository, optional secret
         helmrelease.yaml      # HelmRelease referencing the OCIRepository
@@ -46,9 +46,12 @@ kubernetes/apps/
         secret.sops.yaml      # (optional) SOPS-encrypted Secret scaffold
 ```
 
-## Post-generation Task
+## Post-generation Tasks
 
-After rendering, Copier runs a `yq` task to insert `<app>/ks.yaml` into the existing `kubernetes/apps/<namespace>/kustomization.yaml` resources list (keeping `namespace.yaml` first and the rest sorted).
+After rendering, Copier runs two tasks:
+
+1. A `yq` task that inserts `<app>/ks.yaml` into the existing `kubernetes/apps/<namespace>/kustomization.yaml` resources list (keeping `namespace.yaml` first and the rest sorted).
+2. A `cat`/`rm` task that appends the per-component Flux Kustomization fragment (`.ks-fragment-<component>.yaml`) to `<app>/ks.yaml` and deletes the fragment. This lets new components be added to an existing app without overwriting prior components' Flux Kustomizations.
 
 ## Extension
 
