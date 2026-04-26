@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/toolhive.stacklok.dev/mcpserver_v1alpha1.json
+apiVersion: toolhive.stacklok.dev/v1alpha1
+kind: MCPServer
+metadata:
+  name: searxng
+spec:
+  image: docker.io/isokoliuk/mcp-searxng:1.0.3@sha256:2d936f821eae1f4859b3534e1dd10d73f9c3687f366f1755538cf3217b2716f0
+  transport: streamable-http
+  proxyPort: 8080
+  env:
+    - name: TZ
+      value: America/Detroit
+    - name: SEARXNG_URL
+      value: http://searxng.ai.svc.cluster.local:8080
+    - name: MCP_HTTP_PORT
+      value: "8080"
+  resources:
+    requests:
+      cpu: 10m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
