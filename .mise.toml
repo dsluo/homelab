@@ -4,52 +4,38 @@ KUBECONFIG = "{{config_root}}/kubeconfig"
 SOPS_AGE_KEY_CMD = "op read 'op://homelab/kube age key/password'"
 TALOSCONFIG = "{{config_root}}/talos/clusterconfig/talosconfig"
 
-LOCAL_FISH_COMPLETE_PATH = "{{config_root}}/.completions/fish"
-
-[hooks.enter]
-shell = "fish"
-script = """
-if not contains -- $LOCAL_FISH_COMPLETE_PATH $fish_complete_path
-    set -p fish_complete_path $LOCAL_FISH_COMPLETE_PATH
-end
-"""
-
-[hooks.leave]
-shell = "fish"
-script = """
-set -l path_index (contains -i $LOCAL_FISH_COMPLETE_PATH $fish_complete_path)
-and set -e fish_complete_path[$path_index]
-"""
-
-[hooks]
-# fyi, this ALWAYS runs using `sh`
-postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
-
 [tools]
+# utilities
+"aqua:casey/just" = "1.50.0"
+"aqua:jqlang/jq" = "1.8.1"
+"aqua:mikefarah/yq" = "4.53.2"
+# talos
 "aqua:budimanjojo/talhelper" = "3.1.9"
-"aqua:derailed/k9s" = "0.50.18"
-"aqua:FiloSottile/age" = { version = "1.3.1", completions = false }
-"aqua:fluxcd/flux2" = "2.8.6"
-"aqua:getsops/sops" = { version = "3.12.2", completions = false }
-"aqua:go-task/task" = { version = "3.50.0", completions = true, completion_flag = "--completion" }
-"aqua:jqlang/jq" = { version = "1.8.1", completions = false }
-"aqua:kubernetes/kubectl" = "1.34.3"
 "aqua:siderolabs/talos" = "1.12.7"
-"aqua:utkuozdemir/pv-migrate" = "3.3.0"
+"github:Handfish/talos-pilot" = "0.1.9"
+# k8s
+"aqua:derailed/k9s" = "0.50.18"
 "aqua:helm/helm" = "4.1.4"
 "aqua:helmfile/helmfile" = "1.4.4"
 "aqua:kubernetes-sigs/kustomize" = "5.8.0"
-"aqua:mikefarah/yq" = { version = "4.53.2", completions = false }
+"aqua:kubernetes/kubectl" = "1.34.3"
+# task specific
+"aqua:utkuozdemir/pv-migrate" = "3.3.0"
+# app clis
 "aqua:cilium/cilium-cli" = "0.19.2"
-"aqua:cloudflare/cloudflared" = { version = "2026.3.0", completions = false }
-"github:grafana/mcp-grafana" = { version = "0.11.6", completions = false }
+"aqua:cloudflare/cloudflared" = "2026.3.0"
 "github:cloudnative-pg/cloudnative-pg" = "1.29.0"
-"github:Handfish/talos-pilot" = { version = "0.1.9", completions = false }
-"aqua:opentofu" = { version = "1.11.6", completions = false }
-"pipx:copier" = { version = "9.14.3", completions = false, uvx_args = "--with copier-template-extensions" }
-"pipx:flux-local" = { version = "8.2.0", completions = false }
-"cargo:kanidm_tools" = { version = "1.9.1", completions = false }
-"aqua:gruntwork-io/terragrunt" = { version = "1.0.3", completion_flag = "--install-autocomplete" }
+# flux
+"aqua:FiloSottile/age" = "1.3.1"
+"aqua:fluxcd/flux2" = "2.8.6"
+"aqua:getsops/sops" = "3.12.2"
+# authoring tools
+"npm:renovate" = "43.150.0"
+"pipx:copier" = { version = "9.14.3", uvx_args = "--with copier-template-extensions" }
+"pipx:flux-local" = "8.2.0"
+# iac
+"aqua:gruntwork-io/terragrunt" = "1.0.3"
+"aqua:opentofu" = "1.11.6"
 "asdf:mise-plugins/mise-oci" = "3.75.0"
-just = "latest"
-"npm:renovate" = "latest"
+# ai/mcp
+"github:grafana/mcp-grafana" = "0.11.6"
