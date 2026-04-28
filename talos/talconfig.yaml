@@ -48,7 +48,7 @@ nodes:
     networkInterfaces:
       - interface: bond0
         bond:
-          interfaces: 
+          interfaces:
             - enp1s0f0np0
             - enp1s0f1np1
           mode: active-backup
@@ -78,6 +78,17 @@ nodes:
         kind: UserVolumeConfig
         name: local-hostpath
         volumeType: directory
+
+patches:
+  - |-
+    machine:
+      features:
+        kubernetesTalosAPIAccess:
+          allowedKubernetesNamespaces:
+            - system-upgrade
+          allowedRoles:
+            - os:admin
+          enabled: true
 
 controlPlane:
   patches:

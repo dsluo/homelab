@@ -1,24 +1,29 @@
 _:
     @just --list
 
-# Generate Talos config
+# Generate Talos machine config from talconfig.yaml
 genconfig:
     talhelper genconfig
 
+# Bootstrap a fresh cluster: generate config, apply insecurely, bootstrap etcd, fetch kubeconfig
 bootstrap:
     talhelper genconfig
     talhelper gencommand apply --extra-flags="--insecure" | sh
     until talhelper gencommand bootstrap | sh; do sleep 10; done
     until talhelper gencommand kubeconfig --extra-flags="--force" | sh; do sleep 10; done
 
+# Apply Talos machine config to running nodes
 apply:
     talhelper gencommand apply | sh
 
+# Upgrade Talos OS on all nodes
 upgrade-talos:
     talhelper gencommand upgrade | sh
 
+# Upgrade Kubernetes version on all nodes
 upgrade-k8s:
     talhelper gencommand upgrade-k8s | sh
 
+# Reset nodes and reboot; pass force=true to wipe all disks (default preserves STATE/EPHEMERAL)
 reset force="false":
     talhelper gencommand reset --extra-flags="--reboot {{ if force == "false" { '--system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL' } else { '' } }} --graceful=false --wait=false" | sh
