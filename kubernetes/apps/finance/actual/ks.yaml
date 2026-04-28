@@ -8,12 +8,15 @@ spec:
     - name: volsync
       namespace: volsync-system
   components:
+    - ../../../../components/oidc
     - ../../../../components/volsync
   interval: 1h
   path: ./kubernetes/apps/finance/actual/app
   postBuild:
     substitute:
       APP: *app
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/actual-budget.svg"
+      OIDC_APP_NAME: Actual
       VOLSYNC_CAPACITY: 1Gi
     substituteFrom:
       - name: cluster-secrets

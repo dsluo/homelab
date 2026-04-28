@@ -1,0 +1,12 @@
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: actual-users
+spec:
+  friendlyName: Actual Users
+  allowedOIDCClients:
+    - name: actual
+  users:
+    userRefs:
+      - name: david
+        namespace: security
