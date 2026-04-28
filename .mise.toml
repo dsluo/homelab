@@ -49,7 +49,7 @@ postinstall = "{{config_root}}/scripts/gen-completions.sh fish"
 "pipx:copier" = { version = "9.14.3", completions = false, uvx_args = "--with copier-template-extensions" }
 "pipx:flux-local" = { version = "8.2.0", completions = false }
 "cargo:kanidm_tools" = { version = "1.9.1", completions = false }
-"aqua:gruntwork-io/terragrunt" = { version = "1.0.2", completion_flag = "--install-autocomplete" }
+"aqua:gruntwork-io/terragrunt" = { version = "1.0.3", completion_flag = "--install-autocomplete" }
 "asdf:mise-plugins/mise-oci" = "3.75.0"
 just = "latest"
 "npm:renovate" = "latest"
