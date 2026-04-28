@@ -11,10 +11,9 @@ spec:
   interval: 1h
   values:
     controllers:
-      *app :
-        annotations:
+      ? *app
+      : annotations:
           reloader.stakater.com/auto: "true"
-
         pod:
           securityContext:
             fsGroup: 1000
@@ -22,12 +21,29 @@ spec:
             runAsGroup: 1000
             runAsUser: 1000
         containers:
-          *app :
-            image:
+          ? *app
+          : image:
               repository: ghcr.io/actualbudget/actual
               tag: 26.4.0@sha256:b0e732e2c41b3dc468a71548e88ef76d3f0c157fc43d15fa05d14ec1c5747e1e
             env:
               ACTUAL_PORT: &port 5006
+              ACTUAL_LOGIN_METHOD: openid
+              ACTUAL_OPENID_DISCOVERY_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: &oidcSecret actual-oidc-credentials
+                    key: OIDC_DISCOVERY_URL
+              ACTUAL_OPENID_CLIENT_ID:
+                valueFrom:
+                  secretKeyRef:
+                    name: *oidcSecret
+                    key: OIDC_CLIENT_ID
+              ACTUAL_OPENID_CLIENT_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: *oidcSecret
+                    key: OIDC_CLIENT_SECRET
+              ACTUAL_OPENID_SERVER_HOSTNAME: "https://actual.${SECRET_DOMAIN}"
             probes:
               liveness:
                 enabled: true
@@ -57,13 +73,13 @@ spec:
               limits:
                 memory: 512M
     service:
-      *app :
-        ports:
+      ? *app
+      : ports:
           http:
             port: *port
     route:
-      *app :
-        hostnames:
+      ? *app
+      : hostnames:
           - "actual.${SECRET_DOMAIN}"
         parentRefs:
           - name: envoy-internal
