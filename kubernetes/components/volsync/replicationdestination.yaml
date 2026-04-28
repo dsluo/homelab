@@ -28,3 +28,9 @@ spec:
     repository: ${APP}-volsync-secret
     storageClassName: ${VOLSYNC_STORAGECLASS:=openebs-zfspv}
     volumeSnapshotClassName: ${VOLSYNC_SNAPSHOTCLASS:=openebs-zfs-snapshot}
+    moverVolumes:
+      - mountPath: repository
+        volumeSource:
+          nfs:
+            path: /mnt/tank/backup/volsync
+            server: storage.lan
