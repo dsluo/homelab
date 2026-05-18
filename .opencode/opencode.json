@@ -1,0 +1,26 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "github": {
+      "type": "remote",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer {env:GITHUB_TOKEN}"
+      },
+    },
+    "grafana": {
+      "type": "local",
+      "command": [
+        "mcp-grafana"
+      ],
+      "environment": {
+        "GRAFANA_URL": "{env:GRAFANA_URL}",
+        "GRAFANA_SERVICE_ACCOUNT_TOKEN": "{env:GRAFANA_SERVICE_ACCOUNT_TOKEN}"
+      },
+    },
+    "searxng": {
+      "type": "remote",
+      "url": "https://search-mcp.spudkingdom.org/mcp",
+    }
+  }
+}
