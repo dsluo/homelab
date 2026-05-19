@@ -1,0 +1,16 @@
+---
+apiVersion: operator.victoriametrics.com/v1
+kind: VLSingle
+metadata:
+  name: victoria-logs-single
+spec:
+  retentionPeriod: "7d"
+  extraArgs:
+    storageDataPath: &vl-path /vl-data
+  volumes:
+    - name: &vl-volume data
+      persistentVolumeClaim:
+        claimName: "${APP}"
+  volumeMounts:
+    - name: *vl-volume
+      mountPath: *vl-path
