@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - ./vlagent.yaml
   - ./vlsingle.yaml
+  - ./grafanadatasource.yaml
