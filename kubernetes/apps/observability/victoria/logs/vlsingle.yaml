@@ -5,12 +5,12 @@ metadata:
   name: victoria-logs-single
 spec:
   retentionPeriod: "7d"
-  extraArgs:
-    storageDataPath: &vl-path /vl-data
+  storageDataPath: /victoria-logs-data
+  storage: null # override default; use existing PVC via volumes instead
   volumes:
-    - name: &vl-volume data
+    - name: data
       persistentVolumeClaim:
         claimName: "${APP}"
   volumeMounts:
-    - name: *vl-volume
-      mountPath: *vl-path
+    - name: data
+      mountPath: /victoria-logs-data
