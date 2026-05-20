@@ -16,8 +16,6 @@ Accept any of:
 
 If the user did not specify a PR, list candidates and ask. Do not review all open PRs unless explicitly asked.
 
-**Multiple PRs:** When reviewing two or more PRs simultaneously, launch a parallel subagent per PR using the `Task` tool. Each subagent receives the full procedure (§1–§5) scoped to its single PR number. Collect all subagent results and present them as a consolidated summary. This is significantly faster than sequential review since each PR's research (changelog fetches, greps, in-repo impact) is independent.
-
 ## Tool rules
 
 **Use `gh` for all GitHub data** — PRs, issues, releases, file contents via `gh api`. Never `curl https://api.github.com/...` and never pipe JSON into `python3 -c` to parse it; `gh`'s `--jq` and `-R` flags already cover every case this skill needs. `curl` **is** fine for downloading release assets where `gh release download` doesn't fit (e.g. chart tarballs for local inspection); it's forbidden specifically for things you'd have to parse yourself.
@@ -123,19 +121,6 @@ Output a concise markdown block suitable for pasting as a PR comment. Format:
 Keep it tight. If there are no breaking changes and nothing notable, say so in one line and stop. If verdict is `⛔`, explain what would need to change for it to become safe.
 
 Do not post the comment yourself unless the user asks. Show the review and wait.
-
-### Parallel review (multiple PRs)
-
-When the user requests review of multiple PRs, use the `Task` tool to launch independent subagents:
-
-1. Determine the PR numbers to review.
-2. Launch one `general` subagent per PR via the `Task` tool, each with:
-   - `prompt`: "Review Renovate PR #<NUM> in repo <owner/repo>. Follow the review-renovate-pr skill procedure (§1–§5). Return the full markdown review block."
-   - `description`: "Review Renovate PR #<NUM>"
-3. Wait for all subagents to complete, then consolidate:
-   - Lead with a summary table: PR number, dep, version bump, verdict.
-   - Follow with each individual review block.
-   - Highlight any PRs with `⛔` or `⚠` verdicts at the top.
 
 ## Repo-specific notes
 
