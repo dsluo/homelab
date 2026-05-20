@@ -5,3 +5,4 @@ resources:
   - ./vlagent.yaml
   - ./vlsingle.yaml
   - ./grafanadatasource.yaml
+  - ./grafanadashboard.yaml
