@@ -29,7 +29,7 @@ spec:
           jellyfin:
             image:
               repository: ghcr.io/jellyfin/jellyfin
-              tag: 10.11.9
+              tag: 10.11.10
             probes:
               liveness:
                 enabled: true
