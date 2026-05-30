@@ -6,6 +6,7 @@ resources:
   - ./ocirepository.yaml
   - ./resourceclaimtemplate.yaml
   - ./secret.sops.yaml
+  - ./servicemonitor.yaml
 configMapGenerator:
   - name: llama-cpp-config
     files:
