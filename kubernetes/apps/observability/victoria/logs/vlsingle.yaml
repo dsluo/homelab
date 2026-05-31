@@ -6,7 +6,6 @@ metadata:
 spec:
   retentionPeriod: "7d"
   storageDataPath: /victoria-logs-data
-  storage: null # override default; use existing PVC via volumes instead
   volumes:
     - name: data
       persistentVolumeClaim:
