@@ -36,7 +36,7 @@ TALOSCONFIG = "{{config_root}}/talos/clusterconfig/talosconfig"
 "pipx:copier" = { version = "9.15.1", uvx_args = "--with copier-template-extensions" }
 "pipx:flux-local" = "8.2.0"
 # iac
-"aqua:gruntwork-io/terragrunt" = "1.0.6"
+"aqua:gruntwork-io/terragrunt" = "1.0.7"
 "aqua:opentofu" = "1.12.1"
 "asdf:mise-plugins/mise-oci" = "3.75.0"
 # ai/mcp
