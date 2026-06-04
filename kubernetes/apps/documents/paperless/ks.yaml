@@ -22,6 +22,7 @@ spec:
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/paperless-ngx.svg"
       OIDC_APP_NAME: Paperless
       OIDC_PKCE_ENABLED: "true"
+      OIDC_CALLBACK_PATH: /accounts/oidc/pocket-id/login/callback/
       VOLSYNC_CAPACITY: 10Gi
     substituteFrom:
       - name: cluster-secrets

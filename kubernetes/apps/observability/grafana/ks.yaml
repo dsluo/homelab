@@ -41,6 +41,7 @@ spec:
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/grafana.svg"
       OIDC_APP_NAME: Grafana
       OIDC_PKCE_ENABLED: "true"
+      OIDC_CALLBACK_PATH: /login/generic_oauth
       VOLSYNC_CAPACITY: 5Gi
     substituteFrom:
       - name: cluster-secrets
