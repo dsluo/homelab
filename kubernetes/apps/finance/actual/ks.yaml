@@ -17,6 +17,7 @@ spec:
       APP: *app
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/actual-budget.svg"
       OIDC_APP_NAME: Actual
+      OIDC_CALLBACK_PATH: /openid/callback
       VOLSYNC_CAPACITY: 1Gi
     substituteFrom:
       - name: cluster-secrets
