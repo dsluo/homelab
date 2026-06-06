@@ -1,16 +1,25 @@
 _:
     @just --list
 
-init:
-    terragrunt run --all init
-
+# Create a plan for the current unit.
+[no-cd]
 plan:
-    terragrunt run --all plan
+    terragrunt plan -out plan.tfplan
 
+# Create a plan for all units.
+planall:
+    terragrunt run --all plan -- -out plan.tfplan
+
+# Apply a plan for the current unit.
+[no-cd]
 apply:
-    terragrunt run --all apply
+    terragrunt apply plan.tfplan
 
-alias fmt := format
+# Apply a plan for all units.
+applyall:
+    terragrunt run --all apply -- plan.tfplan
 
+# Format all *.tf and *.hcl files.
 format:
-    terragrunt hcl fmt
+    terragrunt hcl fmt .
+alias fmt := format
