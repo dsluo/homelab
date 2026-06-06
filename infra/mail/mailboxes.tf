@@ -23,7 +23,7 @@ resource "onepassword_item" "mailbox_login" {
   title    = "${each.key}@${each.value.domain}"
   category = "login"
 
-  username = each.key
+  username = "${each.key}@${each.value.domain}"
   # password_wo         = ephemeral.random_password.mailbox_password[each.key].result
   # password_wo_version = 1
   password_recipe {
