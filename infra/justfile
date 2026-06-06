@@ -1,0 +1,16 @@
+_:
+    @just --list
+
+init:
+    terragrunt run --all init
+
+plan:
+    terragrunt run --all plan
+
+apply:
+    terragrunt run --all apply
+
+alias fmt := format
+
+format:
+    terragrunt hcl fmt
