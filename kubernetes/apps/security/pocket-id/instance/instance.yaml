@@ -59,3 +59,10 @@ spec:
         secretKeyRef:
           name: pocket-id-secret
           key: mailboxPassword
+
+  emailNotifications:
+    apiKeyExpiration: true
+    loginNotification: true
+    oneTimeAccessAsAdmin: true
+    oneTimeAccessAsUnauthenticated: false
+    verification: true
