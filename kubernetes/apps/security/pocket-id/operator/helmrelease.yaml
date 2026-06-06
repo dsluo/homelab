@@ -18,3 +18,10 @@ spec:
         enabled: true
       dashboard:
         enabled: true
+        grafanaDashboard:
+          enabled: true
+          allowCrossNamespaceImport: true
+          instanceSelector:
+            matchLabels:
+              dashboards: grafana
+              grafana.internal/instance: null
