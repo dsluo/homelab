@@ -38,5 +38,6 @@ TALOSCONFIG = "{{config_root}}/talos/clusterconfig/talosconfig"
 # iac
 "aqua:gruntwork-io/terragrunt" = "1.0.7"
 "aqua:opentofu" = "1.12.1"
+"aqua:opentofu/tofu-ls" = "0.5.0"
 # ai/mcp
 "github:grafana/mcp-grafana" = "0.15.2"
