@@ -46,3 +46,16 @@ spec:
       - name: envoy-external
         namespace: network
     hostnames: ["pocket-id.${SECRET_DOMAIN}"]
+
+  smtp:
+    host: smtp.migadu.com
+    port: 465
+    tls: tls
+    skipCertVerify: false
+    from: &from "pocketid@${SECRET_DOMAIN}"
+    user: *from
+    password:
+      valueFrom:
+        secretKeyRef:
+          name: pocket-id-secret
+          key: mailboxPassword
