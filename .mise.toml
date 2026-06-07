@@ -34,7 +34,6 @@ TALOSCONFIG = "{{config_root}}/talos/clusterconfig/talosconfig"
 # authoring tools
 "npm:renovate" = "43.214.4"
 "pipx:copier" = { version = "9.15.1", uvx_args = "--with copier-template-extensions" }
-"pipx:flux-local" = "8.2.0"
 # iac
 "aqua:gruntwork-io/terragrunt" = "1.0.7"
 "aqua:opentofu" = "1.12.1"
