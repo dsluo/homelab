@@ -9,6 +9,6 @@ reconcile:
 newapp:
     copier copy templates . --trust
 
-# Run flux-local tests
+# Run flate tests
 test:
-    flux-local test --enable-helm --all-namespaces --path kubernetes/flux/cluster/ -v
+    flate test all --path kubernetes/flux/cluster --allow-missing-secrets
