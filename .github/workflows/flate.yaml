@@ -102,6 +102,7 @@ jobs:
           message-id: ${{ github.event.pull_request.number }}/flate/${{ matrix.resource }}
           message-failure: Diff was not successful
           message: |
+            #### Flate diff — `${{ matrix.resource }}`
             ```diff
             ${{ steps.diff.outputs.diff }}
             ```
