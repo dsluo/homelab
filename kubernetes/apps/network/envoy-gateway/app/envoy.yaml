@@ -106,7 +106,7 @@ kind: Gateway
 metadata:
   name: envoy-towonel
   annotations:
-    # DNS for routes on this gateway is managed by the cloudflare-dns-towonel
+    # DNS for routes on this gateway is managed by the cloudflare-dns-unproxied
     # external-dns instance (--gateway-name=envoy-towonel), which defaults to
     # DNS-only (no --cloudflare-proxied) so traffic reaches the VPS relay direct.
     external-dns.alpha.kubernetes.io/target: towonel.${SECRET_DOMAIN}

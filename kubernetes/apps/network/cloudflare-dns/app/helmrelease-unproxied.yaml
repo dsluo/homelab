@@ -2,17 +2,17 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app cloudflare-dns-towonel
+  name: &app cloudflare-dns-unproxied
 spec:
   chartRef:
     kind: OCIRepository
-    name: cloudflare-dns-towonel
+    name: cloudflare-dns
   interval: 1h
   values:
     fullnameOverride: *app
     provider: cloudflare
     env:
-      # Reuses the Cloudflare API token managed by the cloudflare-dns app.
+      # Shared with the proxied instance; defined in secret.sops.yaml.
       - name: CF_API_TOKEN
         valueFrom:
           secretKeyRef:
@@ -32,9 +32,9 @@ spec:
     policy: sync
     sources: ["gateway-httproute"]
     txtPrefix: k8s.
-    # Distinct owner id so this instance and cloudflare-dns don't fight over
-    # each other's records (they manage disjoint gateways/hostnames).
-    txtOwnerId: towonel
+    # Distinct owner id so this instance and cloudflare-dns-proxied don't fight
+    # over each other's records (they manage disjoint gateways/hostnames).
+    txtOwnerId: unproxied
     domainFilters: ["${SECRET_DOMAIN}"]
     serviceMonitor:
       enabled: true
