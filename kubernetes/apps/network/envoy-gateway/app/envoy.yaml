@@ -156,6 +156,13 @@ kind: ClientTrafficPolicy
 metadata:
   name: envoy
 spec:
+  # Parse the PROXY protocol v2 header the towonel-agent prepends in TLS
+  # passthrough so the real client IP survives the tunnel; without it envoy
+  # reads the header as a bad TLS record and rejects with a protocol_version
+  # alert. optional: true keeps the non-PROXY gateways (cloudflare, internal)
+  # working unchanged.
+  proxyProtocol:
+    optional: true
   clientIPDetection:
     xForwardedFor:
       trustedCIDRs:
