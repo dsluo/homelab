@@ -11,7 +11,7 @@ spec:
   ref:
     tag: 0.1.27
   url: oci://codeberg.org/towonel/charts/towonel-agent
-  verify:
-    provider: cosign
-    secretRef:
-      name: towonel-cosign-pub
+  # verify:
+  #   provider: cosign
+  #   secretRef:
+  #     name: towonel-cosign-pub
