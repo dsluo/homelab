@@ -73,8 +73,8 @@ spec:
               - hostname: "*.${SECRET_DOMAIN}"
                 originRequest:
                   http2Origin: true
-                  originServerName: external.${SECRET_DOMAIN}
-                service: https://envoy-external.{{ .Release.Namespace }}.svc.cluster.local:443
+                  originServerName: cloudflare.${SECRET_DOMAIN}
+                service: https://envoy-cloudflare.{{ .Release.Namespace }}.svc.cluster.local:443
               - service: http_status:404
     persistence:
       config-file:

@@ -43,7 +43,7 @@ spec:
   route:
     enabled: true
     parentRefs:
-      - name: envoy-external
+      - name: envoy-cloudflare
         namespace: network
     hostnames: ["pocket-id.${SECRET_DOMAIN}"]
 
