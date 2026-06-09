@@ -45,8 +45,6 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: envoy-cloudflare
-  labels:
-    external-dns/public: "true"
   annotations:
     external-dns.alpha.kubernetes.io/target: cloudflare.${SECRET_DOMAIN}
 spec:
@@ -107,11 +105,11 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: envoy-towonel
-  labels:
-    external-dns/public: "true"
   annotations:
+    # DNS for routes on this gateway is managed by the cloudflare-dns-towonel
+    # external-dns instance (--gateway-name=envoy-towonel), which defaults to
+    # DNS-only (no --cloudflare-proxied) so traffic reaches the VPS relay direct.
     external-dns.alpha.kubernetes.io/target: towonel.${SECRET_DOMAIN}
-    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
 spec:
   gatewayClassName: envoy
   infrastructure:
