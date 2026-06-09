@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app cloudflare-dns
+  name: &app cloudflare-dns-proxied
 spec:
   chartRef:
     kind: OCIRepository

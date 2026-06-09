@@ -1,0 +1,42 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app cloudflare-dns-unproxied
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: cloudflare-dns
+  interval: 1h
+  values:
+    fullnameOverride: *app
+    provider: cloudflare
+    env:
+      # Shared with the proxied instance; defined in secret.sops.yaml.
+      - name: CF_API_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: &secret cloudflare-dns-secret
+            key: api-token
+    extraArgs:
+      # https://kubernetes-sigs.github.io/external-dns/v0.20.0/docs/flags/
+      - --cloudflare-dns-records-per-page=1000
+      - --gateway-name=envoy-towonel
+      # NOTE: no --cloudflare-proxied. Records default to DNS-only so any
+      # HTTPRoute attached to envoy-towonel reaches the VPS towonel relay
+      # directly instead of being proxied through Cloudflare. This is the whole
+      # reason for a second external-dns instance: --cloudflare-proxied is a
+      # global flag, and the per-record proxied annotation is read only from the
+      # HTTPRoute (never inherited from the Gateway).
+    triggerLoopOnEvent: true
+    policy: sync
+    sources: ["gateway-httproute"]
+    txtPrefix: k8s.
+    # Distinct owner id so this instance and cloudflare-dns-proxied don't fight
+    # over each other's records (they manage disjoint gateways/hostnames).
+    txtOwnerId: unproxied
+    domainFilters: ["${SECRET_DOMAIN}"]
+    serviceMonitor:
+      enabled: true
+    podAnnotations:
+      secret.reloader.stakater.com/reload: *secret
