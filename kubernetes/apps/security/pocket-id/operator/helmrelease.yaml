@@ -24,4 +24,3 @@ spec:
           instanceSelector:
             matchLabels:
               dashboards: grafana
-              grafana.internal/instance: null
