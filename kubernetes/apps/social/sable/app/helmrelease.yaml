@@ -34,7 +34,7 @@ spec:
               liveness: &probe
                 enabled: true
                 custom: true
-                spec:
+                spec: &probespec
                   httpGet:
                     path: /
                     port: &port 8080
@@ -44,8 +44,10 @@ spec:
                   failureThreshold: 3
               readiness: *probe
               startup:
-                <<: *probe
+                enabled: true
+                custom: true
                 spec:
+                  <<: *probespec
                   failureThreshold: 30
     service:
       *app :
