@@ -7,3 +7,4 @@ components:
 resources:
   - ./namespace.yaml
   - ./continuwuity/ks.yaml
+  - ./sable/ks.yaml
