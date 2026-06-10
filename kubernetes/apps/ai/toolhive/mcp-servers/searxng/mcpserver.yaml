@@ -15,6 +15,8 @@ spec:
       value: http://searxng.ai.svc.cluster.local:8080
     - name: MCP_HTTP_PORT
       value: "8080"
+    - name: MCP_HTTP_HOST
+      value: "0.0.0.0"
   podTemplateSpec:
     spec:
       containers:
