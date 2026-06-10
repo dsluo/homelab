@@ -70,6 +70,13 @@ spec:
         data:
           config.yaml: |-
             ingress:
+              # Apex domain — the wildcard below does NOT match the bare apex, so
+              # an explicit rule is required (e.g. Matrix /.well-known delegation).
+              - hostname: "${SECRET_DOMAIN}"
+                originRequest:
+                  http2Origin: true
+                  originServerName: cloudflare.${SECRET_DOMAIN}
+                service: https://envoy-cloudflare.{{ .Release.Namespace }}.svc.cluster.local:443
               - hostname: "*.${SECRET_DOMAIN}"
                 originRequest:
                   http2Origin: true
