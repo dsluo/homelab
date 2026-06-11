@@ -20,7 +20,7 @@ cniConfig:
 nodes:
   - hostname: talos0
     ipAddress: "10.0.42.3"
-    nameservers:
+    nameservers: &dns
       - 10.0.42.1
     controlPlane: true
     installDiskSelector:
@@ -78,29 +78,86 @@ nodes:
         kind: UserVolumeConfig
         name: local-hostpath
         volumeType: directory
+  - hostname: talos1
+    ipAddress: 10.0.42.4
+    nameservers: *dns
+    controlPlane: false
+    installDiskSelector:
+      size: ">= 1TB"
+      model: "Samsung*"
+    kernelModules:
+      - name: zfs
+      - name: nvidia
+      - name: nvidia_uvm
+      - name: nvidia_drm
+      - name: nvidia_modeset
+    schematic:
+      customization:
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/amd-ucode
+            - siderolabs/nvidia-container-toolkit-production
+            - siderolabs/nvidia-open-gpu-kernel-modules-production
+            - siderolabs/util-linux-tools
+            - siderolabs/zfs
+        bootloader: sd-boot
+    volumes:
+      - name: EPHEMERAL
+        provisioning:
+          diskSelector:
+            match: disk.pretty_size >= "1 TB" && disk.model.startsWith("Samsung")
+          maxSize: 100GB
+    networkInterfaces:
+      - interface: enp16s0f1
+        mtu: 1500
+        vlans:
+          - vlanId: 42
+            dhcp: false
+            addresses:
+              - "10.0.42.4/24"
+            routes:
+              - network: "0.0.0.0/0"
+                gateway: 10.0.42.1
+            # vip:
+            #   ip: "10.0.42.2"
+    patches:
+      - |-
+        apiVersion: v1alpha1
+        kind: RawVolumeConfig
+        name: openebs-zpool
+        provisioning:
+          diskSelector:
+            match: disk.pretty_size >= "1 TB" && disk.model.startsWith("Samsung")
+          minSize: "500GB"
+          grow: true
+      - |-
+        apiVersion: v1alpha1
+        kind: UserVolumeConfig
+        name: local-hostpath
+        volumeType: directory
 
 patches:
   - |-
     machine:
-      features:
-        kubernetesTalosAPIAccess:
-          allowedKubernetesNamespaces:
-            - system-upgrade
-          allowedRoles:
-            - os:admin
-          enabled: true
+      files:
+        - path: /etc/cri/conf.d/20-customization.part
+          op: create
+          content: |
+            [plugins."io.containerd.cri.v1.runtime"]
+              cdi_spec_dirs = ["/var/cdi/static", "/var/cdi/dynamic"]
+              device_ownership_from_security_context = true
 
 controlPlane:
   patches:
     - |-
       machine:
-        files:
-          - path: /etc/cri/conf.d/20-customization.part
-            op: create
-            content: |
-              [plugins."io.containerd.cri.v1.runtime"]
-                cdi_spec_dirs = ["/var/cdi/static", "/var/cdi/dynamic"]
-                device_ownership_from_security_context = true
+        features:
+          kubernetesTalosAPIAccess:
+            allowedKubernetesNamespaces:
+              - system-upgrade
+            allowedRoles:
+              - os:admin
+            enabled: true
     - |-
       cluster:
         # Disable built-in CoreDNS to use Helm-managed CoreDNS
@@ -108,9 +165,9 @@ controlPlane:
           disabled: true
 
         # Disable kube-proxy since Cilium replaces it
-        proxy: 
+        proxy:
           disabled: true
-        
+
         # Enable MutatingAdmissionPolicy (and friends)
         apiServer:
           extraArgs:
