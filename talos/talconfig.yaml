@@ -82,15 +82,6 @@ nodes:
 patches:
   - |-
     machine:
-      features:
-        kubernetesTalosAPIAccess:
-          allowedKubernetesNamespaces:
-            - system-upgrade
-          allowedRoles:
-            - os:admin
-          enabled: true
-  - |-
-    machine:
       files:
         - path: /etc/cri/conf.d/20-customization.part
           op: create
@@ -101,6 +92,15 @@ patches:
 
 controlPlane:
   patches:
+    - |-
+      machine:
+        features:
+          kubernetesTalosAPIAccess:
+            allowedKubernetesNamespaces:
+              - system-upgrade
+            allowedRoles:
+              - os:admin
+            enabled: true
     - |-
       cluster:
         # Disable built-in CoreDNS to use Helm-managed CoreDNS
