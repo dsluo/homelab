@@ -13,3 +13,4 @@ parameters:
   shared: "yes"
 provisioner: zfs.csi.openebs.io
 allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
