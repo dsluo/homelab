@@ -6,13 +6,15 @@ source "$(dirname "${0}")/lib/common.sh"
 export LOG_LEVEL="debug"
 
 function create_zpool() {
-    log debug "Creating zpool"
+    local node="${1}"
+
+    log debug "Creating zpool on node ${node}"
 
     POOL_NAME=tank
     POOL_DISK=/dev/disk/by-partlabel/r-openebs-zpool
 
     kubectl debug \
-        node/talos0 \
+        "node/${node}" \
         -n kube-system \
         --image=busybox:1.36 \
         --profile=sysadmin \
@@ -29,10 +31,16 @@ function create_zpool() {
 }
 
 function main() {
+    local node="${1:-}"
+
+    if [[ -z "${node}" ]]; then
+        log error "Missing required argument" "usage=${0##*/} <node-name>"
+    fi
+
     check_env KUBECONFIG
     check_cli kubectl
 
-    create_zpool
+    create_zpool "${node}"
 }
 
 main "$@"
