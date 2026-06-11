@@ -12,7 +12,7 @@ TALOSCONFIG = "{{config_root}}/talos/clusterconfig/talosconfig"
 "aqua:google/go-containerregistry" = "0.21.6"
 # talos
 "aqua:budimanjojo/talhelper" = "3.1.11"
-"aqua:siderolabs/talos" = "1.13.3"
+"aqua:siderolabs/talos" = "1.13.4"
 "github:Handfish/talos-pilot" = "0.1.9"
 # k8s
 "aqua:derailed/k9s" = "0.51.0"
