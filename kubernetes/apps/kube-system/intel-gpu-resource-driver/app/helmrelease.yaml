@@ -12,6 +12,8 @@ spec:
   values:
     kubeletPlugin:
       privileged: true
+      nodeSelector:
+        intel.feature.node.kubernetes.io/gpu: "true"
       healthMonitoring:
         enabled: false
     cdi:
