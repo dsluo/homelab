@@ -89,18 +89,18 @@ patches:
           allowedRoles:
             - os:admin
           enabled: true
+  - |-
+    machine:
+      files:
+        - path: /etc/cri/conf.d/20-customization.part
+          op: create
+          content: |
+            [plugins."io.containerd.cri.v1.runtime"]
+              cdi_spec_dirs = ["/var/cdi/static", "/var/cdi/dynamic"]
+              device_ownership_from_security_context = true
 
 controlPlane:
   patches:
-    - |-
-      machine:
-        files:
-          - path: /etc/cri/conf.d/20-customization.part
-            op: create
-            content: |
-              [plugins."io.containerd.cri.v1.runtime"]
-                cdi_spec_dirs = ["/var/cdi/static", "/var/cdi/dynamic"]
-                device_ownership_from_security_context = true
     - |-
       cluster:
         # Disable built-in CoreDNS to use Helm-managed CoreDNS
@@ -108,9 +108,9 @@ controlPlane:
           disabled: true
 
         # Disable kube-proxy since Cilium replaces it
-        proxy: 
+        proxy:
           disabled: true
-        
+
         # Enable MutatingAdmissionPolicy (and friends)
         apiServer:
           extraArgs:
