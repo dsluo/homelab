@@ -12,7 +12,6 @@ locals {
     "management" = {
       interfaces = [
         "ether1",
-        "sfp-sfpplus19", # david-desktop
       ]
       vlan   = 20
       trunk  = false
@@ -21,7 +20,6 @@ locals {
     "access-vlan10" = {
       comment = "clients"
       interfaces = [
-        "sfp-sfpplus19", # david-desktop
         "sfp-sfpplus20", # emily-desktop
         "sfp-sfpplus21", # macmini
       ]
@@ -51,6 +49,7 @@ locals {
       interfaces = [
         "sfp-sfpplus15", # talos0
         "sfp-sfpplus16", # talos0
+        "sfp-sfpplus19", # talos1
       ]
       vlan  = 42
       trunk = true
@@ -62,7 +61,7 @@ locals {
     "sfp-sfpplus16" = "talos0"
     "sfp-sfpplus17" = "storage"
     "sfp-sfpplus18" = "storage"
-    "sfp-sfpplus19" = "david-desktop"
+    "sfp-sfpplus19" = "talos1"
     "sfp-sfpplus20" = "emily-desktop"
     "sfp-sfpplus21" = "macmini"
     "sfp-sfpplus23" = "sw-access downstream"
