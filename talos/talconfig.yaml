@@ -20,7 +20,7 @@ cniConfig:
 nodes:
   - hostname: talos0
     ipAddress: "10.0.42.3"
-    nameservers:
+    nameservers: &dns
       - 10.0.42.1
     controlPlane: true
     installDiskSelector:
@@ -71,6 +71,63 @@ nodes:
         provisioning:
           diskSelector:
             match: disk.pretty_size == "960 GB" && disk.model.startsWith("SAMSUNG")
+          minSize: "500GB"
+          grow: true
+      - |-
+        apiVersion: v1alpha1
+        kind: UserVolumeConfig
+        name: local-hostpath
+        volumeType: directory
+  - hostname: talos1
+    ipAddress: 10.0.42.4
+    nameservers: *dns
+    controlPlane: false
+    installDiskSelector:
+      size: ">= 1TB"
+      model: "Samsung*"
+    kernelModules:
+      - name: zfs
+      - name: nvidia
+      - name: nvidia_uvm
+      - name: nvidia_drm
+      - name: nvidia_modeset
+    schematic:
+      customization:
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/amd-ucode
+            - siderolabs/nvidia-container-toolkit-production
+            - siderolabs/nvidia-open-gpu-kernel-modules-production
+            - siderolabs/util-linux-tools
+            - siderolabs/zfs
+        bootloader: sd-boot
+    volumes:
+      - name: EPHEMERAL
+        provisioning:
+          diskSelector:
+            match: disk.pretty_size >= "1 TB" && disk.model.startsWith("Samsung")
+          maxSize: 100GB
+    networkInterfaces:
+      - interface: enp16s0f1
+        mtu: 1500
+        vlans:
+          - vlanId: 42
+            dhcp: false
+            addresses:
+              - "10.0.42.4/24"
+            routes:
+              - network: "0.0.0.0/0"
+                gateway: 10.0.42.1
+            # vip:
+            #   ip: "10.0.42.2"
+    patches:
+      - |-
+        apiVersion: v1alpha1
+        kind: RawVolumeConfig
+        name: openebs-zpool
+        provisioning:
+          diskSelector:
+            match: disk.pretty_size >= "1 TB" && disk.model.startsWith("Samsung")
           minSize: "500GB"
           grow: true
       - |-
