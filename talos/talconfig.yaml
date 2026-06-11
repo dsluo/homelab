@@ -23,6 +23,8 @@ nodes:
     nameservers: &dns
       - 10.0.42.1
     controlPlane: true
+    nodeLabels:
+      intel.feature.node.kubernetes.io/gpu: "true"
     installDiskSelector:
       size: "960197124096"
       model: "SAMSUNG*"
