@@ -41,7 +41,7 @@ jobs:
           persist-credentials: false
 
       - name: Install Flate
-        uses: home-operations/flate/action@4ef9bb741a9f346fbc719659ff0fd3080bac3eae # v0.3.4
+        uses: home-operations/flate/action@54bf38b3e9f0ffa27838559f05254c593af228a3 # v0.4.4
 
       - name: Run Flate test
         run: flate test all --path ./kubernetes/flux/cluster --allow-missing-secrets
@@ -70,7 +70,7 @@ jobs:
           persist-credentials: false
 
       - name: Install Flate
-        uses: home-operations/flate/action@4ef9bb741a9f346fbc719659ff0fd3080bac3eae # v0.3.4
+        uses: home-operations/flate/action@54bf38b3e9f0ffa27838559f05254c593af228a3 # v0.4.4
 
       - name: Run Flate diff
         id: diff
