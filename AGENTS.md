@@ -1,6 +1,6 @@
 # Homelab
 
-A single-node Kubernetes homelab with GitOps-driven deployments.
+A two-node Kubernetes homelab with GitOps-driven deployments. `talos0` is the control plane (Intel GPU host); `talos1` is a worker.
 
 ## Stack
 
@@ -14,7 +14,8 @@ A single-node Kubernetes homelab with GitOps-driven deployments.
 - **Secrets**: SOPS + Age (encrypted in-repo), 1Password as the Age key backend
 - **Certs**: cert-manager
 - **DB**: CloudNative-PG (PostgreSQL operator)
-- **Monitoring**: Victoria Metrics + Grafana (with Grafana MCP)
+- **Monitoring**: Victoria Metrics + Grafana (with Grafana MCP), Kepler (power metrics)
+- **OS/Talos upgrades**: tuppr (`system-upgrade` namespace)
 - **Infra-as-code**: OpenTofu — manages MikroTik switch (`infra/sw_core/`) and Backblaze B2 (`infra/backblaze/`)
 - **Dependency updates**: Renovate (auto-merges patch/minor for GitHub Actions and mise tools)
 - **Tool versions**: mise-en-place (`.mise.toml`)
@@ -36,11 +37,22 @@ docs/          # Hardware and bootstrap documentation
 
 ## Key Apps by Namespace
 
-| Namespace     | Apps                                                |
-| ------------- | --------------------------------------------------- |
-| kube-system   | Cilium, CoreDNS, Metrics Server, Intel GPU driver   |
-| network       | Cloudflare DNS + Tunnel, Envoy Gateway, k8s-gateway |
-| database      | CloudNative-PG                                      |
-| observability | Victoria Metrics, Grafana, SNMP Exporter            |
-| documents     | Paperless-ngx                                       |
-| security      | Pocket-ID (SSO)                                     |
+| Namespace      | Apps                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------- |
+| kube-system    | Cilium, CoreDNS, Metrics Server, Intel GPU driver, Reflector, Reloader, Snapshot Controller |
+| network        | Cloudflare DNS + Tunnel, Envoy Gateway, k8s-gateway, towonel-agent                          |
+| database       | CloudNative-PG                                                                              |
+| observability  | Victoria Metrics, Grafana, SNMP Exporter, Kepler                                            |
+| ai             | llama.cpp, SearXNG, ToolHive (MCP servers)                                                  |
+| media          | Jellyfin, Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, SABnzbd, Seerr, Recyclarr          |
+| documents      | Paperless-ngx                                                                               |
+| finance        | Actual                                                                                      |
+| maker          | OrcaSlicer                                                                                  |
+| social         | Continuwuity (Matrix), Sable                                                                |
+| security       | Pocket-ID (SSO)                                                                             |
+| system-upgrade | tuppr (Talos upgrades)                                                                      |
+| openebs-system | OpenEBS                                                                                     |
+| cert-manager   | cert-manager                                                                                |
+| volsync-system | VolSync                                                                                     |
+| flux-system    | flux-operator, flux-instance                                                                |
+| default        | echo                                                                                        |
