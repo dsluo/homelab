@@ -19,7 +19,7 @@ A two-node Kubernetes homelab with GitOps-driven deployments. `talos0` is the co
 - **Infra-as-code**: OpenTofu — manages MikroTik switch (`infra/sw_core/`) and Backblaze B2 (`infra/backblaze/`)
 - **Dependency updates**: Renovate (auto-merges patch/minor for GitHub Actions and mise tools)
 - **Tool versions**: mise-en-place (`.mise.toml`)
-- **Task runner**: Taskfile (`task <command>`)
+- **Task runner**: Just (`just <command>`)
 
 ## Directory Structure
 
