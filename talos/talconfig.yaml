@@ -80,6 +80,12 @@ nodes:
         kind: UserVolumeConfig
         name: local-hostpath
         volumeType: directory
+      - |-
+        apiVersion: v1alpha1
+        kind: EthernetConfig
+        name: enp4s0
+        wakeOnLan:
+          - magic
   - hostname: talos1
     ipAddress: 10.0.42.4
     nameservers: *dns
@@ -137,6 +143,12 @@ nodes:
         kind: UserVolumeConfig
         name: local-hostpath
         volumeType: directory
+      - |-
+        apiVersion: v1alpha1
+        kind: EthernetConfig
+        name: enp14s0
+        wakeOnLan:
+          - magic
 
 patches:
   - |-
