@@ -15,3 +15,4 @@ resources:
   - ./reflector/ks.yaml
   - ./snapshot-controller/ks.yaml
   - ./intel-gpu-resource-driver/ks.yaml
+  - ./nvidia-gpu/ks.yaml
