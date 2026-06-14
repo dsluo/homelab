@@ -1,0 +1,21 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: llmkube-llamacpp
+spec:
+  jobLabel: inference.llmkube.dev/service
+  namespaceSelector:
+    matchNames:
+      - ai
+  # Auto-discover every llamacpp InferenceService pod. llmkube stamps this
+  # constant label on all of them, so new models are picked up without edits.
+  selector:
+    matchLabels:
+      inference.llmkube.dev/runtime: llamacpp
+  podMetricsEndpoints:
+    # llmkube launches llama-server with --metrics, exposing the Prometheus
+    # endpoint on the same named "http" port (8080) as the inference API.
+    - port: http
+      path: /metrics
+      honorLabels: true
