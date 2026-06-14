@@ -15,6 +15,15 @@ spec:
       count: 2 # 3090 Ti + 3070 on talos1
       vendor: nvidia
       layers: 999 # preset ngl=999 (full offload)
+      # Emit a single --tensor-split 6,1 (preset value). llmkube derives the
+      # ratio from the layerSplit range sizes (6 vs 1), so we must NOT also pass
+      # --tensor-split in extraArgs or llama.cpp gets it twice. The ranges only
+      # express the 6:1 proportion; they need not match the real layer count.
+      sharding:
+        strategy: layer
+        layerSplit:
+          - "0-5" # 3090 Ti — 6 parts
+          - "6-6" # 3070 — 1 part
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
@@ -31,15 +40,19 @@ spec:
   contextSize: 262144 # ctx-size
   parallelSlots: 1 # parallel
   batchSize: 2048 # batch-size
-  uBatchSize: 512 # ubatch-size
+  uBatchSize: 256 # ubatch-size — halved from 512 to shrink the per-context
+  # compute buffer on the 3070. The 3070 holds TWO compute buffers (main +
+  # MTP draft context), allocated sequentially; at 512 (and even 384) the
+  # second one OOMs. 256 is the ceiling that fits full 262144 ctx + MTP here.
   cacheTypeK: q8_0 # cache-type-k
   cacheTypeV: q8_0 # cache-type-v
 
   # --- preset flags without typed CRD fields (MTP draft, KV reuse, sampling) ---
-  # Omitted from the preset: load-on-startup (router-only) and verbosity=4 (debug).
+  # Omitted from the preset: load-on-startup (router-only).
+  # --tensor-split 6,1 is emitted by the Model's gpu.sharding (above), not here.
   extraArgs:
-    - --tensor-split
-    - "6,1"
+    - --verbosity
+    - "4"
     - --cache-reuse
     - "256"
     - --kv-unified
