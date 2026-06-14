@@ -24,7 +24,7 @@ spec:
           *app :
             image:
               repository: ghcr.io/sableclient/sable
-              tag: 1.17.0@sha256:4739d811e859cedfc2c9b0a857d4a5e0d6ea7ea7eef7e91088d427a515c5abf4
+              tag: 1.18.0@sha256:6869a8c5fa937c29bdfd239bdfd263378f8a29dd74a7912c0304fdd736a32dea
             securityContext:
               privileged: false
               allowPrivilegeEscalation: false
