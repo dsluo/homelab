@@ -38,7 +38,7 @@ spec:
 
   # --- typed preset fields ---
   contextSize: 262144 # ctx-size
-  parallelSlots: 1 # parallel
+  parallelSlots: 2 # parallel
   batchSize: 2048 # batch-size
   uBatchSize: 256 # ubatch-size — halved from 512 to shrink the per-context
   # compute buffer on the 3070. The 3070 holds TWO compute buffers (main +
