@@ -16,7 +16,7 @@ TALOSCONFIG = "{{config_root}}/talos/clusterconfig/talosconfig"
 "github:Handfish/talos-pilot" = "0.1.9"
 # k8s
 "aqua:derailed/k9s" = "0.51.0"
-"aqua:helm/helm" = "4.2.0"
+"aqua:helm/helm" = "4.2.1"
 "aqua:helmfile/helmfile" = "1.5.3"
 "aqua:kubernetes-sigs/kustomize" = "5.8.0"
 "aqua:kubernetes/kubectl" = "1.34.3"
