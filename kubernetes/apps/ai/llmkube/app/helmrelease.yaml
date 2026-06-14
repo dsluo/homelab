@@ -19,18 +19,23 @@ spec:
       # Helm crds/ dir), so Flux install.crds/upgrade.crds settings don't apply.
       install: true
       keep: true
-    # Controller runs CPU-only; InferenceService CRs schedule the GPU workloads.
     controllerManager:
       replicaCount: 1
       leaderElection:
         enabled: false
+      # Pin to the GPU node (talos1). The controller mounts the model-cache PVC
+      # that inference pods also share; openebs-zfspv is node-local, so the
+      # controller must live on the same node where GPU inference schedules.
+      nodeSelector:
+        kubernetes.io/hostname: talos1
       resources:
         requests:
           cpu: 10m
           memory: 256Mi
         limits:
           memory: 1Gi
-    # Shared model cache PVC — uses the cluster default storage class (openebs-zfspv).
+    # Shared model cache PVC. openebs-zfspv is node-local, so this binds on the
+    # controller's node (talos1) and is read by inference pods scheduled there.
     modelCache:
       enabled: true
       size: 100Gi
