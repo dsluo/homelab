@@ -1,0 +1,39 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app llmkube
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: *app
+      version: 0.8.6
+      sourceRef:
+        kind: HelmRepository
+        name: *app
+      interval: 1h
+  values:
+    crds:
+      # CRDs are rendered as templated resources gated on this value (not the
+      # Helm crds/ dir), so Flux install.crds/upgrade.crds settings don't apply.
+      install: true
+      keep: true
+    # Controller runs CPU-only; InferenceService CRs schedule the GPU workloads.
+    controllerManager:
+      replicaCount: 1
+      leaderElection:
+        enabled: false
+      resources:
+        requests:
+          cpu: 10m
+          memory: 256Mi
+        limits:
+          memory: 1Gi
+    # Shared model cache PVC — uses the cluster default storage class (openebs-zfspv).
+    modelCache:
+      enabled: true
+      size: 100Gi
+      accessMode: ReadWriteOnce
+    priorityClasses:
+      enabled: true

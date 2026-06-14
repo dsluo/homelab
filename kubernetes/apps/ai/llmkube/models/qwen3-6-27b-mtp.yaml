@@ -1,0 +1,93 @@
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: Model
+metadata:
+  name: qwen3-6-27b-mtp
+spec:
+  # HF cache path models--unsloth--Qwen3.6-27B-MTP-GGUF / Qwen3.6-27B-UD-Q4_K_XL.gguf
+  source: https://huggingface.co/unsloth/Qwen3.6-27B-MTP-GGUF/resolve/main/Qwen3.6-27B-UD-Q4_K_XL.gguf
+  format: gguf
+  quantization: UD-Q4_K_XL
+  hardware:
+    accelerator: cuda
+    gpu:
+      enabled: true
+      count: 2 # 3090 Ti + 3070 on talos1
+      vendor: nvidia
+      layers: 999 # preset ngl=999 (full offload)
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: InferenceService
+metadata:
+  name: qwen3-6-27b-mtp
+spec:
+  modelRef: qwen3-6-27b-mtp
+  runtime: llamacpp
+  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b9603@sha256:841b199aed2649a748875b043b32fed2e8c2d4d87e1d563556817fb7fa44b72b
+  runtimeClassName: nvidia
+  replicas: 1
+
+  # --- typed preset fields ---
+  contextSize: 262144 # ctx-size
+  parallelSlots: 1 # parallel
+  batchSize: 2048 # batch-size
+  uBatchSize: 512 # ubatch-size
+  cacheTypeK: q8_0 # cache-type-k
+  cacheTypeV: q8_0 # cache-type-v
+
+  # --- preset flags without typed CRD fields (MTP draft, KV reuse, sampling) ---
+  # Omitted from the preset: load-on-startup (router-only) and verbosity=4 (debug).
+  extraArgs:
+    - --tensor-split
+    - "6,1"
+    - --cache-reuse
+    - "256"
+    - --kv-unified
+    - --spec-type
+    - draft-mtp
+    - --spec-draft-n-max
+    - "3"
+    - --spec-draft-ngl
+    - "999"
+    - --spec-draft-type-k
+    - q8_0
+    - --spec-draft-type-v
+    - q8_0
+    - --temp
+    - "0.6"
+    - --top-p
+    - "0.95"
+    - --top-k
+    - "20"
+    - --min-p
+    - "0.0"
+    - --presence-penalty
+    - "0.0"
+    - --repeat-penalty
+    - "1.0"
+    - --chat-template-kwargs
+    - '{"preserve_thinking":true}'
+
+  resources:
+    cpu: "1"
+    memory: 8Gi
+    gpu: 2
+
+  endpoint:
+    port: 8080
+    type: ClusterIP
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: qwen3-6-27b-mtp
+spec:
+  hostnames:
+    - "qwen.${SECRET_DOMAIN}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+  rules:
+    - backendRefs:
+        - name: qwen3-6-27b-mtp
+          port: 8080
