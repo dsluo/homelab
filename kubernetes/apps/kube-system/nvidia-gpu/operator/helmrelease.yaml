@@ -1,0 +1,33 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nvidia-gpu-operator
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: nvidia-gpu-operator
+  interval: 1h
+  values:
+    # Driver and container toolkit are provided by Talos system extensions
+    # (nvidia-open-gpu-kernel-modules-production + nvidia-container-toolkit-production).
+    driver:
+      enabled: false
+    toolkit:
+      enabled: false
+    cdi:
+      enabled: true
+      default: true
+    hostPaths:
+      driverInstallDir: /usr/local
+    nfd:
+      enabled: true
+    gfd:
+      enabled: true
+    dcgmExporter:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+    migManager:
+      enabled: false
