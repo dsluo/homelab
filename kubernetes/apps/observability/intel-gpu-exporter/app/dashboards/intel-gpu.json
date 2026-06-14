@@ -1,0 +1,109 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "schemaVersion": 39,
+  "tags": ["intel", "gpu"],
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {},
+        "hide": 0,
+        "refresh": 1,
+        "regex": ""
+      },
+      {
+        "name": "pci_dev",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "${datasource}" },
+        "query": "label_values(intel_gpu_vram_total_bytes, pci_dev)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {}
+      }
+    ]
+  },
+  "time": { "from": "now-6h", "to": "now" },
+  "title": "Intel GPU",
+  "uid": "intel-gpu",
+  "panels": [
+    {
+      "id": 1,
+      "title": "VRAM Utilization",
+      "type": "gauge",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 75 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "100 * intel_gpu_vram_used_bytes{pci_dev=~\"$pci_dev\"} / intel_gpu_vram_total_bytes{pci_dev=~\"$pci_dev\"}",
+          "legendFormat": "{{node}} {{pci_dev}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "VRAM Used / Total",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 16, "x": 8, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "showPoints": "never" }
+        }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "intel_gpu_vram_used_bytes{pci_dev=~\"$pci_dev\"}",
+          "legendFormat": "used {{pci_dev}}"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "intel_gpu_vram_allocated_bytes{pci_dev=~\"$pci_dev\"}",
+          "legendFormat": "allocated {{pci_dev}}"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "intel_gpu_vram_total_bytes{pci_dev=~\"$pci_dev\"}",
+          "legendFormat": "total {{pci_dev}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "DRM Clients",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 8 },
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "intel_gpu_drm_clients{pci_dev=~\"$pci_dev\"}",
+          "legendFormat": "{{node}} {{pci_dev}}"
+        }
+      ]
+    }
+  ]
+}

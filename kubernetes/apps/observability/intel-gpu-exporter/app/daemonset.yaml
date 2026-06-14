@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: intel-gpu-exporter
+  labels:
+    app.kubernetes.io/name: intel-gpu-exporter
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: intel-gpu-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: intel-gpu-exporter
+    spec:
+      # Only nodes with an Intel GPU.
+      nodeSelector:
+        intel.feature.node.kubernetes.io/gpu: "true"
+      # Aggregate VRAM from every GPU client's /proc/<pid>/fdinfo on the host.
+      hostPID: true
+      automountServiceAccountToken: false
+      containers:
+        - name: exporter
+          image: python:3.13-alpine@sha256:db66119d6609a3a941a9433b225f4e13d33c459cede097cf3ec2fc4d1bd314b2
+          command: ["python3", "-u", "/app/exporter.py"]
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: PORT
+              value: "9123"
+          ports:
+            - name: metrics
+              containerPort: 9123
+          securityContext:
+            # Reading other processes' fdinfo requires host-root + ptrace.
+            privileged: true
+            runAsUser: 0
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+          volumeMounts:
+            - name: script
+              mountPath: /app
+              readOnly: true
+      volumes:
+        - name: script
+          configMap:
+            name: intel-gpu-exporter-script
