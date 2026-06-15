@@ -1,0 +1,41 @@
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: Model
+metadata:
+  name: qwen3-reranker-0.6b
+spec:
+  # llama.cpp-packaged reranker build (rank head intact); serves memini's
+  # /v1/rerank on CPU.
+  source: https://huggingface.co/Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp/resolve/main/Qwen3-Reranker-0.6B-Q5_K_M.gguf
+  format: gguf
+  quantization: Q5_K_M
+  hardware:
+    accelerator: cpu
+    gpu:
+      enabled: false
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: InferenceService
+metadata:
+  name: qwen3-reranker-0.6b
+spec:
+  modelRef: qwen3-reranker-0.6b
+  runtime: llamacpp
+  image: ghcr.io/ggml-org/llama.cpp:server-b9628@sha256:d0b7bce18e8f1bd9cfa8a455ea184cedae513ddfacded7fa41182fa31d9c4aa9
+  replicas: 1
+  contextSize: 8192
+  parallelSlots: 4
+  # --reranking + --pooling rank exposes the Cohere-style /v1/rerank endpoint
+  # memini calls.
+  extraArgs:
+    - --reranking
+    - --pooling
+    - rank
+    - --alias
+    - qwen3-reranker-0.6b
+  resources:
+    cpu: "500m"
+    memory: 1Gi
+  endpoint:
+    port: 8080
+    type: ClusterIP
