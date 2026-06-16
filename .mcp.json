@@ -15,6 +15,15 @@
         "GRAFANA_URL": "${GRAFANA_URL}",
         "GRAFANA_SERVICE_ACCOUNT_TOKEN": "${GRAFANA_SERVICE_ACCOUNT_TOKEN}"
       }
+    },
+    "memini": {
+      "type": "http",
+      "url": "${MEMINI_URL}/mcp",
+      "alwaysLoad": true,
+      "headers": {
+        "Authorization": "Bearer ${MEMINI_API_KEY}",
+        "X-Memini-Namespace": "homelab"
+      }
     }
   }
 }
