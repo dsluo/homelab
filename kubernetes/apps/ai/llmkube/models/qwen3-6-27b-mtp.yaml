@@ -51,6 +51,8 @@ spec:
   # Omitted from the preset: load-on-startup (router-only).
   # --tensor-split 6,1 is emitted by the Model's gpu.sharding (above), not here.
   extraArgs:
+    - --alias
+    - Qwen/Qwen3.6-27B-MTP
     - --verbosity
     - "4"
     - --cache-reuse
