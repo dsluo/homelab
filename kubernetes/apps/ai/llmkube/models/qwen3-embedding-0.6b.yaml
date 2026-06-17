@@ -2,10 +2,9 @@
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: Model
 metadata:
-  name: all-minilm-l6-v2
+  name: qwen3-embedding-0.6b
 spec:
-  # 384-dim BERT sentence encoder; serves memini's embeddings on CPU.
-  source: https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-Q8_0.gguf
+  source: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF/resolve/main/Qwen3-Embedding-0.6B-Q8_0.gguf
   format: gguf
   quantization: Q8_0
   hardware:
@@ -16,25 +15,24 @@ spec:
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
 metadata:
-  name: all-minilm-l6-v2
+  name: qwen3-embedding-0.6b
 spec:
-  modelRef: all-minilm-l6-v2
+  modelRef: qwen3-embedding-0.6b
   runtime: llamacpp
   image: ghcr.io/ggml-org/llama.cpp:server-b9628@sha256:d0b7bce18e8f1bd9cfa8a455ea184cedae513ddfacded7fa41182fa31d9c4aa9
   replicas: 1
-  contextSize: 32768
+  contextSize: 8192
   uBatchSize: 2048
   parallelSlots: 8
-  # MiniLM is a BERT encoder → mean pooling. --embeddings exposes /v1/embeddings.
   extraArgs:
     - --embeddings
     - --pooling
-    - mean
+    - last
     - --alias
-    - sentence-transformers/all-MiniLM-L6-v2
+    - Qwen/Qwen3-Embedding-0.6B
   resources:
     cpu: "500m"
-    memory: 1Gi
+    memory: 2Gi
   endpoint:
     port: 8080
     type: ClusterIP
