@@ -32,7 +32,7 @@ metadata:
 spec:
   modelRef: qwen3-6-27b-mtp
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b9628@sha256:5535de118ed457f761cbfeacd7e10fef31cb391ca7cac1d5c78b11d28fcf88e6
+  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b9680@sha256:aead4f4d77679873a40036c984702c8a9a52ab52275b0702e2fa68b4bc9a5f03
   runtimeClassName: nvidia
   replicas: 1
 
