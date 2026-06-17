@@ -19,9 +19,9 @@ spec:
             env:
               MEMINI_BACKEND: sqlite
               MEMINI_LOG_FORMAT: json
-              MEMINI_EMBED_BASE_URL: http://all-minilm-l6-v2.ai.svc.cluster.local:8080/v1
-              MEMINI_EMBED_MODEL: sentence-transformers/all-MiniLM-L6-v2
-              MEMINI_EMBED_DIMS: "384"
+              MEMINI_EMBED_BASE_URL: http://qwen3-embedding-0.6b.ai.svc.cluster.local:8080/v1
+              MEMINI_EMBED_MODEL: Qwen/Qwen3-Embedding-0.6B
+              MEMINI_EMBED_DIMS: "1024"
               MEMINI_RERANK: http://qwen3-reranker-0.6b.ai.svc.cluster.local:8080/v1
               MEMINI_RERANK_MODEL: qwen3-reranker-0.6b
               MEMINI_RERANK_TOP_N: "20"
