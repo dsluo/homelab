@@ -24,7 +24,6 @@ spec:
               MEMINI_EMBED_DIMS: "384"
               MEMINI_RERANK: http://qwen3-reranker-0.6b.ai.svc.cluster.local:8080/v1
               MEMINI_RERANK_MODEL: qwen3-reranker-0.6b
-              MEMINI_RERANK_TOP_N: "20"
               MEMINI_RERANK_MAX_DOC_CHARS: "4000"
               MEMINI_API_KEY:
                 valueFrom:
@@ -41,7 +40,7 @@ spec:
       data:
         existingClaim: *app
     route:
-      internal:
+      ui:
         enabled: true
         hostnames:
           - "memini.${SECRET_DOMAIN}"
