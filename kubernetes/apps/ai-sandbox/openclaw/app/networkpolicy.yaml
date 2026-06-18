@@ -1,0 +1,50 @@
+---
+# Default-deny egress for openclaw. Because the dind sidecar runs untrusted /
+# prompt-injected agent code, this is the control that contains a sandbox
+# breakout: the pod may reach DNS and the public internet, but NOT the
+# Kubernetes API, other namespaces, or any in-cluster service.
+#
+# Egress rules switch this endpoint to default-deny egress (ingress is left
+# unrestricted so the envoy-internal route and kubelet probes keep working).
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: openclaw
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: openclaw
+  egress:
+    # Cluster DNS (Helm-managed CoreDNS in kube-system).
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # Public internet only. NOTE: Cilium's `world` entity also covers RFC1918
+    # LAN hosts (the MikroTik at 10.0.42.1, other homelab devices), so we use a
+    # CIDR allow that explicitly excludes private + link-local ranges. This
+    # keeps kube-apiserver, the pod/service CIDRs, other namespaces, and the LAN
+    # unreachable while still permitting external egress (e.g. Anthropic API,
+    # agent web access). If openclaw is later pointed at an in-cluster or on-LAN
+    # model, add a narrow toEndpoints/toCIDR rule for just that host:port rather
+    # than relaxing these excepts.
+    - toCIDRSet:
+        - cidr: 0.0.0.0/0
+          except:
+            - 10.0.0.0/8
+            - 172.16.0.0/12
+            - 192.168.0.0/16
+            - 169.254.0.0/16
+            - 100.64.0.0/10
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "80"
+              protocol: TCP

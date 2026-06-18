@@ -1,0 +1,176 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app openclaw
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    controllers:
+      *app :
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          # Run the whole pod in its own user namespace (k8s 1.36 GA). The dind
+          # daemon's "root" maps to an unprivileged host UID, so even though it
+          # stays privileged below, a sandbox/agent breakout cannot become root
+          # on the node. Requires the node sysctl user.max_user_namespaces > 0
+          # (set on talos1 in talos/talconfig.yaml).
+          hostUsers: false
+          # Keep this privileged, untrusted-code workload off the control plane.
+          nodeSelector:
+            kubernetes.io/hostname: talos1
+          securityContext:
+            # gateway runs as the image's "node" user; dind overrides to root
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+        initContainers:
+          # Stage the docker CLI onto the gateway's PATH — the upstream image
+          # ships without it, and sandboxing shells out to `docker`.
+          docker-cli:
+            image:
+              repository: docker
+              tag: 28-cli
+            command:
+              - sh
+              - -c
+              - cp /usr/local/bin/docker /dockerbin/docker
+        containers:
+          *app :
+            image:
+              repository: ghcr.io/openclaw/openclaw
+              tag: 2026.5.22@sha256:dcfd148777401d1bbdc63eab5c2f280bbfa912dfb1818566f9d66bb96ffb3f95
+            env:
+              # Bind to all interfaces so the in-cluster Service can reach the
+              # gateway. Non-loopback binds require auth (gateway token below).
+              OPENCLAW_GATEWAY_BIND: lan
+              OPENCLAW_GATEWAY_PORT: &port 18789
+              # Consolidate the auth-profile encryption key into the single
+              # backed-up config volume (default would be /home/node/.config).
+              OPENCLAW_AUTH_PROFILE_SECRET_DIR: /home/node/.openclaw/.secrets
+              # Agent sandboxing via the dind sidecar (shared unix socket).
+              OPENCLAW_SANDBOX: "1"
+              OPENCLAW_DOCKER_SOCKET: /dind/docker.sock
+              DOCKER_HOST: unix:///dind/docker.sock
+              PATH: /dockerbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+            envFrom:
+              - secretRef:
+                  name: openclaw-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *port
+                  initialDelaySeconds: 10
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              runAsUser: 1000
+              runAsGroup: 1000
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 25m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
+          dind:
+            image:
+              repository: docker
+              tag: 28-dind
+            # Keep the official dind entrypoint (modprobe/iptables setup) but
+            # listen on the shared socket and grant access to just the gateway's
+            # gid (1000) via mode 0660 — not world-writable.
+            command:
+              - sh
+              - -c
+              - |
+                ( while [ ! -S /dind/docker.sock ]; do sleep 0.5; done; chgrp 1000 /dind/docker.sock; chmod 660 /dind/docker.sock ) &
+                exec dockerd-entrypoint.sh --host=unix:///var/run/docker.sock --host=unix:///dind/docker.sock
+            env:
+              DOCKER_TLS_CERTDIR: ""
+            securityContext:
+              # privileged is required for dockerd (cgroups/overlay/iptables),
+              # but hostUsers:false above confines it to the pod user namespace:
+              # this "root" is an unprivileged UID on the host, not node root.
+              privileged: true
+              runAsUser: 0
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
+    service:
+      *app :
+        controller: *app
+        primary: true
+        ports:
+          http:
+            port: *port
+    route:
+      internal:
+        enabled: true
+        hostnames:
+          - "openclaw.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: *app
+                port: *port
+    persistence:
+      # Config, agents, auth-profiles, and workspace all live here. Mounted at
+      # the same path in dind so the daemon resolves sandbox bind-mount paths.
+      config:
+        existingClaim: *app
+        advancedMounts:
+          *app :
+            *app :
+              - path: /home/node/.openclaw
+            dind:
+              - path: /home/node/.openclaw
+      # Shared unix socket between the gateway and the dind daemon.
+      docker-sock:
+        type: emptyDir
+        advancedMounts:
+          *app :
+            *app :
+              - path: /dind
+            dind:
+              - path: /dind
+      # docker CLI binary staged by the init container.
+      docker-bin:
+        type: emptyDir
+        advancedMounts:
+          *app :
+            *app :
+              - path: /dockerbin
+            docker-cli:
+              - path: /dockerbin
+      # dind's image/container store (ephemeral).
+      var-lib-docker:
+        type: emptyDir
+        advancedMounts:
+          *app :
+            dind:
+              - path: /var/lib/docker
+      tmp:
+        type: emptyDir
+        advancedMounts:
+          *app :
+            *app :
+              - path: /tmp

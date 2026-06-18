@@ -149,6 +149,14 @@ nodes:
         name: enp14s0
         wakeOnLan:
           - magic
+      - |-
+        # Enable unprivileged user namespaces so openclaw's pod can run with
+        # hostUsers:false (k8s 1.36 userns GA). Talos defaults this to 0, which
+        # disables the feature. Scoped to talos1 since that is where the
+        # privileged dind/agent workload is pinned.
+        machine:
+          sysctls:
+            user.max_user_namespaces: "11255"
 
 patches:
   - |-

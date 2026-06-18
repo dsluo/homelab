@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-sandbox
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+  labels:
+    resource.kubernetes.io/admin-access: "true"
+    # Isolated home for openclaw: runs a docker-in-docker agent sandbox that
+    # needs privileged + relaxed Pod Security. Kept out of the shared `ai`
+    # namespace so that blast radius is contained here.
+    pod-security.kubernetes.io/enforce: privileged
