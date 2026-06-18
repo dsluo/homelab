@@ -1,4 +1,15 @@
 {
+  "extraKnownMarketplaces": {
+    "memini": {
+      "source": {
+        "source": "github",
+        "repo": "eleboucher/memini"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "memini@memini": true
+  },
   "permissions": {
     "allow": [
       "WebSearch",
