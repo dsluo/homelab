@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-sandbox
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+  labels:
+    resource.kubernetes.io/admin-access: "true"
+    # Isolated home for openclaw, which runs untrusted agent code. Kept separate
+    # from the shared `ai` namespace to contain blast radius. The openclaw pod
+    # itself is restricted-compliant AND gVisor-sandboxed (RuntimeClass), which
+    # is the real isolation; the namespace floor is `baseline` rather than
+    # `restricted` only because VolSync's backup/restore mover (NFS volume + an
+    # injected unhardened `jitter` initContainer) is not restricted-compliant
+    # and would otherwise be rejected, breaking backups and blocking the PVC.
+    pod-security.kubernetes.io/enforce: &ps baseline
+    pod-security.kubernetes.io/audit: *ps
+    pod-security.kubernetes.io/warn: *ps

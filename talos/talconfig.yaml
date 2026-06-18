@@ -108,6 +108,10 @@ nodes:
         systemExtensions:
           officialExtensions:
             - siderolabs/amd-ucode
+            # gVisor (runsc) container runtime — sandboxes the openclaw agent
+            # pod (RuntimeClass "gvisor") so untrusted/injected agent code is
+            # confined to a userspace kernel instead of the host kernel.
+            - siderolabs/gvisor
             - siderolabs/nvidia-container-toolkit-production
             - siderolabs/nvidia-open-gpu-kernel-modules-production
             - siderolabs/util-linux-tools
@@ -153,6 +157,14 @@ nodes:
         name: enp14s0
         wakeOnLan:
           - magic
+      - |-
+        # gVisor (runsc) requires unprivileged user namespaces to build its
+        # sandbox; Talos defaults user.max_user_namespaces to 0 (disabled).
+        # Scoped to talos1, the only node with the gVisor extension and where
+        # the openclaw agent pod is pinned. (Lowers a KSPP hardening default.)
+        machine:
+          sysctls:
+            user.max_user_namespaces: "11255"
 
 patches:
   - |-
