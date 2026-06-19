@@ -25,6 +25,7 @@ spec:
     substitute:
       APP: *app
       OIDC_APP_NAME: OpenClaw
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/openclaw.svg"
       VOLSYNC_CAPACITY: 10Gi
     substituteFrom:
       - name: cluster-secrets
