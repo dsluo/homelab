@@ -1,0 +1,152 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app openclaw
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    defaultPodOptions:
+      # Sandbox the whole pod with gVisor: untrusted/injected agent code runs
+      # against a userspace kernel, not the host kernel. This replaces the
+      # privileged docker-in-docker sandbox entirely (no privileged container,
+      # no host Docker daemon). Requires the siderolabs/gvisor extension +
+      # user.max_user_namespaces>0 on talos1 (see talos/talconfig.yaml).
+      runtimeClassName: gvisor
+      # The gateway has no business talking to the kube-API.
+      automountServiceAccountToken: false
+      # ndots:1 stops the resolver from appending the namespace search domains to
+      # every external lookup (the default ndots:5 turns `api.anthropic.com` into
+      # 5+ failed in-cluster queries first). Cheaper DNS and a prerequisite for a
+      # future toFQDNs egress allowlist (see networkpolicy.yaml).
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000   # upstream "node" user
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    controllers:
+      *app :
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          # Pinned to the worker (which carries the gVisor extension); never the
+          # control-plane / GPU host talos0.
+          nodeSelector:
+            kubernetes.io/hostname: talos1
+        initContainers:
+          # Onboarding gate: OpenClaw setup is interactive, so block startup
+          # until it has been completed. On first deploy:
+          #   kubectl -n ai-sandbox exec -it <pod> -c setup -- openclaw setup
+          setup:
+            image: &img
+              repository: ghcr.io/openclaw/openclaw
+              tag: 2026.6.8@sha256:9f55f0cb32b2925a983f40726440189b8f422ec61ae2a0fb0cf90403cf6d63d7
+            env: &env
+              HOME: &home /home/node
+              TZ: "${CONFIG_TZ:=Etc/UTC}"
+              OPENCLAW_GATEWAY_BIND: lan
+              OPENCLAW_GATEWAY_PORT: &port 18789
+              OPENCLAW_AUTH_PROFILE_SECRET_DIR: /home/node/.openclaw/.secrets
+              PATH: /home/node/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+            envFrom: &envFrom
+              - secretRef:
+                  name: openclaw-secret
+            command:
+              - sh
+              - -c
+              - |
+                while [ ! -s "$HOME/.openclaw/openclaw.json" ]; do
+                  echo 'OpenClaw is not set up yet. Run: kubectl -n ai-sandbox exec -it <pod> -c setup -- openclaw setup';
+                  sleep 60;
+                done
+            securityContext: &sc
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+        containers:
+          *app :
+            image: *img
+            env: *env
+            envFrom: *envFrom
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *port
+                  initialDelaySeconds: 10
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 25m
+                memory: 256Mi
+              limits:
+                # gVisor adds some overhead; agent workloads are bursty.
+                cpu: "4"
+                memory: 2Gi
+    service:
+      *app :
+        controller: *app
+        primary: true
+        ports:
+          http:
+            port: *port
+    route:
+      internal:
+        enabled: true
+        hostnames:
+          - "openclaw.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: *app
+                port: *port
+    persistence:
+      # Whole HOME on the backed-up PVC so the read-only rootfs has a writable
+      # home for config, agents, auth-profiles, and workspace.
+      config:
+        existingClaim: *app
+        advancedMounts:
+          *app :
+            *app :
+              - path: *home
+            setup:
+              - path: *home
+      # Agent toolchain/download caches (npm, pip, go, etc.) on an ephemeral
+      # emptyDir mounted over $HOME/.cache. Regenerable junk: never backed up and
+      # discarded on pod recreation. sizeLimit caps it so a runaway cache can't
+      # fill the node's ephemeral storage and trigger eviction; disk-backed (no
+      # medium: Memory) so it doesn't count against the pod's memory limit.
+      cache:
+        type: emptyDir
+        sizeLimit: 20Gi
+        advancedMounts:
+          *app :
+            *app :
+              - path: /home/node/.cache
+      tmp:
+        type: emptyDir
+        medium: Memory
+        globalMounts:
+          - path: /tmp

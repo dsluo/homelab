@@ -1,0 +1,14 @@
+---
+# gVisor (runsc) runtime, provided by the siderolabs/gvisor Talos extension on
+# talos1. Cluster-scoped; scheduling pins gvisor pods to nodes that actually
+# have the runtime handler installed. Only openclaw opts into it (via its pod's
+# runtimeClassName) — it is intentionally NOT forced namespace-wide, so VolSync
+# movers and other infra run on the normal runtime.
+apiVersion: node.k8s.io/v1
+kind: RuntimeClass
+metadata:
+  name: gvisor
+handler: runsc
+scheduling:
+  nodeSelector:
+    kubernetes.io/hostname: talos1
