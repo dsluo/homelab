@@ -90,15 +90,42 @@ spec:
                 # unconditionally. Also allowlist the Control UI browser origin:
                 # the dashboard opens a WebSocket and the gateway rejects it unless
                 # the page origin is in gateway.controlUi.allowedOrigins (exact
-                # origin, no wildcards). Idempotent; runs every start so it
+                # origin, no wildcards). Also wire the agent to the in-cluster
+                # Qwen model (llmkube InferenceService qwen3-6-27b-mtp in the `ai`
+                # namespace, OpenAI-compatible llama.cpp at :8080/v1 — reachable
+                # per the egress policy). Registered as provider "local" (mode
+                # merge keeps the bundled catalogs) and set as the agent's primary
+                # model, replacing the default external openai/gpt-5.5. The dummy
+                # apiKey satisfies credential resolution; llama.cpp ignores it (no
+                # --api-key on the server). Idempotent; runs every start so it
                 # self-heals if `openclaw setup` rewrites the config.
                 node -e '
                   const fs = require("fs"), f = process.env.HOME + "/.openclaw/openclaw.json";
                   const c = JSON.parse(fs.readFileSync(f, "utf8"));
                   c.gateway = Object.assign({}, c.gateway, { bind: "lan" });
                   c.gateway.controlUi = Object.assign({}, c.gateway.controlUi, { allowedOrigins: [process.env.CONTROL_UI_ORIGIN] });
+                  c.models = Object.assign({}, c.models, { mode: "merge" });
+                  c.models.providers = Object.assign({}, c.models.providers, {
+                    local: {
+                      baseUrl: "http://qwen3-6-27b-mtp.ai:8080/v1",
+                      api: "openai-completions",
+                      apiKey: "sk-local",
+                      models: [{
+                        id: "qwen3-6-27b-mtp",
+                        name: "Qwen3.6 27B MTP (local)",
+                        reasoning: true,
+                        input: ["text"],
+                        cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+                        contextWindow: 262144,
+                        maxTokens: 8192,
+                        compat: { thinkingFormat: "qwen" }
+                      }]
+                    }
+                  });
+                  c.agents = Object.assign({}, c.agents);
+                  c.agents.defaults = Object.assign({}, c.agents.defaults, { model: { primary: "local/qwen3-27b-mtp" } });
                   fs.writeFileSync(f, JSON.stringify(c, null, 2));
-                  console.log("openclaw gateway.bind=lan, controlUi.allowedOrigins=[" + process.env.CONTROL_UI_ORIGIN + "]");
+                  console.log("openclaw config: bind=lan, controlUi origin set, agent model=local/qwen3-27b-mtp");
                 '
             securityContext: &sc
               readOnlyRootFilesystem: true
