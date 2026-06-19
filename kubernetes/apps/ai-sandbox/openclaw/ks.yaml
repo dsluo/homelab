@@ -11,13 +11,20 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/ai-sandbox/openclaw/app
   components:
+    # Pocket-ID SSO enforced at the Envoy gateway (forward-auth SecurityPolicy +
+    # OIDC client). Defense-in-depth in front of OpenClaw's own gateway token, so
+    # the untrusted-agent UI is never reachable on the LAN without an SSO login.
+    - ../../../../components/oidc/envoy
     - ../../../../components/volsync
   dependsOn:
+    - name: pocket-id
+      namespace: security
     - name: volsync
       namespace: volsync-system
   postBuild:
     substitute:
       APP: *app
+      OIDC_APP_NAME: OpenClaw
       VOLSYNC_CAPACITY: 10Gi
     substituteFrom:
       - name: cluster-secrets

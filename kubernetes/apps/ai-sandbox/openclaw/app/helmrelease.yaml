@@ -19,6 +19,14 @@ spec:
       runtimeClassName: gvisor
       # The gateway has no business talking to the kube-API.
       automountServiceAccountToken: false
+      # ndots:1 stops the resolver from appending the namespace search domains to
+      # every external lookup (the default ndots:5 turns `api.anthropic.com` into
+      # 5+ failed in-cluster queries first). Cheaper DNS and a prerequisite for a
+      # future toFQDNs egress allowlist (see networkpolicy.yaml).
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000   # upstream "node" user
@@ -125,6 +133,18 @@ spec:
               - path: *home
             setup:
               - path: *home
+      # Agent toolchain/download caches (npm, pip, go, etc.) on an ephemeral
+      # emptyDir mounted over $HOME/.cache. Regenerable junk: never backed up and
+      # discarded on pod recreation. sizeLimit caps it so a runaway cache can't
+      # fill the node's ephemeral storage and trigger eviction; disk-backed (no
+      # medium: Memory) so it doesn't count against the pod's memory limit.
+      cache:
+        type: emptyDir
+        sizeLimit: 20Gi
+        advancedMounts:
+          *app :
+            *app :
+              - path: /home/node/.cache
       tmp:
         type: emptyDir
         medium: Memory

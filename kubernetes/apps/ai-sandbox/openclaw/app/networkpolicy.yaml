@@ -44,6 +44,15 @@ spec:
     # agent web access). If openclaw is later pointed at an in-cluster or on-LAN
     # model, add a narrow toEndpoints/toCIDR rule for just that host:port rather
     # than relaxing these excepts.
+    #
+    # FUTURE HARDENING (see README "Egress hardening"): replace this broad
+    # 0.0.0.0/0 rule with a Cilium `toFQDNs` allowlist of only the provider
+    # domains the agent actually needs (JJGadgets' reference does this:
+    # api.anthropic.com, *.openrouter.ai, etc.). That requires upgrading the
+    # CoreDNS egress rule above to L7 (add `rules: { dns: [{ matchPattern: "*" }] }`
+    # under its toPorts) so Cilium's DNS proxy can resolve the names. Deferred
+    # for now because it trades the agent's general web access for tighter
+    # containment — turn it on once the set of needed domains is known.
     - toCIDRSet:
         - cidr: 0.0.0.0/0
           except:
