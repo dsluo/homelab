@@ -23,6 +23,8 @@ nodes:
     nameservers: &dns
       - 10.0.42.1
     controlPlane: true
+    machineSpec:
+      secureboot: true
     nodeLabels:
       intel.feature.node.kubernetes.io/gpu: "true"
     installDiskSelector:
@@ -90,6 +92,8 @@ nodes:
     ipAddress: 10.0.42.4
     nameservers: *dns
     controlPlane: false
+    machineSpec:
+      secureboot: true
     installDiskSelector:
       size: ">= 1TB"
       model: "Samsung*"
