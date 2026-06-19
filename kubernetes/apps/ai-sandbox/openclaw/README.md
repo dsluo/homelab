@@ -110,13 +110,22 @@ Pocket-ID SSO login (the Envoy OIDC `SecurityPolicy`). An in-cluster model is
 already reachable per the egress policy; external provider APIs work over the
 public-internet rule.
 
-> Auth + bind are **fail-loud**, not fail-open: with `OPENCLAW_GATEWAY_BIND=lan`
-> (a non-loopback bind) OpenClaw refuses to start without a credential, so a
+> **Network bind is config-only, not env** (verified in OpenClaw source
+> v2026.6.8). The gateway reads `gateway.bind` from `openclaw.json` (or the
+> `--bind` flag) — `OPENCLAW_GATEWAY_BIND` is **inert** in a plain pod (only the
+> Docker `setup.sh` would translate it to config, and we don't run that). With no
+> config value the default is `auto`, which binds `0.0.0.0` **only when OpenClaw
+> detects a container runtime**; gVisor isn't detected, so it fell back to
+> loopback and was unreachable (CrashLoop). The `setup` initContainer therefore
+> forces `gateway.bind: "lan"` (→ `0.0.0.0` unconditionally) in the persisted
+> config. `OPENCLAW_GATEWAY_PORT` *is* honored via env (source-confirmed), which
+> is why the gateway listens on 18789.
+>
+> Auth: `OPENCLAW_GATEWAY_TOKEN` (`app/secret.sops.yaml`) is read directly from
+> env. A non-loopback bind makes OpenClaw require a credential, so a
 > wrong/missing token CrashLoops rather than exposing an unauthenticated UI.
-> `OPENCLAW_GATEWAY_TOKEN` (`app/secret.sops.yaml`) is the documented token-mode
-> var; `OPENCLAW_GATEWAY_BIND=lan` is the documented container mechanism for
-> binding to the pod interface (env overrides the config key). JJGadgets uses
-> `OPENCLAW_GATEWAY_PASSWORD` only because he selected password-mode auth.
+> JJGadgets uses `OPENCLAW_GATEWAY_PASSWORD` only because he selected
+> password-mode auth.
 
 ## Runtime validation (after first deploy)
 

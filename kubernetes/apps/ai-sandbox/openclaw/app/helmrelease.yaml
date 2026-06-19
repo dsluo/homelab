@@ -55,7 +55,10 @@ spec:
             env: &env
               HOME: &home /home/node
               TZ: "${CONFIG_TZ:=Etc/UTC}"
-              OPENCLAW_GATEWAY_BIND: lan
+              # NOTE: OpenClaw does NOT auto-map OPENCLAW_GATEWAY_* env vars to
+              # config (only a few like OPENCLAW_GATEWAY_TOKEN are read); bind/port
+              # live in openclaw.json. The bind is forced to all-interfaces by the
+              # setup initContainer below — env-based bind does nothing here.
               OPENCLAW_GATEWAY_PORT: &port 18789
               OPENCLAW_AUTH_PROFILE_SECRET_DIR: /home/node/.openclaw/.secrets
               PATH: /home/node/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -70,6 +73,24 @@ spec:
                   echo 'OpenClaw is not set up yet. Run: kubectl -n ai-sandbox exec -it <pod> -c setup -- openclaw setup';
                   sleep 60;
                 done
+                # Force an all-interfaces bind via the persisted config. The
+                # bind mode is read ONLY from openclaw.json (or the --bind flag),
+                # never from env — OPENCLAW_GATEWAY_BIND is inert in a plain pod
+                # (confirmed in OpenClaw source v2026.6.8: only the Docker
+                # setup.sh writes it to config). With no config value the default
+                # is "auto", which resolves to 0.0.0.0 only when OpenClaw detects
+                # a container runtime; gVisor isn't detected, so it fell back to
+                # loopback (127.0.0.1) and was unreachable by Envoy + the kubelet
+                # probe (CrashLoop). gateway.bind="lan" resolves to 0.0.0.0
+                # unconditionally. Idempotent; runs every start so it self-heals
+                # if `openclaw setup` rewrites the config.
+                node -e '
+                  const fs = require("fs"), f = process.env.HOME + "/.openclaw/openclaw.json";
+                  const c = JSON.parse(fs.readFileSync(f, "utf8"));
+                  c.gateway = Object.assign({}, c.gateway, { bind: "lan" });
+                  fs.writeFileSync(f, JSON.stringify(c, null, 2));
+                  console.log("openclaw gateway.bind forced to lan (0.0.0.0)");
+                '
             securityContext: &sc
               readOnlyRootFilesystem: true
               allowPrivilegeEscalation: false
