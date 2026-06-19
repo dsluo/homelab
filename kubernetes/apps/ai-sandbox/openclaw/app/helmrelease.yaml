@@ -61,6 +61,11 @@ spec:
               # setup initContainer below — env-based bind does nothing here.
               OPENCLAW_GATEWAY_PORT: &port 18789
               OPENCLAW_AUTH_PROFILE_SECRET_DIR: /home/node/.openclaw/.secrets
+              # Browser origin the Control UI is served from; the setup
+              # initContainer writes it to gateway.controlUi.allowedOrigins so the
+              # WebSocket Origin check passes. Not read by OpenClaw directly — it's
+              # consumed by the config patch script (Flux substitutes SECRET_DOMAIN).
+              CONTROL_UI_ORIGIN: "https://openclaw.${SECRET_DOMAIN}"
               PATH: /home/node/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
             envFrom: &envFrom
               - secretRef:
@@ -82,14 +87,18 @@ spec:
                 # a container runtime; gVisor isn't detected, so it fell back to
                 # loopback (127.0.0.1) and was unreachable by Envoy + the kubelet
                 # probe (CrashLoop). gateway.bind="lan" resolves to 0.0.0.0
-                # unconditionally. Idempotent; runs every start so it self-heals
-                # if `openclaw setup` rewrites the config.
+                # unconditionally. Also allowlist the Control UI browser origin:
+                # the dashboard opens a WebSocket and the gateway rejects it unless
+                # the page origin is in gateway.controlUi.allowedOrigins (exact
+                # origin, no wildcards). Idempotent; runs every start so it
+                # self-heals if `openclaw setup` rewrites the config.
                 node -e '
                   const fs = require("fs"), f = process.env.HOME + "/.openclaw/openclaw.json";
                   const c = JSON.parse(fs.readFileSync(f, "utf8"));
                   c.gateway = Object.assign({}, c.gateway, { bind: "lan" });
+                  c.gateway.controlUi = Object.assign({}, c.gateway.controlUi, { allowedOrigins: [process.env.CONTROL_UI_ORIGIN] });
                   fs.writeFileSync(f, JSON.stringify(c, null, 2));
-                  console.log("openclaw gateway.bind forced to lan (0.0.0.0)");
+                  console.log("openclaw gateway.bind=lan, controlUi.allowedOrigins=[" + process.env.CONTROL_UI_ORIGIN + "]");
                 '
             securityContext: &sc
               readOnlyRootFilesystem: true
