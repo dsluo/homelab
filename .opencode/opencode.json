@@ -124,7 +124,7 @@
     },
     "searxng": {
       "type": "remote",
-      "url": "https://search-mcp.spudkingdom.org/mcp",
+      "url": "https://search-mcp.crayon.club/mcp"
     }
   }
 }
