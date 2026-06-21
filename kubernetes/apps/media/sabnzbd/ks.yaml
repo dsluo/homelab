@@ -20,6 +20,8 @@ spec:
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/sabnzbd.svg"
       OIDC_APP_NAME: SABnzbd
       VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_UID: "4008"
+      VOLSYNC_GID: "4008"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

@@ -20,6 +20,8 @@ spec:
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/bazarr.svg"
       OIDC_APP_NAME: Bazarr
       VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_UID: "4009"
+      VOLSYNC_GID: "4009"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

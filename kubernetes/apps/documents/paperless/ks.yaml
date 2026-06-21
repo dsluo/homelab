@@ -24,6 +24,8 @@ spec:
       OIDC_PKCE_ENABLED: "true"
       OIDC_CALLBACK_PATH: /accounts/oidc/pocket-id/login/callback/
       VOLSYNC_CAPACITY: 10Gi
+      VOLSYNC_UID: "4001"
+      VOLSYNC_GID: "4001"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

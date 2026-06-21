@@ -19,6 +19,8 @@ spec:
       OIDC_APP_NAME: Actual
       OIDC_CALLBACK_PATH: /openid/callback
       VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_UID: "1000"
+      VOLSYNC_GID: "1000"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
