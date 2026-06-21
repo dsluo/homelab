@@ -22,9 +22,13 @@ spec:
     copyMethod: Snapshot
     enableFileDeletion: true
     moverSecurityContext:
-      runAsUser: ${VOLSYNC_UID:=4003}
-      runAsGroup: ${VOLSYNC_GID:=4003}
-      fsGroup: ${VOLSYNC_GID:=4003}
+      # No default: every consumer must set VOLSYNC_UID/GID to its app's runtime
+      # uid/gid so the mover writes restorable ownership. A missing value renders
+      # an empty runAsUser and fails the build loudly instead of silently
+      # defaulting to a uid no app runs as.
+      runAsUser: ${VOLSYNC_UID}
+      runAsGroup: ${VOLSYNC_GID}
+      fsGroup: ${VOLSYNC_GID}
     repository: ${APP}-volsync-secret
     storageClassName: ${VOLSYNC_STORAGECLASS:=openebs-zfspv}
     volumeSnapshotClassName: ${VOLSYNC_SNAPSHOTCLASS:=openebs-zfs-snapshot}
