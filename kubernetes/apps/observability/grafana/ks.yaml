@@ -43,6 +43,8 @@ spec:
       OIDC_PKCE_ENABLED: "true"
       OIDC_CALLBACK_PATH: /login/generic_oauth
       VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_UID: "1000"
+      VOLSYNC_GID: "1000"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

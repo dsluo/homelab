@@ -19,6 +19,8 @@ spec:
           securityContext:
             runAsUser: 4001
             runAsGroup: 4001
+            fsGroup: 4001
+            fsGroupChangePolicy: OnRootMismatch
             supplementalGroups: [5000]
 
         containers:

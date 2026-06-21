@@ -15,6 +15,8 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_UID: "1001"
+      VOLSYNC_GID: "1001"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

@@ -21,6 +21,8 @@ spec:
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/qbittorrent.svg"
       OIDC_APP_NAME: qBittorrent
       VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_UID: "4005"
+      VOLSYNC_GID: "4005"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

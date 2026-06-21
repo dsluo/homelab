@@ -27,6 +27,11 @@ spec:
       OIDC_APP_NAME: OpenClaw
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/openclaw.svg"
       VOLSYNC_CAPACITY: 10Gi
+      # Restore mover writes files owned by its own uid (non-root restic can't
+      # chown). openclaw chmods its own state dir on startup, which needs real
+      # ownership (fsGroup only grants group access) — so match the app's uid.
+      VOLSYNC_UID: "1000"
+      VOLSYNC_GID: "1000"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
