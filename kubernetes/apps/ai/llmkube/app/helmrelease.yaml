@@ -4,15 +4,10 @@ kind: HelmRelease
 metadata:
   name: &app llmkube
 spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
   interval: 1h
-  chart:
-    spec:
-      chart: *app
-      version: 0.8.11
-      sourceRef:
-        kind: HelmRepository
-        name: *app
-      interval: 1h
   values:
     crds:
       # CRDs are rendered as templated resources gated on this value (not the
