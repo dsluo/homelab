@@ -48,6 +48,7 @@ docs/          # Hardware and bootstrap documentation
 | documents      | Paperless-ngx                                                                               |
 | finance        | Actual                                                                                      |
 | maker          | OrcaSlicer                                                                                  |
+| games          | Games-on-Whales (Wolf game streaming) + direwolf-operator                                   |
 | social         | Continuwuity (Matrix), Sable                                                                |
 | security       | Pocket-ID (SSO)                                                                             |
 | system-upgrade | tuppr (Talos upgrades)                                                                      |
