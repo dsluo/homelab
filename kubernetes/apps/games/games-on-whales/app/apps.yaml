@@ -7,6 +7,10 @@ apiVersion: direwolf.games-on-whales.github.io/v1alpha1
 kind: App
 metadata:
   name: firefox
+  annotations:
+    # The container command uses shell ${PULSE_SINK}; Flux postBuild envsubst
+    # would blank it. The App needs no Flux substitution, so exclude it.
+    kustomize.toolkit.fluxcd.io/substitute: disabled
 spec:
   appAssetWebP: UklGRhwBAABXRUJQVlA4IBABAADQHACdASosAZABPm02mUmkIqKhICgAgA2JaW7hd2EbQAnsA99snIe+2Yy09snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPekAAD+/9O4f/1K366KRn9B8NO3tyIAAAAAAAAAAAAAAAAAA
   id: 1
