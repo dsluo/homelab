@@ -47,15 +47,6 @@ spec:
               digest: sha256:e8b7cf17ea1bab75c1cec1889a1166ebb3da4c5f0972ae8a7d7cc8dc2571fef0
     service:
       app:
-        # Preserve the client source IP. With the default Cluster policy,
-        # Cilium SNATs the Moonlight client to a node IP, so the proxy reports
-        # the wrong client_ip to the operator and wolf streams video to a node
-        # instead of the client ("No video received"). Local keeps the real
-        # client IP and announces the shared VIP only from the node running the
-        # endpoint (talos1, where all GPU pods are pinned). The operator-created
-        # per-session RTP Services need the same fix — applied via the
-        # MutatingAdmissionPolicy in ./session-service-policy.yaml.
-        externalTrafficPolicy: Local
         annotations:
           # Pin the shared Moonlight LB IP from the Cilium pool
           # (10.0.42.128-254). Per-session RTP Services inherit it via the
