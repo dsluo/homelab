@@ -1,0 +1,55 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: games-on-whales
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: direwolf-operator
+  # Upstream chart defaults already fit this cluster:
+  # - moonlight-proxy LoadBalancer Service with lbipam.cilium.io/sharing-key:
+  #   direwolf (Cilium LB-IPAM shares one LB IP between the proxy and the
+  #   per-session RTP Services the operator creates)
+  # - cert-manager Issuers/Certificates via rawResources (cert-manager is here)
+  values:
+    # The SNAPSHOT chart bakes a CI image ref ("7/merge") that kubelet rejects
+    # (InvalidImageName), so all four images are overridden with shrinedogg's
+    # published fork tags (docker.io/shrinedogg/*). See README for what each
+    # patch fixes.
+    controllers:
+      direwolf_operator:
+        containers:
+          operator:
+            image:
+              repository: docker.io/shrinedogg/direwolf-operator
+              tag: v0.1.0
+              digest: sha256:398681deb415a4220fd3c68c6c500dbd2f5251f458be716e8663dd5152516df6
+            # The operator's --lb-sharing-key defaults to POD_NAMESPACE
+            # ("games"), but the chart annotates the moonlight-proxy Service
+            # with sharing-key "direwolf". Mismatched keys make Cilium LB-IPAM
+            # hand the per-session RTP Service a different external IP than the
+            # proxy, so Moonlight's RTSP handshake to the paired IP times out.
+            # Align the key so every session Service shares the proxy's LB IP.
+            args:
+              - --lb-sharing-key=direwolf
+            env:
+              AGENT_IMAGE: docker.io/shrinedogg/wolf-agent:v0.1.0@sha256:1205f62ab4f4dd8cde97387e0055beba62cfe673f91df4ebe38aee0d4cf3cc08
+              WOLF_IMAGE: docker.io/shrinedogg/wolf:v0.1.0@sha256:9d062c45ed7533ba5949db3d739448a83aa6c85a712a41193c496d4b6c1158f8
+      moonlight_proxy:
+        containers:
+          proxy:
+            image:
+              repository: docker.io/shrinedogg/moonlight-proxy
+              tag: v0.1.1
+              digest: sha256:e8b7cf17ea1bab75c1cec1889a1166ebb3da4c5f0972ae8a7d7cc8dc2571fef0
+    service:
+      app:
+        annotations:
+          # Pin the shared Moonlight LB IP from the Cilium pool
+          # (10.0.42.128-254). Per-session RTP Services inherit it via the
+          # sharing-key above.
+          lbipam.cilium.io/sharing-key: direwolf
+          lbipam.cilium.io/ips: "10.0.42.135"
