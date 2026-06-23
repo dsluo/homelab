@@ -54,24 +54,21 @@ spec:
       # virtual-input/controller hotplug needs /dev/uinput on the node (uinput
       # kernel module + device access) -- a follow-up, see README.
       #
-      # Request BOTH of talos1's GPUs (node exposes nvidia.com/gpu: 2, no
-      # time-slicing). CDI injects each allocated GPU's DRM render node at its
-      # host numbering, so taking both guarantees BOTH renderD128 (RTX 3090 Ti,
-      # 01:00.0) and renderD129 (RTX 3070, 0f:00.0) are present in the wolf
-      # container. With only one GPU the scheduler picks either card
-      # non-deterministically, so a hardcoded renderNode (renderD128) is absent
-      # ~half the time and wolf silently falls back to software x264. Taking
-      # both makes renderNode: /dev/dri/renderD128 always valid.
-      #
-      # Trade-off: this consumes the whole node, so an App that also needs a GPU
-      # for its own container (e.g. firefox: nvidia.com/gpu 1) can't schedule
-      # alongside (1 + 2 > 2). Test Ball has no app container, so it's fine.
-      # Revisit with GPU time-slicing if concurrent app+wolf GPU use is needed.
+      # Single GPU. CDI injects whichever physical card the scheduler picked at
+      # its host render-node number (renderD128 = RTX 3090 Ti 01:00.0,
+      # renderD129 = RTX 3070 0f:00.0), so the card is non-deterministic. Rather
+      # than grab BOTH GPUs to force renderD128 to exist (the old approach, which
+      # consumed the whole node and blocked an App's own GPU container), the wolf
+      # entrypoint wrapper now detects the actually-injected render node and
+      # exports WOLF_RENDER_NODE to it (see wolf-entrypoint.yaml), so a single
+      # GPU on either card works. Combined with GPU time-slicing (see the
+      # nvidia-gpu operator HelmRelease) this leaves slices for the App's own GPU
+      # container (e.g. firefox: nvidia.com/gpu 1) to co-schedule.
       resources:
         requests:
-          nvidia.com/gpu: "2"
+          nvidia.com/gpu: "1"
         limits:
-          nvidia.com/gpu: "2"
+          nvidia.com/gpu: "1"
     wolfAgent:
       volumeMounts:
         - name: udev-data
