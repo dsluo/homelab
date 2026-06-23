@@ -14,6 +14,12 @@ spec:
       masquerade: true
       # Ref: https://github.com/siderolabs/talos/issues/10002
       hostLegacyRouting: true
+      # Allow per-Service forwarding-mode overrides via the
+      # service.cilium.io/forwarding-mode annotation. The cluster default stays
+      # SNAT (loadBalancer.mode below); only the games/direwolf Moonlight
+      # Services opt into DSR so wolf sees the real client source IP and streams
+      # RTP video to the client instead of a node. (games-on-whales bring-up)
+      lbModeAnnotation: true
     cni:
       # Required for pairing with Multus CNI
       exclusive: false
@@ -41,6 +47,11 @@ spec:
     loadBalancer:
       algorithm: maglev
       mode: snat
+      # Dispatch method for Services that opt into DSR via annotation (see
+      # bpf.lbModeAnnotation). geneve encapsulates the original tuple so it
+      # survives any L2 switch that would mangle IPv4-option (opt) dispatch;
+      # works with routingMode: native.
+      dsrDispatch: geneve
     localRedirectPolicy: true
     operator:
       dashboards:

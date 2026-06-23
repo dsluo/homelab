@@ -1,0 +1,60 @@
+---
+# The direwolf-operator creates one LoadBalancer Service per streaming session
+# (named <user>-<app>-<id>-rtp) and exposes no way to configure it. Left at the
+# cluster-default SNAT forwarding mode, Cilium masquerades the Moonlight client
+# to a node IP, so wolf streams the RTP video to a node instead of the real
+# client and Moonlight reports "No video received". Control/RTSP works
+# (client-initiated); only the server-initiated video breaks.
+#
+# This policy injects service.cilium.io/forwarding-mode: dsr on those Services
+# at creation time so Cilium preserves the client source IP. DSR is used instead
+# of externalTrafficPolicy: Local because Local makes Cilium LB-IPAM refuse to
+# share the proxy's VIP with the session Services (RTSP then times out); DSR
+# keeps externalTrafficPolicy: Cluster, so the shared VIP is preserved. The
+# proxy Service gets the same annotation directly via the HelmRelease, and the
+# global opt-in lives on the Cilium HelmRelease (bpf.lbModeAnnotation: true).
+#
+# Remove this once the operator can set annotations on the Services it generates
+# (tracked upstream); see the repo README.
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: direwolf-session-svc-dsr
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["services"]
+  matchConditions:
+    - name: is-direwolf-session-rtp-lb
+      expression: >-
+        object.spec.type == 'LoadBalancer' &&
+        object.metadata.name.endsWith('-rtp')
+  reinvocationPolicy: Never
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        # forwarding-mode must be set at Service creation time and not changed
+        # during its lifetime, so this policy only matches CREATE.
+        expression: >-
+          Object{
+            metadata: Object.metadata{
+              annotations: {
+                "service.cilium.io/forwarding-mode": "dsr"
+              }
+            }
+          }
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionPolicyBinding
+metadata:
+  name: direwolf-session-svc-dsr
+spec:
+  policyName: direwolf-session-svc-dsr
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: games

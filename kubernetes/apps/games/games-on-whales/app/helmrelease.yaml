@@ -53,3 +53,12 @@ spec:
           # sharing-key above.
           lbipam.cilium.io/sharing-key: direwolf
           lbipam.cilium.io/ips: "10.0.42.135"
+          # Preserve the Moonlight client source IP. The cluster default is
+          # SNAT, which masquerades the client to a node IP, so the operator
+          # reports the wrong client_ip and wolf streams RTP video to a node
+          # ("No video received"). DSR keeps the real client IP without changing
+          # externalTrafficPolicy, so Cilium LB-IPAM can still share this VIP
+          # with the per-session RTP Services (which get the same annotation via
+          # ./session-service-policy.yaml). Requires bpf.lbModeAnnotation on the
+          # Cilium HelmRelease.
+          service.cilium.io/forwarding-mode: dsr
