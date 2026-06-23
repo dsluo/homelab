@@ -21,11 +21,11 @@ spec:
   # is node-local on talos1) later if profile persistence is wanted.
   wolfConfig:
     runtimeVariables:
-      # CDI injects exactly one NVIDIA DRM render node into the wolf container.
-      # On talos1 it lands at renderD128 (verified: DRIVER=nvidia, RTX 3090 Ti;
-      # renderD129 does NOT exist in-container). Pointing wolf at the wrong node
-      # makes it skip every HW encoder ("not a NVIDIA GPU") -> no HEVC -> the
-      # Moonlight client gets "No video received".
+      # renderD128 = RTX 3090 Ti (01:00.0); renderD129 = RTX 3070 (0f:00.0).
+      # The wolf sidecar requests BOTH GPUs (see user.yaml), so CDI injects both
+      # render nodes at their host numbering and renderD128 is always present.
+      # (With a single GPU request the scheduler picks either card, so this node
+      # would be absent ~half the time and wolf falls back to software x264.)
       renderNode: /dev/dri/renderD128
   template:
     spec:
