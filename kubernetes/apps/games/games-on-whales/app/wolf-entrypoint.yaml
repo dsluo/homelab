@@ -9,6 +9,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: wolf-root-entrypoint
+  annotations:
+    # The ks.yaml postBuild envsubst would otherwise blank the script's
+    # ${init_script} refs (undefined Flux var -> ""), turning the cont-init.d
+    # loop into `source ""` and crash-looping wolf. This script needs no Flux
+    # substitution, so exclude it.
+    kustomize.toolkit.fluxcd.io/substitute: disabled
 data:
   entrypoint.sh: |
     #!/usr/bin/env bash
