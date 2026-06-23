@@ -61,6 +61,17 @@ spec:
 
               export PULSE_SINK="$(pactl list sinks short | awk '$2 ~ /^virtual_sink/ {print $2; exit}')"
               export PULSE_SOURCE="${PULSE_SINK}.monitor"
+
+              # The Firefox profile lives under /home/retro, which is the
+              # wolf-data volume -- an ephemeral emptyDir (created root:root)
+              # shared with the root wolf sidecar. The GOW entrypoint drops to
+              # retro (uid 1000) but does not chown the home, so Firefox can't
+              # write its profile and dies with "Your Firefox profile cannot be
+              # loaded. It may be missing or inaccessible." This command runs as
+              # root (the entrypoint gosu's to retro afterwards), so fix the
+              # ownership first. (PUID/PGID default to 1000; substitute:disabled
+              # on this App keeps Flux from blanking the braces.)
+              chown -R "${PUID:-1000}:${PGID:-1000}" /home/retro
               exec /entrypoint.sh
 ---
 # yaml-language-server: $schema=https://github.com/games-on-whales/fenrir/raw/refs/heads/main/schemas/direwolf.games-on-whales.github.io/app_v1alpha1.json
