@@ -22,10 +22,11 @@ spec:
   wolfConfig:
     runtimeVariables:
       # renderD128 = RTX 3090 Ti (01:00.0); renderD129 = RTX 3070 (0f:00.0).
-      # The wolf sidecar requests BOTH GPUs (see user.yaml), so CDI injects both
-      # render nodes at their host numbering and renderD128 is always present.
-      # (With a single GPU request the scheduler picks either card, so this node
-      # would be absent ~half the time and wolf falls back to software x264.)
+      # This value is effectively a placeholder: the wolf sidecar now requests a
+      # single GPU (see user.yaml) and its entrypoint detects whichever render
+      # node CDI actually injected, overriding WOLF_RENDER_NODE at startup (see
+      # wolf-entrypoint.yaml). The CRD still requires the field, so leave the
+      # default.
       renderNode: /dev/dri/renderD128
   template:
     spec:

@@ -32,6 +32,25 @@ data:
       source "${init_script}"
     done
 
+    # Render-node selection (dual-GPU node, single nvidia.com/gpu request).
+    # CDI injects only the scheduler-picked card's DRM render node, at its host
+    # number (renderD128 = RTX 3090 Ti 01:00.0, renderD129 = RTX 3070 0f:00.0),
+    # and which card we get is non-deterministic. WOLF_RENDER_NODE comes from the
+    # App's wolfConfig.runtimeVariables.renderNode (default /dev/dri/renderD128),
+    # so a fixed value is absent ~half the time and wolf silently falls back to
+    # software x264. Point wolf at whichever render node actually got injected.
+    # talos1 is an NVIDIA-only GPU node (no iGPU), so with one GPU there is
+    # exactly one renderD* and it is always the NVIDIA card.
+    shopt -s nullglob
+    render_nodes=(/dev/dri/renderD*)
+    shopt -u nullglob
+    if [ ${#render_nodes[@]} -gt 0 ]; then
+      export WOLF_RENDER_NODE="${render_nodes[0]}"
+      gow_log "Detected render node ${WOLF_RENDER_NODE}; overriding WOLF_RENDER_NODE"
+    else
+      gow_log "WARNING: no /dev/dri/renderD* present; leaving WOLF_RENDER_NODE=${WOLF_RENDER_NODE:-unset}"
+    fi
+
     gow_log "Launching the container's startup script as root"
     chmod +x /opt/gow/startup.sh
     exec /opt/gow/startup.sh
