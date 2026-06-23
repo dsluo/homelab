@@ -7,4 +7,3 @@ resources:
   - ./wolf-entrypoint.yaml
   - ./user.yaml
   - ./apps.yaml
-  - ./session-service-policy.yaml
