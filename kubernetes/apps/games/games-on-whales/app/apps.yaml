@@ -21,12 +21,12 @@ spec:
   # is node-local on talos1) later if profile persistence is wanted.
   wolfConfig:
     runtimeVariables:
-      # The NVIDIA container toolkit injects the GPU's DRM node with its host
-      # numbering; on a CDI-injected dGPU the in-container node is typically
-      # renderD129 (renderD128 may not exist inside the container). With the
-      # wrong node wolf can't detect the GPU vendor and silently falls back to
-      # software x264 encoding. VERIFY on talos1 (see README).
-      renderNode: /dev/dri/renderD129
+      # CDI injects exactly one NVIDIA DRM render node into the wolf container.
+      # On talos1 it lands at renderD128 (verified: DRIVER=nvidia, RTX 3090 Ti;
+      # renderD129 does NOT exist in-container). Pointing wolf at the wrong node
+      # makes it skip every HW encoder ("not a NVIDIA GPU") -> no HEVC -> the
+      # Moonlight client gets "No video received".
+      renderNode: /dev/dri/renderD128
   template:
     spec:
       containers:
@@ -78,7 +78,7 @@ spec:
   # No volumeClaimTemplate -> the operator uses an ephemeral emptyDir.
   wolfConfig:
     runtimeVariables:
-      renderNode: /dev/dri/renderD129
+      renderNode: /dev/dri/renderD128 # see firefox note above
     startAudioServer: false
     startVirtualCompositor: false
     audio:
