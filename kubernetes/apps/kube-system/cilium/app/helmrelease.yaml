@@ -48,10 +48,13 @@ spec:
       algorithm: maglev
       mode: snat
       # Dispatch method for Services that opt into DSR via annotation (see
-      # bpf.lbModeAnnotation). geneve encapsulates the original tuple so it
-      # survives any L2 switch that would mangle IPv4-option (opt) dispatch;
-      # works with routingMode: native.
-      dsrDispatch: geneve
+      # bpf.lbModeAnnotation). opt embeds the original tuple in an IPv4 option
+      # and is the only dispatch compatible with routingMode: native + the
+      # default snat NodePort mode. (geneve dispatch requires the geneve tunnel
+      # protocol, which we don't run, and crash-loops the agent here. The two
+      # nodes are L2-adjacent through an L2 switch that forwards by MAC and does
+      # not strip IPv4 options, so opt is safe on this LAN.)
+      dsrDispatch: opt
     localRedirectPolicy: true
     operator:
       dashboards:
