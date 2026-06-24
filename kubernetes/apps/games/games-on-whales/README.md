@@ -38,23 +38,24 @@ scope (see the fork's `examples/steam.yaml` to add later).
 | wolf-agent | v0.1.0 | Go fake-udev for controller hotplug |
 | wolf | v0.1.0 | skips legacy `wl_drm` when dmabuf v4 feedback is active (sway crash) |
 
-## GPU sharing with llmkube (PriorityClass preemption)
+## GPU sharing with llmkube (currently MANUAL)
 
 talos1's GPUs (3090 Ti + 3070) are normally held by **llmkube** (`qwen3-6-27b-mtp`,
-`nvidia.com/gpu: 2`). The Fenrir operator cannot set a `priorityClassName` on the
-session pods it generates (the User CRD only exposes resources/volumes/sidecar
-policies), so instead **llmkube's GPU model is pinned to a negative PriorityClass**
-`gpu-preemptible` (value `-100`, defined in
-`kubernetes/apps/ai/llmkube/models/priorityclass.yaml`).
+`nvidia.com/gpu: 2`). A game session pod needs both (the wolf sidecar's
+compositor+NVENC, plus the app container's rendering), so llmkube must yield first.
 
-A game session pod runs at the default priority (0). When it requests
-`nvidia.com/gpu` and both GPUs are held by llmkube, the scheduler **preempts** the
-negative-priority llmkube pod to free a GPU; llmkube reschedules and reloads its
-model once the session ends. No custom controller, no fork patch.
+**For now this is manual.** Scale the LLM down before gaming and back up after:
 
-Trade-offs: preemption evicts llmkube's whole pod (both GPUs — a Test Ball session
-needs 1, a Firefox session needs 2: wolf + app); the LLM is offline during play and
-takes time to reload afterward.
+```sh
+kubectl -n ai scale inferenceservice qwen3-6-27b-mtp --replicas=0   # before gaming
+kubectl -n ai scale inferenceservice qwen3-6-27b-mtp --replicas=1   # after
+```
+
+Every automatic approach we tried hit a dead end — PriorityClass preemption (broke
+once GPU time-slicing removed scheduler scarcity), inflating the llmkube GPU request
+(silently ignored by llmkube, which binds the pod request to the model's GPU count),
+and an arbiter/KEDA (deferred). See the tracking issue for the full write-up. Until
+that's resolved, drive it by hand.
 
 ## Pairing / using it
 
