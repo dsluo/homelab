@@ -30,6 +30,8 @@ spec:
 
     serviceMonitor:
       enabled: true
+      interval: 1s
+      scrapeTimeout: 1s
       auth: [public_v2]
       params:
         - name: compute-pdu
