@@ -36,11 +36,15 @@ and firewalled by a default-deny egress CiliumNetworkPolicy.
   ever hits OpenClaw's own gateway-token auth. Two independent auth layers.
 - **Pinned to `talos1`** (worker, has the gVisor extension); never the
   control-plane / GPU host `talos0`.
-- **Egress is default-deny** (`app/networkpolicy.yaml`): only cluster DNS, the
-  in-cluster LLMs (`ai` namespace :8080), and the *public* internet (private /
-  link-local CIDRs excluded). kube-apiserver, the LAN, and other namespaces are
-  unreachable. See **Egress hardening** below for tightening this to a per-domain
-  allowlist.
+- **Egress is default-deny** (`app/networkpolicy.yaml`): only cluster DNS, a
+  short allowlist of named in-cluster services (the Qwen model, memini, and the
+  SearXNG MCP proxy — via Cilium `toServices`, which tracks each Service's own
+  backends and self-heals across chart bumps, **not** the whole `ai` namespace),
+  and the *public* internet (private / link-local CIDRs excluded). kube-apiserver,
+  the LAN, and every other namespace/service are unreachable. (`toServices` can't
+  be paired with `toPorts`, so memini's :9090 metrics port is reachable alongside
+  its :8080 API — acceptable for a sandbox allowlist.) See **Egress hardening**
+  below for tightening the public-internet rule to a per-domain allowlist.
 
 ## Storage
 
