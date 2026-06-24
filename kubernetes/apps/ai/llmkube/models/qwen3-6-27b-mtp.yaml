@@ -35,10 +35,11 @@ spec:
   image: ghcr.io/ggml-org/llama.cpp:server-cuda-b9744@sha256:f8f4bb64edbf26d369b75c01059663ba749c9893006a7aef5838e5f705319d76
   runtimeClassName: nvidia
   replicas: 1
-  # Negative priority (value -100) so games-on-whales Wolf streaming sessions
-  # (default priority 0) preempt this pod and free a GPU on talos1. See
-  # ./priorityclass.yaml and kubernetes/apps/games/games-on-whales/README.md.
-  priorityClassName: gpu-preemptible
+  # NOTE: GPU handoff to games-on-whales is MANUAL on this branch -- scale this
+  # InferenceService to 0 before gaming and back to 1 afterward
+  # (kubectl -n ai scale inferenceservice qwen3-6-27b-mtp --replicas=0). No
+  # PriorityClass preemption here; see issue #1109 and
+  # kubernetes/apps/games/games-on-whales/README.md.
 
   # --- typed preset fields ---
   contextSize: 262144 # ctx-size
@@ -90,20 +91,15 @@ spec:
   resources:
     cpu: "1"
     memory: 8Gi
-    # Request the WHOLE GPU node (= 2 cards x 4 time-slicing replicas = 8; see
-    # kubernetes/apps/kube-system/nvidia-gpu/operator/helmrelease.yaml). This is
-    # deliberately the k8s SCHEDULING request only -- the model still runs on 2
-    # physical GPUs via hardware.gpu.count + the 6:1 --tensor-split above (8
-    # slices dedupe to the 2 physical UUIDs for CUDA).
-    #
-    # Why grab all 8: GPU time-slicing removed the scarcity that priority
-    # preemption relies on -- at gpu: 2 the node still had 6 free slices, so a
-    # games-on-whales session (needs 2) scheduled WITHOUT preempting this
-    # gpu-preemptible pod, leaving qwen running and contending for VRAM. Holding
-    # all 8 restores scarcity: a session can't fit, so the scheduler preempts
-    # qwen (priority -100) and frees the node. It also guarantees qwen always
-    # lands on BOTH full physical cards (no 2-slices-on-one-card OOM).
-    # Bump this if the node's GPU count or replicas change.
+    # Request all 8 logical GPUs (= 2 physical cards x 4 time-slicing replicas;
+    # see kubernetes/apps/kube-system/nvidia-gpu/operator/helmrelease.yaml). This
+    # is the k8s SCHEDULING request only -- the model still runs on the 2 physical
+    # cards via hardware.gpu.count + the 6:1 --tensor-split above (the 8 slices
+    # dedupe to the 2 physical UUIDs for CUDA). Grabbing all 8 keeps every other
+    # GPU pod off qwen's cards (no shared-VRAM contention) and guarantees qwen
+    # lands on BOTH full cards (no 2-slices-on-one-card OOM). GPU handoff to
+    # games-on-whales is MANUAL -- scale this InferenceService to 0 first (see
+    # README / issue #1109). Bump this if the node's GPU count or replicas change.
     gpu: 8
 
   endpoint:
