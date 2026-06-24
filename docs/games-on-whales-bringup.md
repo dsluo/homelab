@@ -3,8 +3,10 @@
 How the `games` namespace went from an empty manifest to a real application
 streaming GPU-accelerated, hardware-encoded video to a [Moonlight](https://moonlight-stream.org/)
 client — co-resident with the LLM stack on a single two-GPU node — and what is
-still open. This is the narrative record; the day-to-day working scratchpad lives
-in `docs/fenrir-bringup-handoff.md` (untracked).
+still open. This is the narrative record; topic-by-topic deep dives live in
+[`games-on-whales/`](games-on-whales/) (GPU handoff, co-location, known issues,
+upstream issues). A day-to-day working scratchpad may also exist at
+`docs/fenrir-bringup-handoff.md` (untracked).
 
 ## What we built
 
@@ -181,9 +183,9 @@ culprit — it broke preemption *and* never delivered co-location (below); the
 PriorityClass was collateral damage in the over-correction.
 
 > The `Model.hardware.gpu.count` ↔ `--tensor-split` coupling that made `#1107` a
-> no-op is documented in detail in the handoff doc (a future re-enable of
-> time-slicing would have to manually override the split). It is also worth filing
-> upstream against defilantech/LLMKube — see Open work.
+> no-op — and what re-enabling time-slicing would actually require — is documented
+> in [`games-on-whales/gpu-handoff-and-time-slicing.md`](games-on-whales/gpu-handoff-and-time-slicing.md).
+> It is also worth filing upstream against defilantech/LLMKube — see Open work.
 
 ---
 
@@ -266,7 +268,8 @@ Three real paths (tracked in issue **#1109**):
   `--dry-run=server`, not macOS `base64 -d`.
 - **llmkube GPU count** drives the pod request *and* `--split-mode`/`--tensor-split`
   simultaneously (`Model.hardware.gpu.count` wins over `resources.gpu`); changing it
-  has model-loading side effects. See the handoff doc for the full mechanics.
+  has model-loading side effects. Full mechanics:
+  [`games-on-whales/gpu-handoff-and-time-slicing.md`](games-on-whales/gpu-handoff-and-time-slicing.md).
 - **Moonlight ports:** video 47998/UDP, control 47999/UDP, audio 48000/UDP, RTSP
   48010/TCP.
 - **Pairing:** `kubectl -n games logs deploy/moonlight-proxy | grep "Insert pin"`,
