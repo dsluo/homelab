@@ -56,6 +56,11 @@ Trade-offs: preemption evicts llmkube's whole pod (both GPUs — a Test Ball ses
 needs 1, a Firefox session needs 2: wolf + app); the LLM is offline during play and
 takes time to reload afterward.
 
+> ⚠️ **Do not enable GPU time-slicing on the gpu-operator.** Preemption relies on
+> the node advertising exactly `nvidia.com/gpu: 2`; time-slicing inflates that (e.g.
+> 8 slices) so a session schedules *alongside* qwen without preempting it, and they
+> contend for VRAM. See issue #1109.
+
 ## Pairing / using it
 
 1. Get the shared LB IP: `kubectl -n games get svc -o wide` (pinned to

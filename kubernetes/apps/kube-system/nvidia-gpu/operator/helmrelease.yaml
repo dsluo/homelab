@@ -25,29 +25,6 @@ spec:
       enabled: true
     gfd:
       enabled: true
-    # GPU time-slicing. A fenrir/wolf streaming session pod needs two
-    # nvidia.com/gpu (the wolf sidecar's compositor+NVENC, plus the app
-    # container's own rendering); with two physical GPUs that's the whole node
-    # and nothing co-schedules. Time-slicing advertises each physical card as
-    # `replicas` logical nvidia.com/gpu so wolf + app + llmkube can share.
-    # NOTE: time-slicing only multiplexes CUDA contexts, it does NOT partition
-    # VRAM -- co-tenants share the card's memory. The 27B llmkube model needs
-    # both cards' combined VRAM, so verify it still lands on two DISTINCT
-    # physical cards after this rolls out (it's gpu-preemptible and scaled down
-    # while gaming, so a collision is low-stakes, but worth checking).
-    devicePlugin:
-      config:
-        create: true
-        name: time-slicing-config
-        default: time-slicing
-        data:
-          time-slicing: |-
-            version: v1
-            sharing:
-              timeSlicing:
-                resources:
-                  - name: nvidia.com/gpu
-                    replicas: 4
     dcgmExporter:
       enabled: true
       serviceMonitor:
