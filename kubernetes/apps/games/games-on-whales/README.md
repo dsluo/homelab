@@ -54,7 +54,7 @@ kubectl -n ai scale inferenceservice qwen3-6-27b-mtp --replicas=1   # after
 Every automatic approach we tried hit a dead end — PriorityClass preemption (broke
 once GPU time-slicing removed scheduler scarcity), inflating the llmkube GPU request
 (silently ignored by llmkube, which binds the pod request to the model's GPU count),
-and an arbiter/KEDA (deferred). See the tracking issue for the full write-up. Until
+and an arbiter/KEDA (deferred). See issue #1109 for the full write-up. Until
 that's resolved, drive it by hand.
 
 ## Pairing / using it

@@ -39,7 +39,7 @@ spec:
   # InferenceService to 0 before gaming and back to 1 afterward
   # (kubectl -n ai scale inferenceservice qwen3-6-27b-mtp --replicas=0). The
   # automatic approaches (PriorityClass preemption, an arbiter) all hit dead
-  # ends; see the tracking issue and games-on-whales/README.md.
+  # ends; see issue #1109 and games-on-whales/README.md.
 
   # --- typed preset fields ---
   contextSize: 262144 # ctx-size
