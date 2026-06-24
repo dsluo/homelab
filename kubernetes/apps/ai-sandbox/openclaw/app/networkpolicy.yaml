@@ -26,16 +26,34 @@ spec:
               protocol: UDP
             - port: "53"
               protocol: TCP
-    # In-cluster local LLMs (llama-cpp / llmkube model servers in the `ai`
-    # namespace, which serve inference on 8080). Scoped to that namespace +
-    # port only — no other in-cluster service is reachable.
-    - toEndpoints:
-        - matchLabels:
-            io.kubernetes.pod.namespace: ai
-      toPorts:
-        - ports:
-            - port: "8080"
-              protocol: TCP
+    # In-cluster services openclaw is allowed to reach, named directly — NOT the
+    # whole `ai` namespace, which also runs the embedding/reranker models and the
+    # other MCP servers that openclaw must not reach. `toServices` resolves each
+    # Service to its current backend pods (with kube-proxy replacement Cilium
+    # handles the ClusterIP→pod translation), so this follows the Service's own
+    # endpoint selector and self-heals if llmkube/ToolHive relabel pods on a chart
+    # bump. (Matching the `qwen.${SECRET_DOMAIN}` ingress hostname would be worse —
+    # it resolves to the SHARED envoy-internal gateway IP that fronts every route.)
+    #
+    # NOTE: `toServices` can't be paired with `toPorts`, so this allows whatever
+    # ports the backends expose. qwen and the searxng proxy are 8080-only; memini
+    # also exposes :9090 (metrics), which openclaw can therefore reach. Acceptable
+    # for a sandbox allowlist. Verify enforcement after reconcile with Hubble:
+    # `cilium hubble observe --from-pod ai-sandbox/openclaw`.
+    - toServices:
+        # Qwen chat model (llmkube), reached at http://qwen3-6-27b-mtp.ai:8080/v1.
+        - k8sService:
+            serviceName: qwen3-6-27b-mtp
+            namespace: ai
+        # memini memory API.
+        - k8sService:
+            serviceName: memini
+            namespace: ai
+        # SearXNG MCP server — the proxy is the endpoint clients connect to
+        # (the HTTPRoute backs mcp-mcp-searxng-proxy, not mcp-mcp-searxng).
+        - k8sService:
+            serviceName: mcp-mcp-searxng-proxy
+            namespace: ai
     # Public internet only. NOTE: Cilium's `world` entity also covers RFC1918
     # LAN hosts (the MikroTik at 10.0.42.1, other homelab devices), so we use a
     # CIDR allow that explicitly excludes private + link-local ranges. This
