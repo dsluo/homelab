@@ -54,13 +54,26 @@ spec:
           - name: log
             configBlock: |-
               class error
+    # todo: if the cluster becomes all-control-plane (or gains more CP nodes),
+    # revisit — a `required` control-plane affinity is fine there and the
+    # podAntiAffinity below can be relaxed.
     affinity:
+      # prefer (not require) control-plane: with one CP node a `required` rule
+      # collapses both replicas onto talos0, killing DNS during its reboot.
       nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
                 - key: node-role.kubernetes.io/control-plane
                   operator: Exists
+      # keep the two replicas on separate nodes for real HA across reboots
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: coredns
     tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
