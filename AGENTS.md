@@ -57,3 +57,9 @@ docs/          # Hardware and bootstrap documentation
 | volsync-system | VolSync                                                                                     |
 | flux-system    | flux-operator, flux-instance                                                                |
 | default        | echo                                                                                        |
+
+## Memory
+
+- **Save memories to memini** (the MCP memory service, namespace `homelab`) via `memory_remember`. This is the primary, preferred store — do **not** write new memories to the on-disk file-based store when memini is reachable.
+- **Disk is a fallback only.** Write a memory to the on-disk file-based store (indexed in its `MEMORY.md`) **only if memini is unavailable** (e.g. the MCP server is unreachable). Note in the entry that it is a stopgap pending migration.
+- **Migrate stopgap disk memories at the first opportunity.** Whenever memini becomes available again and on-disk memory files exist, prompt the user to migrate them into memini using a subagent. Once migrated, delete the disk files and clear the `MEMORY.md` index.
