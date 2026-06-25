@@ -31,6 +31,30 @@ docs/          # Hardware and bootstrap documentation
 
 Apps are organized by namespace under `kubernetes/apps/<namespace>/` — list that directory to see what's deployed and where.
 
+## Working in this repo
+
+**App layout (the two-file split).** Each app is:
+
+```
+kubernetes/apps/<ns>/<app>/
+  ks.yaml          # Flux Kustomization: dependsOn, components, postBuild substitutions, targetNamespace
+  app/
+    kustomization.yaml   # lists the resources below
+    helmrelease.yaml     # the actual workload (usually the app-template chart)
+    ocirepository.yaml   # chart source
+    secret.sops.yaml     # SOPS-encrypted secrets (when needed)
+```
+
+`ks.yaml` is Flux's wrapper — edit it for dependencies, shared `components/`, and `postBuild.substitute` values. The `app/` dir holds the real manifests — edit it to change the workload itself.
+
+**Scaffold new apps with `just newapp`** (copier from `templates/`). Don't hand-roll the boilerplate.
+
+**Validate before committing: `just test`** (runs `flate test all`). This is what CI gates on (`.github/workflows/flate.yaml`), so it's the pre-push check.
+
+**Secrets are SOPS — never commit plaintext.** Files matching `*.sops.yaml` are encrypted per `.sops.yaml` rules; edit them via `sops`. Cluster-wide values come from the `cluster-secrets` Secret via `postBuild.substituteFrom`.
+
+**Operational loop:** `just reconcile` force-pulls from Git. To test a feature branch live before merging, `just flux-branch` points Flux at the current branch; `just flux-branch-reset` reverts to `main`.
+
 ## Memory
 
 - **Save memories to memini** (the MCP memory service, namespace `homelab`) via `memory_remember`. This is the primary, preferred store — do **not** write new memories to the on-disk file-based store when memini is reachable.
