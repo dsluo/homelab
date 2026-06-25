@@ -33,6 +33,8 @@ spec:
       auto_login: "false"
       skip_org_role_sync: "false"
       role_attribute_path: "contains(groups[*], 'grafana-admins') && 'Admin' || contains(groups[*], 'grafana-editors') && 'Editor' || 'Viewer'"
+    date_formats:
+      default_timezone: America/Detroit
     log:
       mode: console
     metrics:

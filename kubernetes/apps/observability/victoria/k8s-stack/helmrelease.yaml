@@ -53,7 +53,6 @@ spec:
       forceDeployDatasource: true
 
     defaultDashboards:
-      defaultTimezone: America/Detroit
       grafanaOperator:
         enabled: true
 
