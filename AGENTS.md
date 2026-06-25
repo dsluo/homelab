@@ -4,22 +4,16 @@ A two-node Kubernetes homelab with GitOps-driven deployments. `talos0` is the co
 
 ## Stack
 
-- **OS**: Talos Linux
-- **Kubernetes**: k8s on Talos, bootstrapped via `talhelper` + `helmfile`
-- **GitOps**: Flux CD (flux-operator + flux-instance) — watches `kubernetes/` and reconciles continuously
-- **CNI**: Cilium (also replaces kube-proxy)
-- **Ingress**: Envoy Gateway + k8s-gateway (internal DNS)
-- **Storage**: OpenEBS ZFS (persistent) + Local HostPath
-- **Backups**: VolSync
-- **Secrets**: SOPS + Age (encrypted in-repo), 1Password as the Age key backend
-- **Certs**: cert-manager
-- **DB**: CloudNative-PG (PostgreSQL operator)
-- **Monitoring**: Victoria Metrics + Grafana (with Grafana MCP), Kepler (power metrics)
-- **OS/Talos upgrades**: tuppr (`system-upgrade` namespace)
-- **Infra-as-code**: OpenTofu — manages MikroTik switch (`infra/sw_core/`) and Backblaze B2 (`infra/backblaze/`)
+The non-obvious, load-bearing choices that shape how changes get made:
+
+- **OS / Kubernetes**: Talos Linux, bootstrapped via `talhelper` + `helmfile`
+- **GitOps**: Flux CD watches `kubernetes/` and reconciles continuously — changes land via commit, not `kubectl apply`
+- **CNI**: Cilium, which also replaces kube-proxy
+- **Secrets**: SOPS + Age, encrypted in-repo, with 1Password as the Age key backend
+- **Infra-as-code**: OpenTofu under `infra/` (MikroTik switch in `infra/sw_core/`, Backblaze B2 in `infra/backblaze/`)
 - **Dependency updates**: Renovate (auto-merges patch/minor for GitHub Actions and mise tools)
-- **Tool versions**: mise-en-place (`.mise.toml`)
-- **Task runner**: Just (`just <command>`)
+
+Other tooling is discoverable from the repo: mise (`.mise.toml`), Just (the justfile), and the apps under `kubernetes/apps/` (Envoy Gateway, OpenEBS, VolSync, cert-manager, CloudNative-PG, Victoria Metrics + Grafana, tuppr, etc.).
 
 ## Directory Structure
 
@@ -35,25 +29,34 @@ scripts/       # Automation scripts
 docs/          # Hardware and bootstrap documentation
 ```
 
-## Key Apps by Namespace
+Apps are organized by namespace under `kubernetes/apps/<namespace>/` — list that directory to see what's deployed and where.
 
-| Namespace      | Apps                                                                                        |
-| -------------- | ------------------------------------------------------------------------------------------- |
-| kube-system    | Cilium, CoreDNS, Metrics Server, Intel GPU driver, Reflector, Reloader, Snapshot Controller |
-| network        | Cloudflare DNS + Tunnel, Envoy Gateway, k8s-gateway, towonel-agent                          |
-| database       | CloudNative-PG                                                                              |
-| observability  | Victoria Metrics, Grafana, SNMP Exporter, Kepler                                            |
-| ai             | llama.cpp, SearXNG, ToolHive (MCP servers)                                                  |
-| media          | Jellyfin, Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, SABnzbd, Seerr, Recyclarr          |
-| documents      | Paperless-ngx                                                                               |
-| finance        | Actual                                                                                      |
-| maker          | OrcaSlicer                                                                                  |
-| games          | Games-on-Whales (Wolf game streaming) + direwolf-operator                                   |
-| social         | Continuwuity (Matrix), Sable                                                                |
-| security       | Pocket-ID (SSO)                                                                             |
-| system-upgrade | tuppr (Talos upgrades)                                                                      |
-| openebs-system | OpenEBS                                                                                     |
-| cert-manager   | cert-manager                                                                                |
-| volsync-system | VolSync                                                                                     |
-| flux-system    | flux-operator, flux-instance                                                                |
-| default        | echo                                                                                        |
+## Working in this repo
+
+**App layout (the two-file split).** Each app is:
+
+```
+kubernetes/apps/<ns>/<app>/
+  ks.yaml          # Flux Kustomization: dependsOn, components, postBuild substitutions, targetNamespace
+  app/
+    kustomization.yaml   # lists the resources below
+    helmrelease.yaml     # the actual workload (usually the app-template chart)
+    ocirepository.yaml   # chart source
+    secret.sops.yaml     # SOPS-encrypted secrets (when needed)
+```
+
+`ks.yaml` is Flux's wrapper — edit it for dependencies, shared `components/`, and `postBuild.substitute` values. The `app/` dir holds the real manifests — edit it to change the workload itself.
+
+**Scaffold new apps with `just newapp`** (copier from `templates/`). Don't hand-roll the boilerplate.
+
+**Validate before committing: `just test`** (runs `flate test all`). This is what CI gates on (`.github/workflows/flate.yaml`), so it's the pre-push check.
+
+**Secrets are SOPS — never commit plaintext.** Files matching `*.sops.yaml` are encrypted per `.sops.yaml` rules; edit them via `sops`. Cluster-wide values come from the `cluster-secrets` Secret via `postBuild.substituteFrom`.
+
+**Operational loop:** `just reconcile` force-pulls from Git. To test a feature branch live before merging, `just flux-branch` points Flux at the current branch; `just flux-branch-reset` reverts to `main`.
+
+## Memory
+
+- **Save memories to memini** (the MCP memory service, namespace `homelab`) via `memory_remember`. This is the primary, preferred store — do **not** write new memories to the on-disk file-based store when memini is reachable.
+- **Disk is a fallback only.** Write a memory to the on-disk file-based store (indexed in its `MEMORY.md`) **only if memini is unavailable** (e.g. the MCP server is unreachable). Note in the entry that it is a stopgap pending migration.
+- **Migrate stopgap disk memories at the first opportunity.** Whenever memini becomes available again and on-disk memory files exist, prompt the user to migrate them into memini using a subagent. Once migrated, delete the disk files and clear the `MEMORY.md` index.
