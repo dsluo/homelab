@@ -8,6 +8,9 @@ metadata:
     cnpg.io/skipEmptyWalArchiveCheck: enabled
 spec:
   instances: 1
+  # single instance on node-local storage: the PDB can never be satisfied (no
+  # failover target), so it would deadlock node drains during tuppr upgrades.
+  enablePDB: false
   imageName: ghcr.io/cloudnative-pg/postgresql:18@sha256:c835ea1053376ab101e3528cd9d3712c8f760378af6f6a4b5bd74c119e35e190
 
   primaryUpdateStrategy: unsupervised

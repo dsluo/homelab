@@ -9,8 +9,16 @@ spec:
     name: *app
   interval: 1h
   values:
-    # todo: multi-node
-    replicaCount: 1
+    replicaCount: 2
     monitoring:
       serviceMonitor:
         enabled: true
+      prometheusRule:
+        enabled: true
+      dashboards:
+        enabled: true
+        grafanaOperator:
+          enabled: true
+          allowCrossNamespaceImport: true
+          matchLabels:
+            dashboards: grafana
