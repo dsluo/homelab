@@ -15,4 +15,5 @@ terraform {
 
 inputs = {
   backup_bucket_name = include.root.locals.secrets.backblaze.backup_bucket_name
+  onepassword        = include.root.locals.secrets.onepassword
 }
