@@ -29,6 +29,13 @@ spec:
     zfs-localpv:
       zfsNode:
         encrKeysDir: "/var/openebs/zfs"
+        # Restrict CSI topology to hostname only. The default ("All") registers
+        # every node label (NFD, nvidia, transient tuppr upgrade labels) as a
+        # topology key, which breaks storageCapacity tracking: the capacity
+        # controller can't build clean per-node CSIStorageCapacity segments, so a
+        # node ends up with no capacity object and the scheduler reports "not
+        # enough free storage" — leaving VolSync mover pods stuck Pending.
+        allowedTopologyKeys: "kubernetes.io/hostname"
 
       analytics:
         enabled: false
