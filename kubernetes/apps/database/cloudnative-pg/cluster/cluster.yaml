@@ -64,7 +64,8 @@ spec:
       enabled: true
       isWALArchiver: true
       parameters:
-        barmanObjectName: garage
+        # WALs + primary (PITR-capable) base backups go to Backblaze B2.
+        barmanObjectName: backblaze
 
   bootstrap:
     # initdb:
@@ -73,9 +74,17 @@ spec:
     recovery:
       database: *default
       owner: *default
-      source: garage
+      source: backblaze
 
   externalClusters:
+    # recovery.source picks one of these; the others are just available targets
+    # to flip to (e.g. recover from garage before B2 has its first backup).
+    - name: backblaze
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: backblaze
+          serverName: postgres
     - name: garage
       plugin:
         name: barman-cloud.cloudnative-pg.io

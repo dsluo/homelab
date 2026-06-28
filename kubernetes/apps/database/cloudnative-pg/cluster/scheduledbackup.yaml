@@ -3,7 +3,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup
 metadata:
-  name: postgres-daily
+  name: postgres-daily-b2
 spec:
   # 7:30 AM UTC => 2:30 EST/3:30 EDT
   schedule: "0 30 7 * * *"
@@ -13,5 +13,25 @@ spec:
   method: plugin
   pluginConfiguration:
     name: barman-cloud.cloudnative-pg.io
+    # primary, PITR-capable backup (same store as the WAL archive)
+    parameters:
+      barmanObjectName: backblaze
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/postgresql.cnpg.io/scheduledbackup_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: postgres-daily-garage
+spec:
+  # offset 1h from the B2 backup
+  # 8:30 AM UTC => 3:30 EST/4:30 EDT
+  schedule: "0 30 8 * * *"
+  backupOwnerReference: cluster
+  cluster:
+    name: postgres
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
+    # secondary cold base backup (no WAL archive here -> not PITR)
     parameters:
       barmanObjectName: garage
