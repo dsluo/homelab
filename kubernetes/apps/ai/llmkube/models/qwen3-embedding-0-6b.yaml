@@ -22,9 +22,13 @@ spec:
   image: ghcr.io/ggml-org/llama.cpp:server-b9628@sha256:d0b7bce18e8f1bd9cfa8a455ea184cedae513ddfacded7fa41182fa31d9c4aa9
   replicas: 1
   # llama.cpp splits contextSize across parallelSlots, so per-slot ctx =
-  # contextSize / parallelSlots. Keep per-slot above memini's
-  # MEMINI_EMBED_MAX_ITEM_CHARS cap (6000 chars ≈ 1500-2000 tokens):
-  # 8192 / 2 = 4096 tokens/slot. Total ctx unchanged, so CPU/KV memory is too.
+  # contextSize / parallelSlots = 8192 / 2 = 4096 tokens/slot. memini v0.5.0
+  # dropped its MEMINI_EMBED_MAX_ITEM_CHARS guard and embeds item content
+  # un-truncated, so this per-slot ctx (and the uBatchSize below) is now the
+  # only bound on embeddable item size — an item over ~4096 tokens (~16k chars)
+  # fails the pooled-embedding ubatch rather than being truncated. Size for the
+  # largest item memini is expected to embed. Total ctx unchanged, so CPU/KV
+  # memory is too.
   contextSize: 8192
   # Pooled embeddings must fit the whole sequence in one ubatch, so keep this
   # >= per-slot ctx (4096) — otherwise a long input fits the context but not a

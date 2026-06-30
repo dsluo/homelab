@@ -36,13 +36,9 @@ spec:
               MEMINI_EMBED_BASE_URL: http://qwen3-embedding-0-6b.ai.svc.cluster.local:8080/v1
               MEMINI_EMBED_MODEL: Qwen/Qwen3-Embedding-0.6B
               MEMINI_EMBED_DIMS: "1024"
-              # Bound each embed input so it can't overrun the embedder's
-              # per-slot context (~6000 chars ≈ 1500-2000 tokens).
-              MEMINI_EMBED_MAX_ITEM_CHARS: "6000"
               MEMINI_EMBED_MAX_CONCURRENCY: "2"
               MEMINI_RERANK: http://qwen3-reranker-0-6b.ai.svc.cluster.local:8080/v1
               MEMINI_RERANK_MODEL: Qwen/Qwen3-Reranker-0.6B
-              MEMINI_RERANK_MAX_DOC_CHARS: "4000"
               MEMINI_API_KEY:
                 valueFrom:
                   secretKeyRef:
