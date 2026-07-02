@@ -30,7 +30,7 @@ TALOSCONFIG = "{{config_root}}/talos/clusterconfig/talosconfig"
 # flux
 "aqua:FiloSottile/age" = "1.3.1"
 "aqua:fluxcd/flux2" = "2.8.8"
-"aqua:getsops/sops" = "3.13.1"
+"aqua:getsops/sops" = "3.13.2"
 # authoring tools
 "npm:renovate" = "43.246.1"
 "pipx:copier" = { version = "9.16.0", uvx_args = "--with copier-template-extensions" }
