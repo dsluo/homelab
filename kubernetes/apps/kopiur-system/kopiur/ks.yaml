@@ -35,6 +35,13 @@ spec:
       kind: ClusterRepository
       current: status.conditions.filter(c, c.type == 'Ready').exists(c, c.status == 'True')
       failed: status.conditions.filter(c, c.type == 'Stalled').exists(c, c.status == 'True')
+  # Health-gate only the ClusterRepository, not every object in the path:
+  # `wait: true` would also gate on RepositoryReplication, letting a failed
+  # nightly NFS sync block rollouts of every app that dependsOn this.
+  healthChecks:
+    - apiVersion: kopiur.home-operations.com/v1alpha1
+      kind: ClusterRepository
+      name: homelab
   interval: 1h
   path: ./kubernetes/apps/kopiur-system/kopiur/repository
   postBuild:
@@ -47,4 +54,3 @@ spec:
     name: flux-system
     namespace: flux-system
   targetNamespace: kopiur-system
-  wait: true
