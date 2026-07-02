@@ -24,6 +24,9 @@ spec:
     all: true
   credentialProjection:
     allowed: true
+  identityDefaults:
+    hostnameExpr: namespace
+    usernameExpr: namespace + '-' + policyName
   moverDefaults:
     cache:
       capacity: 8Gi
