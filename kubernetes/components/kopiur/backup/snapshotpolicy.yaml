@@ -13,6 +13,9 @@ spec:
     - pvc:
         name: ${APP}
   copyMethod: Snapshot
+  files:
+    ignoreRules:
+      - lost+found
   volumeSnapshotClassName: ${VOLSYNC_SNAPSHOTCLASS:=openebs-zfs-snapshot}
   retention:
     keepHourly: 24

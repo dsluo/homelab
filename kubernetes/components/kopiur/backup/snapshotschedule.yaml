@@ -9,3 +9,4 @@ spec:
   schedule:
     cron: H * * * *
     concurrencyPolicy: Forbid
+    runOnCreate: false
