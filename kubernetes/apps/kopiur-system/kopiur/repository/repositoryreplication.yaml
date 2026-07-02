@@ -1,0 +1,21 @@
+---
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: RepositoryReplication
+metadata:
+  name: homelab-nfs
+spec:
+  sourceRef:
+    kind: ClusterRepository
+    name: homelab
+  destination:
+    filesystem:
+      path: /repository
+      volume:
+        nfs:
+          server: storage.lan
+          path: /mnt/tank/backup/kopiur
+  # daily, in the same overnight window as the CNPG B2 backup (07:30 UTC);
+  # destinationEncryption omitted -> true mirror reusing the source password
+  schedule:
+    cron: H 7 * * *
+    jitter: 15m

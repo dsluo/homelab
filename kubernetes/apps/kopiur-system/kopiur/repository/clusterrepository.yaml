@@ -1,0 +1,39 @@
+---
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: ClusterRepository
+metadata:
+  name: homelab
+spec:
+  backend:
+    b2:
+      bucket: crayon-club-backups
+      prefix: kopiur/
+      auth:
+        secretRef:
+          name: kopiur-repository
+          namespace: kopiur-system
+  encryption:
+    passwordSecretRef:
+      name: kopiur-repository
+      namespace: kopiur-system
+      key: KOPIA_PASSWORD
+  # create-time settings (encryption/splitter/hash/ecc) are immutable after init
+  create:
+    enabled: true
+  allowedNamespaces:
+    list:
+      - ai
+      - ai-sandbox
+      - documents
+      - finance
+      - kopiur-system
+      - maker
+      - media
+      - observability
+      - social
+  credentialProjection:
+    allowed: true
+  moverDefaults:
+    cache:
+      capacity: 8Gi
+      storageClassName: openebs-hostpath

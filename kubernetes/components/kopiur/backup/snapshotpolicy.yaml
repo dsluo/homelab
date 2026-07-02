@@ -1,0 +1,25 @@
+---
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotPolicy
+metadata:
+  name: ${APP}
+spec:
+  repository:
+    kind: ClusterRepository
+    name: homelab
+  credentialProjection:
+    enabled: true
+  sources:
+    - pvc:
+        name: ${APP}
+  copyMethod: Snapshot
+  volumeSnapshotClassName: ${VOLSYNC_SNAPSHOTCLASS:=openebs-zfs-snapshot}
+  retention:
+    keepHourly: 24
+    keepDaily: 7
+  mover:
+    securityContext:
+      runAsUser: ${VOLSYNC_UID}
+      runAsGroup: ${VOLSYNC_GID}
+    podSecurityContext:
+      fsGroup: ${VOLSYNC_GID}
