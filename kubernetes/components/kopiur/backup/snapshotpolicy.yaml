@@ -17,6 +17,14 @@ spec:
   retention:
     keepHourly: 24
     keepDaily: 7
+  verification:
+    quick:
+      cron: H 4 * * *
+      jitter: 1h
+    deep:
+      schedule:
+        cron: H 5 1 * *
+        jitter: 1h
   mover:
     securityContext:
       runAsUser: ${VOLSYNC_UID}
