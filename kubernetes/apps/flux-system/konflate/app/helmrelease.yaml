@@ -13,6 +13,9 @@ spec:
       repo: github://dsluo/homelab
       mcp: true
       verifyImages: true
+      prComments: true
+      statusChecks: true
+      publicUrl: https://konflate.${SECRET_DOMAIN}
     secret:
       existingSecret: konflate-secret
     deploymentAnnotations:
