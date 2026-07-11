@@ -21,9 +21,15 @@ metadata:
 spec:
   dependsOn:
     - name: pocket-id-operator
+  components:
+    - ../../../../components/database
   interval: 1h
   path: ./kubernetes/apps/security/pocket-id/instance
   postBuild:
+    substitute:
+      APP: pocket-id
+      # role/database/secret predate the component and use the undashed name
+      DB_APP: pocketid
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

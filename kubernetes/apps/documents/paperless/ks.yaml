@@ -12,10 +12,9 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/documents/paperless/app
   components:
+    - ../../../../components/database
     - ../../../../components/oidc
     - ../../../../components/volsync
-    # todo
-    # - ../../../../components/database
   postBuild:
     substitute:
       APP: *app

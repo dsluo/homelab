@@ -2,9 +2,9 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
-  name: paperless
+  name: ${DB_APP}
 spec:
-  name: paperless
-  owner: paperless
+  name: ${DB_APP}
+  owner: ${DB_APP}
   cluster:
     name: postgres
