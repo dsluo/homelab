@@ -1,0 +1,26 @@
+---
+# Rendered inside the consuming app's Kustomization: ${APP} resolves there, and
+# targetNamespace places this Kustomization CR in the app's namespace. The
+# resources it manages land in the database namespace regardless.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ${APP}-db
+spec:
+  dependsOn:
+    - name: cnpg-cluster
+      namespace: database
+  interval: 1h
+  path: ./kubernetes/components/database/resources
+  postBuild:
+    substitute:
+      # DB_APP overrides the database/role/secret name when it differs from the
+      # app name (e.g. pocket-id -> pocketid).
+      DB_APP: ${DB_APP:=${APP}}
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: database
+  wait: true

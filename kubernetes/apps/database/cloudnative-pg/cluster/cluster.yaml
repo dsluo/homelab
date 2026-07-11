@@ -26,38 +26,11 @@ spec:
       # we're single node anyway
       disabledDefaultServices: ["ro", "r"]
     roles:
+      # app stays inline: it's the bootstrap database owner, not a login role.
+      # Per-app login roles are DatabaseRole resources created by
+      # components/database in each consuming app's Kustomization.
       - name: &default app
         login: false
-      - name: paperless
-        ensure: present
-        login: true
-        passwordSecret:
-          name: paperless-postgres-secret
-      - name: sonarr
-        ensure: present
-        login: true
-        passwordSecret:
-          name: sonarr-postgres-secret
-      - name: radarr
-        ensure: present
-        login: true
-        passwordSecret:
-          name: radarr-postgres-secret
-      - name: prowlarr
-        ensure: present
-        login: true
-        passwordSecret:
-          name: prowlarr-postgres-secret
-      - name: pocketid
-        ensure: present
-        login: true
-        passwordSecret:
-          name: pocketid-postgres-secret
-      - name: seerr
-        ensure: present
-        login: true
-        passwordSecret:
-          name: seerr-postgres-secret
 
   plugins:
     - name: barman-cloud.cloudnative-pg.io
