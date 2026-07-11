@@ -19,7 +19,10 @@ releases:
     chart: oci://mirror.gcr.io/envoyproxy/gateway-helm
     version: v1.8.2
 
-  - name: kube-prometheus-stack
+  # pre-seeds the monitoring.coreos.com CRDs so first reconcile is clean;
+  # steady-state they're owned by the prometheus-operator-crds HelmRelease
+  # in kubernetes/apps/observability/
+  - name: prometheus-operator-crds
     namespace: observability
-    chart: oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack
-    version: 87.14.0
+    chart: oci://ghcr.io/prometheus-community/charts/prometheus-operator-crds
+    version: 30.0.1
