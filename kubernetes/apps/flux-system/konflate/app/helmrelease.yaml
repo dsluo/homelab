@@ -1,0 +1,35 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: konflate
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: konflate
+  interval: 1h
+  values:
+    config:
+      repo: github://dsluo/homelab
+      clusterPath: kubernetes/flux/cluster
+      mcp: true
+      verifyImages: true
+    secret:
+      existingSecret: konflate-secret
+    deploymentAnnotations:
+      reloader.stakater.com/auto: "true"
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: envoy-cloudflare
+          namespace: network
+          sectionName: https
+      hostnames:
+        - konflate.${SECRET_DOMAIN}
+    persistence:
+      enabled: true
+      storageClass: openebs-hostpath
+      size: 5Gi
+    monitoring:
+      serviceMonitor:
+        enabled: true
