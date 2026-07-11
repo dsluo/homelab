@@ -6,7 +6,7 @@ TALOSCONFIG = "{{config_root}}/talos/clusterconfig/talosconfig"
 
 [tools]
 # utilities
-"aqua:casey/just" = "1.55.1"
+"aqua:casey/just" = "1.56.0"
 "aqua:jqlang/jq" = "1.8.1"
 "aqua:mikefarah/yq" = "4.53.3"
 "aqua:google/go-containerregistry" = "0.21.7"
