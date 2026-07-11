@@ -11,7 +11,6 @@ spec:
   values:
     config:
       repo: github://dsluo/homelab
-      clusterPath: kubernetes/flux/cluster
       mcp: true
       verifyImages: true
     secret:
