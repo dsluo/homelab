@@ -49,7 +49,7 @@ kubernetes/apps/<ns>/<app>/
 
 **Scaffold new apps with `just newapp`** (copier from `templates/`). Don't hand-roll the boilerplate.
 
-**Validate before committing: `just test`** (runs `flate test all`). This is what CI gates on (`.github/workflows/flate.yaml`), so it's the pre-push check.
+**Validate before committing: `just test`.** It runs `flate test all` — flate renders the whole Flux tree (Kustomizations and HelmReleases) offline and reports what would fail to reconcile, without touching the cluster.
 
 **Secrets are SOPS — never commit plaintext.** Files matching `*.sops.yaml` are encrypted per `.sops.yaml` rules; edit them via `sops`. Cluster-wide values come from the `cluster-secrets` Secret via `postBuild.substituteFrom`.
 
