@@ -122,6 +122,8 @@ metadata:
 spec:
   compression:
     compressor: zstd
+  credentialProjection:
+    enabled: true
   mover:
     podSecurityContext:
       runAsUser: ${uid}
@@ -132,6 +134,7 @@ spec:
     name: homelab
   retention:
     keepLatest: 3
+    keepHourly: 24
     keepDaily: 7
     keepWeekly: 4
   sources:
@@ -139,7 +142,9 @@ spec:
         name: ${app}
   volumeSnapshotClassName: openebs-zfs-snapshot
 EOF
-        kubectl kopiur snapshot now --policy "${app}" -n "${ns}" --wait
+        # mise installs the CLI as plain `kopiur` (kubectl plugin discovery
+        # would need a kubectl-kopiur binary, which only krew/brew provide).
+        kopiur snapshot now --policy "${app}" -n "${ns}" --wait
     done
 }
 
@@ -160,7 +165,7 @@ function cmd_verify_seeds() {
     if [[ -n "${failures}" ]]; then
         log error "Seed snapshots missing/failed/empty/incomplete — do NOT run 'delete'" "apps" "${failures//$'\n'/,}"
     fi
-    log info "Also eyeball sizes: kubectl kopiur snapshots list -A"
+    log info "Also eyeball sizes: kopiur snapshots list -A"
 }
 
 function cmd_delete() {
