@@ -9,11 +9,19 @@ spec:
     # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
     version: v1.36.2
   healthChecks:
+    # `has()` guards: a just-created CR has no status.phase yet, and an
+    # unguarded dereference is a CEL error, which tuppr treats as unhealthy —
+    # blocking upgrades until the phase appears (forever, if the kopiur
+    # controller is down).
     - apiVersion: kopiur.home-operations.com/v1alpha1
       kind: Snapshot
       expr: |-
-        status.phase != 'Running'
+        !has(status.phase) || !(status.phase in ['Pending', 'Running'])
     - apiVersion: kopiur.home-operations.com/v1alpha1
       kind: Restore
       expr: |-
-        !(status.phase in ['Resolving', 'Restoring'])
+        !has(status.phase) || !(status.phase in ['Pending', 'Resolving', 'Restoring'])
+    - apiVersion: kopiur.home-operations.com/v1alpha1
+      kind: RepositoryReplication
+      expr: |-
+        !has(status.phase) || status.phase != 'Replicating'

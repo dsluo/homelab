@@ -48,9 +48,10 @@ spec:
       # VMSingle still runs as root (no securityContext today), but the mover is
       # pre-pinned to 65534 — the uid the VM stack uses for its other workloads
       # (node-exporter, kube-state-metrics) and what the operator's
-      # useStrictSecurity assigns to managed pods. Harmless now (root reads/writes
-      # data the mover wrote under any uid) and forward-compatible: a later switch
-      # to non-root needs no re-chown of restored data.
+      # useStrictSecurity assigns to managed pods. The backup mover can still
+      # read root-owned files because the component's fsGroup group-remaps the
+      # snapshot clone; forward-compatible: a later switch to non-root needs no
+      # re-chown of restored data.
       # TODO: enable useStrictSecurity / set the VMSingle securityContext to 65534.
       KOPIUR_UID: "65534"
       KOPIUR_GID: "65534"
@@ -84,9 +85,10 @@ spec:
       KOPIUR_CAPACITY: 5Gi
       # VLSingle still runs as root (no securityContext today), but the mover is
       # pre-pinned to 65534 — the VM stack's non-root uid (what the operator's
-      # useStrictSecurity assigns to managed pods). Harmless now (root reads/writes
-      # data the mover wrote under any uid) and forward-compatible: a later switch
-      # to non-root needs no re-chown of restored data.
+      # useStrictSecurity assigns to managed pods). The backup mover can still
+      # read root-owned files because the component's fsGroup group-remaps the
+      # snapshot clone; forward-compatible: a later switch to non-root needs no
+      # re-chown of restored data.
       # TODO: enable useStrictSecurity / set the VLSingle securityContext to 65534.
       KOPIUR_UID: "65534"
       KOPIUR_GID: "65534"

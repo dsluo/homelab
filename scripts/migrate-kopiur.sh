@@ -16,6 +16,14 @@
 #   migrate-kopiur.sh delete        # delete RS/RD/PVC per app (destructive!)
 #   migrate-kopiur.sh resume        # flux resume + reconcile (restores PVCs)
 #   migrate-kopiur.sh status        # per-app PVC/pod/snapshot overview
+#
+# ORDERING: run 'suspend' and 'final-backup' BEFORE Flux reconciles the
+# cutover merge — Flux (prune: true) deletes every app's volsync CRs the
+# moment its ks.yaml flips from components/volsync to components/kopiur,
+# taking the final-backup safety net with them. Both phases preflight this
+# and abort if the ReplicationSources are already gone. The restic
+# credentials for the baseline are archived in
+# docs/volsync-restic-recovery.sops.yaml.
 set -Eeuo pipefail
 
 source "$(dirname "${0}")/lib/common.sh"
@@ -55,11 +63,24 @@ function scale_operators() {
     done
 }
 
+# The final restic baseline needs the volsync CRs, which Flux prunes as soon
+# as it reconciles the cutover merge. Refuse to continue once they are gone.
+function require_volsync_crs() {
+    local missing
+    missing=$(apps | while read -r _ ns app _ _; do
+        kubectl get replicationsource "${app}" -n "${ns}" >/dev/null 2>&1 || echo "${ns}/${app}"
+    done)
+    if [[ -n "${missing}" ]]; then
+        log error "ReplicationSources already pruned — Flux reconciled the cutover before the final restic baseline was taken" "apps" "${missing//$'\n'/,}"
+    fi
+}
+
 function cmd_suspend() {
+    require_volsync_crs
     scale_operators 0
     apps | while read -r ks ns app _ _; do
         log info "Suspending" "app" "${app}"
-        flux suspend kustomization "${ks}" -n flux-system
+        flux suspend kustomization "${ks}" -n "${ns}"
         flux suspend helmrelease "${app}" -n "${ns}" 2>/dev/null || true
         workloads "${ns}" "${app}" | xargs -r kubectl scale -n "${ns}" --replicas=0
     done
@@ -70,6 +91,7 @@ function cmd_suspend() {
 }
 
 function cmd_final_backup() {
+    require_volsync_crs
     local stamp="pre-kopiur-$(date +%s)"
     apps | while read -r _ ns app _ _; do
         kubectl patch replicationsource "${app}" -n "${ns}" --type merge \
@@ -83,7 +105,7 @@ function cmd_final_backup() {
 }
 
 function cmd_stop_volsync() {
-    flux suspend kustomization volsync -n flux-system
+    flux suspend kustomization volsync -n volsync-system
     kubectl scale deploy volsync -n volsync-system --replicas=0
 }
 
@@ -101,9 +123,10 @@ spec:
   compression:
     compressor: zstd
   mover:
-    securityContext:
+    podSecurityContext:
       runAsUser: ${uid}
       runAsGroup: ${gid}
+      fsGroup: ${gid}
   repository:
     kind: ClusterRepository
     name: homelab
@@ -125,7 +148,9 @@ function cmd_verify_seeds() {
     failures=$(apps | while read -r _ ns app _ _; do
         if kubectl get snapshot -n "${ns}" -o json | jq -e --arg app "${app}" '
             [.items[] | select(.spec.policyRef.name == $app)
-             | select(.status.phase == "Succeeded")] | length > 0' >/dev/null; then
+             | select(.status.phase == "Succeeded")
+             | select((.status.stats.sizeBytes // 0) > 0)
+             | select((.status.stats.filesFailed // 0) == 0)] | length > 0' >/dev/null; then
             echo "OK   ${ns}/${app}" >&2
         else
             echo "FAIL ${ns}/${app}" >&2
@@ -133,7 +158,7 @@ function cmd_verify_seeds() {
         fi
     done)
     if [[ -n "${failures}" ]]; then
-        log error "Seed snapshots missing/failed — do NOT run 'delete'" "apps" "${failures//$'\n'/,}"
+        log error "Seed snapshots missing/failed/empty/incomplete — do NOT run 'delete'" "apps" "${failures//$'\n'/,}"
     fi
     log info "Also eyeball sizes: kubectl kopiur snapshots list -A"
 }
@@ -153,11 +178,11 @@ function cmd_resume() {
     apps | while read -r ks ns app _ _; do
         log info "Resuming" "app" "${app}"
         flux resume helmrelease "${app}" -n "${ns}" 2>/dev/null || true
-        flux resume kustomization "${ks}" -n flux-system
+        flux resume kustomization "${ks}" -n "${ns}"
     done
     scale_operators 1
-    apps | while read -r ks _ _ _ _; do
-        flux reconcile kustomization "${ks}" -n flux-system || true
+    apps | while read -r ks ns _ _ _; do
+        flux reconcile kustomization "${ks}" -n "${ns}" || true
     done
 }
 
