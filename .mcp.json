@@ -7,6 +7,10 @@
         "Authorization": "Bearer ${GITHUB_TOKEN}"
       }
     },
+    "konflate": {
+      "type": "http",
+      "url": "${KONFLATE_URL}/mcp"
+    },
     "grafana": {
       "type": "stdio",
       "command": "mcp-grafana",
