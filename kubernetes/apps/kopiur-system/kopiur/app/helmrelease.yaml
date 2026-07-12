@@ -24,5 +24,8 @@ spec:
     resources:
       requests:
         cpu: 100m
+        # Without an explicit request, Kubernetes copies the 2Gi limit into
+        # the request and permanently reserves it on a node.
+        memory: 256Mi
       limits:
         memory: 2Gi

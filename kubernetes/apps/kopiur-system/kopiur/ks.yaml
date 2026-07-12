@@ -26,6 +26,21 @@ metadata:
 spec:
   dependsOn:
     - name: kopiur
+  # Every app's ks gates on this Kustomization, so it must only report Ready
+  # once the repository actually connects — otherwise a bad NFS export or
+  # KOPIA_PASSWORD leaves every PVC Pending on an unresolvable Restore while
+  # Flux shows the backup stack green. `wait` stays false so the offsite
+  # RepositoryReplication (auth-failing until the B2 key lands) never gates
+  # app reconciliation.
+  healthChecks:
+    - apiVersion: kopiur.home-operations.com/v1alpha1
+      kind: ClusterRepository
+      name: homelab
+  healthCheckExprs:
+    - apiVersion: kopiur.home-operations.com/v1alpha1
+      kind: ClusterRepository
+      current: has(status.phase) && status.phase == 'Ready'
+      failed: has(status.phase) && status.phase in ['Failed', 'Degraded']
   interval: 1h
   path: ./kubernetes/apps/kopiur-system/kopiur/repository
   postBuild:

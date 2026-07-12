@@ -8,12 +8,14 @@ spec:
   compression:
     compressor: zstd
   mover:
-    securityContext:
+    podSecurityContext:
       # Match the app's runtime uid/gid (see restore.yaml for why there is no
-      # default). The backup mover reads a fsGroup-agnostic snapshot clone
-      # whose files the app's own uid already owns.
+      # default). fsGroup group-remaps the snapshot clone on mount — like
+      # VolSync's moverSecurityContext did — so the mover can also read files
+      # the app wrote under a different uid (e.g. victoria's root-owned data).
       runAsUser: ${KOPIUR_UID}
       runAsGroup: ${KOPIUR_GID}
+      fsGroup: ${KOPIUR_GID}
   repository:
     kind: ClusterRepository
     name: homelab

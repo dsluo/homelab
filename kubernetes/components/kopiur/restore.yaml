@@ -6,15 +6,16 @@ metadata:
   name: ${APP}
 spec:
   mover:
-    securityContext:
+    podSecurityContext:
       # No default: the restore mover writes every restored file owned by its
       # own uid, and a non-root mover cannot chown. Apps that chmod/chown
       # their state need the files OWNED by their runtime uid, so every
       # consumer must set KOPIUR_UID/GID to match the app. A missing value
       # fails the build loudly instead of silently defaulting to a uid no app
-      # runs as.
+      # runs as. fsGroup mirrors VolSync's moverSecurityContext.
       runAsUser: ${KOPIUR_UID}
       runAsGroup: ${KOPIUR_GID}
+      fsGroup: ${KOPIUR_GID}
   policy:
     onMissingSnapshot: Continue
   source:
