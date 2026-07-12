@@ -23,7 +23,7 @@ resource "b2_application_key" "kopiur" {
     "writeFiles",
     "deleteFiles",
   ]
-  name_prefix = "kopiur/"
+  name_prefix = "kopia/"
 }
 
 data "onepassword_vault" "vault" {
@@ -47,5 +47,5 @@ resource "onepassword_item" "kopiur_key" {
 
   username            = b2_application_key.kopiur.application_key_id
   password_wo         = b2_application_key.kopiur.application_key
-  password_wo_version = 1
+  password_wo_version = 2
 }

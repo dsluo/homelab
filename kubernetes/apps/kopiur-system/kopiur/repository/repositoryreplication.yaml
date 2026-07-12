@@ -11,7 +11,7 @@ spec:
   destination:
     b2:
       bucket: crayon-club-backups
-      prefix: kopiur/
+      prefix: kopia/
       auth:
         secretRef:
           name: kopiur-repository-secret
