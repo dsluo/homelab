@@ -1,0 +1,36 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/snapshotpolicy_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotPolicy
+metadata:
+  name: ${APP}
+spec:
+  compression:
+    compressor: zstd
+  credentialProjection:
+    # Consumer half of the projection handshake (owner half: `allowed` on the
+    # ClusterRepository). Copies the repository credentials into this app's
+    # namespace for the mover Job; fail-closed by default, and without it a
+    # mover outside kopiur-system cannot open the repository.
+    enabled: true
+  mover:
+    podSecurityContext:
+      # Match the app's runtime uid/gid (see restore.yaml for why there is no
+      # default). fsGroup group-remaps the snapshot clone on mount — like
+      # VolSync's moverSecurityContext did — so the mover can also read files
+      # the app wrote under a different uid (e.g. victoria's root-owned data).
+      runAsUser: ${KOPIUR_UID}
+      runAsGroup: ${KOPIUR_GID}
+      fsGroup: ${KOPIUR_GID}
+  repository:
+    kind: ClusterRepository
+    name: homelab
+  retention:
+    keepLatest: 3
+    keepHourly: 24
+    keepDaily: 7
+    keepWeekly: 4
+  sources:
+    - pvc:
+        name: ${APP}
+  volumeSnapshotClassName: ${KOPIUR_SNAPSHOTCLASS:=openebs-zfs-snapshot}

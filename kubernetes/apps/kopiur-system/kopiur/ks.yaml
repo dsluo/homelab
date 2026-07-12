@@ -1,0 +1,56 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: kopiur
+spec:
+  dependsOn:
+    - name: openebs
+      namespace: openebs-system
+    - name: snapshot-controller
+      namespace: kube-system
+  interval: 1h
+  path: ./kubernetes/apps/kopiur-system/kopiur/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: kopiur-system
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: kopiur-repository
+spec:
+  dependsOn:
+    - name: kopiur
+  # Every app's ks gates on this Kustomization, so it must only report Ready
+  # once the repository actually connects — otherwise a bad NFS export or
+  # KOPIA_PASSWORD leaves every PVC Pending on an unresolvable Restore while
+  # Flux shows the backup stack green. `wait` stays false so the offsite
+  # RepositoryReplication (auth-failing until the B2 key lands) never gates
+  # app reconciliation.
+  healthChecks:
+    - apiVersion: kopiur.home-operations.com/v1alpha1
+      kind: ClusterRepository
+      name: homelab
+  healthCheckExprs:
+    - apiVersion: kopiur.home-operations.com/v1alpha1
+      kind: ClusterRepository
+      current: has(status.phase) && status.phase == 'Ready'
+      failed: has(status.phase) && status.phase in ['Failed', 'Degraded']
+  interval: 1h
+  path: ./kubernetes/apps/kopiur-system/kopiur/repository
+  postBuild:
+    substituteFrom:
+      - name: cluster-secrets
+        kind: Secret
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: kopiur-system
+  wait: false

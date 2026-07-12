@@ -1,0 +1,25 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/repositoryreplication_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: RepositoryReplication
+metadata:
+  name: homelab-offsite
+spec:
+  sourceRef:
+    kind: ClusterRepository
+    name: homelab
+  destination:
+    b2:
+      bucket: crayon-club-backups
+      prefix: kopia/
+      auth:
+        secretRef:
+          name: kopiur-repository-secret
+  schedule:
+    # Daily offsite sync of the hourly snapshots. Planned follow-up: flip the
+    # topology so B2 is the primary repository and TrueNAS the replica.
+    cron: H 10 * * *
+  sync:
+    # kopia sync-to defaults to one blob at a time; without this the initial
+    # seed to B2 would take days.
+    parallel: 8
