@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/snapshotschedule_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotSchedule
+metadata:
+  name: ${APP}
+spec:
+  policyRef:
+    name: ${APP}
+  schedule:
+    # Nightly, in the same window as the CNPG scheduled backups (07:30/08:30).
+    # The hashed `H` staggers the movers within the hour.
+    cron: H 8 * * *
