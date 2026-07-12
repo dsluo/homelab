@@ -33,10 +33,20 @@ secret:
   type: bool
   default: false
   help: Generate secret?
-volsync:
+kopiur:
   type: bool
   default: true
-  help: Use volsync managed PVC?
+  help: Use kopiur managed PVC?
+kopiur_uid:
+  type: str
+  default: "1000"
+  help: App runtime uid (kopiur mover ownership)?
+  when: "{{ kopiur }}"
+kopiur_gid:
+  type: str
+  default: "{{ kopiur_uid }}"
+  help: App runtime gid (kopiur mover ownership)?
+  when: "{{ kopiur }}"
 app_template:
   type: bool
   default: true

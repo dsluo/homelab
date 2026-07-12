@@ -13,14 +13,14 @@ The non-obvious, load-bearing choices that shape how changes get made:
 - **Infra-as-code**: OpenTofu under `infra/` (MikroTik switch in `infra/sw_core/`, Backblaze B2 in `infra/backblaze/`)
 - **Dependency updates**: Renovate (auto-merges patch/minor for GitHub Actions and mise tools)
 
-Other tooling is discoverable from the repo: mise (`.mise.toml`), Just (the justfile), and the apps under `kubernetes/apps/` (Envoy Gateway, OpenEBS, VolSync, cert-manager, CloudNative-PG, Victoria Metrics + Grafana, tuppr, etc.).
+Other tooling is discoverable from the repo: mise (`.mise.toml`), Just (the justfile), and the apps under `kubernetes/apps/` (Envoy Gateway, OpenEBS, kopiur, cert-manager, CloudNative-PG, Victoria Metrics + Grafana, tuppr, etc.).
 
 ## Directory Structure
 
 ```
 kubernetes/
   apps/        # App deployments, organized by namespace
-  components/  # Shared Kustomize components (SOPS, VolSync)
+  components/  # Shared Kustomize components (SOPS, kopiur)
   flux/        # Flux CD config
 talos/         # Talos OS cluster config (talconfig.yaml + generated clusterconfig/)
 infra/         # OpenTofu infra (MikroTik switch, Backblaze B2)
