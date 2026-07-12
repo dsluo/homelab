@@ -26,9 +26,11 @@
 # docs/volsync-restic-recovery.sops.yaml.
 set -Eeuo pipefail
 
+# shellcheck source=scripts/lib/common.sh
 source "$(dirname "${0}")/lib/common.sh"
 
-export ROOT_DIR="$(git rev-parse --show-toplevel)"
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+export ROOT_DIR
 
 # App inventory, derived from every ks.yaml that consumes components/kopiur.
 # Emits: <flux-ks-name> <namespace> <app> <uid> <gid>
@@ -75,6 +77,38 @@ function require_volsync_crs() {
     fi
 }
 
+# Pods (any phase except Succeeded/Failed) still mounting <app>'s PVC in <ns>.
+# Label-independent: inspects spec.volumes directly, so it also catches
+# operator-created or unlabeled pods that the instance-label wait would miss.
+function pvc_mounters() {
+    local ns="${1}" app="${2}"
+    kubectl get pod -n "${ns}" -o json | jq -r --arg pvc "${app}" '
+        .items[]
+        | select(.status.phase != "Succeeded" and .status.phase != "Failed")
+        | select([.spec.volumes[]? | select(.persistentVolumeClaim.claimName == $pvc)] | length > 0)
+        | .metadata.name'
+}
+
+# Hard quiescence gate: the final backup, seed, and delete phases all assume
+# no writer is left on the PVCs — a straggler would corrupt the baseline or
+# the seed, or turn 'delete' into data loss. Aborts (log error exits) after
+# the timeout; a kubectl/jq failure inside also aborts via set -e.
+function require_pvcs_unmounted() {
+    local timeout="${1:-300}"
+    local deadline=$((SECONDS + timeout)) leftover
+    while true; do
+        leftover=$(apps | while read -r _ ns app _ _; do
+            pvc_mounters "${ns}" "${app}" | sed "s|^|${ns}/|"
+        done)
+        [[ -z "${leftover}" ]] && return 0
+        if ((SECONDS >= deadline)); then
+            log error "Pods still mount app PVCs after ${timeout}s" "pods" "${leftover//$'\n'/,}"
+        fi
+        log info "Waiting for PVC mounters to terminate" "pods" "${leftover//$'\n'/,}"
+        sleep 10
+    done
+}
+
 function cmd_suspend() {
     require_volsync_crs
     scale_operators 0
@@ -84,15 +118,18 @@ function cmd_suspend() {
         flux suspend helmrelease "${app}" -n "${ns}" 2>/dev/null || true
         workloads "${ns}" "${app}" | xargs -r kubectl scale -n "${ns}" --replicas=0
     done
+    # Best-effort progress wait; the real gate is require_pvcs_unmounted.
     apps | while read -r _ ns app _ _; do
         kubectl wait pod -n "${ns}" -l "app.kubernetes.io/instance=${app}" \
             --for=delete --timeout=5m 2>/dev/null || true
     done
+    require_pvcs_unmounted 300
 }
 
 function cmd_final_backup() {
     require_volsync_crs
-    local stamp="pre-kopiur-$(date +%s)"
+    local stamp
+    stamp="pre-kopiur-$(date +%s)"
     apps | while read -r _ ns app _ _; do
         kubectl patch replicationsource "${app}" -n "${ns}" --type merge \
             -p "{\"spec\":{\"trigger\":{\"manual\":\"${stamp}\"}}}"
@@ -169,6 +206,7 @@ function cmd_verify_seeds() {
 }
 
 function cmd_delete() {
+    require_pvcs_unmounted 60
     read -r -p "This deletes every app's PVC + volsync CRs. Seeds verified? (yes/no) " ok
     [[ "${ok}" == "yes" ]] || exit 1
     apps | while read -r _ ns app _ _; do
