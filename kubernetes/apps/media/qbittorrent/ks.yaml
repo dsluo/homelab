@@ -7,11 +7,11 @@ spec:
   dependsOn:
     - name: pocket-id
       namespace: security
-    - name: volsync
-      namespace: volsync-system
+    - name: kopiur-repository
+      namespace: kopiur-system
   components:
     - ../../../../components/oidc/envoy
-    - ../../../../components/volsync
+    - ../../../../components/kopiur
   interval: 1h
   path: ./kubernetes/apps/media/qbittorrent/app
   postBuild:
@@ -20,9 +20,9 @@ spec:
       SUBDOMAIN: qb
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/qbittorrent.svg"
       OIDC_APP_NAME: qBittorrent
-      VOLSYNC_CAPACITY: 5Gi
-      VOLSYNC_UID: "4005"
-      VOLSYNC_GID: "4005"
+      KOPIUR_CAPACITY: 5Gi
+      KOPIUR_UID: "4005"
+      KOPIUR_GID: "4005"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

@@ -15,7 +15,7 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         pod:
-          # Pin to the chart's default runtime uid/gid so VOLSYNC_UID/GID=65532
+          # Pin to the chart's default runtime uid/gid so KOPIUR_UID/GID=65532
           # (ks.yaml) stays anchored to a real in-repo value and can't drift on a
           # chart bump. fsGroup remaps restored data on mount as a fallback.
           # NOTE: this must live under each controller's pod.securityContext, not

@@ -8,16 +8,16 @@ spec:
   path: ./kubernetes/apps/media/jellyfin/app
   components:
     - ../../../../components/oidc
-    - ../../../../components/volsync
+    - ../../../../components/kopiur
   postBuild:
     substitute:
       APP: *app
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/jellyfin.svg"
       OIDC_APP_NAME: Jellyfin
       OIDC_CALLBACK_PATH: /sso/OID/redirect/PocketID
-      VOLSYNC_CAPACITY: 5Gi
-      VOLSYNC_UID: "4006"
-      VOLSYNC_GID: "4006"
+      KOPIUR_CAPACITY: 5Gi
+      KOPIUR_UID: "4006"
+      KOPIUR_GID: "4006"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
@@ -29,7 +29,7 @@ spec:
   targetNamespace: media
   wait: false
   dependsOn:
-    - name: volsync
-      namespace: volsync-system
+    - name: kopiur-repository
+      namespace: kopiur-system
     - name: intel-gpu-resource-driver
       namespace: kube-system

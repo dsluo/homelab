@@ -27,13 +27,13 @@ spec:
     - name: grafana-operator
     - name: pocket-id
       namespace: security
-    - name: volsync
-      namespace: volsync-system
+    - name: kopiur-repository
+      namespace: kopiur-system
   interval: 1h
   path: ./kubernetes/apps/observability/grafana/instance
   components:
     - ../../../../components/oidc
-    - ../../../../components/volsync
+    - ../../../../components/kopiur
   postBuild:
     substitute:
       APP: *app
@@ -42,9 +42,9 @@ spec:
       OIDC_APP_NAME: Grafana
       OIDC_PKCE_ENABLED: "true"
       OIDC_CALLBACK_PATH: /login/generic_oauth
-      VOLSYNC_CAPACITY: 5Gi
-      VOLSYNC_UID: "1000"
-      VOLSYNC_GID: "1000"
+      KOPIUR_CAPACITY: 5Gi
+      KOPIUR_UID: "1000"
+      KOPIUR_GID: "1000"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

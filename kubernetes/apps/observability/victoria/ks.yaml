@@ -35,16 +35,16 @@ spec:
   dependsOn:
     - name: victoria-metrics-operator
     - name: grafana-instance
-    - name: volsync
-      namespace: volsync-system
+    - name: kopiur-repository
+      namespace: kopiur-system
   interval: 1h
   path: ./kubernetes/apps/observability/victoria/k8s-stack
   components:
-    - ../../../../components/volsync
+    - ../../../../components/kopiur
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CAPACITY: 50Gi
+      KOPIUR_CAPACITY: 50Gi
       # VMSingle still runs as root (no securityContext today), but the mover is
       # pre-pinned to 65534 — the uid the VM stack uses for its other workloads
       # (node-exporter, kube-state-metrics) and what the operator's
@@ -52,8 +52,8 @@ spec:
       # data the mover wrote under any uid) and forward-compatible: a later switch
       # to non-root needs no re-chown of restored data.
       # TODO: enable useStrictSecurity / set the VMSingle securityContext to 65534.
-      VOLSYNC_UID: "65534"
-      VOLSYNC_GID: "65534"
+      KOPIUR_UID: "65534"
+      KOPIUR_GID: "65534"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
@@ -72,24 +72,24 @@ metadata:
 spec:
   dependsOn:
     - name: victoria-metrics-operator
-    - name: volsync
-      namespace: volsync-system
+    - name: kopiur-repository
+      namespace: kopiur-system
   components:
-    - ../../../../components/volsync
+    - ../../../../components/kopiur
   interval: 1h
   path: ./kubernetes/apps/observability/victoria/logs
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CAPACITY: 5Gi
+      KOPIUR_CAPACITY: 5Gi
       # VLSingle still runs as root (no securityContext today), but the mover is
       # pre-pinned to 65534 — the VM stack's non-root uid (what the operator's
       # useStrictSecurity assigns to managed pods). Harmless now (root reads/writes
       # data the mover wrote under any uid) and forward-compatible: a later switch
       # to non-root needs no re-chown of restored data.
       # TODO: enable useStrictSecurity / set the VLSingle securityContext to 65534.
-      VOLSYNC_UID: "65534"
-      VOLSYNC_GID: "65534"
+      KOPIUR_UID: "65534"
+      KOPIUR_GID: "65534"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

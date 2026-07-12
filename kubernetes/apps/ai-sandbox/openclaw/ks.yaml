@@ -15,23 +15,23 @@ spec:
     # OIDC client). Defense-in-depth in front of OpenClaw's own gateway token, so
     # the untrusted-agent UI is never reachable on the LAN without an SSO login.
     - ../../../../components/oidc/envoy
-    - ../../../../components/volsync
+    - ../../../../components/kopiur
   dependsOn:
     - name: pocket-id
       namespace: security
-    - name: volsync
-      namespace: volsync-system
+    - name: kopiur-repository
+      namespace: kopiur-system
   postBuild:
     substitute:
       APP: *app
       OIDC_APP_NAME: OpenClaw
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/openclaw.svg"
-      VOLSYNC_CAPACITY: 10Gi
+      KOPIUR_CAPACITY: 10Gi
       # Restore mover writes files owned by its own uid (non-root restic can't
       # chown). openclaw chmods its own state dir on startup, which needs real
       # ownership (fsGroup only grants group access) — so match the app's uid.
-      VOLSYNC_UID: "1000"
-      VOLSYNC_GID: "1000"
+      KOPIUR_UID: "1000"
+      KOPIUR_GID: "1000"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
