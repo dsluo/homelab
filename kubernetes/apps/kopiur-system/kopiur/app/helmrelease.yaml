@@ -10,6 +10,15 @@ spec:
     name: kopiur
   interval: 1h
   values:
+    features:
+      credentialProjection:
+        # Third leg of the projection handshake (with `allowed` on the
+        # ClusterRepository and `enabled` on each SnapshotPolicy/Restore):
+        # grants the operator cluster-wide Secret create/patch/delete RBAC so
+        # it can copy the repository credentials into mover namespaces. Off by
+        # default in the chart; without it every projected mover fails with an
+        # HTTP 403 condition on the CR.
+        enabled: true
     monitoring:
       dashboards:
         enabled: true
