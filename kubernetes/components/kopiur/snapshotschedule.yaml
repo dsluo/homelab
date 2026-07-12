@@ -8,6 +8,6 @@ spec:
   policyRef:
     name: ${APP}
   schedule:
-    # Nightly, in the same window as the CNPG scheduled backups (07:30/08:30).
+    # Hourly, matching the old VolSync cadence (retention keeps 24 hourlies).
     # The hashed `H` staggers the movers within the hour.
-    cron: H 8 * * *
+    cron: H * * * *

@@ -7,6 +7,13 @@ metadata:
 spec:
   allowedNamespaces:
     all: true
+  credentialProjection:
+    # Movers run in each app's namespace and need KOPIA_PASSWORD co-resident
+    # there. Projection is fail-closed: this owner-side gate AND the
+    # consumer-side `credentialProjection.enabled` on every SnapshotPolicy/
+    # Restore (components/kopiur) must both be set or movers outside
+    # kopiur-system can't open the repository.
+    allowed: true
   backend:
     filesystem:
       # In-pod mount point; the NFS export below is what's behind it. The

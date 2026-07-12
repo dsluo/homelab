@@ -7,6 +7,12 @@ metadata:
 spec:
   compression:
     compressor: zstd
+  credentialProjection:
+    # Consumer half of the projection handshake (owner half: `allowed` on the
+    # ClusterRepository). Copies the repository credentials into this app's
+    # namespace for the mover Job; fail-closed by default, and without it a
+    # mover outside kopiur-system cannot open the repository.
+    enabled: true
   mover:
     podSecurityContext:
       # Match the app's runtime uid/gid (see restore.yaml for why there is no
@@ -21,6 +27,7 @@ spec:
     name: homelab
   retention:
     keepLatest: 3
+    keepHourly: 24
     keepDaily: 7
     keepWeekly: 4
   sources:

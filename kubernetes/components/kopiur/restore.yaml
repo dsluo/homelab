@@ -5,6 +5,10 @@ kind: Restore
 metadata:
   name: ${APP}
 spec:
+  credentialProjection:
+    # See snapshotpolicy.yaml — required for the restore mover to open the
+    # repository from the app's namespace.
+    enabled: true
   mover:
     podSecurityContext:
       # No default: the restore mover writes every restored file owned by its
