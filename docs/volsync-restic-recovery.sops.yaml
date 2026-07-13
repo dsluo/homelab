@@ -1,3 +1,10 @@
+# ARCHIVED RECOVERY CREDENTIAL — not applied by Flux.
+# The pre-kopiur restic repository at storage.lan:/mnt/tank/backup/volsync is
+# kept as the recovery baseline for the volsync -> kopiur migration (see
+# scripts/migrate-kopiur.sh). This is the only surviving copy of its
+# credentials, moved here from kubernetes/components/volsync/secret.sops.yaml
+# when that component was deleted. RESTIC_REPOSITORY is templated per app
+# (${APP}). Decrypt with: sops -d docs/volsync-restic-recovery.sops.yaml
 apiVersion: v1
 kind: Secret
 metadata:

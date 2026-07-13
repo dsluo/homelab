@@ -11,7 +11,7 @@ and firewalled by a default-deny egress CiliumNetworkPolicy.
   kernel. This replaces docker-in-docker entirely — **no privileged container,
   no host Docker daemon**.
 - **gVisor is scoped to openclaw only** — not forced namespace-wide. The openclaw
-  pod opts in via `runtimeClassName: gvisor` (`app/runtimeclass.yaml`); VolSync
+  pod opts in via `runtimeClassName: gvisor` (`app/runtimeclass.yaml`); kopiur
   movers and any other infra in the namespace run on the normal runtime. This is
   deliberate: the untrusted workload is sandboxed, trusted backup infra is left
   alone (and JJGadgets' reference does the same — gVisor on the app, not the
@@ -21,9 +21,9 @@ and firewalled by a default-deny egress CiliumNetworkPolicy.
   RuntimeDefault`, `readOnlyRootFilesystem: true` (HOME is the only writable
   persistent path; `/tmp` is a memory emptyDir). The hardening is applied per
   workload (the openclaw pod), not via the namespace floor: the namespace
-  *enforce* level is `baseline`, because VolSync's NFS-mounting backup/restore
-  mover (+ an injected unhardened `jitter` initContainer) can't satisfy
-  `restricted`. gVisor + the pod's own securityContext are the real isolation.
+  *enforce* level is `baseline`, because kopiur's movers inline-mount the NFS
+  repository and `nfs` volumes aren't allowed under `restricted`. gVisor + the
+  pod's own securityContext are the real isolation.
 - **No kube-API access**: `automountServiceAccountToken: false`, and egress
   policy denies the API server / other namespaces anyway. (Note: JJGadgets'
   reference deliberately does the *opposite* — it grants the pod a ServiceAccount
@@ -48,11 +48,11 @@ and firewalled by a default-deny egress CiliumNetworkPolicy.
 
 ## Storage
 
-- **`config` PVC (`openclaw`, VolSync-backed)**: mounted at `$HOME=/home/node`.
+- **`config` PVC (`openclaw`, kopiur-backed)**: mounted at `$HOME=/home/node`.
   Holds config, agents, auth-profiles, workspace — the stuff worth backing up.
 - **`cache` (ephemeral `emptyDir`, NOT backed up)**: mounted over `$HOME/.cache`
   with a `sizeLimit` cap. Holds regenerable agent/toolchain caches (npm, pip,
-  go, …) so they don't bloat the restic backups of the config PVC. Discarded on
+  go, …) so they don't bloat the kopia backups of the config PVC. Discarded on
   pod recreation (re-downloaded as needed) — cheaper than a dedicated PVC for
   throwaway data. Add more sub-mounts (or switch to a PVC) if a tool caches
   outside `~/.cache` or the re-download cost becomes annoying. (JJGadgets keeps a

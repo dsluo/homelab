@@ -34,7 +34,7 @@ spec:
         # topology key, which breaks storageCapacity tracking: the capacity
         # controller can't build clean per-node CSIStorageCapacity segments, so a
         # node ends up with no capacity object and the scheduler reports "not
-        # enough free storage" — leaving VolSync mover pods stuck Pending.
+        # enough free storage" — leaving kopiur mover pods stuck Pending.
         allowedTopologyKeys: "kubernetes.io/hostname"
 
       analytics:

@@ -4,20 +4,22 @@ kind: Kustomization
 metadata:
   name: &app {{app}}
 spec:
-  {% if volsync -%}
+  {% if kopiur -%}
   dependsOn:
-    - name: volsync
-      namespace: volsync-system
+    - name: kopiur-repository
+      namespace: kopiur-system
   components:
-    - ../../../../components/volsync
+    - ../../../../components/kopiur
   {%- endif %}
   interval: 1h
   path: ./kubernetes/apps/{{namespace}}/{{app}}/{{component}}
   postBuild:
     substitute:
       APP: *app
-      {% if volsync -%}
-      VOLSYNC_CAPACITY: 5Gi
+      {% if kopiur -%}
+      KOPIUR_CAPACITY: 5Gi
+      KOPIUR_UID: "{{kopiur_uid}}"
+      KOPIUR_GID: "{{kopiur_gid}}"
       {%- endif %}
     substituteFrom:
       - name: cluster-secrets
