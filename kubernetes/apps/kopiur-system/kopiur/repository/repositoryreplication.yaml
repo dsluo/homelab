@@ -9,9 +9,16 @@ spec:
     kind: ClusterRepository
     name: homelab
   destination:
-    b2:
+    # B2 via its S3-compatible API: kopia's native b2 provider is deprecated
+    # and Backblaze now rejects its old native-API calls ("not currently
+    # supported on API version number 1" — first scheduled sync, 2026-07-13).
+    # The same application key works; the secret carries it under the S3 names
+    # (AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY) alongside the legacy B2_* keys.
+    s3:
       bucket: crayon-club-backups
       prefix: kopia/
+      endpoint: s3.us-west-000.backblazeb2.com
+      region: us-west-000
       auth:
         secretRef:
           name: kopiur-repository-secret
