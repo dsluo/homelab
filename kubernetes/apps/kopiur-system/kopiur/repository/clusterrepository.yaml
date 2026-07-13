@@ -30,3 +30,18 @@ spec:
       name: kopiur-repository-secret
       namespace: kopiur-system
       key: KOPIA_PASSWORD
+  # Kopia web UI (operator-created Deployment/Service `homelab-kopia-ui`,
+  # exposed by the HTTPRoute alongside this file). Read-only: snapshots and
+  # policies are managed from Git via the operator, so the UI is for browsing
+  # and restores only. Login creds are minted into `homelab-kopia-ui-auth`.
+  server:
+    namespace: kopiur-system
+    readOnly: true
+    auth:
+      generate: {}
+    resources:
+      requests:
+        cpu: 25m
+        memory: 128Mi
+      limits:
+        memory: 1Gi
