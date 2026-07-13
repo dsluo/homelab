@@ -73,11 +73,11 @@ Preparation was thorough and paid off: NFS export write-tested in-cluster, B2 ke
 
 Tracked from the window (none urgent):
 
-- `migrate-kopiur.sh` fixes per lesson 5 (kept in-tree as the reference for future windows).
-- Split RepositoryReplication into its own Flux ks (`dependsOn: kopiur-repository`) so fresh bootstraps don't deadlock.
-- VMSingle → non-root (useStrictSecurity / securityContext 1000) + one-time full-PVC chown; until then a VM cache reset recreates root-0700 dirs and breaks hourly vmks snapshots.
-- victoria-logs: same non-root TODO; its 65534 mover works only while VL writes world-readable files.
-- Decide: flip topology so B2 is the primary repository and TrueNAS the replica; set `sync.deleteExtra: true` on the replication once stable (B2 grows unboundedly without it).
-- Optional hardening from review: persistent mover cache, `scheduleDefaults.timezone`, operator pod securityContext.
-- Post-checks (time-gated): first B2 replication (`H 10 * * *` — the schedule is UTC, ≈ 6:00 AM EDT), Grafana kopiur dashboard, tuppr dry-check against the new gates.
-- Delete the restic dataset `tank/backup/volsync` on TrueNAS only after weeks of stable kopiur operation. Credentials archived at `docs/volsync-restic-recovery.sops.yaml`.
+- `migrate-kopiur.sh` fixes per lesson 5 (kept in-tree as the reference for future windows) — #1259.
+- Split RepositoryReplication into its own Flux ks (`dependsOn: kopiur-repository`) so fresh bootstraps don't deadlock — #1260.
+- VMSingle → non-root (useStrictSecurity / securityContext 1000) + one-time full-PVC chown; until then a VM cache reset recreates root-0700 dirs and breaks hourly vmks snapshots — #1261.
+- victoria-logs: same non-root TODO; its 65534 mover works only while VL writes world-readable files — #1261.
+- Decide: flip topology so B2 is the primary repository and TrueNAS the replica; set `sync.deleteExtra: true` on the replication once stable (B2 grows unboundedly without it) — #1262.
+- Optional hardening from review: persistent mover cache, `scheduleDefaults.timezone`, operator pod securityContext — #1263.
+- Post-checks (time-gated): first B2 replication (`H 10 * * *` — the schedule is UTC, ≈ 6:00 AM EDT), Grafana kopiur dashboard, tuppr dry-check against the new gates — #1265.
+- Delete the restic dataset `tank/backup/volsync` on TrueNAS only after weeks of stable kopiur operation. Credentials archived at `docs/volsync-restic-recovery.sops.yaml` — #1264.
