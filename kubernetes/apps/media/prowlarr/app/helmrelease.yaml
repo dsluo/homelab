@@ -107,8 +107,6 @@ spec:
                 port: *port
 
     persistence:
-      data:
-        existingClaim: *app
       cache:
         type: emptyDir
         globalMounts:
