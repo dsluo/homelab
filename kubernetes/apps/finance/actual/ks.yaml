@@ -5,11 +5,11 @@ metadata:
   name: &app actual
 spec:
   dependsOn:
-    - name: volsync
-      namespace: volsync-system
+    - name: kopiur-repository
+      namespace: kopiur-system
   components:
     - ../../../../components/oidc
-    - ../../../../components/volsync
+    - ../../../../components/kopiur
   interval: 1h
   path: ./kubernetes/apps/finance/actual/app
   postBuild:
@@ -18,9 +18,9 @@ spec:
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/actual-budget.svg"
       OIDC_APP_NAME: Actual
       OIDC_CALLBACK_PATH: /openid/callback
-      VOLSYNC_CAPACITY: 1Gi
-      VOLSYNC_UID: "1000"
-      VOLSYNC_GID: "1000"
+      KOPIUR_CAPACITY: 1Gi
+      KOPIUR_UID: "1000"
+      KOPIUR_GID: "1000"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

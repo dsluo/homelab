@@ -5,19 +5,19 @@ metadata:
   name: &app seerr
 spec:
   dependsOn:
-    - name: volsync
-      namespace: volsync-system
+    - name: kopiur-repository
+      namespace: kopiur-system
   components:
     - ../../../../components/database
-    - ../../../../components/volsync
+    - ../../../../components/kopiur
   interval: 1h
   path: ./kubernetes/apps/media/seerr/app
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CAPACITY: 5Gi
-      VOLSYNC_UID: "1000"
-      VOLSYNC_GID: "1000"
+      KOPIUR_CAPACITY: 5Gi
+      KOPIUR_UID: "1000"
+      KOPIUR_GID: "1000"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

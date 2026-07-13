@@ -9,7 +9,19 @@ spec:
     # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
     version: v1.36.2
   healthChecks:
-    - apiVersion: volsync.backube/v1alpha1
-      kind: ReplicationSource
+    # Fail closed: `has()` requires an observed phase before reporting
+    # healthy. A just-created CR (no status yet) or a down kopiur controller
+    # blocks the upgrade instead of racing a mover that is about to start —
+    # a reboot mid-backup/restore is worse than a stalled upgrade.
+    - apiVersion: kopiur.home-operations.com/v1alpha1
+      kind: Snapshot
       expr: |-
-        status.conditions.filter(c, c.type == "Synchronizing").all(c, c.status == "False")
+        has(status.phase) && !(status.phase in ['Pending', 'Running'])
+    - apiVersion: kopiur.home-operations.com/v1alpha1
+      kind: Restore
+      expr: |-
+        has(status.phase) && !(status.phase in ['Pending', 'Resolving', 'Restoring'])
+    - apiVersion: kopiur.home-operations.com/v1alpha1
+      kind: RepositoryReplication
+      expr: |-
+        has(status.phase) && status.phase != 'Replicating'

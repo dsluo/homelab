@@ -7,14 +7,14 @@ spec:
   dependsOn:
     - name: pocket-id
       namespace: security
-    - name: volsync
-      namespace: volsync-system
+    - name: kopiur-repository
+      namespace: kopiur-system
   interval: 1h
   path: ./kubernetes/apps/documents/paperless/app
   components:
     - ../../../../components/database
     - ../../../../components/oidc
-    - ../../../../components/volsync
+    - ../../../../components/kopiur
   postBuild:
     substitute:
       APP: *app
@@ -22,9 +22,9 @@ spec:
       OIDC_APP_NAME: Paperless
       OIDC_PKCE_ENABLED: "true"
       OIDC_CALLBACK_PATH: /accounts/oidc/pocket-id/login/callback/
-      VOLSYNC_CAPACITY: 10Gi
-      VOLSYNC_UID: "4001"
-      VOLSYNC_GID: "4001"
+      KOPIUR_CAPACITY: 10Gi
+      KOPIUR_UID: "4001"
+      KOPIUR_GID: "4001"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
