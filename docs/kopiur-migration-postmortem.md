@@ -1,6 +1,6 @@
 # Postmortem: VolSync → kopiur backup migration
 
-**Date:** 2026-07-12/13 (window 2026-07-13 00:27–02:10 UTC, ~103 minutes of app downtime)
+**Date:** 2026-07-12 (window 20:27–22:10 EDT, ~103 minutes of app downtime; all times below are EDT, UTC-4)
 **Outcome:** Success. 17 apps cut over from VolSync/restic to kopiur/kopia with zero data loss; one app (prowlarr) removed from the backup set entirely after the migration exposed that its PVC had been empty for months.
 **PRs:** #1245 (operator + repository), #1246 (cutover), #1257 (mid-window fixes), #1247 (volsync removal).
 
@@ -19,25 +19,25 @@ VolSync had backed the app PVCs with per-app restic repositories since the clust
 
 Preparation was thorough and paid off: NFS export write-tested in-cluster, B2 key tofu-applied and live-authenticated (including a prefix rename that rotated credentials), `KOPIA_PASSWORD` hash-matched against 1Password, a broken vmks restic baseline diagnosed and fixed *before* the window, three stacked PRs reviewed against upstream (onedr0p/home-ops, kopiur CRDs/chart) plus an external model review, and everything rendered offline with konflate/flate.
 
-## Timeline (2026-07-13 UTC)
+## Timeline (2026-07-12, EDT)
 
 | Time | Event |
 | --- | --- |
-| ~20:10 (07-12) | #1245 merged. `kopiur-repository` deadlocks on a webhook/dry-run bootstrap cycle (incident 1); one manual `kubectl apply` of the ClusterRepository breaks it. Repo initializes on NFS, `kopiur doctor` 8/8. |
-| ~20:25 (07-12) | #1246 merged **early** — before `suspend`/`final-backup`, out of runbook order (incident 2). Contained by design: every cutover ks fails Flux's dry-run on the immutable PVC `dataSourceRef`, so nothing applies or prunes. |
-| 00:27 | `suspend`: 18 ks suspended, workloads to 0. First run had died on macOS bash 3.2 (incident 3); label-selector waits burned ~10 cosmetic minutes (incident 4). Hard PVC-unmount gate passes. |
-| 00:45–00:47 | `final-backup`: all 18 restic manual syncs Successful in ~90 s (movers run concurrently; apps quiesced with a fresh hourly behind them). Recovery baseline secured. |
-| 00:49 | `stop-volsync`. |
-| 00:50–00:56 | Seed run 1: 8 apps OK, dies on qbittorrent — root-exec `.bash_history` unreadable by the mover (incident 5). prowlarr "succeeds" at 0 bytes → its PVC turns out to be empty since February (incident 6). |
-| ~01:06 | Debug pods scan all remaining PVCs for mover-unreadable files; qbittorrent fixed; vmks flagged (root-owned non-world-readable cache dirs, data actually 1000:1000). PR #1257: drop prowlarr from backups, vmks mover uid 65534→1000. |
-| 01:11–01:20 | Seed run 2: dies on vmks — the four cache dirs are root-owned mode 0700, unreadable by *any* non-root mover (incident 7). One-time `chown -R 1000:1000` of the cache. |
-| 01:34–01:46 | vmks seeds (34 GiB); seed run 3 completes victoria-logs + continuwuity (never reached before — both prior runs died earlier in the order). |
-| 01:48 | `verify-seeds`: 17/17 OK, `filesFailed=0`, sizes eyeballed against on-disk usage. #1257 merged. |
-| ~01:52 | `delete`: silent no-op first (interactive prompt got EOF without a TTY, incident 8), then hangs on recyclarr — a 21 h-old Completed CronJob pod held the PVC via pvc-protection (incident 9). Pod deleted; all 17 PVCs + volsync CRs removed. |
-| ~01:55 | `resume`: Helm's three-way merge computes an empty patch for unchanged templates, so manual `replicas=0` survives — nothing scales up (incident 10). Script then dies resuming vmks: its ks needs the VM operator's admission webhook, but operators are only scaled up *after* the resume loop (incident 11). Manual scale-ups + operator-first recovery. |
-| 02:00–02:15 | Restore populator fills all PVCs from seeds (vmks last). recyclarr needs a `kubectl create job --from=cronjob` kick to give its WaitForFirstConsumer PVC a consumer. Apps Running by ~02:10, 0 restarts; paperless processing, VMSingle serving restored data. |
-| 02:06 / 02:14 | First *scheduled* hourly snapshots succeed unattended (paperless; vmks as uid 1000). |
-| ~02:50 | #1247 rebased (`--onto main` — the stacked branch still carried squash-merged cutover commits) and merged. The volsync ks was pruned while suspended, so Flux skipped garbage collection (incident 12); operator/namespace/CRDs/orphan CRs torn down manually. Tree fully green. |
+| ~16:10 | #1245 merged. `kopiur-repository` deadlocks on a webhook/dry-run bootstrap cycle (incident 1); one manual `kubectl apply` of the ClusterRepository breaks it. Repo initializes on NFS, `kopiur doctor` 8/8. |
+| ~16:25 | #1246 merged **early** — before `suspend`/`final-backup`, out of runbook order (incident 2). Contained by design: every cutover ks fails Flux's dry-run on the immutable PVC `dataSourceRef`, so nothing applies or prunes. |
+| 20:27 | `suspend`: 18 ks suspended, workloads to 0. First run had died on macOS bash 3.2 (incident 3); label-selector waits burned ~10 cosmetic minutes (incident 4). Hard PVC-unmount gate passes. |
+| 20:45–20:47 | `final-backup`: all 18 restic manual syncs Successful in ~90 s (movers run concurrently; apps quiesced with a fresh hourly behind them). Recovery baseline secured. |
+| 20:49 | `stop-volsync`. |
+| 20:50–20:56 | Seed run 1: 8 apps OK, dies on qbittorrent — root-exec `.bash_history` unreadable by the mover (incident 5). prowlarr "succeeds" at 0 bytes → its PVC turns out to be empty since February (incident 6). |
+| ~21:06 | Debug pods scan all remaining PVCs for mover-unreadable files; qbittorrent fixed; vmks flagged (root-owned non-world-readable cache dirs, data actually 1000:1000). PR #1257: drop prowlarr from backups, vmks mover uid 65534→1000. |
+| 21:11–21:20 | Seed run 2: dies on vmks — the four cache dirs are root-owned mode 0700, unreadable by *any* non-root mover (incident 7). One-time `chown -R 1000:1000` of the cache. |
+| 21:34–21:46 | vmks seeds (34 GiB); seed run 3 completes victoria-logs + continuwuity (never reached before — both prior runs died earlier in the order). |
+| 21:48 | `verify-seeds`: 17/17 OK, `filesFailed=0`, sizes eyeballed against on-disk usage. #1257 merged. |
+| ~21:52 | `delete`: silent no-op first (interactive prompt got EOF without a TTY, incident 8), then hangs on recyclarr — a 21 h-old Completed CronJob pod held the PVC via pvc-protection (incident 9). Pod deleted; all 17 PVCs + volsync CRs removed. |
+| ~21:55 | `resume`: Helm's three-way merge computes an empty patch for unchanged templates, so manual `replicas=0` survives — nothing scales up (incident 10). Script then dies resuming vmks: its ks needs the VM operator's admission webhook, but operators are only scaled up *after* the resume loop (incident 11). Manual scale-ups + operator-first recovery. |
+| 22:00–22:15 | Restore populator fills all PVCs from seeds (vmks last). recyclarr needs a `kubectl create job --from=cronjob` kick to give its WaitForFirstConsumer PVC a consumer. Apps Running by ~22:10, 0 restarts; paperless processing, VMSingle serving restored data. |
+| 22:06 / 22:14 | First *scheduled* hourly snapshots succeed unattended (paperless; vmks as uid 1000). |
+| ~22:50 | #1247 rebased (`--onto main` — the stacked branch still carried squash-merged cutover commits) and merged. The volsync ks was pruned while suspended, so Flux skipped garbage collection (incident 12); operator/namespace/CRDs/orphan CRs torn down manually. Tree fully green. |
 
 ## What went wrong (and what held)
 
@@ -50,7 +50,7 @@ Preparation was thorough and paid off: NFS export write-tested in-cluster, B2 ke
 3. **macOS bash 3.2** — `scripts/lib/common.sh` uses `local -A`; Apple's 2007 bash parses `[debug]=1` as an arithmetic subscript and dies under `set -u`. Homebrew bash 5 + explicit interpreter.
 4. **Label-selector waits** — `kubectl wait --for=delete -l instance=<app>` matches Completed CronJob pods and chart satellite pods (vmks's vmagent/vmalert/etc.), burning full timeouts on pods that will never delete.
 5. **fsGroup does not remap read-only snapshot clones.** The load-bearing false assumption of the whole design: VolSync's mover read a *read-write*, fsGroup-re-chowned clone; kopiur's mover mounts the clone read-only, and kubelet skips the fsGroup chown on RO mounts. Any file neither world-readable nor mover-uid-owned fails the snapshot fatally. Component comments had encoded the false premise and were rewritten.
-6. **prowlarr backed up nothing for months.** Postgres-backed, `readOnlyRootFilesystem`, PVC empty since 2026-02-25 — and every VolSync backup of it was "Successful". Backup-green ≠ data-backed-up; only the migration's `sizeBytes > 0` gate surfaced it.
+6. **prowlarr backed up nothing for months.** Postgres-backed, `readOnlyRootFilesystem`, PVC empty since 2026-02-24 — and every VolSync backup of it was "Successful". Backup-green ≠ data-backed-up; only the migration's `sizeBytes > 0` gate surfaced it.
 7. **VMSingle still runs as root** and creates cache subdirs mode 0700, despite its data being mostly 1000:1000. Mixed ownership on one PVC defeats any single non-root mover uid until the workload itself is made non-root.
 8. **Interactive prompts don't survive non-TTY execution** — `read -p` got EOF and the script exited as if declined, silently.
 9. **pvc-protection counts Completed pods.** A finished CronJob pod blocks PVC deletion until the pod object is deleted.
@@ -79,5 +79,5 @@ Tracked from the window (none urgent):
 - victoria-logs: same non-root TODO; its 65534 mover works only while VL writes world-readable files.
 - Decide: flip topology so B2 is the primary repository and TrueNAS the replica; set `sync.deleteExtra: true` on the replication once stable (B2 grows unboundedly without it).
 - Optional hardening from review: persistent mover cache, `scheduleDefaults.timezone`, operator pod securityContext.
-- Post-checks (time-gated): first B2 replication (`H 10 * * *` UTC), Grafana kopiur dashboard, tuppr dry-check against the new gates.
+- Post-checks (time-gated): first B2 replication (`H 10 * * *` — the schedule is UTC, ≈ 06:00 EDT), Grafana kopiur dashboard, tuppr dry-check against the new gates.
 - Delete the restic dataset `tank/backup/volsync` on TrueNAS only after weeks of stable kopiur operation. Credentials archived at `docs/volsync-restic-recovery.sops.yaml`.
