@@ -45,16 +45,15 @@ spec:
     substitute:
       APP: *app
       KOPIUR_CAPACITY: 50Gi
-      # VMSingle still runs as root (no securityContext today), but the mover is
-      # pre-pinned to 65534 — the uid the VM stack uses for its other workloads
-      # (node-exporter, kube-state-metrics) and what the operator's
-      # useStrictSecurity assigns to managed pods. The backup mover can still
-      # read root-owned files because the component's fsGroup group-remaps the
-      # snapshot clone; forward-compatible: a later switch to non-root needs no
-      # re-chown of restored data.
-      # TODO: enable useStrictSecurity / set the VMSingle securityContext to 65534.
-      KOPIUR_UID: "65534"
-      KOPIUR_GID: "65534"
+      # The mover uid must match the data's actual on-disk ownership: fsGroup
+      # does NOT remap a read-only snapshot-clone mount (kubelet skips the
+      # chown), so a mismatched mover hits PermissionDenied on any file that
+      # isn't world-readable. VMSingle's data is owned 1000:1000 (verified
+      # 2026-07-13) with several cache/ dirs not world-readable.
+      # TODO: enable useStrictSecurity / set an explicit VMSingle
+      # securityContext, and keep this uid in lockstep with it.
+      KOPIUR_UID: "1000"
+      KOPIUR_GID: "1000"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
@@ -83,13 +82,13 @@ spec:
     substitute:
       APP: *app
       KOPIUR_CAPACITY: 5Gi
-      # VLSingle still runs as root (no securityContext today), but the mover is
-      # pre-pinned to 65534 — the VM stack's non-root uid (what the operator's
-      # useStrictSecurity assigns to managed pods). The backup mover can still
-      # read root-owned files because the component's fsGroup group-remaps the
-      # snapshot clone; forward-compatible: a later switch to non-root needs no
-      # re-chown of restored data.
-      # TODO: enable useStrictSecurity / set the VLSingle securityContext to 65534.
+      # VLSingle runs as root but writes world-readable files (0644/0755), so a
+      # 65534 mover can read everything today (verified 2026-07-13). fsGroup
+      # does NOT remap a read-only snapshot-clone mount — if VL ever writes a
+      # non-world-readable file, snapshots fail PermissionDenied and this uid
+      # must be revisited.
+      # TODO: enable useStrictSecurity / set the VLSingle securityContext to
+      # 65534, then this pinning becomes exact.
       KOPIUR_UID: "65534"
       KOPIUR_GID: "65534"
     substituteFrom:

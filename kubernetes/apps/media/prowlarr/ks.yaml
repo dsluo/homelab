@@ -7,12 +7,9 @@ spec:
   dependsOn:
     - name: pocket-id
       namespace: security
-    - name: kopiur-repository
-      namespace: kopiur-system
   components:
     - ../../../../components/database
     - ../../../../components/oidc/envoy
-    - ../../../../components/kopiur
   interval: 1h
   path: ./kubernetes/apps/media/prowlarr/app
   postBuild:
@@ -20,9 +17,6 @@ spec:
       APP: *app
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/prowlarr.svg"
       OIDC_APP_NAME: Prowlarr
-      KOPIUR_CAPACITY: 5Gi
-      KOPIUR_UID: "65534"
-      KOPIUR_GID: "65534"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
