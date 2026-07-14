@@ -17,6 +17,23 @@ spec:
       spec:
         retentionPeriod: "100y"
         storageDataPath: /victoria-metrics-data
+        useStrictSecurity: true
+        # Keep the workload identity tied to the kopiur mover identity. The
+        # operator does not merge its strict-security defaults when a custom
+        # uid is set, so spell out the complete hardened context here.
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: ${KOPIUR_UID}
+          runAsGroup: ${KOPIUR_GID}
+          fsGroup: ${KOPIUR_GID}
+          fsGroupChangePolicy: OnRootMismatch
+          seccompProfile:
+            type: RuntimeDefault
+          privileged: false
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: [ALL]
         storage: null # override chart default; use existing PVC via volumes instead
         volumes:
           - name: data

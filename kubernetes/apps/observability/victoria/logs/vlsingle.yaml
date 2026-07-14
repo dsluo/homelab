@@ -6,6 +6,23 @@ metadata:
 spec:
   retentionPeriod: "7d"
   storageDataPath: /victoria-logs-data
+  useStrictSecurity: true
+  # Keep the workload identity tied to the kopiur mover identity. The
+  # operator does not merge its strict-security defaults when a custom uid is
+  # set, so spell out the complete hardened context here.
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: ${KOPIUR_UID}
+    runAsGroup: ${KOPIUR_GID}
+    fsGroup: ${KOPIUR_GID}
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile:
+      type: RuntimeDefault
+    privileged: false
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop: [ALL]
   volumes:
     - name: data
       persistentVolumeClaim:
