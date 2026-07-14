@@ -38,3 +38,36 @@ spec:
         memory: 256Mi
       limits:
         memory: 2Gi
+    # Controller pod security, pinned to the chart's current defaults so an
+    # upstream default change can't silently relax them. The controller never
+    # touches the NFS repository in-process here (no extraVolumes), so the
+    # locked-down nobody uid is sufficient.
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      runAsGroup: 65534
+      fsGroup: 65534
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+    webhook:
+      # Same pin for the webhook pod (its context is separate from the
+      # controller's by chart design — root-level keys never reach it).
+      podSecurityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
