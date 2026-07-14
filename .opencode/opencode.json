@@ -112,6 +112,10 @@
         "Authorization": "Bearer {env:GITHUB_TOKEN}"
       },
     },
+    "konflate": {
+      "type": "remote",
+      "url": "{env:KONFLATE_URL}/mcp"
+    },
     "grafana": {
       "type": "local",
       "command": [
