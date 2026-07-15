@@ -34,7 +34,7 @@ TALOSCONFIG = "{{config_root}}/talos/clusterconfig/talosconfig"
 "aqua:getsops/sops" = "3.13.2"
 # authoring tools
 "npm:renovate" = "43.263.6"
-"pipx:copier" = { version = "9.16.0", uvx_args = "--with copier-template-extensions" }
+"pipx:copier" = { version = "9.17.0", uvx_args = "--with copier-template-extensions" }
 # iac
 "aqua:gruntwork-io/terragrunt" = "1.1.0"
 "aqua:opentofu" = "1.12.4"
