@@ -79,6 +79,8 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
+          - name: envoy-towonel
+            namespace: network
         rules:
           - backendRefs:
               - identifier: *app
