@@ -42,14 +42,14 @@ spec:
     # upstream default change can't silently relax them. The controller never
     # touches the NFS repository in-process here (no extraVolumes), so the
     # locked-down nobody uid is sufficient.
-    podSecurityContext:
+    podSecurityContext: &podSecurityContext
       runAsNonRoot: true
       runAsUser: 65534
       runAsGroup: 65534
       fsGroup: 65534
       seccompProfile:
         type: RuntimeDefault
-    securityContext:
+    securityContext: &securityContext
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       capabilities:
@@ -58,16 +58,5 @@ spec:
     webhook:
       # Same pin for the webhook pod (its context is separate from the
       # controller's by chart design — root-level keys never reach it).
-      podSecurityContext:
-        runAsNonRoot: true
-        runAsUser: 65534
-        runAsGroup: 65534
-        fsGroup: 65534
-        seccompProfile:
-          type: RuntimeDefault
-      securityContext:
-        allowPrivilegeEscalation: false
-        readOnlyRootFilesystem: true
-        capabilities:
-          drop:
-            - ALL
+      podSecurityContext: *podSecurityContext
+      securityContext: *securityContext
