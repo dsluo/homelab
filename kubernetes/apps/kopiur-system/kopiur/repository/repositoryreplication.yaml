@@ -23,9 +23,11 @@ spec:
         secretRef:
           name: kopiur-repository-secret
   schedule:
-    # Daily offsite sync of the hourly snapshots. Planned follow-up: flip the
-    # topology so B2 is the primary repository and TrueNAS the replica.
-    cron: H 10 * * *
+    # Daily offsite sync of the hourly snapshots, early morning local time
+    # (the repository's scheduleDefaults.timezone; was `H 10 * * *` back when
+    # crons read in UTC). Planned follow-up: flip the topology so B2 is the
+    # primary repository and TrueNAS the replica.
+    cron: H 6 * * *
   sync:
     # kopia sync-to defaults to one blob at a time; without this the initial
     # seed to B2 would take days.
