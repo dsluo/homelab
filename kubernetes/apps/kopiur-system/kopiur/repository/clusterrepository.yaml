@@ -30,21 +30,6 @@ spec:
       name: kopiur-repository-secret
       namespace: kopiur-system
       key: KOPIA_PASSWORD
-  moverDefaults:
-    # Warm kopia cache for every mover this repository spawns (backup,
-    # restore, maintenance, replication, bootstrap): a controller-owned
-    # per-recipe PVC reused across runs, so movers stop re-downloading the
-    # repository indexes from NFS on every hourly snapshot. Both `capacity`
-    # and `mode` are load-bearing — without a capacity the mode is ignored
-    # and the cache silently falls back to an emptyDir. Verification movers
-    # coerce Persistent to ephemeral themselves (RWO Multi-Attach safety).
-    # NFS classes can't back the cache (root-squash defeats fsGroup), hence
-    # the node-local zfs class; zvols are thin, so 5Gi per recipe costs only
-    # what the cache actually holds.
-    cache:
-      capacity: 5Gi
-      mode: Persistent
-      storageClassName: openebs-zfspv
   scheduleDefaults:
     # Every consuming cron (verification, replication, maintenance) reads in
     # local time instead of the implicit controller default (UTC). Snapshot
