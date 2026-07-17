@@ -25,7 +25,7 @@ TALOSCONFIG = "{{config_root}}/talos/clusterconfig/talosconfig"
 "aqua:utkuozdemir/pv-migrate" = "3.5.0"
 # app clis
 "aqua:cilium/cilium-cli" = "0.19.6"
-"aqua:cloudflare/cloudflared" = "2026.7.1"
+"aqua:cloudflare/cloudflared" = "2026.7.2"
 "github:cloudnative-pg/cloudnative-pg" = "1.30.0"
 "github:home-operations/kopiur" = "0.7.3"
 # flux
