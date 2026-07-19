@@ -21,7 +21,6 @@ locals {
       comment = "clients"
       interfaces = [
         "sfp-sfpplus20", # emily-desktop
-        "sfp-sfpplus21", # macmini
       ]
       vlan  = 10
       trunk = false
@@ -29,6 +28,7 @@ locals {
     "trunk-native20" = {
       comment = "infra"
       interfaces = [
+        "sfp-sfpplus21", # sw-util downstream
         "sfp-sfpplus23", # sw-access downstream
         "sfp-sfpplus24", # udm pro upstream
       ]
@@ -63,7 +63,7 @@ locals {
     "sfp-sfpplus18" = "storage"
     "sfp-sfpplus19" = "talos1"
     "sfp-sfpplus20" = "emily-desktop"
-    "sfp-sfpplus21" = "macmini"
+    "sfp-sfpplus21" = "sw-util downstream"
     "sfp-sfpplus23" = "sw-access downstream"
     "sfp-sfpplus24" = "udm pro upstream"
   }
