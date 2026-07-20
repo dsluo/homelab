@@ -11,7 +11,7 @@ spec:
   # single instance on node-local storage: the PDB can never be satisfied (no
   # failover target), so it would deadlock node drains during tuppr upgrades.
   enablePDB: false
-  imageName: ghcr.io/cloudnative-pg/postgresql:18@sha256:17760b4508e1703f7bf3d5ee6c9335ff6d1bf62b034a3d5b32a43414a516789f
+  imageName: ghcr.io/cloudnative-pg/postgresql:18@sha256:b38bee8f92acd6d7276d5be32e9af36a0ea72c9d339945f1ae205a2acc3cbb89
 
   primaryUpdateStrategy: unsupervised
   # switch to switchover when instances > 1
