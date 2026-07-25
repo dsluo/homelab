@@ -27,7 +27,7 @@ spec:
           paperless:
             image:
               repository: ghcr.io/paperless-ngx/paperless-ngx
-              tag: 2.20.15
+              tag: 3.0.2
             env:
               # host
               PAPERLESS_URL: https://paperless.${SECRET_DOMAIN}
@@ -101,7 +101,7 @@ spec:
               PAPERLESS_DATA_DIR: /data/local/data
               PAPERLESS_MEDIA_ROOT: /data/local/media
               # importing
-              PAPERLESS_CONSUMER_POLLING: 10
+              PAPERLESS_CONSUMER_POLLING_INTERVAL: 10
               PAPERLESS_CONSUMER_RECURSIVE: "true"
 
             probes:
