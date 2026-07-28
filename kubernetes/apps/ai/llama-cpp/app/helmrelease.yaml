@@ -46,7 +46,7 @@ spec:
           ? *app
           : image:
               repository: ghcr.io/ggml-org/llama.cpp
-              tag: server-intel-b10108@sha256:01ed444a9f80b66a8ceeb45a43f7aebb878c692b8c71e35aae373ccc1be5c1fa
+              tag: server-intel-b10156@sha256:3e76f50d7217e288b3ce760b0ef12ec9c7b1c7a7cc1dcaf3c4c1732404f33d48
             args:
               - --models-preset
               - &presetFile /config/presets.ini
