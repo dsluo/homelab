@@ -37,4 +37,4 @@ TALOSCONFIG = "{{config_root}}/talos/clusterconfig/talosconfig"
 "aqua:opentofu" = "1.12.5"
 "aqua:opentofu/tofu-ls" = "0.5.3"
 # ai/mcp
-"github:grafana/mcp-grafana" = "0.17.2"
+"github:grafana/mcp-grafana" = "1.0.0"
