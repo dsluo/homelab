@@ -37,3 +37,57 @@ spec:
       accessMode: ReadWriteOnce
     priorityClasses:
       enabled: true
+    prometheus:
+      # Discovers every pod carrying inference.llmkube.dev/service, so new
+      # InferenceServices are scraped without edits, and relabels job to
+      # llmkube-inference while promoting service/model/runtime onto each
+      # series — which is what the recording rules and dashboards group by.
+      inferencePodMonitor:
+        enabled: true
+        additionalLabels: null
+      prometheusRule:
+        # Only for the llmkube:inference:* recording rules the dashboards read.
+        # vmalert runs selectAllByDefault, so the rule can live next to the
+        # release and needs no selector labels.
+        enabled: true
+        namespace: ai
+        # null, not {} — Helm merges maps, so an empty one leaves the chart's
+        # kube-prometheus-stack selector labels in place.
+        additionalLabels: null
+        rules:
+          # DCGM alerts, and their thresholds are wrong for this node: the
+          # 3090 Ti alone draws past the 250 W powerLimitThreshold under load,
+          # and gpu-preemptible inference is *meant* to sit at 100% util.
+          gpu:
+            enabled: false
+          # Gates the recording-rule group as well as the alerts.
+          # InferenceServiceDown is live off the PodMonitor's job relabel;
+          # ControllerDown is inert until serviceMonitor is enabled, since
+          # nothing emits job="llmkube-controller" to go 0.
+          inference:
+            enabled: true
+    grafana:
+      dashboards:
+        enabled: true
+        # The kube-prometheus-stack sidecar label the chart adds by default is
+        # noise here: grafana-operator reads the ConfigMap through the
+        # GrafanaDashboard CRs below, not by watching ConfigMap labels.
+        additionalLabels: null
+        operator:
+          enabled: true
+          # Defers the vLLM and SGLang dashboards to the operator, which
+          # publishes them only while an InferenceService on that runtime
+          # exists. Everything here is runtime: llamacpp, so they stay unfiled.
+          mode: auto
+          instanceSelector:
+            matchLabels:
+              dashboards: grafana
+          # The CRs land in ai; the Grafana instance lives in observability.
+          allowCrossNamespaceImport: true
+          folder: LLMKube
+          # Six of the seven dashboards template ${DS_PROMETHEUS}; the AMD one
+          # uses a datasource variable and falls through to the default, which
+          # is VictoriaMetrics either way.
+          datasources:
+            - inputName: DS_PROMETHEUS
+              datasourceName: VictoriaMetrics
