@@ -1,0 +1,26 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/operator.victoriametrics.com/vmrule_v1beta1.json
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: victoria-metrics-ingestion
+spec:
+  groups:
+    # Rows discarded at ingestion are invisible from the scrape side — vmagent
+    # reports its targets healthy while vmsingle drops the samples. That is how
+    # the -maxLabelsPerTimeseries=30 limit silently ate every kubelet/cAdvisor
+    # series for seven weeks. Alert on the whole class, not just that one limit.
+    - name: victoria-metrics-ingestion
+      rules:
+        - alert: VictoriaMetricsRowsIgnored
+          expr: sum by (reason) (increase(vm_rows_ignored_total[10m])) > 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: VictoriaMetrics is discarding rows at ingestion
+            description: >-
+              vmsingle has discarded {{ $value | humanize }} rows in the last
+              10m with reason "{{ $labels.reason }}". These samples are scraped
+              successfully but never stored, so scrape targets look healthy
+              while the series go missing.
