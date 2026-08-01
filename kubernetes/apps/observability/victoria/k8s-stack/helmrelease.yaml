@@ -83,6 +83,24 @@ spec:
       enabled: true
     kubelet:
       enabled: true
+      vmScrape:
+        spec:
+          # Mirrors the chart 0.87.0 defaults minus the node-label labelmap —
+          # re-diff against the chart on upgrade.
+          #
+          # The default `labelmap __meta_kubernetes_node_label_(.+)` copies every
+          # node label onto every kubelet / cAdvisor series. Node Feature
+          # Discovery (pulled in by the GPU operator) puts 76-140 labels on each
+          # node, which blows past VictoriaMetrics' -maxLabelsPerTimeseries=30 and
+          # makes vmsingle discard the series outright at ingestion. Nothing here
+          # consumes the mapped labels and `instance` already carries the node
+          # name, so don't map them at all — an allowlist a future operator can't
+          # regress.
+          relabelConfigs:
+            - sourceLabels: [__metrics_path__]
+              targetLabel: metrics_path
+            - targetLabel: job
+              replacement: kubelet
     kubeApiServer:
       enabled: true
     kubeControllerManager:

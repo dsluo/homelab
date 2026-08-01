@@ -5,6 +5,7 @@ resources:
   - ./helmrelease.yaml
   - ./httproute.yaml
   - ./ocirepository.yaml
+  - ./vmrule.yaml
   - ./vmstaticscrape.yaml
   - ./vmuser.yaml
   - ./secret.sops.yaml
