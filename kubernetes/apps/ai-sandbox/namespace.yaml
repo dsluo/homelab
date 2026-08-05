@@ -7,8 +7,8 @@ metadata:
     kustomize.toolkit.fluxcd.io/prune: disabled
   labels:
     resource.kubernetes.io/admin-access: "true"
-    # Isolated home for openclaw, which runs untrusted agent code. Kept separate
-    # from the shared `ai` namespace to contain blast radius. The openclaw pod
+    # Isolated home for hermes, which runs untrusted agent code. Kept separate
+    # from the shared `ai` namespace to contain blast radius. The hermes pod
     # itself is restricted-compliant AND gVisor-sandboxed (RuntimeClass), which
     # is the real isolation; the namespace floor is `baseline` rather than
     # `restricted` only because kopiur's movers inline-mount the NFS repository

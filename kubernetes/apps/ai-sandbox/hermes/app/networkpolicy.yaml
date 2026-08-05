@@ -1,21 +1,28 @@
 ---
-# Default-deny egress for openclaw. The pod runs untrusted / prompt-injected
+# Default-deny egress for hermes. The pod runs untrusted / prompt-injected
 # agent code (gVisor-sandboxed), so this is the control that contains a
-# breakout: the pod may reach DNS, the in-cluster LLMs, and the public
-# internet, but NOT the Kubernetes API, the LAN, or other in-cluster services.
+# breakout: the pod may reach DNS, Pocket-ID, the in-cluster LLMs, and the
+# public internet, but NOT the Kubernetes API, the rest of the LAN, or other
+# in-cluster services.
 #
 # Egress rules switch this endpoint to default-deny egress (ingress is left
 # unrestricted so the envoy-internal route and kubelet probes keep working).
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: openclaw
+  name: hermes
 spec:
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/name: openclaw
+      app.kubernetes.io/name: hermes
   egress:
     # Cluster DNS (Helm-managed CoreDNS in kube-system).
+    #
+    # This is an L7 rule, which openclaw's equivalent was not: `rules.dns` puts
+    # every lookup through Cilium's DNS proxy so it can learn name->IP mappings
+    # and enforce the `toFQDNs` rule below. matchPattern "*" means we observe
+    # all names but block none — the containment still comes from the egress
+    # rules, not from DNS filtering.
     - toEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: kube-system
@@ -26,20 +33,43 @@ spec:
               protocol: UDP
             - port: "53"
               protocol: TCP
-    # In-cluster services openclaw is allowed to reach, named directly — NOT the
+          rules:
+            dns:
+              - matchPattern: "*"
+    # Pocket-ID, by name.
+    #
+    # This is new relative to openclaw and is the one real widening in this
+    # policy. openclaw never spoke to the IdP itself — the Envoy forward-auth
+    # filter did, out in the network namespace. Hermes authenticates its own
+    # dashboard, so the POD has to reach the issuer server-side for OIDC
+    # discovery, the token exchange, and the JWKS fetch.
+    #
+    # `pocket-id.${SECRET_DOMAIN}` resolves to the shared envoy-internal gateway
+    # IP, which is RFC1918 and therefore excluded by the public-internet rule
+    # below. A `toCIDR` for that IP would open every route behind that gateway;
+    # `toFQDNs` instead pins the allowance to this one hostname, so the pod can
+    # reach Pocket-ID and nothing else on the LAN. (This is the same mechanism
+    # the deferred egress-allowlist work wants — see README.md.)
+    - toFQDNs:
+        - matchName: "pocket-id.${SECRET_DOMAIN}"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    # In-cluster services hermes is allowed to reach, named directly — NOT the
     # whole `ai` namespace, which also runs the embedding/reranker models and the
-    # other MCP servers that openclaw must not reach. `toServices` resolves each
+    # other MCP servers that hermes must not reach. `toServices` resolves each
     # Service to its current backend pods (with kube-proxy replacement Cilium
-    # handles the ClusterIP→pod translation), so this follows the Service's own
+    # handles the ClusterIP->pod translation), so this follows the Service's own
     # endpoint selector and self-heals if llmkube/ToolHive relabel pods on a chart
     # bump. (Matching the `qwen.${SECRET_DOMAIN}` ingress hostname would be worse —
     # it resolves to the SHARED envoy-internal gateway IP that fronts every route.)
     #
     # NOTE: `toServices` can't be paired with `toPorts`, so this allows whatever
     # ports the backends expose. qwen and the searxng proxy are 8080-only; memini
-    # also exposes :9090 (metrics), which openclaw can therefore reach. Acceptable
+    # also exposes :9090 (metrics), which hermes can therefore reach. Acceptable
     # for a sandbox allowlist. Verify enforcement after reconcile with Hubble:
-    # `cilium hubble observe --from-pod ai-sandbox/openclaw`.
+    # `cilium hubble observe --from-pod ai-sandbox/hermes`.
     - toServices:
         # Qwen chat model (llmkube), reached at http://qwen3-6-27b-mtp.ai:8080/v1.
         - k8sService:
@@ -59,18 +89,14 @@ spec:
     # CIDR allow that explicitly excludes private + link-local ranges. This
     # keeps kube-apiserver, the pod/service CIDRs, other namespaces, and the LAN
     # unreachable while still permitting external egress (e.g. Anthropic API,
-    # agent web access). If openclaw is later pointed at an in-cluster or on-LAN
-    # model, add a narrow toEndpoints/toCIDR rule for just that host:port rather
-    # than relaxing these excepts.
+    # agent web access). The one deliberate hole in the private ranges is the
+    # Pocket-ID `toFQDNs` rule above.
     #
     # FUTURE HARDENING (see README "Egress hardening"): replace this broad
-    # 0.0.0.0/0 rule with a Cilium `toFQDNs` allowlist of only the provider
-    # domains the agent actually needs (JJGadgets' reference does this:
-    # api.anthropic.com, *.openrouter.ai, etc.). That requires upgrading the
-    # CoreDNS egress rule above to L7 (add `rules: { dns: [{ matchPattern: "*" }] }`
-    # under its toPorts) so Cilium's DNS proxy can resolve the names. Deferred
-    # for now because it trades the agent's general web access for tighter
-    # containment — turn it on once the set of needed domains is known.
+    # 0.0.0.0/0 rule with a `toFQDNs` allowlist of only the provider domains the
+    # agent actually needs. The L7 DNS prerequisite is now satisfied by the
+    # CoreDNS rule above, so this is a one-rule swap whenever the needed domain
+    # set is known — the only thing still deferred is deciding that set.
     - toCIDRSet:
         - cidr: 0.0.0.0/0
           except:
