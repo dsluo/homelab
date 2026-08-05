@@ -92,10 +92,24 @@ spec:
                   secretKeyRef:
                     name: hermes-oidc-credentials
                     key: OIDC_CLIENT_SECRET
-              # s6-overlay writes its supervision tree under /run; tell it the
-              # rest of the rootfs is read-only so it stages there instead of
-              # trying to mutate /etc and /var (see the emptyDirs below).
+              # Tells s6's preinit that / is read-only, so it accepts the
+              # pre-mounted /run emptyDir as-is instead of trying to create a
+              # tmpfs there (which needs CAP_SYS_ADMIN we don't have).
               S6_READ_ONLY_ROOT: "1"
+              # Required, and the name is not a joke — this is exactly the
+              # configuration the flag exists for.
+              #
+              # s6's preinit checks that /run belongs to the container uid. The
+              # kubelet creates the emptyDir 0777 root:root and `fsGroup: 10000`
+              # then chgrps it to root:10000 + setgid (mode 2777). preinit would
+              # normally chown it, but it can't: /init execs through the setuid
+              # s6-overlay-suexec, and `allowPrivilegeEscalation: false` sets
+              # no_new_privs, so the setuid bit is ignored and euid stays 10000.
+              # None of preinit's repair branches match a 2777 root-owned /run,
+              # so without this flag it exits 100 before Hermes ever starts.
+              # (Verified against s6-overlay v3.2.3.0's preinit, the version
+              # baked into this image.)
+              S6_YES_I_WANT_A_WORLD_WRITABLE_RUN_BECAUSE_KUBERNETES: "1"
               # The OpenAI-compatible API server stays off (upstream default).
               # Turning it on needs API_SERVER_ENABLED/_HOST/_KEY *and* a second
               # exposed port — see README.md "Deferred follow-ups".

@@ -37,12 +37,12 @@ for what actually changed.
   See [Authentication](#authentication).
 - **Pinned to `talos1`** (worker, has the gVisor extension); never the
   control-plane / GPU host `talos0`.
-- **Egress is default-deny** (`app/networkpolicy.yaml`): cluster DNS (now
-  through Cilium's L7 DNS proxy), Pocket-ID by FQDN, a short allowlist of named
-  in-cluster services (the Qwen model, memini, and the SearXNG MCP proxy — via
-  Cilium `toServices`), and the *public* internet (private / link-local CIDRs
-  excluded). kube-apiserver, the rest of the LAN, and every other
-  namespace/service are unreachable.
+- **Egress is default-deny** (`app/networkpolicy.yaml`): cluster DNS, the
+  envoy-cloudflare gateway pods (for Pocket-ID — see below), a short allowlist
+  of named in-cluster services (the Qwen model, memini, and the SearXNG MCP
+  proxy — via Cilium `toServices`), and the *public* internet (private /
+  link-local CIDRs excluded). kube-apiserver, the rest of the LAN, and every
+  other namespace/service are unreachable.
 
 ### The uid is not a free choice
 
@@ -79,6 +79,35 @@ Three things make this work, and all three are load-bearing:
 The client id and secret come from the `hermes-oidc-credentials` Secret that
 the Pocket-ID operator creates (we use it as a confidential client — PKCE
 *and* a client secret).
+
+**This is a reduction in defense-in-depth, and worth being explicit about.**
+openclaw had two independent gates: the Envoy forward-auth filter rejected
+unauthenticated requests before they reached any app code, and a gateway token
+sat behind it. Hermes has one — its own middleware — so the whole dashboard
+HTTP surface is now network-reachable by anything that can hit envoy-internal.
+That is defensible here (the gate fails closed, and the unauthenticated
+allowlist is narrow: `/auth/*`, `/login`, `/api/auth/providers`, the MCP OAuth
+callback, and static assets) but it is one layer, not two, on an app whose
+whole premise is running untrusted code.
+
+### Reaching Pocket-ID
+
+Because the pod now authenticates itself, it needs to reach the issuer
+server-side — for discovery, the token exchange, and the JWKS fetch. That took
+a new egress rule, and the obvious form of it does not work:
+
+`pocket-id.${SECRET_DOMAIN}` resolves (via k8s-gateway) to the
+**envoy-cloudflare** LoadBalancer VIP — not envoy-internal, which fronts hermes
+itself. With Cilium's kube-proxy replacement, a service VIP is DNAT'd to its
+backend pod *before* the destination identity is resolved for policy, so the
+policy engine only ever sees the gateway pod's identity. A `toFQDNs` or
+`toCIDR` rule on that VIP would never match.
+
+So the policy selects the envoy-cloudflare **gateway pods** directly. The
+honest cost: Envoy routes by `Host` header, so this transitively allows every
+route behind that gateway, not just Pocket-ID. There is no way to narrow it at
+L3/L4 while the IdP shares a gateway — tightening it means giving pocket-id its
+own Gateway.
 
 **The dashboard fails closed.** Since the June 2026 upstream hardening, a
 non-loopback bind with no registered auth provider refuses to start rather than
@@ -196,10 +225,14 @@ hermes pod, and run `hermes claw migrate --source <path>`.
   hourly (kopia dedupes them, so this is waste rather than breakage).
 - **Per-domain egress allowlist.** The policy still permits any public host on
   443/80. The tighter model is a `toFQDNs` allowlist of just the provider
-  domains the agent needs (`api.anthropic.com`, `*.openrouter.ai`, …). The L7
-  DNS prerequisite is **already satisfied** — the CoreDNS rule now runs through
-  Cilium's DNS proxy for the Pocket-ID rule — so this is a one-rule swap once
-  the needed domain set is known.
+  domains the agent needs (`api.anthropic.com`, `*.openrouter.ai`, …). That
+  needs the CoreDNS egress rule upgraded to L7 (`rules: { dns: [{ matchPattern:
+  "*" }] }`) so Cilium's DNS proxy can learn the mappings — note that would be
+  the cluster's first L7 policy. Deferred until the needed domain set is known.
+- **Dedicated Gateway for pocket-id**, which would let the egress rule above
+  name only the IdP's own Envoy pods instead of every route behind
+  envoy-cloudflare. Out of scope here because it touches `security/pocket-id`
+  and `network/envoy-gateway`.
 - **OpenAI-compatible API server.** Off (upstream default). Enabling it means
   `API_SERVER_ENABLED=true`, `API_SERVER_HOST=0.0.0.0`, a SOPS-managed
   `API_SERVER_KEY` (8+ chars), and exposing port 8642 — worth doing only if
@@ -209,14 +242,22 @@ hermes pod, and run `hermes claw migrate --source <path>`.
 
 Can't be verified from manifests:
 
-- [ ] **s6-overlay boots as uid 10000 under a read-only rootfs.** The highest-risk
-      item in this PR. `/init` expects to be PID 1 (it is, in a normal pod) and
-      normally starts as root; we start it as 10000 with
-      `allowPrivilegeEscalation: false`, so its setuid preinit can't elevate.
-      Upstream explicitly handles the "started as `id -u hermes`" path, but this
-      combination is untested here. If it fails, relax in this order:
-      `readOnlyRootFilesystem` → `allowPrivilegeEscalation` → run as root and
-      let s6 drop privileges itself.
+- [ ] **s6-overlay boots as uid 10000 under a read-only rootfs.** Still the
+      highest-risk item. `/init` runs unprivileged here (the setuid
+      `s6-overlay-suexec` is neutered by `allowPrivilegeEscalation: false`), so
+      preinit can't chown `/run` and needs
+      `S6_YES_I_WANT_A_WORLD_WRITABLE_RUN_BECAUSE_KUBERNETES=1` to accept the
+      emptyDir as-is — see the comment on that env var in `helmrelease.yaml`.
+      That was traced against s6-overlay v3.2.3.0's actual `preinit`, but only
+      a real boot proves it. Note that relaxing `readOnlyRootFilesystem` alone
+      would NOT have fixed it, and neither would running as root while keeping
+      `capabilities: drop: [ALL]`.
+- [ ] **Watch for `docker_config_migrate.py failed` in the logs.** Upstream's
+      `stage2-hook.sh` is the one place in the boot path that calls
+      `s6-setuidgid` without a non-root skip, so as uid 10000 with all caps
+      dropped its `setgroups()` fails and Hermes' config-schema migration is
+      skipped with only a warning. Non-fatal, but it means an image bump can
+      silently leave `config.yaml` un-migrated. Worth an upstream issue.
 - [ ] Pod schedules on talos1 under RuntimeClass `gvisor` and passes readiness.
 - [ ] **Hermes runs cleanly under gVisor** — watch for syscall-compat issues;
       gVisor trades some compatibility/perf for isolation. Chromium (bundled for
@@ -227,14 +268,15 @@ Can't be verified from manifests:
       Pocket-ID and back to `/auth/callback`. A failure here is a pod that never
       goes ready (fail-closed), so check pod logs for the specific missing-env
       error before touching Pocket-ID.
-- [ ] **The pod can reach Pocket-ID.** This depends on the new L7 DNS + `toFQDNs`
-      rule; if the DNS proxy isn't enforcing, the token exchange fails even
-      though the browser redirect looked fine. Confirm with
-      `cilium hubble observe --from-pod ai-sandbox/hermes`.
+- [ ] **The pod can reach Pocket-ID.** The failure mode is sneaky: discovery is
+      lazy, so the pod goes ready and the browser redirect looks fine, and only
+      the server-side token/JWKS calls hang. Check that the egress rule's pod
+      selector actually matches the running envoy-cloudflare pods —
+      `kubectl -n network get pods -l gateway.envoyproxy.io/owning-gateway-name=envoy-cloudflare`
+      should be non-empty.
 - [ ] **NetworkPolicy selects the pod** (`app.kubernetes.io/name: hermes`).
 - [ ] Agent can reach the in-cluster LLM (`ai` :8080) and the public internet.
 - [ ] Negative check: from inside the pod, kube-apiserver and a LAN host
       (e.g. 10.0.42.1) are **unreachable**; DNS still resolves; and
-      `pocket-id.${SECRET_DOMAIN}` IS reachable while another host behind the
-      same envoy-internal gateway is not.
+      `pocket-id.${SECRET_DOMAIN}` IS reachable.
 - [ ] **`/dev/shm` is 1Gi** and browser tools work.
