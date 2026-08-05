@@ -37,12 +37,27 @@ spec:
       accessMode: ReadWriteOnce
     priorityClasses:
       enabled: true
+    metrics:
+      # Plain HTTP on the controller's metrics port. With secure: true,
+      # controller-runtime puts its authn/authz filter in front of /metrics,
+      # and the chart's ServiceMonitor sets tlsConfig.insecureSkipVerify but
+      # sends no bearer token — vmagent would scrape it and get a 401. The
+      # port stays ClusterIP-only either way.
+      secure: false
     prometheus:
       # Discovers every pod carrying inference.llmkube.dev/service, so new
       # InferenceServices are scraped without edits, and relabels job to
       # llmkube-inference while promoting service/model/runtime onto each
       # series — which is what the recording rules and dashboards group by.
       inferencePodMonitor:
+        enabled: true
+        additionalLabels: null
+      # Scrapes the controller-manager's own llmkube_* metrics, which the
+      # Operator health row added to the llmkube-inference dashboard in 0.9.14
+      # reads (reconcile rate/duration, time-to-ready, fleet readiness, replica
+      # state, GPU queue depth). Relabels job to llmkube-controller, which is
+      # also what makes the ControllerDown alert below able to fire.
+      serviceMonitor:
         enabled: true
         additionalLabels: null
       prometheusRule:
@@ -61,9 +76,8 @@ spec:
           gpu:
             enabled: false
           # Gates the recording-rule group as well as the alerts.
-          # InferenceServiceDown is live off the PodMonitor's job relabel;
-          # ControllerDown is inert until serviceMonitor is enabled, since
-          # nothing emits job="llmkube-controller" to go 0.
+          # InferenceServiceDown is live off the PodMonitor's job relabel, and
+          # ControllerDown off the ServiceMonitor's.
           inference:
             enabled: true
     grafana:
@@ -75,9 +89,10 @@ spec:
         additionalLabels: null
         operator:
           enabled: true
-          # Defers the vLLM and SGLang dashboards to the operator, which
-          # publishes them only while an InferenceService on that runtime
-          # exists. Everything here is runtime: llamacpp, so they stay unfiled.
+          # Defers the runtime dashboards to the operator, which publishes each
+          # only while an InferenceService on that runtime exists. vLLM and
+          # SGLang stay unfiled; 0.9.14 added llamacpp to that set, so its
+          # dashboard is published here off the three llamacpp services.
           mode: auto
           instanceSelector:
             matchLabels:
@@ -85,7 +100,7 @@ spec:
           # The CRs land in ai; the Grafana instance lives in observability.
           allowCrossNamespaceImport: true
           folder: LLMKube
-          # Six of the seven dashboards template ${DS_PROMETHEUS}; the AMD one
+          # Seven of the eight dashboards template ${DS_PROMETHEUS}; the AMD one
           # uses a datasource variable and falls through to the default, which
           # is VictoriaMetrics either way.
           datasources:
