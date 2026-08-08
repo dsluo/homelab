@@ -6,4 +6,3 @@ resources:
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
   - ./runtimeclass.yaml
-  - ./secret.sops.yaml

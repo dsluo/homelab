@@ -1,0 +1,218 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app hermes
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    defaultPodOptions:
+      # Sandbox the whole pod with gVisor: untrusted/injected agent code runs
+      # against a userspace kernel, not the host kernel. Requires the
+      # siderolabs/gvisor extension + user.max_user_namespaces>0 on talos1
+      # (see talos/talconfig.yaml).
+      runtimeClassName: gvisor
+      # The agent has no business talking to the kube-API.
+      automountServiceAccountToken: false
+      # ndots:1 stops the resolver from appending the namespace search domains to
+      # every external lookup (the default ndots:5 turns `api.anthropic.com` into
+      # 5+ failed in-cluster queries first). Cheaper DNS, and it matters more here
+      # than it did for openclaw because the egress policy now runs a Cilium L7
+      # DNS proxy — every query is parsed (see networkpolicy.yaml).
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      securityContext:
+        runAsNonRoot: true
+        # 10000 is the `hermes` user baked into the image (Dockerfile:
+        # `useradd -u 10000 -m -d /opt/data hermes`). This value is NOT free to
+        # choose: the s6 stage2 hook (docker/stage2-hook.sh) hard-refuses to boot
+        # when the container starts as a non-root uid that isn't `id -u hermes`,
+        # because the bootstrap can neither remap the user nor chown the volume.
+        # Starting as root (the image default, which then drops via s6-setuidgid)
+        # is the only other supported option, and we don't want root here.
+        runAsUser: 10000
+        runAsGroup: 10000
+        fsGroup: 10000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    controllers:
+      *app :
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          # Pinned to the worker (which carries the gVisor extension); never the
+          # control-plane / GPU host talos0.
+          nodeSelector:
+            kubernetes.io/hostname: talos1
+        containers:
+          *app :
+            image:
+              repository: docker.io/nousresearch/hermes-agent
+              tag: v2026.8.3@sha256:16788311e2fa3035456bdc1bafb8ec2b1777db64ebf020af9bb7eb73c3712c9e
+            # NOT `command:` — the image ENTRYPOINT is a dispatcher
+            # (docker/entrypoint-dispatch.sh) that exec's s6-overlay's /init when
+            # it owns PID 1, which is what supervises the gateway and dashboard.
+            # Overriding command would bypass /init and skip the whole bootstrap
+            # (volume seeding, profile reconcile, dashboard service). `args` maps
+            # to the image CMD, which the dispatcher forwards.
+            args:
+              - gateway
+              - run
+            env:
+              TZ: "${CONFIG_TZ:=Etc/UTC}"
+              # The web dashboard is the Control-UI analogue and the only surface
+              # we expose. It runs as a supervised s6 service alongside the
+              # gateway; without this the service is registered but stays down.
+              HERMES_DASHBOARD: "1"
+              HERMES_DASHBOARD_HOST: 0.0.0.0
+              HERMES_DASHBOARD_PORT: &port 9119
+              # Public origin, used to reconstruct the OIDC redirect_uri behind
+              # the Envoy gateway. Without it the callback would be built from
+              # the pod-internal host and Pocket-ID would reject the redirect.
+              HERMES_DASHBOARD_PUBLIC_URL: "https://hermes.${SECRET_DOMAIN}"
+              # Self-hosted OIDC against Pocket-ID (plugins/dashboard_auth/self_hosted).
+              # A non-loopback bind fails CLOSED unless an auth provider is
+              # registered, so these three are load-bearing: get them wrong and
+              # the dashboard refuses to start rather than serving unauthenticated.
+              HERMES_DASHBOARD_OIDC_ISSUER: "https://pocket-id.${SECRET_DOMAIN}"
+              HERMES_DASHBOARD_OIDC_CLIENT_ID:
+                valueFrom:
+                  secretKeyRef:
+                    name: hermes-oidc-credentials
+                    key: OIDC_CLIENT_ID
+              HERMES_DASHBOARD_OIDC_CLIENT_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: hermes-oidc-credentials
+                    key: OIDC_CLIENT_SECRET
+              # Tells s6's preinit that / is read-only, so it accepts the
+              # pre-mounted /run emptyDir as-is instead of trying to create a
+              # tmpfs there (which needs CAP_SYS_ADMIN we don't have).
+              S6_READ_ONLY_ROOT: "1"
+              # Required, and the name is not a joke — this is exactly the
+              # configuration the flag exists for.
+              #
+              # s6's preinit checks that /run belongs to the container uid. The
+              # kubelet creates the emptyDir 0777 root:root and `fsGroup: 10000`
+              # then chgrps it to root:10000 + setgid (mode 2777). preinit would
+              # normally chown it, but it can't: /init execs through the setuid
+              # s6-overlay-suexec, and `allowPrivilegeEscalation: false` sets
+              # no_new_privs, so the setuid bit is ignored and euid stays 10000.
+              # None of preinit's repair branches match a 2777 root-owned /run,
+              # so without this flag it exits 100 before Hermes ever starts.
+              # (Verified against s6-overlay v3.2.3.0's preinit, the version
+              # baked into this image.)
+              S6_YES_I_WANT_A_WORLD_WRITABLE_RUN_BECAUSE_KUBERNETES: "1"
+              # The OpenAI-compatible API server stays off (upstream default).
+              # Turning it on needs API_SERVER_ENABLED/_HOST/_KEY *and* a second
+              # exposed port — see README.md "Deferred follow-ups".
+            probes:
+              # Generous startup budget: the image is heavy (Python 3.13 +
+              # Node 26 + a bundled Chromium), the s6 bootstrap seeds the data
+              # volume on first boot, and gVisor adds syscall overhead on top.
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *port
+                  initialDelaySeconds: 15
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  # ~5 minutes before the kubelet gives up.
+                  failureThreshold: 30
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *port
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              readOnlyRootFilesystem: true
+              # s6's preinit is setuid-root, but we never need it: the pod
+              # already starts as the uid the services run as, so there is no
+              # privilege to drop and nothing to escalate to.
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 100m
+                memory: 1Gi
+              limits:
+                # Upstream recommends 2-4Gi once browser tools are in play;
+                # gVisor adds overhead and agent workloads are bursty.
+                cpu: "4"
+                memory: 4Gi
+    service:
+      *app :
+        controller: *app
+        primary: true
+        ports:
+          http:
+            port: *port
+    route:
+      internal:
+        enabled: true
+        hostnames:
+          - "hermes.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: *app
+                port: *port
+    persistence:
+      # /opt/data is the single source of truth for all Hermes state — config.yaml,
+      # .env (provider API keys), SOUL.md, sessions, memories, skills, cron, logs,
+      # and the per-profile HOME for tool subprocesses. It is also the `hermes`
+      # user's home. The install tree at /opt/hermes stays root-owned and
+      # immutable, so this is the only persistent path that needs to be writable.
+      config:
+        existingClaim: *app
+        globalMounts:
+          - path: /opt/data
+      # s6-overlay stages its supervision tree (/run/service, /run/s6) here;
+      # with a read-only rootfs it has nowhere else to go. Tiny (service dirs,
+      # pidfiles, a few sockets), so cap it — an unbounded memory emptyDir is
+      # charged to the pod's memory limit and would let a runaway write OOM-kill
+      # the container.
+      run:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 64Mi
+        globalMounts:
+          - path: /run
+      # Agent scratch space. Deliberately disk-backed rather than memory-backed:
+      # this is the one writable path untrusted agent code can fill at will, and
+      # on `medium: Memory` that fills the pod's memory limit instead of disk.
+      # sizeLimit caps it either way so a runaway can't consume the node's
+      # ephemeral storage and trigger eviction.
+      tmp:
+        type: emptyDir
+        sizeLimit: 4Gi
+        globalMounts:
+          - path: /tmp
+      # Chromium (bundled for the browser tools) needs real shared memory; the
+      # 64Mi default /dev/shm makes it crash on non-trivial pages. Upstream's
+      # Docker guidance is `--shm-size=1g`.
+      dev-shm:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 1Gi
+        globalMounts:
+          - path: /dev/shm
