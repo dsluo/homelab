@@ -40,7 +40,7 @@ scope (see the fork's `examples/steam.yaml` to add later).
 
 ## GPU sharing with llmkube (PriorityClass preemption)
 
-talos1's GPUs (3090 Ti + 3070) are normally held by **llmkube** (`qwen3-6-27b-mtp`,
+talos1's GPUs (3090 Ti + 3070) are normally held by **llmkube** (`qwen3-8-27b-mtp`,
 `nvidia.com/gpu: 2`). The Fenrir operator cannot set a `priorityClassName` on the
 session pods it generates (the User CRD only exposes resources/volumes/sidecar
 policies), so instead **llmkube's GPU model is pinned to a negative PriorityClass**
