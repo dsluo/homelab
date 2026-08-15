@@ -123,7 +123,7 @@ nodes:
             match: disk.pretty_size >= "1 TB" && disk.model.startsWith("Samsung")
           maxSize: 100GB
     networkInterfaces:
-      - interface: enp16s0f1
+      - interface: enp2s0f0
         mtu: 1500
         vlans:
           - vlanId: 42
@@ -153,7 +153,7 @@ nodes:
       - |-
         apiVersion: v1alpha1
         kind: EthernetConfig
-        name: enp14s0
+        name: enp2s0
         wakeOnLan:
           - magic
       - |-
