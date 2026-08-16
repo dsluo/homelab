@@ -123,7 +123,12 @@ nodes:
             match: disk.pretty_size >= "1 TB" && disk.model.startsWith("Samsung")
           maxSize: 100GB
     networkInterfaces:
-      - interface: enp2s0f0
+      - interface: bond0
+        bond:
+          interfaces:
+            - enp2s0f0
+            - enp2s0f1
+          mode: active-backup
         mtu: 1500
         vlans:
           - vlanId: 42
