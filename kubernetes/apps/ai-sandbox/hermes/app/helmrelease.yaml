@@ -20,9 +20,7 @@ spec:
       automountServiceAccountToken: false
       # ndots:1 stops the resolver from appending the namespace search domains to
       # every external lookup (the default ndots:5 turns `api.anthropic.com` into
-      # 5+ failed in-cluster queries first). Cheaper DNS, and it matters more here
-      # than it did for openclaw because the egress policy now runs a Cilium L7
-      # DNS proxy — every query is parsed (see networkpolicy.yaml).
+      # 5+ failed in-cluster queries first). Cheaper DNS.
       dnsConfig:
         options:
           - name: ndots
