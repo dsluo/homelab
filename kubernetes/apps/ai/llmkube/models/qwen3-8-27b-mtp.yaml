@@ -2,10 +2,14 @@
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: Model
 metadata:
-  name: qwen3-6-27b-mtp
+  name: qwen3-8-27b-mtp
 spec:
-  # HF cache path models--unsloth--Qwen3.6-27B-MTP-GGUF / Qwen3.6-27B-UD-Q4_K_XL.gguf
-  source: https://huggingface.co/unsloth/Qwen3.6-27B-MTP-GGUF/resolve/main/Qwen3.6-27B-UD-Q4_K_XL.gguf
+  # HF cache path models--unsloth--Qwen3.8-27B-GGUF / Qwen3.8-27B-UD-Q4_K_XL.gguf
+  # Qwen3.8 folds the MTP (nextn) layer into the base GGUF, so there is no
+  # separate -MTP-GGUF repo as there was for 3.6. Verified in the file's header:
+  # qwen35.nextn_predict_layers=1 plus blk.64.nextn.* tensors. The --spec-type
+  # draft-mtp flags below therefore still apply unchanged.
+  source: https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-UD-Q4_K_XL.gguf
   format: gguf
   quantization: UD-Q4_K_XL
   hardware:
@@ -28,9 +32,9 @@ spec:
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
 metadata:
-  name: qwen3-6-27b-mtp
+  name: qwen3-8-27b-mtp
 spec:
-  modelRef: qwen3-6-27b-mtp
+  modelRef: qwen3-8-27b-mtp
   runtime: llamacpp
   image: ghcr.io/ggml-org/llama.cpp:server-cuda-b10276@sha256:48a88af72b29e865d64f464e3dc1e4fbbad4a36c5e2298d72d13b690f9d17dd2
   runtimeClassName: nvidia
@@ -56,7 +60,7 @@ spec:
   # --tensor-split 6,1 is emitted by the Model's gpu.sharding (above), not here.
   extraArgs:
     - --alias
-    - Qwen/Qwen3.6-27B-MTP
+    - Qwen/Qwen3.8-27B
     - --verbosity
     - "4"
     - --cache-reuse
@@ -72,6 +76,11 @@ spec:
     - q8_0
     - --spec-draft-type-v
     - q8_0
+    # Retained from 3.6, deliberately. Qwen3.6 documented two thinking-mode
+    # presets -- 1.0 for general tasks and 0.6 for "precise coding tasks" -- and
+    # we picked the coding one. Qwen3.8's model card lists only the general 1.0
+    # and drops the coding preset, so 0.6 is now a local choice rather than an
+    # upstream recommendation. Bump to 1.0 if outputs feel under-diverse.
     - --temp
     - "0.6"
     - --top-p
@@ -107,7 +116,7 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: qwen3-6-27b-mtp
+  name: qwen3-8-27b-mtp
 spec:
   hostnames:
     - "qwen.${SECRET_DOMAIN}"
@@ -116,5 +125,5 @@ spec:
       namespace: network
   rules:
     - backendRefs:
-        - name: qwen3-6-27b-mtp
+        - name: qwen3-8-27b-mtp
           port: 8080

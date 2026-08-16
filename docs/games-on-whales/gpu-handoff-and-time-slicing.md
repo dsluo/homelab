@@ -1,7 +1,7 @@
 # GPU handoff: LLM ↔ game sessions (and why time-slicing breaks it)
 
 `talos1`'s two GPUs (3090 Ti + 3070) are normally held by **llmkube**
-(`qwen3-6-27b-mtp`, `nvidia.com/gpu: 2`). A game session pod needs both (the Wolf
+(`qwen3-8-27b-mtp`, `nvidia.com/gpu: 2`). A game session pod needs both (the Wolf
 sidecar's compositor+NVENC, plus the app container's rendering), so the LLM must
 yield. This doc explains the mechanism we use, why an earlier attempt (GPU
 time-slicing) broke it, and exactly what it would take to re-introduce time-slicing
@@ -109,8 +109,8 @@ untouched (6:1 keeps working, zero hacks), and accept that preemption won't fire
 (the node has slack) → drive the handoff manually:
 
 ```sh
-kubectl -n ai scale inferenceservice qwen3-6-27b-mtp --replicas=0   # before gaming
-kubectl -n ai scale inferenceservice qwen3-6-27b-mtp --replicas=1   # after
+kubectl -n ai scale inferenceservice qwen3-8-27b-mtp --replicas=0   # before gaming
+kubectl -n ai scale inferenceservice qwen3-8-27b-mtp --replicas=1   # after
 ```
 
 (This manual path is preserved on the `chore/gpu-without-preemption` branch.) The

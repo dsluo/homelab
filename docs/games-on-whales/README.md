@@ -151,7 +151,7 @@ decode, 1.41 ms render. The streaming pipeline is fully validated end-to-end.
 
 ### 5. Sharing the GPUs with the LLM — automatic handoff
 
-`talos1`'s two GPUs are normally held by **llmkube** (`qwen3-6-27b-mtp`,
+`talos1`'s two GPUs are normally held by **llmkube** (`qwen3-8-27b-mtp`,
 `nvidia.com/gpu: 2`). A game session needs both (Wolf + app), so the LLM has to
 yield. The operator can't set a `priorityClassName` on session pods, so the lever
 lives on the *consumer* side: llmkube's model is pinned to a negative PriorityClass
@@ -177,7 +177,7 @@ session needs both, and the scheduler **preempts** the `-100` qwen pod to fit.
 Validated live — a Firefox session preempted qwen on `talos1`:
 
 ```
-Normal  Preempted  pod/qwen3-6-27b-mtp-...-nj765
+Normal  Preempted  pod/qwen3-8-27b-mtp-...-nj765
   Preempted by pod eaef996d-... (alex-firefox) on node talos1
 ```
 

@@ -41,9 +41,9 @@ spec:
     # for a sandbox allowlist. Verify enforcement after reconcile with Hubble:
     # `cilium hubble observe --from-pod ai-sandbox/openclaw`.
     - toServices:
-        # Qwen chat model (llmkube), reached at http://qwen3-6-27b-mtp.ai:8080/v1.
+        # Qwen chat model (llmkube), reached at http://qwen3-8-27b-mtp.ai:8080/v1.
         - k8sService:
-            serviceName: qwen3-6-27b-mtp
+            serviceName: qwen3-8-27b-mtp
             namespace: ai
         # memini memory API.
         - k8sService:
