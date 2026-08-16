@@ -9,6 +9,11 @@
     ":disableRateLimiting",
     ":semanticCommits",
     "github>home-operations/renovate-presets",
+    "github>home-operations/renovate-presets//apps/cnpg.json5",
+    "github>home-operations/renovate-presets//apps/grafanaDashboards.json5",
+    "github>home-operations/renovate-presets//apps/llamacpp.json5",
+    "github>home-operations/renovate-presets//apps/searxng.json5",
+    "github>home-operations/renovate-presets//apps/talosFactory.json5",
   ],
   dependencyDashboard: true,
   dependencyDashboardTitle: "Renovate Dashboard",
@@ -40,32 +45,6 @@
     ],
   },
   packageRules: [
-    {
-      description: "llama.cpp uses bNNNN build numbers with variant prefix",
-      matchPackageNames: [
-        "ghcr.io/ggml-org/llama.cpp"
-      ],
-      versioning: "regex:^(?<compatibility>server-[a-z]+)-b(?<patch>\\d+)$",
-    },
-    {
-      description: "SearXNG uses calver versioning (YYYY.M.patch-commit)",
-      matchPackageNames: [
-        "ghcr.io/searxng/searxng",
-        "searxng/searxng",
-        "docker.io/searxng/searxng"
-      ],
-      versioning: "regex:^(?<major>\\d{4})\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-(?<build>.+))?$",
-    },
-    {
-      description: "Override Helmfile Dependency Name",
-      matchDatasources: [
-        "docker"
-      ],
-      matchManagers: [
-        "helmfile"
-      ],
-      overrideDepName: "{{packageName}}",
-    },
     {
       description: "Flux Operator Group",
       groupName: "flux-operator",
@@ -253,6 +232,23 @@
       ],
       addLabels: [
         "renovate/github-release"
+      ],
+    },
+    {
+      description: "Grafana dashboard revisions are bare integers, so every bump reads as a major; restore the preset's chore framing that the generic major rule above overrides",
+      matchDatasources: [
+        "custom.grafana-dashboards"
+      ],
+      semanticCommitType: "chore",
+      semanticCommitScope: "grafana-dashboards",
+      commitMessagePrefix: "{{semanticCommitType}}({{semanticCommitScope}}):",
+      commitMessageTopic: "dashboard {{sourceDirectory}}",
+      commitMessageExtra: "( {{currentVersion}} ➔ {{newVersion}} )",
+      labels: [
+        "type/patch"
+      ],
+      addLabels: [
+        "renovate/grafana-dashboard"
       ],
     },
   ],
