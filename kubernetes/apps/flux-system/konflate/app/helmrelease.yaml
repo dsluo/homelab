@@ -28,6 +28,12 @@ spec:
           sectionName: https
       hostnames:
         - konflate.${SECRET_DOMAIN}
+    resources:
+      limits:
+        memory: 2Gi
+      requests:
+        cpu: 50m
+        memory: 512Mi
     persistence:
       enabled: true
       storageClass: openebs-hostpath
