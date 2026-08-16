@@ -54,7 +54,14 @@ spec:
             gateway.envoyproxy.io/owning-gateway-name: envoy-cloudflare
       toPorts:
         - ports:
-            - port: "443"
+            # 10443, NOT 443. Envoy Gateway shifts privileged listener ports by
+            # +10000 (svc/envoy-cloudflare is `443 -> targetPort 10443`), and the
+            # DNAT described above happens BEFORE the policy verdict — so what
+            # this rule sees is the backend port, not the service port. A "443"
+            # here matches nothing and silently drops every server-side OIDC
+            # call. (The kube-dns rule above gets to say 53 only because that
+            # Service is genuinely 53 -> 53.)
+            - port: "10443"
               protocol: TCP
     # In-cluster services hermes is allowed to reach, named directly — NOT the
     # whole `ai` namespace, which also runs the embedding/reranker models and the
