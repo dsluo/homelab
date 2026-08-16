@@ -38,8 +38,8 @@ locals {
     "trunk-native40" = {
       comment = "services"
       interfaces = [
-        "sfp-sfpplus17", # storage
-        "sfp-sfpplus18", # storage
+        "sfp-sfpplus1", # storage
+        "sfp-sfpplus2", # storage
       ]
       vlan  = 40
       trunk = true
@@ -47,9 +47,10 @@ locals {
     "trunk-native42" = {
       comment = "kubernetes"
       interfaces = [
-        "sfp-sfpplus15", # talos0
-        "sfp-sfpplus16", # talos0
-        "sfp-sfpplus19", # talos1
+        "sfp-sfpplus3", # talos0
+        "sfp-sfpplus4", # talos0
+        "sfp-sfpplus5", # talos1
+        "sfp-sfpplus6", # talos1
       ]
       vlan  = 42
       trunk = true
@@ -57,11 +58,12 @@ locals {
   }
   interface_comments = {
     "ether1"        = "management"
-    "sfp-sfpplus15" = "talos0"
-    "sfp-sfpplus16" = "talos0"
-    "sfp-sfpplus17" = "storage"
-    "sfp-sfpplus18" = "storage"
-    "sfp-sfpplus19" = "talos1"
+    "sfp-sfpplus1"  = "storage"
+    "sfp-sfpplus2"  = "storage"
+    "sfp-sfpplus3"  = "talos0"
+    "sfp-sfpplus4"  = "talos0"
+    "sfp-sfpplus5"  = "talos1"
+    "sfp-sfpplus6"  = "talos1"
     "sfp-sfpplus20" = "emily-desktop"
     "sfp-sfpplus21" = "sw-util downstream"
     "sfp-sfpplus23" = "sw-access downstream"
