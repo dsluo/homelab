@@ -35,7 +35,11 @@ spec:
       # confidential modes — so the Pocket-ID client has to accept it. We still
       # pass the client secret (confidential client) for the token endpoint.
       OIDC_PKCE_ENABLED: "true"
-      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/NousResearch/hermes-agent@main/website/static/img/logo.png"
+      # PNG, not the .svg every other app here uses: selfh.st publishes
+      # hermes-agent as PNG/WebP only (no SVG variant exists). Still ~10x
+      # smaller than upstream's 1.3MB logo, which the pocket-id operator would
+      # have to fetch and re-upload on every reconcile.
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/png/hermes-agent.png"
       KOPIUR_CAPACITY: 10Gi
       # Match the uid baked into the image (Dockerfile: `useradd -u 10000 -m -d
       # /opt/data hermes`). The restore mover writes files owned by its own uid
