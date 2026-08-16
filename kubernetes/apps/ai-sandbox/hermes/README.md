@@ -171,8 +171,8 @@ provider (reachable per the egress policy):
 ```sh
 kubectl -n ai-sandbox exec -it deploy/hermes -- sh -c '
   hermes config set model.provider custom
-  hermes config set model.default qwen3-6-27b-mtp
-  hermes config set model.base_url http://qwen3-6-27b-mtp.ai:8080/v1
+  hermes config set model.default qwen3-8-27b-mtp
+  hermes config set model.base_url http://qwen3-8-27b-mtp.ai:8080/v1
   hermes config set model.context_length 262144
 '
 ```
