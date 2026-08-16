@@ -58,8 +58,11 @@ spec:
             # (docker/entrypoint-dispatch.sh) that exec's s6-overlay's /init when
             # it owns PID 1, which is what supervises the gateway and dashboard.
             # Overriding command would bypass /init and skip the whole bootstrap
-            # (volume seeding, profile reconcile, dashboard service). `args` maps
-            # to the image CMD, which the dispatcher forwards.
+            # (volume seeding, profile reconcile, dashboard service).
+            #
+            # The image defines no CMD, so there is no default to inherit: the
+            # dispatcher forwards these args to docker/main-wrapper.sh, which
+            # routes a non-executable first argument to `hermes "$@"`.
             args:
               - gateway
               - run
