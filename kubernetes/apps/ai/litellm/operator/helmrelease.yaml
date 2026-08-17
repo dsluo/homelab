@@ -1,0 +1,39 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app litellm-operator
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  # Unlike llmkube, this chart ships its six CRDs in the Helm crds/ dir rather
+  # than as value-gated templates, so upgrades depend on install/upgrade.crds.
+  # No block here: kubernetes/flux/cluster/ks.yaml patches CreateReplace onto
+  # every HelmRelease under kubernetes/apps, so the CRDs already track the chart.
+  values:
+    replicaCount: 1
+    controller:
+      leaderElection:
+        # Single replica, so the lease only adds startup latency after a
+        # restart. Matches the llmkube controller next door.
+        enabled: false
+    llmkube:
+      # The wiring. Mirrors every Ready inference.llmkube.dev InferenceService
+      # into a LiteLLMModel in the same namespace, which the proxy then adopts —
+      # so the three models under ../../llmkube/models show up on the proxy
+      # without a hand-written LiteLLMModel each. Adds RBAC for
+      # inference.llmkube.dev and sets ENABLE_LLMKUBE_AUTOREGISTER.
+      #
+      # The operator only discovers the llmkube CRDs at startup: installing them
+      # later (or reinstalling llmkube) needs an operator restart to pick up.
+      # They are already present here, since the llmkube Kustomization installs
+      # them into this same namespace.
+      autoRegister: true
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        memory: 128Mi

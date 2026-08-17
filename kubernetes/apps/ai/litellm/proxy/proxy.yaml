@@ -1,0 +1,110 @@
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMProxy
+metadata:
+  name: litellm
+spec:
+  # main-stable resolved to exactly this digest when pinned; using the semver
+  # tag instead lets renovate raise real version bumps rather than anonymous
+  # digest churn on a rolling tag.
+  image: ghcr.io/berriai/litellm:v1.97.0@sha256:468c25f35f3e5ec4e414974f00deab93337b1b4d9953cabcfd3722e59415f834
+  replicas: 1
+
+  # api mode pushes model_list to the proxy's admin API instead of rendering it
+  # into config.yaml, so the proxy does NOT roll when the model set changes.
+  # That matters here specifically: qwen3-8-27b-mtp runs under the
+  # gpu-preemptible PriorityClass and gets evicted whenever a games-on-whales
+  # session claims the GPUs, so its InferenceService endpoint churns by design.
+  # In file mode every one of those cycles would restart the proxy and drop
+  # in-flight requests to the embedding and reranker models too.
+  #
+  # Everything except model_list (settings, and the route below) still renders
+  # into config.yaml, with general_settings.store_model_in_db forced true.
+  applyMode: api
+  apiAccess:
+    # The operator authenticates admin-API calls with the proxy master key. The
+    # endpoint defaults to the operator-managed Service, http://litellm.ai.svc:4000.
+    masterKeyRef:
+      name: litellm-secret
+      key: LITELLM_MASTER_KEY
+
+  # No modelSelector, so the proxy adopts every LiteLLMModel in the ai
+  # namespace — today exactly the three the operator generates from the llmkube
+  # InferenceServices: qwen3-8-27b-mtp, qwen3-embedding-0-6b and
+  # qwen3-reranker-0-6b. There are no hand-written models.
+  #
+  # Known gap on the reranker: auto-registration always emits params.model as
+  # openai/<modelRef>, and litellm's rerank dispatch (litellm/rerank_api/main.py)
+  # has no openai branch — it handles cohere, litellm_proxy, azure_ai, infinity,
+  # together_ai, jina_ai, nvidia_nim, bedrock, hosted_vllm, deepinfra,
+  # fireworks_ai, voyage and watsonx. So qwen3-reranker-0-6b is published here
+  # but raises on /v1/rerank. Nothing calls it: memini reaches the llama.cpp
+  # reranker directly. To fix it, add a LiteLLMModel of the same name using
+  # hosted_vllm/<name> — the operator skips a same-named model that lacks its
+  # managed-by: llmkube label, so it shadows the generated one.
+
+  env:
+    - name: LITELLM_MASTER_KEY
+      valueFrom:
+        secretKeyRef:
+          name: litellm-secret
+          key: LITELLM_MASTER_KEY
+    # Encrypts provider credentials at rest in the DB. Upstream is explicit that
+    # this is set once and never rotated — changing it makes every already
+    # stored credential undecryptable.
+    - name: LITELLM_SALT_KEY
+      valueFrom:
+        secretKeyRef:
+          name: litellm-secret
+          key: LITELLM_SALT_KEY
+
+    # litellm assembles DATABASE_URL from these itself when the config file sets
+    # no general_settings.database_url (proxy_cli.py -> utils.
+    # construct_database_url_from_env_vars). Going through the split vars is what
+    # lets the CNPG basic-auth Secret be consumed as-is: a single DATABASE_URL
+    # would mean hand-writing a second copy of the password into a connection
+    # string, which then silently rots if CNPG ever rotates the role.
+    - name: DATABASE_HOST
+      value: postgres-rw.database.svc.cluster.local:5432
+    - name: DATABASE_NAME
+      value: litellm
+    - name: DATABASE_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: litellm-postgres-secret
+          key: username
+    - name: DATABASE_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: litellm-postgres-secret
+          key: password
+
+  # The image entrypoint runs `prisma migrate deploy` before the server binds,
+  # and on a fresh database that is ~30 tables. The operator's default liveness
+  # probe (10s delay, 3 failures, 10s period) kills the pod around 40s, which is
+  # inside that window — the CRD has no startupProbe field, so the grace has to
+  # come from a slack failureThreshold on liveness instead. Readiness keeps the
+  # default and correctly holds the pod out of the Service until migrations end.
+  livenessProbe:
+    httpGet:
+      path: /health/liveliness
+      port: 4000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 30
+
+  route:
+    hostnames:
+      - "litellm.${SECRET_DOMAIN}"
+    parentRefs:
+      - name: envoy-internal
+        namespace: network
+        sectionName: https
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 2Gi

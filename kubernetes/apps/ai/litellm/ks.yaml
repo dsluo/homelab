@@ -1,0 +1,51 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app litellm-operator
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/ai/litellm/operator
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - name: cluster-secrets
+        kind: Secret
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  # wait: true, unlike the llmkube pair next door. The litellm Kustomization
+  # below applies CRs that a validating webhook admits, and the operator
+  # self-manages that webhook's serving cert — it patches the CA bundle into the
+  # ValidatingWebhookConfiguration at startup. Applying a LiteLLMProxy before
+  # that lands fails admission outright, not just "CRD not found".
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app litellm
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/ai/litellm/proxy
+  components:
+    - ../../../../components/database
+  dependsOn:
+    - name: litellm-operator
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - name: cluster-secrets
+        kind: Secret
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: false
