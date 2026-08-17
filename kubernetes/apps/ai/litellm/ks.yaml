@@ -6,6 +6,20 @@ metadata:
 spec:
   interval: 1h
   path: ./kubernetes/apps/ai/litellm/operator
+  dependsOn:
+    # Ordering, not just presence. llmkube.autoRegister is resolved once at
+    # operator startup: a single RESTMapping for inference.llmkube.dev/
+    # InferenceService, and on NoMatch the reconciler is never wired up again
+    # for the life of the process. Losing that race on a rebuild is not
+    # "no new models" — applyMode: api means syncModels prunes every model
+    # tagged managed_by: litellm-operator that isn't in the desired set, and
+    # with auto-registration off that set is empty, so the proxy converges to
+    # zero models until someone restarts the operator by hand.
+    #
+    # llmkube is wait: true for this reason; without it the dependency would be
+    # satisfied the moment the HelmRelease object is applied, well before the
+    # chart has installed the CRDs.
+    - name: llmkube
   postBuild:
     substitute:
       APP: *app

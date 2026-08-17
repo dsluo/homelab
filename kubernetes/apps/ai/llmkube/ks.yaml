@@ -18,7 +18,10 @@ spec:
     name: flux-system
     namespace: flux-system
   targetNamespace: ai
-  wait: false
+  # wait: true so dependents block until the HelmRelease is actually Ready, not
+  # just applied. litellm-operator runs with llmkube.autoRegister, and that is a
+  # one-shot capability check at operator startup — see ../litellm/ks.yaml.
+  wait: true
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
