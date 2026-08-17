@@ -16,9 +16,19 @@ spec:
     replicaCount: 1
     controller:
       leaderElection:
-        # Single replica, so the lease only adds startup latency after a
-        # restart. Matches the llmkube controller next door.
-        enabled: false
+        # Left on (the chart default), deliberately unlike the llmkube
+        # controller next door — do not "harmonize" the two. replicaCount is 1
+        # but the chart sets no strategy, so the Deployment rolls with the
+        # default maxSurge 25%, which rounds up to one surge pod: two operator
+        # processes overlap on every chart upgrade. llmkube tolerates that
+        # because it only writes Kubernetes objects idempotently; this operator
+        # writes to litellm's admin API with POST /model/new, which is not
+        # idempotent and which litellm lets succeed twice for one model_name.
+        # Two processes reconciling at once can leave duplicate rows that
+        # syncModels can never reap — its managed map is keyed by ModelName, so
+        # it only ever tracks one of the pair. The lease costs some startup
+        # latency after a restart; that is the cheaper side.
+        enabled: true
     llmkube:
       # The wiring. Mirrors every Ready inference.llmkube.dev InferenceService
       # into a LiteLLMModel in the same namespace, which the proxy then adopts —
@@ -28,8 +38,8 @@ spec:
       #
       # The operator only discovers the llmkube CRDs at startup: installing them
       # later (or reinstalling llmkube) needs an operator restart to pick up.
-      # They are already present here, since the llmkube Kustomization installs
-      # them into this same namespace.
+      # ../ks.yaml therefore orders this Kustomization behind llmkube, which is
+      # wait: true so the CRDs exist before this pod ever starts.
       autoRegister: true
     resources:
       requests:
