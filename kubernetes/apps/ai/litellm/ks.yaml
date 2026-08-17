@@ -7,18 +7,10 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/ai/litellm/operator
   dependsOn:
-    # Ordering, not just presence. llmkube.autoRegister is resolved once at
-    # operator startup: a single RESTMapping for inference.llmkube.dev/
-    # InferenceService, and on NoMatch the reconciler is never wired up again
-    # for the life of the process. Losing that race on a rebuild is not
-    # "no new models" — applyMode: api means syncModels prunes every model
-    # tagged managed_by: litellm-operator that isn't in the desired set, and
-    # with auto-registration off that set is empty, so the proxy converges to
-    # zero models until someone restarts the operator by hand.
-    #
-    # llmkube is wait: true for this reason; without it the dependency would be
-    # satisfied the moment the HelmRelease object is applied, well before the
-    # chart has installed the CRDs.
+    # autoRegister is resolved once at operator startup, so starting before the
+    # llmkube CRDs exist disables it for the life of the pod — and under
+    # applyMode: api that empty desired set makes syncModels prune the proxy to
+    # zero models. llmkube is wait: true so this ordering actually holds.
     - name: llmkube
   postBuild:
     substitute:
@@ -32,11 +24,9 @@ spec:
     name: flux-system
     namespace: flux-system
   targetNamespace: ai
-  # wait: true, unlike the llmkube pair next door. The litellm Kustomization
-  # below applies CRs that a validating webhook admits, and the operator
-  # self-manages that webhook's serving cert — it patches the CA bundle into the
-  # ValidatingWebhookConfiguration at startup. Applying a LiteLLMProxy before
-  # that lands fails admission outright, not just "CRD not found".
+  # The proxy below is admitted by a validating webhook whose serving cert the
+  # operator self-manages, so applying a LiteLLMProxy early fails admission
+  # outright rather than merely "CRD not found".
   wait: true
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
