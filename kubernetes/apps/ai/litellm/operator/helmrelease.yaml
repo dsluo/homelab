@@ -1,0 +1,36 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app litellm-operator
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    replicaCount: 1
+    controller:
+      leaderElection:
+        # On (the chart default), deliberately unlike llmkube next door — do not
+        # harmonize the two. The chart sets no strategy, so even at one replica
+        # the default maxSurge overlaps two operators on every upgrade, and this
+        # one writes to litellm's admin API via non-idempotent POST /model/new.
+        # Duplicate rows that result are unreapable: syncModels keys on
+        # ModelName and only ever tracks one of the pair.
+        enabled: true
+    llmkube:
+      # Mirrors every Ready inference.llmkube.dev InferenceService into a
+      # LiteLLMModel the proxy adopts, so ../../llmkube/models show up without a
+      # hand-written model each.
+      #
+      # Discovery happens once at operator startup, so installing the llmkube
+      # CRDs later needs a restart to pick up. ../ks.yaml orders this behind
+      # llmkube (wait: true) to keep that from happening on a rebuild.
+      autoRegister: true
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        memory: 128Mi

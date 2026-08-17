@@ -1,0 +1,55 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app litellm-operator
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/ai/litellm/operator
+  dependsOn:
+    # autoRegister is resolved once at operator startup, so starting before the
+    # llmkube CRDs exist disables it for the life of the pod — and under
+    # applyMode: api that empty desired set makes syncModels prune the proxy to
+    # zero models. llmkube is wait: true so this ordering actually holds.
+    - name: llmkube
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - name: cluster-secrets
+        kind: Secret
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  # The proxy below is admitted by a validating webhook whose serving cert the
+  # operator self-manages, so applying a LiteLLMProxy early fails admission
+  # outright rather than merely "CRD not found".
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app litellm
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/ai/litellm/proxy
+  components:
+    - ../../../../components/database
+  dependsOn:
+    - name: litellm-operator
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - name: cluster-secrets
+        kind: Secret
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: false

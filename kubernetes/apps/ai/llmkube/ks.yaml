@@ -18,7 +18,9 @@ spec:
     name: flux-system
     namespace: flux-system
   targetNamespace: ai
-  wait: false
+  # Ready, not merely applied, so dependents land after the CRDs exist —
+  # litellm-operator needs that at startup. See ../litellm/ks.yaml.
+  wait: true
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
