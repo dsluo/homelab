@@ -38,11 +38,17 @@ spec:
   path: ./kubernetes/apps/ai/litellm/proxy
   components:
     - ../../../../components/database
+    - ../../../../components/oidc
   dependsOn:
     - name: litellm-operator
+    - name: pocket-id
+      namespace: security
   postBuild:
     substitute:
       APP: *app
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/litellm.svg"
+      OIDC_APP_NAME: LiteLLM
+      OIDC_CALLBACK_PATH: /sso/callback
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
