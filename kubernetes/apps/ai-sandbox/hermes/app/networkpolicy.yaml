@@ -1,0 +1,122 @@
+---
+# Default-deny egress for hermes. The pod runs untrusted / prompt-injected
+# agent code (gVisor-sandboxed), so this is the control that contains a
+# breakout: the pod may reach DNS, Pocket-ID, the in-cluster LLMs, and the
+# public internet, but NOT the Kubernetes API, the rest of the LAN, or other
+# in-cluster services.
+#
+# Egress rules switch this endpoint to default-deny egress (ingress is left
+# unrestricted so the envoy-internal route and kubelet probes keep working).
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: hermes
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: hermes
+  egress:
+    # Cluster DNS (Helm-managed CoreDNS in kube-system).
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # Pocket-ID, reached through the envoy-cloudflare gateway that fronts it.
+    #
+    # This is new relative to openclaw and is the one real widening in this
+    # policy. openclaw never spoke to the IdP itself — the Envoy forward-auth
+    # filter did, out in the network namespace. Hermes authenticates its own
+    # dashboard, so the POD has to reach the issuer server-side for OIDC
+    # discovery, the token exchange, and the JWKS fetch.
+    #
+    # This selects the gateway PODS, not the hostname, and that is deliberate:
+    # `pocket-id.${SECRET_DOMAIN}` resolves (via k8s-gateway) to the
+    # envoy-cloudflare LoadBalancer VIP, and with kube-proxy replacement Cilium
+    # DNATs a service VIP to its backend pod BEFORE resolving the destination
+    # identity for policy. So the policy engine only ever sees the gateway pod's
+    # identity — a `toFQDNs` or `toCIDR` rule on the VIP would never match. Same
+    # reason the `toServices` rule below is written the way it is.
+    #
+    # SCOPE, honestly stated: Envoy routes by Host header, so allowing the
+    # gateway pod transitively allows every route behind envoy-cloudflare, not
+    # just Pocket-ID. There is no way to narrow this at L3/L4 while the IdP
+    # shares a gateway — tightening it means giving pocket-id its own Gateway.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+            gateway.envoyproxy.io/owning-gateway-namespace: network
+            gateway.envoyproxy.io/owning-gateway-name: envoy-cloudflare
+      toPorts:
+        - ports:
+            # 10443, NOT 443. Envoy Gateway shifts privileged listener ports by
+            # +10000 (svc/envoy-cloudflare is `443 -> targetPort 10443`), and the
+            # DNAT described above happens BEFORE the policy verdict — so what
+            # this rule sees is the backend port, not the service port. A "443"
+            # here matches nothing and silently drops every server-side OIDC
+            # call. (The kube-dns rule above gets to say 53 only because that
+            # Service is genuinely 53 -> 53.)
+            - port: "10443"
+              protocol: TCP
+    # In-cluster services hermes is allowed to reach, named directly — NOT the
+    # whole `ai` namespace, which also runs the embedding/reranker models and the
+    # other MCP servers that hermes must not reach. `toServices` resolves each
+    # Service to its current backend pods (with kube-proxy replacement Cilium
+    # handles the ClusterIP->pod translation), so this follows the Service's own
+    # endpoint selector and self-heals if llmkube/ToolHive relabel pods on a chart
+    # bump. (Matching the `qwen.${SECRET_DOMAIN}` ingress hostname would be worse —
+    # it resolves to the SHARED envoy-internal gateway IP that fronts every route.)
+    #
+    # NOTE: `toServices` can't be paired with `toPorts`, so this allows whatever
+    # ports the backends expose. qwen and the searxng proxy are 8080-only; memini
+    # also exposes :9090 (metrics), which hermes can therefore reach. Acceptable
+    # for a sandbox allowlist. (Verifying enforcement needs Hubble, which is
+    # currently disabled cluster-wide — see kube-system/cilium.)
+    - toServices:
+        # Qwen chat model (llmkube), reached at http://qwen3-8-27b-mtp.ai:8080/v1.
+        - k8sService:
+            serviceName: qwen3-8-27b-mtp
+            namespace: ai
+        # memini memory API.
+        - k8sService:
+            serviceName: memini
+            namespace: ai
+        # SearXNG MCP server — the proxy is the endpoint clients connect to
+        # (the HTTPRoute backs mcp-mcp-searxng-proxy, not mcp-mcp-searxng).
+        - k8sService:
+            serviceName: mcp-mcp-searxng-proxy
+            namespace: ai
+    # Public internet only. NOTE: Cilium's `world` entity also covers RFC1918
+    # LAN hosts (the MikroTik at 10.0.42.1, other homelab devices), so we use a
+    # CIDR allow that explicitly excludes private + link-local ranges. This
+    # keeps kube-apiserver, the pod/service CIDRs, other namespaces, and the LAN
+    # unreachable while still permitting external egress (e.g. Anthropic API,
+    # agent web access). The one deliberate hole in the private ranges is the
+    # envoy-cloudflare rule above.
+    #
+    # FUTURE HARDENING (see README "Deferred follow-ups"): replace this broad
+    # 0.0.0.0/0 rule with a `toFQDNs` allowlist of only the provider domains the
+    # agent actually needs. That additionally requires upgrading the CoreDNS rule
+    # above to L7 (add `rules: { dns: [{ matchPattern: "*" }] }` under its
+    # toPorts) so Cilium's DNS proxy can learn the name->IP mappings. Note this
+    # would be the cluster's first L7 policy. Deferred until the needed domain
+    # set is known.
+    - toCIDRSet:
+        - cidr: 0.0.0.0/0
+          except:
+            - 10.0.0.0/8
+            - 172.16.0.0/12
+            - 192.168.0.0/16
+            - 169.254.0.0/16
+            - 100.64.0.0/10
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "80"
+              protocol: TCP

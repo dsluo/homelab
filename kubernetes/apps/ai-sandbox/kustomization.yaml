@@ -6,4 +6,4 @@ components:
   - ../../components/sops
 resources:
   - ./namespace.yaml
-  - ./openclaw/ks.yaml
+  - ./hermes/ks.yaml

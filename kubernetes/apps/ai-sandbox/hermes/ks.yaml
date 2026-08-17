@@ -1,0 +1,59 @@
+---
+# NOTE: this app runs under RuntimeClass "gvisor", which needs the
+# siderolabs/gvisor extension + user.max_user_namespaces>0 on talos1. Apply the
+# Talos config (extension = reboot) to talos1 BEFORE letting Flux reconcile
+# this, or the pod won't schedule. See README.md.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app hermes
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/ai-sandbox/hermes/app
+  components:
+    # Pocket-ID OIDC *client only* — deliberately NOT ../../../../components/oidc/envoy.
+    # Unlike openclaw (which had no OIDC of its own and was fronted by an Envoy
+    # forward-auth SecurityPolicy), Hermes' dashboard authenticates against
+    # Pocket-ID itself via its bundled self-hosted OIDC provider. One redirect
+    # flow instead of two. See README.md "Authentication".
+    - ../../../../components/oidc
+    - ../../../../components/kopiur
+  dependsOn:
+    - name: pocket-id
+      namespace: security
+    - name: kopiur-repository
+      namespace: kopiur-system
+  postBuild:
+    substitute:
+      APP: *app
+      OIDC_APP_NAME: Hermes Agent
+      # Hermes' self-hosted OIDC provider serves its callback at /auth/callback
+      # (plugins/dashboard_auth/self_hosted), not the /oauth2/callback default
+      # that the Envoy forward-auth filter used.
+      OIDC_CALLBACK_PATH: /auth/callback
+      # The provider sends PKCE (S256) on every exchange — in both public and
+      # confidential modes — so the Pocket-ID client has to accept it. We still
+      # pass the client secret (confidential client) for the token endpoint.
+      OIDC_PKCE_ENABLED: "true"
+      # PNG, not the .svg every other app here uses: selfh.st publishes
+      # hermes-agent as PNG/WebP only (no SVG variant exists). Still ~10x
+      # smaller than upstream's 1.3MB logo, which the pocket-id operator would
+      # have to fetch and re-upload on every reconcile.
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/png/hermes-agent.png"
+      KOPIUR_CAPACITY: 10Gi
+      # Match the uid baked into the image (Dockerfile: `useradd -u 10000 -m -d
+      # /opt/data hermes`). The restore mover writes files owned by its own uid
+      # and a non-root mover can't chown, so it must run as the app's uid or the
+      # restored data volume is unreadable to the gateway.
+      KOPIUR_UID: "10000"
+      KOPIUR_GID: "10000"
+    substituteFrom:
+      - name: cluster-secrets
+        kind: Secret
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai-sandbox
+  wait: false
