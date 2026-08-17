@@ -7,6 +7,11 @@ spec:
   image: ghcr.io/berriai/litellm:v1.97.0@sha256:468c25f35f3e5ec4e414974f00deab93337b1b4d9953cabcfd3722e59415f834
   replicas: 1
 
+  # Pod template rather than the Deployment, which is the operator's — reloader
+  # falls back to template annotations when the workload carries none.
+  podAnnotations:
+    reloader.stakater.com/auto: "true"
+
   # Pushes model_list to the admin API instead of config.yaml, so the proxy does
   # not roll when the model set changes. qwen3-8-27b-mtp is gpu-preemptible and
   # its endpoint churns by design; in file mode each eviction would restart the
@@ -58,6 +63,49 @@ spec:
         secretKeyRef:
           name: litellm-postgres-secret
           key: password
+
+    # /ui SSO against pocket-id via litellm's "generic" OIDC provider, which has
+    # no discovery-document path — hence the endpoints wired individually out of
+    # the Secret the pocket-id operator writes. Who may log in is gated at
+    # pocket-id by the litellm-users group (usergroup.yaml), not here.
+    - name: PROXY_BASE_URL
+      value: "https://litellm.${SECRET_DOMAIN}"
+    - name: GENERIC_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          name: &oidcSecret litellm-oidc-credentials
+          key: OIDC_CLIENT_ID
+    - name: GENERIC_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: *oidcSecret
+          key: OIDC_CLIENT_SECRET
+    - name: GENERIC_AUTHORIZATION_ENDPOINT
+      valueFrom:
+        secretKeyRef:
+          name: *oidcSecret
+          key: OIDC_AUTHORIZATION_URL
+    - name: GENERIC_TOKEN_ENDPOINT
+      valueFrom:
+        secretKeyRef:
+          name: *oidcSecret
+          key: OIDC_TOKEN_URL
+    - name: GENERIC_USERINFO_ENDPOINT
+      valueFrom:
+        secretKeyRef:
+          name: *oidcSecret
+          key: OIDC_USERINFO_URL
+    # profile has to stay: pocket-id only returns preferred_username under it.
+    - name: GENERIC_SCOPE
+      value: openid email profile
+
+    # pocket-id emits no role claim, so logins land as internal_user except this
+    # id, which litellm promotes to proxy_admin on each callback. Username, not
+    # sub — sub is a UUID that does not exist until the user is created.
+    - name: GENERIC_USER_ID_ATTRIBUTE
+      value: preferred_username
+    - name: PROXY_ADMIN_ID
+      value: dsluo
 
   # The entrypoint runs `prisma migrate deploy` (~30 tables on a fresh DB)
   # before the server binds, which outlasts the operator's default liveness

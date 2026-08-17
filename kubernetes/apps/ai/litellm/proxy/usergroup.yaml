@@ -1,0 +1,12 @@
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: litellm-users
+spec:
+  friendlyName: LiteLLM Users
+  allowedOIDCClients:
+    - name: litellm
+  users:
+    userRefs:
+      - name: david
+        namespace: security
