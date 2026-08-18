@@ -36,7 +36,7 @@ metadata:
 spec:
   modelRef: qwen3-8-27b-mtp
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b10450@sha256:5f245844a3244287bf69d4964670a021acf6f336467ae1feaa0024b4665c018d
+  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b10481@sha256:b2497f8834f5ecb4e38530f6bf2734b8e0be107ff48e4720145911c86930f2ce
   runtimeClassName: nvidia
   replicas: 1
   # Negative priority (value -100) so games-on-whales Wolf streaming sessions
