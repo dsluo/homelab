@@ -24,7 +24,7 @@ spec:
       volume:
         nfs:
           server: storage.lan
-          path: /mnt/warm/backup/kopia
+          path: /mnt/warm/backups/kopia
   encryption:
     passwordSecretRef:
       name: kopiur-repository-secret
