@@ -182,7 +182,7 @@ spec:
       media:
         type: nfs
         server: storage.lan
-        path: /mnt/tank/media/torrents
+        path: /mnt/warm/media/torrents
         advancedMounts:
           *app :
             *app :

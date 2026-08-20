@@ -78,7 +78,7 @@ spec:
           - path: /config
       media:
         type: nfs
-        path: /mnt/tank/media/media
+        path: /mnt/warm/media/media
         server: storage.lan
         advancedMounts:
           jellyfin:

@@ -116,7 +116,7 @@ spec:
       media:
         type: nfs
         server: storage.lan
-        path: /mnt/tank/media/usenet
+        path: /mnt/warm/media/usenet
         globalMounts:
           - path: /usenet
       tmp:
