@@ -19,6 +19,14 @@
         "GRAFANA_URL": "${GRAFANA_URL}",
         "GRAFANA_SERVICE_ACCOUNT_TOKEN": "${GRAFANA_SERVICE_ACCOUNT_TOKEN}"
       }
+    },
+    "unifi-network": {
+      "type": "stdio",
+      "command": "unifi-network-mcp"
+    },
+    "unifi-protect": {
+      "type": "stdio",
+      "command": "unifi-protect-mcp"
     }
   }
 }
