@@ -9,7 +9,7 @@ spec:
 
   targetEndpoints:
     - targets:
-        - "homeassistant.lan:8123"
+        - "homeassistant.lan"
       scheme: http
       path: /api/prometheus
 
