@@ -1,0 +1,160 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app bifrost
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    fullnameOverride: *app
+    # Bifrost OSS does not sync config between processes, so a second replica
+    # would serve a stale view of anything created through the UI.
+    replicaCount: 1
+    image:
+      repository: docker.io/maximhq/bifrost
+      # Stay on the v1.6.x line; a v2.0.0-prerelease* line also publishes to
+      # this repository and Renovate will offer it if allowed to.
+      tag: v1.6.11@sha256:ef8e686b3588884066ec3d0e57f3fc15136b11047ad94678adefe5a9573539af
+    deploymentAnnotations:
+      # The chart already checksums the rendered config.json into the pod
+      # template; this covers bifrost-secret, which it does not.
+      reloader.stakater.com/auto: "true"
+
+    # Pin the chart's default runtime uid/gid so KOPIUR_UID/GID=1000 (ks.yaml)
+    # stays anchored to a real in-repo value and can't drift on a chart bump —
+    # the kopiur movers write restored files owned by that uid.
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+
+    storage:
+      mode: sqlite
+      persistence:
+        enabled: true
+        # Setting existingClaim is also what makes the chart render a
+        # Deployment instead of a StatefulSet (templates/deployment.yaml:3),
+        # which is what we want: kopiur owns the PVC, not a volumeClaimTemplate.
+        existingClaim: *app
+      configStore:
+        enabled: true
+      logsStore:
+        enabled: true
+
+    bifrost:
+      appDir: /app/data
+      logStyle: json
+      # Everything the config store holds — including provider keys added
+      # through the UI — is encrypted with this. Never rotate it: a changed key
+      # makes stored secrets unreadable, kopiur restores included.
+      #
+      # Both settings are needed. encryptionKeySecret injects the env var, but
+      # despite what the chart's values.yaml claims, templates/_helpers.tpl
+      # writes config.json's encryption_key only from bifrost.encryptionKey —
+      # so the env.* reference has to be spelled out here too. It names an env
+      # var rather than carrying a value, so nothing secret lands in the
+      # ConfigMap the chart renders this into.
+      encryptionKey: env.BIFROST_ENCRYPTION_KEY
+      encryptionKeySecret:
+        name: bifrost-secret
+        key: BIFROST_ENCRYPTION_KEY
+      # Bootstraps the first admin account. Resolved from the env var of the
+      # same name, supplied by envFrom below.
+      setupToken: env.BIFROST_SETUP_TOKEN
+      authConfig:
+        # This is the only gate on the dashboard and /api/*. The HTTPRoute
+        # carries no OIDC SecurityPolicy, and any pod can reach
+        # bifrost.ai.svc:8080 directly regardless, so LAN and in-cluster
+        # callers face this and nothing else. Do not disable.
+        isEnabled: true
+        existingSecret: bifrost-secret
+        usernameKey: BIFROST_ADMIN_USERNAME
+        passwordKey: BIFROST_ADMIN_PASSWORD
+      client:
+        # Same reasoning: the only gate on /v1/*, which without this serves
+        # inference to anything that can open a socket. Chart default, kept
+        # explicit so a values cleanup can't drop it as redundant.
+        enforceAuthOnInference: true
+        allowedOrigins:
+          - "https://bifrost.${SECRET_DOMAIN}"
+
+      # Deliberately NOT setting sourceOfTruth. Its default ("split") lets
+      # file-declared and UI-created config coexist. Setting it to
+      # "config.json" prunes database-only rows for every section present in
+      # this file — which would delete each provider added through the UI on
+      # the next restart.
+      providers:
+        # The llmkube services, as custom OpenAI-compatible providers. External
+        # providers are added through the UI so their keys stay out of git —
+        # note the chart renders this whole block into a ConfigMap, not a
+        # Secret, so a real credential would have to arrive as env.* plus
+        # bifrost.providerSecrets.
+        #
+        # The served model name is llama.cpp's --alias, so a client-facing
+        # model string is the provider name plus that alias, e.g.
+        # "qwen/Qwen/Qwen3.8-27B" or "qwen-embedding/Qwen/Qwen3-Embedding-0.6B".
+        qwen:
+          custom_provider_config:
+            base_provider_type: openai
+            # llama.cpp runs without --api-key, so send no Authorization
+            # header. The chart's schema still requires keys[] (minItems 1),
+            # hence the valueless placeholder below.
+            is_key_less: true
+          network_config:
+            base_url: http://qwen3-8-27b-mtp.ai.svc.cluster.local:8080
+            # Required. Defaults to false, which blocks every RFC1918
+            # destination — i.e. every in-cluster Service.
+            allow_private_network: true
+          keys:
+            - name: local
+              weight: 1
+        qwen-embedding:
+          custom_provider_config:
+            base_provider_type: openai
+            is_key_less: true
+          network_config:
+            base_url: http://qwen3-embedding-0-6b.ai.svc.cluster.local:8080
+            allow_private_network: true
+          keys:
+            - name: local
+              weight: 1
+        # Best-effort: llama.cpp exposes rerank at /v1/rerank, which is not an
+        # OpenAI request type, so this may only ever show up in the model list.
+        # Drop it if it doesn't resolve.
+        qwen-reranker:
+          custom_provider_config:
+            base_provider_type: openai
+            is_key_less: true
+          network_config:
+            base_url: http://qwen3-reranker-0-6b.ai.svc.cluster.local:8080
+            allow_private_network: true
+          keys:
+            - name: local
+              weight: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        # Helm deep-merges maps, so the chart's default limits.cpu (2000m)
+        # survives unless explicitly nulled. Nothing else in this cluster
+        # throttles on CPU.
+        cpu: null
+        memory: 1Gi
+    extraEnv:
+      # Without a soft limit the Go runtime grows past the container limit and
+      # is OOM-killed rather than collecting. Keep just under limits.memory.
+      GOMEMLIMIT: 900MiB
+    envFrom:
+      # Supplies BIFROST_SETUP_TOKEN for the env.* reference above. The admin
+      # credentials and encryption key reach the pod through the explicit
+      # secretKeyRefs the chart renders from the values above.
+      - secretRef:
+          name: bifrost-secret
