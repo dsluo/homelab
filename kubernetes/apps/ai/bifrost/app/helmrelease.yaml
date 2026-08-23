@@ -91,53 +91,64 @@ spec:
       # this file — which would delete each provider added through the UI on
       # the next restart.
       providers:
-        # The llmkube services, as custom OpenAI-compatible providers. External
-        # providers are added through the UI so their keys stay out of git —
+        # One provider for llmkube — it is the vendor, the Qwen models are its
+        # catalog — rather than one provider per InferenceService. External
+        # providers are added through the UI so their keys stay out of git;
         # note the chart renders this whole block into a ConfigMap, not a
         # Secret, so a real credential would have to arrive as env.* plus
         # bifrost.providerSecrets.
         #
-        # The served model name is llama.cpp's --alias, so a client-facing
-        # model string is the provider name plus that alias, e.g.
-        # "qwen/Qwen/Qwen3.8-27B" or "qwen-embedding/Qwen/Qwen3-Embedding-0.6B".
-        qwen:
+        # Client-facing model strings are the provider name plus llama.cpp's
+        # --alias, so: llmkube/Qwen/Qwen3.8-27B,
+        # llmkube/Qwen/Qwen3-Embedding-0.6B, llmkube/Qwen/Qwen3-Reranker-0.6B.
+        llmkube:
           custom_provider_config:
             base_provider_type: openai
             # llama.cpp runs without --api-key, so send no Authorization
             # header. The chart's schema still requires keys[] (minItems 1),
-            # hence the valueless placeholder below.
+            # hence the valueless entry below.
             is_key_less: true
+            # Each model is its own Service, but network_config carries exactly
+            # one base_url. These overrides are how the other two are reached:
+            # bifrost treats an override with scheme+host as a full URL and
+            # skips base_url entirely (core/providers/utils/utils.go).
+            #
+            # The catch: overrides key on REQUEST TYPE, not on model. That works
+            # here only because each Service happens to serve a different one —
+            # chat, embeddings, rerank. A second chat model on its own Service
+            # could not join this provider, since chat_completion is already
+            # bound to base_url; it would need its own provider entry.
+            #
+            # Consequence to know about: a request naming the chat model but
+            # sent to /v1/embeddings still lands on the embedding Service, and
+            # llama.cpp ignores the model field, so it embeds rather than
+            # erroring. Route by endpoint, not by trusting the model name.
+            request_path_overrides:
+              embedding: http://qwen3-embedding-0-6b.ai.svc.cluster.local:8080/v1/embeddings
+              rerank: http://qwen3-reranker-0-6b.ai.svc.cluster.local:8080/v1/rerank
           network_config:
             base_url: http://qwen3-8-27b-mtp.ai.svc.cluster.local:8080
             # Required. Defaults to false, which blocks every RFC1918
-            # destination — i.e. every in-cluster Service.
+            # destination — i.e. every in-cluster Service. Enforced at dial
+            # time on this provider's client, so it covers the overridden hosts
+            # above too, not just base_url.
             allow_private_network: true
           keys:
-            - name: local
+            - name: llmkube
               weight: 1
-        qwen-embedding:
-          custom_provider_config:
-            base_provider_type: openai
-            is_key_less: true
-          network_config:
-            base_url: http://qwen3-embedding-0-6b.ai.svc.cluster.local:8080
-            allow_private_network: true
-          keys:
-            - name: local
-              weight: 1
-        # Best-effort: llama.cpp exposes rerank at /v1/rerank, which is not an
-        # OpenAI request type, so this may only ever show up in the model list.
-        # Drop it if it doesn't resolve.
-        qwen-reranker:
-          custom_provider_config:
-            base_provider_type: openai
-            is_key_less: true
-          network_config:
-            base_url: http://qwen3-reranker-0-6b.ai.svc.cluster.local:8080
-            allow_private_network: true
-          keys:
-            - name: local
-              weight: 1
+              # An explicit allowlist, and load-bearing for discovery: only the
+              # chat Service answers /v1/models, so the other two would be
+              # invisible without this. Bifrost backfills every allowlist entry
+              # the upstream did not return into its ListModels response
+              # (core/providers/utils/models.go, BackfillModels case A).
+              #
+              # It also restricts: a model not listed here is rejected. Keep in
+              # sync with the --alias values in
+              # kubernetes/apps/ai/llmkube/models/.
+              models:
+                - Qwen/Qwen3.8-27B
+                - Qwen/Qwen3-Embedding-0.6B
+                - Qwen/Qwen3-Reranker-0.6B
     resources:
       requests:
         cpu: 100m
