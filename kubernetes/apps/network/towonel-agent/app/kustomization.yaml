@@ -4,6 +4,6 @@ kind: Kustomization
 resources:
   - ./cosign-pub.yaml
   - ./dnsendpoint.yaml
-  - ./secret.sops.yaml
+  - ./externalsecret.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml

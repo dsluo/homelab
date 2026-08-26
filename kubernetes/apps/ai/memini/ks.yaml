@@ -9,6 +9,8 @@ spec:
   components:
     - ../../../../components/kopiur
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: kopiur-repository
       namespace: kopiur-system
     - name: llmkube-models

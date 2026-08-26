@@ -24,6 +24,8 @@ metadata:
   name: &app grafana-instance
 spec:
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: grafana-operator
     - name: pocket-id
       namespace: security
