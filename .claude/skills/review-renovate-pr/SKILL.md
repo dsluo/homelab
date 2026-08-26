@@ -1,20 +1,19 @@
 ---
 name: review-renovate-pr
-description: Review a Renovate PR in this homelab repo. Fetches upstream changelogs/release notes, identifies breaking changes, and analyzes impact on the in-repo configuration (manifest values, CRDs, dependent charts). Trigger when the user asks to "review renovate PR", "check this renovate update", passes a Renovate PR number/URL, or asks whether a Renovate bump is safe to merge.
+description: Review a Renovate PR in this homelab repo. Fetches upstream changelogs/release notes, identifies breaking changes, and analyzes impact on the in-repo configuration (manifest values, CRDs, dependent charts). Trigger when the user asks to "review renovate PR", "check this renovate update", passes a Renovate PR number/URL, or asks whether a Renovate bump is safe to merge — or to review all open Renovate PRs (batch mode).
 ---
 
 # Review a Renovate PR
 
-Produce an evidence-backed verdict on whether a Renovate PR is safe to merge. Default output: concise review comment with verdict, breaking changes, and in-repo impact.
+Produce an evidence-backed verdict on whether a Renovate PR is safe to merge. Default output: concise review comment with verdict, breaking changes, blast radius, and in-repo impact.
 
 ## Inputs
 
 Accept any of:
 - PR number (e.g. `693`) → `owner/repo` is this repo
 - Full PR URL
-- "latest" / "all open" → list open Renovate PRs first via `gh pr list --author "app/renovate" --state open`, then ask which one(s)
-
-If the user did not specify a PR, list candidates and ask. Do not review all open PRs unless explicitly asked.
+- "latest" → `gh pr list --author "app/renovate" --state open`, pick the newest, confirm with the user
+- **No PR specified, or "all open" / "the open renovate PRs" / multiple PR numbers → batch mode (the default)**: review every open Renovate PR, one subagent per PR in parallel — read `references/batch.md` and follow it. Do not review PRs serially in the main context when there is more than one, and do not stop to ask which PRs to review.
 
 ## Tool rules
 
@@ -33,6 +32,8 @@ Fetch the PR with `gh pr view <num>` (title, body, labels) and `gh pr diff <num>
 - `currentValue` → `newValue` (and `currentDigest` → `newDigest` for digest bumps)
 - Update type from labels (`type/major`, `type/minor`, `type/patch`, `type/digest`)
 - Files changed — these are the actual call sites that consume the dependency
+
+Before grepping for call sites from scratch, check `references/consumers.md` — it maps the recurring dependencies (Talos, kubelet, Cilium, app-template, …) to their known consumption sites and failure modes.
 
 The PR body that Renovate generates usually includes a **Release Notes** collapsible section with upstream changelog excerpts. Read it first — it often contains everything you need and saves a round-trip.
 
@@ -72,13 +73,18 @@ Minor/patch bumps can still contain breaking changes — do not skip the check b
 
 **Language watch:** release notes like "chart name prefix was removed" are ambiguous — it could mean label values, resource names, or both. Do not infer scope from the release note alone. Escalate per §2 (issue → PR) and/or verify from templates (see §4) before prescribing any edit.
 
+**Release age matters.** Check the release date of the new version. A release that shipped in the last day or two has had no soak time — for anything stateful or hard to roll back, "wait for the .1 patch or a week of soak" is a legitimate recommendation, and belongs in the verdict. Renovate's `minimumReleaseAge` only covers github-actions (3d) and mise (1d); containers and charts can land day-zero.
+
 ### 4. Analyze in-repo impact
+
+**For any chart bump, render-and-diff first.** `helm template` the old and new chart with this repo's values and diff the output for the resources this repo references. It is usually the cheapest way to settle the whole review: a byte-identical render across the consumers is a near-automatic ✅; a diff shows you exactly which resources move. Use the chart tarballs (`curl`/`helm pull` into a temp dir) when the OCI chart isn't trivially templatable. For `app-template` bumps, render all consumers (see `references/consumers.md`), not a sample.
 
 For each breaking change, determine which of these categories it falls into, then run the matching check. The common mistake is asking "does this repo *set* the old thing?" when the real question is "does anything in this repo *depend on* the old thing?"
 
 - **Label key rename or label value change** (e.g. `app` → `app.kubernetes.io/component`, or chart-name prefix stripped from a value): grep `kubernetes/` for anything that **selects on** the old key *or the old value* — `matchLabels:`, `selector:`, `labelSelector:`, `jobLabel:` in VMServiceScrape/VMPodScrape/ServiceMonitor, PromQL/LogQL queries inside VMRules and Grafana dashboard JSON (in ConfigMaps or the `GrafanaDashboard` CRD). A label being emitted differently matters only if something reads it.
 - **Resource name change** (e.g. dropping a chart-name prefix from a Service/Deployment): grep for references to the old name — `HTTPRoute` `backendRefs`, `VMUser` `targetRefs`, `ServiceMonitor`/`VMServiceScrape` selectors, `Ingress` backends, cross-namespace Service DNS (`<name>.<ns>.svc.cluster.local`), NetworkPolicy `podSelector`.
 - **Value / flag / CRD-field rename**: grep HelmRelease `values:` blocks, any `valuesFrom` ConfigMaps/Secrets (check they exist, flag SOPS ones as manual follow-up — do not decrypt), `postRenderers`, `kustomize` patches, and CRD manifests (`apiVersion: <group>`) consumed by other apps.
+- **Database schema migration**: check whether it's one-way. If it is, the recommended action includes taking a CNPG backup (or verifying the last scheduled one is recent) **before** merging, and check whether the operator's CRD actually exposes a rollback/version-pin field — if it doesn't, say so explicitly; "roll back the image" is not a plan the CRD supports.
 
 **Verify before prescribing a rename.** If you're about to recommend the user edit a file to match a renamed resource, label value, or field, confirm the new value from the chart itself — do not infer it from the release-note text. Acceptable evidence:
 
@@ -103,6 +109,11 @@ Output a concise markdown block suitable for pasting as a PR comment. Format:
 
 **Update type:** <major|minor|patch|digest> (<datasource>)
 
+### Blast radius
+<what restarts, rolls, or goes briefly down when this merges — pods cycled, dependent apps
+affected, SSO/DB/CNI outage windows. On this single-node cluster this is often the most
+decision-relevant line. "None — config-only, no workload restart" is a valid entry.>
+
 ### Breaking changes
 - <change> — upstream: <release URL>
   - Impact here: <path/to/file.yaml:NN> | no impact — not used
@@ -112,20 +123,28 @@ Output a concise markdown block suitable for pasting as a PR comment. Format:
 
 ### Recommended actions
 - <migration step, values change, or "none — direct merge">
+
+### Optional cleanup
+- <only if noticed in passing: stale comments, deprecated apiVersions, dead values — omit the section if empty>
 ```
 
 **Citation rule:** every `Impact here:` entry must either be a concrete `path/to/file.yaml:NN` reference (line number required — find it with Grep's `-n` output) or the literal string `no impact — not used`. Prose claims like "our helmrelease doesn't reference it" are not acceptable — if it's truly absent, show the grep came up empty; if it's present, cite the line.
 
 **Recommended-actions rule:** every concrete edit in `Recommended actions` (renames, value changes, field swaps) must be backed by template evidence per §4's verify-before-prescribing step. If you only have the release-note text, phrase the action as verification, not a prescribed edit — e.g. `after merge, confirm that the rendered VMAgent Service name still matches httproute.yaml:14; if not, update the backendRef`. Better to ask the user to verify than to prescribe a wrong rename.
 
-Keep it tight. If there are no breaking changes and nothing notable, say so in one line and stop. If verdict is `⛔`, explain what would need to change for it to become safe.
+Keep it tight. If there are no breaking changes and nothing notable, say so in one line and stop. If verdict is `⛔`, explain what would need to change for it to become safe. If verdict is `⚠` and the user wants the update anyway, the standard remedy is `just flux-branch` — point Flux at the PR branch (or a local test branch) to soak it live before merging to `main`; `just flux-branch-reset` reverts.
 
 Do not post the comment yourself unless the user asks. Show the review and wait.
+
+## Batch mode and merging
+
+When reviewing more than one PR — or when the user follows a review with "merge the safe ones" — read `references/batch.md`. It has the parallel fan-out procedure, the subagent dispatch prompt, the cross-PR coupling check, the batch summary format, and the merge-phase mechanics.
 
 ## Repo-specific notes
 
 - Renovate auto-merges patch/minor for `github-actions` (3d release age) and `mise` tools (1d release age) — if the user asks to review one of these, mention it will auto-merge and focus on whether to intervene before that happens.
 - Flux reconciles continuously from `kubernetes/` — a bad merge to `main` starts deploying immediately. Weight "do not merge" accordingly.
 - `*.sops.*` files are encrypted — never try to read them. If a breaking change might require a SOPS-encrypted value update, flag it as a manual follow-up.
-- Major version bumps get a `!` in the commit prefix via the `.renovaterc.json5` rules — if the PR title doesn't match its labels, that's a Renovate config drift worth mentioning.
+- **A `!` in the PR title carries no signal on pre-1.0 packages.** `.renovaterc.json5` stamps `!:` on `matchUpdateTypes: ["major"]`, and Renovate classifies **every 0.x minor as major** — so `!` + `type/minor` labels on a 0.x package is mechanical, not config drift and not evidence of breakage. Do not report it as an anomaly and do not treat its absence as safety; verify breaking changes from the changelog regardless.
 - The cluster is single-node. Storage migrations, CSI changes, and anything touching OpenEBS ZFS or VolSync need extra scrutiny since there's no HA fallback.
+- `wait: true` in an app's `ks.yaml` amplifies blast radius: if that app crash-loops after a bad merge, every Kustomization with a `dependsOn` on it stalls too. Check for it when weighing a ⚠ vs ⛔ verdict (see `references/consumers.md`).
