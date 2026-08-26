@@ -18,7 +18,6 @@ spec:
       enabled: false
     cdi:
       enabled: true
-      default: true
     hostPaths:
       driverInstallDir: /usr/local
     nfd:
