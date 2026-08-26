@@ -6,4 +6,5 @@ metadata:
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
   labels:
+    external-secrets.io/managed: "true"
     pod-security.kubernetes.io/enforce: privileged

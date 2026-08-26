@@ -35,6 +35,8 @@ spec:
   dependsOn:
     - name: victoria-metrics-operator
     - name: grafana-instance
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: kopiur-repository
       namespace: kopiur-system
   interval: 1h
