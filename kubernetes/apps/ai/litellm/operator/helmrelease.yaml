@@ -20,14 +20,18 @@ spec:
         # ModelName and only ever tracks one of the pair.
         enabled: true
     llmkube:
-      # Mirrors every Ready inference.llmkube.dev InferenceService into a
-      # LiteLLMModel the proxy adopts, so ../../llmkube/models show up without a
-      # hand-written model each.
+      # Off. Auto-registration mirrors every Ready InferenceService into a
+      # LiteLLMModel, but hardcodes ModelName to the InferenceService name
+      # (internal/controller/llmkube_projection.go) with no chart value or flag
+      # to change it, and hardcodes an openai/ provider prefix that litellm's
+      # rerank dispatch cannot route. ../proxy/models.yaml replaces the three
+      # generated models by hand to get llmkube/-namespaced client-facing IDs
+      # and a working reranker.
       #
-      # Discovery happens once at operator startup, so installing the llmkube
-      # CRDs later needs a restart to pick up. ../ks.yaml orders this behind
-      # llmkube (wait: true) to keep that from happening on a rebuild.
-      autoRegister: true
+      # Turning this back on republishes the bare InferenceService names
+      # alongside the hand-written ones — six models, not three. Delete
+      # ../proxy/models.yaml in the same change if you ever do.
+      autoRegister: false
     resources:
       requests:
         cpu: 10m

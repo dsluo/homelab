@@ -7,10 +7,11 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/ai/litellm/operator
   dependsOn:
-    # autoRegister is resolved once at operator startup, so starting before the
-    # llmkube CRDs exist disables it for the life of the pod — and under
-    # applyMode: api that empty desired set makes syncModels prune the proxy to
-    # zero models. llmkube is wait: true so this ordering actually holds.
+    # Kept after autoRegister was turned off, where it used to be load-bearing
+    # (the flag resolves once at operator startup, so racing the llmkube CRDs
+    # disabled it for the life of the pod). Now it only orders the backing
+    # Services ahead of the proxy that publishes models pointing at them —
+    # the proxy Kustomization depends on this one, so the ordering carries.
     - name: llmkube
   postBuild:
     substitute:
