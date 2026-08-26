@@ -24,7 +24,7 @@ function wait_for_nodes() {
     done
 }
 
-# Namespaces to be applied before the SOPS secrets are installed
+# Namespaces to be applied before the bootstrap secrets are installed
 function apply_namespaces() {
     log debug "Applying namespaces"
 
@@ -138,6 +138,7 @@ function main() {
     # Apply resources and Helm releases
     wait_for_nodes
     apply_namespaces
+    "${ROOT_DIR}/scripts/bootstrap-external-secrets.sh"
     apply_sops_secrets
     apply_crds
     sync_helm_releases

@@ -1,0 +1,35 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app external-secrets
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    fullnameOverride: external-secrets
+    installCRDs: true
+    crds:
+      createClusterExternalSecret: true
+      createClusterGenerator: false
+      createClusterPushSecret: false
+      createClusterSecretStore: true
+      createPushSecret: false
+      createSecretStore: false
+    processClusterExternalSecret: true
+    processClusterGenerator: false
+    processClusterPushSecret: false
+    processClusterStore: true
+    processPushSecret: false
+    processSecretStore: false
+    genericTargets:
+      enabled: false
+    rbac:
+      serviceAccountTokenCreate: false
+      servicebindings:
+        create: false
+    serviceMonitor:
+      enabled: true
+      renderMode: skipIfMissing
