@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: external-secrets
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+  labels:
+    external-secrets.io/managed: "true"
