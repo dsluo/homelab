@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
-  - ./secret.sops.yaml
+  - ./externalsecret.yaml
   - ./usergroup.yaml
 configMapGenerator:
   - name: qbittorrent-coredns-configmap

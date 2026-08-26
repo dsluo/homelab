@@ -41,6 +41,8 @@ spec:
     - ../../../../components/database
     - ../../../../components/oidc
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: litellm-operator
     - name: pocket-id
       namespace: security

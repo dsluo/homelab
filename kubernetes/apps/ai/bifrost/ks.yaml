@@ -5,6 +5,8 @@ metadata:
   name: &app bifrost
 spec:
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: kopiur-repository
       namespace: kopiur-system
   components:
