@@ -4,6 +4,9 @@ kind: Kustomization
 metadata:
   name: flux-operator
 spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
   components:
     - ../../../../components/oidc
   interval: 1h

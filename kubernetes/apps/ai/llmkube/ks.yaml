@@ -4,6 +4,9 @@ kind: Kustomization
 metadata:
   name: &app llmkube
 spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/ai/llmkube/app
   postBuild:
@@ -36,6 +39,8 @@ spec:
       - name: cluster-secrets
         kind: Secret
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: llmkube
   prune: true
   sourceRef:

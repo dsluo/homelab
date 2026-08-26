@@ -4,6 +4,9 @@ kind: Kustomization
 metadata:
   name: &app toolhive-crds
 spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/ai/toolhive/crds
   postBuild:
@@ -34,6 +37,8 @@ spec:
       - name: cluster-secrets
         kind: Secret
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: toolhive-crds
   prune: true
   sourceRef:
@@ -55,6 +60,8 @@ spec:
       - name: cluster-secrets
         kind: Secret
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: toolhive-crds
   prune: true
   sourceRef:

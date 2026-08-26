@@ -4,6 +4,9 @@ kind: Kustomization
 metadata:
   name: intel-gpu-resource-driver
 spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/kube-system/intel-gpu-resource-driver/app
   postBuild:

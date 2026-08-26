@@ -7,3 +7,4 @@ metadata:
     kustomize.toolkit.fluxcd.io/prune: disabled
   labels:
     external-secrets.io/managed: "true"
+    external-secrets.io/cluster-secrets: "true"

@@ -5,6 +5,8 @@ metadata:
   name: cnpg-operator
 spec:
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: openebs
       namespace: openebs-system
   interval: 1h
@@ -51,6 +53,8 @@ metadata:
   name: plugin-barman-cloud
 spec:
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: cnpg-operator
   interval: 1h
   path: ./kubernetes/apps/database/cloudnative-pg/plugin-barman-cloud

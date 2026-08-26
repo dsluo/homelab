@@ -38,6 +38,8 @@ spec:
   wait: false
   targetNamespace: games
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: fenrir-crds
   postBuild:
     substitute:

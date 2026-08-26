@@ -5,6 +5,8 @@ metadata:
   name: victoria-metrics-operator
 spec:
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     # the VM operator watches prometheus-operator CRs (ServiceMonitor,
     # PodMonitor, PrometheusRule, ...) and converts them to VM equivalents
     - name: prometheus-operator-crds
@@ -33,10 +35,10 @@ metadata:
   name: &app vmks
 spec:
   dependsOn:
-    - name: victoria-metrics-operator
-    - name: grafana-instance
     - name: external-secrets-config
       namespace: external-secrets
+    - name: victoria-metrics-operator
+    - name: grafana-instance
     - name: kopiur-repository
       namespace: kopiur-system
   interval: 1h
@@ -69,6 +71,8 @@ metadata:
   name: &app victoria-logs
 spec:
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: victoria-metrics-operator
     - name: kopiur-repository
       namespace: kopiur-system

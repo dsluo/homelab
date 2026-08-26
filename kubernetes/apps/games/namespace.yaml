@@ -6,6 +6,8 @@ metadata:
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
   labels:
+    external-secrets.io/managed: "true"
+    external-secrets.io/cluster-secrets: "true"
     # Wolf session pods need NET_ADMIN (fake-udev) + run as root, which the
     # cluster-default baseline PSS rejects. Match media/openebs-system.
     pod-security.kubernetes.io/enforce: privileged
