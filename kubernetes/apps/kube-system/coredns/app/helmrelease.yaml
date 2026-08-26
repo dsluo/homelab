@@ -36,25 +36,22 @@ spec:
             configBlock: |-
               pods verified
               fallthrough in-addr.arpa ip6.arpa
-          - name: autopath
-            parameters: "@kubernetes"
+          # Disabled: autopath's answer for the first search suffix is cached
+          # on whichever replica served it, so the two replicas disagree and
+          # Go's parallel A/AAAA queries can land on different ones — yielding
+          # a v6-only address, undialable on this IPv4-only pod network.
+          # todo: re-enable once the cluster is dual-stack — a v6-only answer
+          # dials fine there.
+          # - name: autopath
+          #   parameters: "@kubernetes"
           - name: forward
             parameters: ${SECRET_DOMAIN} 10.0.42.128
           - name: forward
             parameters: . /etc/resolv.conf
-          # `cache` runs before `autopath` in CoreDNS's plugin chain, so a
-          # transient autopath fallthrough gets its NXDOMAIN pinned in the
-          # denial cache (and kept alive by serve_stale) and served to every
-          # pod in the namespace. When that happens to only one of A/AAAA,
-          # Go resolvers stop at the first search suffix and return a
-          # single-family answer — fatal on this IPv4-only pod network.
-          # Not caching cluster.local denials costs nothing: they're answered
-          # from the kubernetes plugin's in-memory store, no upstream traffic.
           - name: cache
             configBlock: |-
               prefetch 20
               serve_stale
-              disable denial cluster.local
           - name: loop
           - name: reload
           - name: loadbalance
