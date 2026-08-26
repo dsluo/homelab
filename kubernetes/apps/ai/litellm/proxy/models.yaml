@@ -1,0 +1,73 @@
+---
+# Hand-written replacements for what ../operator's llmkube auto-registration
+# used to generate (now off — see ../operator/helmrelease.yaml). Written out
+# because the operator hardcodes ModelName to the InferenceService name
+# (internal/controller/llmkube_projection.go) with no knob, and we want the
+# client-facing IDs namespaced by backend the way bifrost's llmkube provider
+# already does: provider name + llama.cpp --alias. One divergence — the 27b is
+# published as …-27B-MTP, where its --alias (and so bifrost's ID for it) is
+# plain Qwen/Qwen3.8-27B. Align the --alias if the two gateways ever need to
+# answer to the same string.
+#
+# The cost of hand-writing: model_info no longer comes from the GGUF (context
+# length) or the runtime flags (mode), and a new InferenceService needs an entry
+# here. The info blocks below are copies of what the projection produced.
+#
+# spec.params.model is NOT the client-facing name — it is litellm's provider
+# routing prefix plus the string forwarded upstream, and never leaves the proxy.
+# The prefix must resolve against litellm.provider_list; "llmkube/" is not a
+# provider and would raise "LLM Provider NOT provided". llama.cpp ignores the
+# forwarded model string (it serves whatever it loaded), so the modelRef the
+# projection used is kept verbatim rather than swapped for the --alias.
+#
+# metadata.name is deliberately NOT the InferenceService name: the generated
+# models carry a controller ownerReference to their InferenceService, so reusing
+# those names would hand Flux a resource that llmkube's GC can delete.
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: llmkube-qwen3-8-27b-mtp
+spec:
+  modelName: llmkube/Qwen/Qwen3.8-27B-MTP
+  params:
+    model: openai/qwen3-8-27b-mtp
+    apiBase: http://qwen3-8-27b-mtp.ai.svc.cluster.local:8080/v1
+    # llama.cpp runs without --api-key, but litellm's openai provider errors on
+    # an unset key and falls back to OPENAI_API_KEY. Any non-empty string does.
+    # (Repeated per document — YAML anchors do not cross a --- boundary.)
+    apiKey: sk-llmkube-noauth
+  info:
+    # ../../llmkube/models/qwen3-8-27b-mtp.yaml contextSize, which is also what
+    # the GGUF reports and what the projection read out of Model.status.
+    maxInputTokens: 262144
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: llmkube-qwen3-embedding-0-6b
+spec:
+  modelName: llmkube/Qwen/Qwen3-Embedding-0.6B
+  params:
+    model: openai/qwen3-embedding-0-6b
+    apiBase: http://qwen3-embedding-0-6b.ai.svc.cluster.local:8080/v1
+    apiKey: sk-llmkube-noauth
+  info:
+    mode: embedding
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: llmkube-qwen3-reranker-0-6b
+spec:
+  modelName: llmkube/Qwen/Qwen3-Reranker-0.6B
+  params:
+    # hosted_vllm, not openai — the one place the projection's hardcoded prefix
+    # was actively wrong. litellm's rerank dispatch (litellm/rerank_api/main.py)
+    # branches per provider and has no openai arm, so the generated model raised
+    # on /v1/rerank. HostedVLLMRerankConfig.get_complete_url appends /rerank to
+    # the api_base below, which is exactly what llama.cpp --reranking serves.
+    model: hosted_vllm/qwen3-reranker-0-6b
+    apiBase: http://qwen3-reranker-0-6b.ai.svc.cluster.local:8080/v1
+    apiKey: sk-llmkube-noauth
+  info:
+    mode: rerank
