@@ -25,6 +25,8 @@ metadata:
   name: kopiur-repository
 spec:
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: kopiur
   # Every app's ks gates on this Kustomization, so it must only report Ready
   # once the repository actually connects — otherwise a bad NFS export or
