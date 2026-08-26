@@ -39,6 +39,7 @@ spec:
                 name: flux-system
                 labels:
                   external-secrets.io/managed: "true"
+                  external-secrets.io/cluster-secrets: "true"
             target:
               kind: Namespace
               name: flux-system

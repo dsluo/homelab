@@ -5,6 +5,9 @@ kind: Kustomization
 metadata:
   name: snmp-exporter
 spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/observability/snmp-exporter/app
   postBuild:

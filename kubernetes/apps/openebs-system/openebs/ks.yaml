@@ -5,6 +5,8 @@ metadata:
   name: openebs
 spec:
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: snapshot-controller
       namespace: kube-system
   interval: 1h

@@ -19,6 +19,8 @@ spec:
     - ../../../../components/oidc
     - ../../../../components/kopiur
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: pocket-id
       namespace: security
     - name: kopiur-repository

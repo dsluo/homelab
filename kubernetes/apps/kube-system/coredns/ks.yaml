@@ -4,6 +4,9 @@ kind: Kustomization
 metadata:
   name: coredns
 spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/kube-system/coredns/app
   postBuild:

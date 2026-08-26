@@ -6,6 +6,8 @@ metadata:
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
   labels:
+    external-secrets.io/managed: "true"
+    external-secrets.io/cluster-secrets: "true"
     resource.kubernetes.io/admin-access: "true"
     # Isolated home for hermes, which runs untrusted agent code. Kept separate
     # from the shared `ai` namespace to contain blast radius. The hermes pod

@@ -4,6 +4,9 @@ kind: Kustomization
 metadata:
   name: grafana-operator
 spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/observability/grafana/operator
   postBuild:

@@ -4,6 +4,9 @@ kind: Kustomization
 metadata:
   name: &app tuppr
 spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/system-upgrade/tuppr/app
   postBuild:
@@ -26,6 +29,8 @@ metadata:
   name: &app tuppr-upgrades
 spec:
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: tuppr
   interval: 1h
   path: ./kubernetes/apps/system-upgrade/tuppr/upgrades
