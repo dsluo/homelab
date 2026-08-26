@@ -8,4 +8,4 @@ resources:
   - ./vmrule.yaml
   - ./vmstaticscrape.yaml
   - ./vmuser.yaml
-  - ./secret.sops.yaml
+  - ./externalsecret.yaml
