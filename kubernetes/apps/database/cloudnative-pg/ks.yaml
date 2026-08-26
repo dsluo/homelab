@@ -27,6 +27,8 @@ metadata:
   name: cnpg-cluster
 spec:
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: cnpg-operator
     - name: plugin-barman-cloud
   interval: 1h
