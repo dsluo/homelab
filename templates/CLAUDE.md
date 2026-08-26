@@ -21,7 +21,7 @@ Copier will prompt for answers, then render files into `kubernetes/apps/<namespa
 | `namespace` | str (computed) | — | Resolved namespace used throughout the template |
 | `app` | str | — | App name |
 | `component` | str | `app` | Component subdirectory name |
-| `secret` | bool | `false` | Generate a `secret.sops.yaml` scaffold |
+| `secret` | bool | `true` | Generate an `externalsecret.yaml` scaffold |
 | `kopiur` | bool | `true` | Add kopiur PVC dependency and component |
 | `kopiur_uid` | str | `1000` | App runtime uid — kopiur movers must write files the app owns (only when `kopiur=true`) |
 | `kopiur_gid` | str | `kopiur_uid` | App runtime gid (only when `kopiur=true`) |
@@ -45,7 +45,7 @@ kubernetes/apps/
         kustomization.yaml    # Kustomize root listing HelmRelease, OCIRepository, optional secret
         helmrelease.yaml      # HelmRelease referencing the OCIRepository
         ocirepository.yaml    # OCIRepository for the Helm chart
-        secret.sops.yaml      # (optional) SOPS-encrypted Secret scaffold
+        externalsecret.yaml   # (optional) ESO-backed Secret scaffold
 ```
 
 ## Post-generation Tasks
@@ -62,6 +62,6 @@ After rendering, Copier runs two tasks:
 ## Notes
 
 - `kustomization.yaml` and `namespace.yaml` at the namespace level use `skip_if_exists` — they won't be overwritten if the namespace already exists, but will be created fresh for new namespaces.
-- After generating, `secret.sops.yaml` must be encrypted with `sops --encrypt --in-place` before committing.
+- Before deploying an `externalsecret.yaml`, create its matching `k8s-<namespace>-<secret>` item and fields in the `homelab` 1Password vault.
 - The `helmrelease.yaml` scaffold assumes a single controller/container/service/route following the app-template pattern. Adjust as needed for the actual app.
 - `ks.yaml` defaults `KOPIUR_CAPACITY` to `5Gi`; update after generation. `KOPIUR_UID`/`KOPIUR_GID` must match the app's runtime uid/gid — kopiur's restore mover writes files owned by its own uid, so a mismatch breaks apps that chmod/chown their state.

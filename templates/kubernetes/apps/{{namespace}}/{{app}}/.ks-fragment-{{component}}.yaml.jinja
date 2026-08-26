@@ -4,10 +4,14 @@ kind: Kustomization
 metadata:
   name: &app {{app}}
 spec:
-  {% if kopiur -%}
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
+  {% if kopiur -%}
     - name: kopiur-repository
       namespace: kopiur-system
+  {%- endif %}
+  {% if kopiur -%}
   components:
     - ../../../../components/kopiur
   {%- endif %}

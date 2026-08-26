@@ -80,7 +80,7 @@ For each breaking change, determine which of these categories it falls into, the
 
 - **Label key rename or label value change** (e.g. `app` → `app.kubernetes.io/component`, or chart-name prefix stripped from a value): grep `kubernetes/` for anything that **selects on** the old key *or the old value* — `matchLabels:`, `selector:`, `labelSelector:`, `jobLabel:` in VMServiceScrape/VMPodScrape/ServiceMonitor, PromQL/LogQL queries inside VMRules and Grafana dashboard JSON (in ConfigMaps or the `GrafanaDashboard` CRD). A label being emitted differently matters only if something reads it.
 - **Resource name change** (e.g. dropping a chart-name prefix from a Service/Deployment): grep for references to the old name — `HTTPRoute` `backendRefs`, `VMUser` `targetRefs`, `ServiceMonitor`/`VMServiceScrape` selectors, `Ingress` backends, cross-namespace Service DNS (`<name>.<ns>.svc.cluster.local`), NetworkPolicy `podSelector`.
-- **Value / flag / CRD-field rename**: grep HelmRelease `values:` blocks, any `valuesFrom` ConfigMaps/Secrets (check they exist, flag SOPS ones as manual follow-up — do not decrypt), `postRenderers`, `kustomize` patches, and CRD manifests (`apiVersion: <group>`) consumed by other apps.
+- **Value / flag / CRD-field rename**: grep HelmRelease `values:` blocks, any `valuesFrom` ConfigMaps/Secrets (check they exist and trace ESO-managed Secrets back to their `ExternalSecret` mappings), `postRenderers`, `kustomize` patches, and CRD manifests (`apiVersion: <group>`) consumed by other apps.
 
 **Verify before prescribing a rename.** If you're about to recommend the user edit a file to match a renamed resource, label value, or field, confirm the new value from the chart itself — do not infer it from the release-note text. Acceptable evidence:
 
@@ -141,6 +141,6 @@ When the user requests review of multiple PRs, use the `Task` tool to launch ind
 
 - Renovate auto-merges patch/minor for `github-actions` (3d release age) and `mise` tools (1d release age) — if the user asks to review one of these, mention it will auto-merge and focus on whether to intervene before that happens.
 - Flux reconciles continuously from `kubernetes/` — a bad merge to `main` starts deploying immediately. Weight "do not merge" accordingly.
-- `*.sops.*` files are encrypted — never try to read them. If a breaking change might require a SOPS-encrypted value update, flag it as a manual follow-up.
+- Kubernetes Secrets are ESO-managed — inspect `ExternalSecret` names and key mappings, never secret values. Remaining `*.sops.*` files belong to Talos, OpenTofu, or recovery docs and must not be decrypted during a Renovate review.
 - Major version bumps get a `!` in the commit prefix via the `.renovaterc.json5` rules — if the PR title doesn't match its labels, that's a Renovate config drift worth mentioning.
 - The cluster is single-node. Storage migrations, CSI changes, and anything touching OpenEBS ZFS or VolSync need extra scrutiny since there's no HA fallback.
