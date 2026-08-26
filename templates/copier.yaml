@@ -35,7 +35,7 @@ component:
 secret:
   type: bool
   default: true
-  help: Generate secret?
+  help: Generate an ExternalSecret?
 kopiur:
   type: bool
   default: true

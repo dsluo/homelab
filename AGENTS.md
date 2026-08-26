@@ -9,7 +9,8 @@ The non-obvious, load-bearing choices that shape how changes get made:
 - **OS / Kubernetes**: Talos Linux, bootstrapped via `talhelper` + `helmfile`
 - **GitOps**: Flux CD watches `kubernetes/` and reconciles continuously — changes land via commit, not `kubectl apply`
 - **CNI**: Cilium, which also replaces kube-proxy
-- **Secrets**: SOPS + Age, encrypted in-repo, with 1Password as the Age key backend
+- **Kubernetes secrets**: External Secrets Operator with the 1Password SDK provider
+- **Bootstrap / IaC secrets**: SOPS + Age for Talos, OpenTofu, and encrypted recovery documents
 - **Infra-as-code**: OpenTofu under `infra/` (MikroTik switch in `infra/sw_core/`, Backblaze B2 in `infra/backblaze/`)
 - **Dependency updates**: Renovate (auto-merges patch/minor for GitHub Actions and mise tools)
 
@@ -20,7 +21,7 @@ Other tooling is discoverable from the repo: mise (`.mise.toml`), Just (the just
 ```
 kubernetes/
   apps/        # App deployments, organized by namespace
-  components/  # Shared Kustomize components (SOPS, kopiur)
+  components/  # Shared Kustomize components (kopiur, OIDC, database)
   flux/        # Flux CD config
 talos/         # Talos OS cluster config (talconfig.yaml + generated clusterconfig/)
 infra/         # OpenTofu infra (MikroTik switch, Backblaze B2)
@@ -42,7 +43,7 @@ kubernetes/apps/<ns>/<app>/
     kustomization.yaml   # lists the resources below
     helmrelease.yaml     # the actual workload (usually the app-template chart)
     ocirepository.yaml   # chart source
-    secret.sops.yaml     # SOPS-encrypted secrets (when needed)
+    externalsecret.yaml  # ESO mapping to a 1Password item (when needed)
 ```
 
 `ks.yaml` is Flux's wrapper — edit it for dependencies, shared `components/`, and `postBuild.substitute` values. The `app/` dir holds the real manifests — edit it to change the workload itself.
@@ -51,7 +52,7 @@ kubernetes/apps/<ns>/<app>/
 
 **Validate before committing: `just test`.** It runs `flate test all` — flate renders the whole Flux tree (Kustomizations and HelmReleases) offline and reports what would fail to reconcile, without touching the cluster.
 
-**Secrets are SOPS — never commit plaintext.** Files matching `*.sops.yaml` are encrypted per `.sops.yaml` rules; edit them via `sops`. Cluster-wide values come from the `cluster-secrets` Secret via `postBuild.substituteFrom`.
+**Kubernetes secrets come from 1Password through ESO — never commit plaintext.** Use one Secure Note per Secret named `k8s-<namespace>-<secret-name>`, keep field labels identical to Kubernetes keys, and reference fields explicitly from `externalsecret.yaml`. Cluster-wide values are fanned out as `cluster-secrets` and remain available through `postBuild.substituteFrom`. SOPS remains only for Talos, OpenTofu, and encrypted recovery documents.
 
 **Operational loop:** `just reconcile` force-pulls from Git. To test a feature branch live before merging, `just flux-branch` points Flux at the current branch; `just flux-branch-reset` reverts to `main`.
 

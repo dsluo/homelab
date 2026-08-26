@@ -5,5 +5,5 @@ resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
   {% if secret -%}
-  - ./secret.sops.yaml
+  - ./externalsecret.yaml
   {% endif -%}

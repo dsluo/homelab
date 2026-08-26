@@ -157,7 +157,7 @@ bootstrap seeds `config.yaml`, `.env`, and `SOUL.md` on first boot, and the
 dashboard comes up as soon as OIDC is satisfied. There is no `setup`
 initContainer.
 
-Provider API keys are therefore *not* in a SOPS secret — they live in
+Provider API keys are therefore *not* in an ESO-managed Secret — they live in
 `/opt/data/.env` on the PVC, written once via the setup wizard:
 
 ```sh
@@ -204,7 +204,7 @@ is a rewrite rather than an image bump:
 | Config | `openclaw.json`, patched every boot by an initContainer | `config.yaml`, seeded by the image bootstrap |
 | Startup gate | initContainer blocking on interactive setup | none |
 | Auth | gateway token + Envoy OIDC forward-auth | native Pocket-ID OIDC |
-| Secret | `openclaw-secret` (SOPS) | none — operator-issued OIDC creds + `.env` on the PVC |
+| Secret | `openclaw-secret` (ESO) | none — operator-issued OIDC creds + `.env` on the PVC |
 
 **This PR does not migrate data.** Upstream ships `hermes claw migrate`, which
 imports `~/.openclaw/` (SOUL, memory, skills, MCP servers, model/provider
@@ -234,7 +234,7 @@ hermes pod, and run `hermes claw migrate --source <path>`.
   envoy-cloudflare. Out of scope here because it touches `security/pocket-id`
   and `network/envoy-gateway`.
 - **OpenAI-compatible API server.** Off (upstream default). Enabling it means
-  `API_SERVER_ENABLED=true`, `API_SERVER_HOST=0.0.0.0`, a SOPS-managed
+  `API_SERVER_ENABLED=true`, `API_SERVER_HOST=0.0.0.0`, an ESO-managed
   `API_SERVER_KEY` (8+ chars), and exposing port 8642 — worth doing only if
   something in-cluster actually wants to drive the agent over `/v1`.
 

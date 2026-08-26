@@ -26,6 +26,7 @@ flux-branch-reset:
 newapp:
     copier copy templates . --trust
 
-# Run flate tests
+# Run static migration checks and flate tests
 test:
+    bash scripts/check-external-secrets.sh
     flate test all --path kubernetes/flux/cluster --allow-missing-secrets

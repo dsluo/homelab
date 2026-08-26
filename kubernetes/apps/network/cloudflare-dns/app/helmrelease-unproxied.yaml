@@ -12,7 +12,7 @@ spec:
     fullnameOverride: *app
     provider: cloudflare
     env:
-      # Shared with the proxied instance; defined in secret.sops.yaml.
+      # Shared with the proxied instance; supplied by externalsecret.yaml.
       - name: CF_API_TOKEN
         valueFrom:
           secretKeyRef:
