@@ -20,3 +20,36 @@ spec:
     namespace: flux-system
   targetNamespace: kube-system
   wait: false
+---
+# Hubble's UI route and dashboards live in their own Kustomization on purpose:
+# they need the Pocket-ID and grafana-operator CRDs, and Flux validates a
+# Kustomization's manifests as a set — a missing CRD or a not-yet-reconciled IdP
+# would then block the CNI's own Kustomization from applying.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app hubble
+spec:
+  dependsOn:
+    - name: cilium
+    - name: pocket-id
+      namespace: security
+  components:
+    - ../../../../components/oidc/envoy
+  interval: 1h
+  path: ./kubernetes/apps/kube-system/cilium/hubble
+  postBuild:
+    substitute:
+      APP: *app
+      OIDC_APP_NAME: Hubble
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/cilium.svg"
+    substituteFrom:
+      - name: cluster-secrets
+        kind: Secret
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: kube-system
+  wait: false

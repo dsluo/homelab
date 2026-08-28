@@ -34,7 +34,44 @@ spec:
     gatewayAPI:
       enabled: false
     hubble:
-      enabled: false
+      enabled: true
+      metrics:
+        # The context options are load-bearing for the bundled dashboards: the
+        # *-namespace ones filter on source_namespace/destination_namespace and
+        # group by source/destination, which only exist when labelsContext and
+        # source/destinationContext are set. workload-name|reserved-identity
+        # keeps those two labels bounded — a workload name for in-cluster peers,
+        # otherwise a reserved identity (world, host, remote-node) rather than a
+        # per-IP series.
+        #
+        # No httpV2 here: L7 metrics are only emitted for pods with Layer 7
+        # visibility, which needs envoy.enabled above (the next step of #1475).
+        enabled:
+          - "dns:query;labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+          - "drop:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+          - "flow:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+          - "tcp:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+          - "icmp:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+          - "port-distribution:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+        dashboards:
+          # ConfigMaps only; the GrafanaDashboard CRs that publish them live in
+          # ./grafanadashboard.yaml (grafana-operator reads the ConfigMap through
+          # a CR, it does not watch dashboard labels).
+          enabled: true
+        serviceMonitor:
+          enabled: true
+      relay:
+        enabled: true
+        # hubble.tls.auto.method is helm: the CA is reused from the cilium-ca
+        # Secret, but the leaf certs are reminted on every chart/values change,
+        # so relay has to restart to pick up its new client cert.
+        rollOutPods: true
+        prometheus:
+          enabled: true
+          serviceMonitor:
+            enabled: true
+      ui:
+        enabled: true
     ipam:
       mode: kubernetes
     ipv4NativeRoutingCIDR: 10.244.0.0/16
