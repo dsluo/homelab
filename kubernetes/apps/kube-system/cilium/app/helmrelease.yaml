@@ -40,9 +40,15 @@ spec:
         # *-namespace ones filter on source_namespace/destination_namespace and
         # group by source/destination, which only exist when labelsContext and
         # source/destinationContext are set. workload-name|reserved-identity
-        # keeps those two labels bounded — a workload name for in-cluster peers,
-        # otherwise a reserved identity (world, host, remote-node) rather than a
-        # per-IP series.
+        # keeps source/destination bounded — a workload name for in-cluster
+        # peers, otherwise a reserved identity (world, host, remote-node) rather
+        # than a per-IP series.
+        #
+        # `dns:query` is the exception: it labels every series with the resolved
+        # name, so its cardinality is whatever the cluster looks up. Kept anyway
+        # because it is what supplies the domain set for hermes' deferred
+        # toFQDNs allowlist (#1475). Drop it first if vmsingle starts shedding
+        # rows.
         #
         # No httpV2 here: L7 metrics are only emitted for pods with Layer 7
         # visibility, which needs envoy.enabled above (the next step of #1475).
@@ -55,16 +61,17 @@ spec:
           - "port-distribution:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
         dashboards:
           # ConfigMaps only; the GrafanaDashboard CRs that publish them live in
-          # ./grafanadashboard.yaml (grafana-operator reads the ConfigMap through
-          # a CR, it does not watch dashboard labels).
+          # ../hubble/grafanadashboard.yaml (grafana-operator reads a ConfigMap
+          # through a CR, it does not watch dashboard labels).
           enabled: true
         serviceMonitor:
           enabled: true
       relay:
         enabled: true
-        # hubble.tls.auto.method is helm: the CA is reused from the cilium-ca
-        # Secret, but the leaf certs are reminted on every chart/values change,
-        # so relay has to restart to pick up its new client cert.
+        # Rolls relay when its own ConfigMap changes (the annotation hashes
+        # hubble-relay/configmap.yaml, nothing else) — the relay counterpart of
+        # rollOutCiliumPods below. Certs are not the reason: the helm TLS method
+        # looks up hubble-relay-client-certs and reuses the existing leaf.
         rollOutPods: true
         prometheus:
           enabled: true

@@ -34,6 +34,10 @@ spec:
     - name: cilium
     - name: pocket-id
       namespace: security
+    # Both of these are wait: false, so this orders the apply rather than
+    # guaranteeing the CRDs are established first.
+    - name: grafana-operator
+      namespace: observability
   components:
     - ../../../../components/oidc/envoy
   interval: 1h

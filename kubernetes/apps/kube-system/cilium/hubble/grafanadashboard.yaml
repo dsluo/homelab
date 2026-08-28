@@ -5,8 +5,10 @@
 # are here in kube-system, the Grafana instance is in observability.
 #
 # hubble-l7-http-metrics-by-workload is deliberately not published: it reads
-# hubble_http_* , which needs the httpV2 metric handler and therefore
-# envoy.enabled (see the HelmRelease).
+# hubble_http_*, which needs the httpV2 metric handler and therefore
+# envoy.enabled (see the HelmRelease). The `hubble` dashboard below carries an
+# HTTP row off the same metrics — expect it blank until then; the rest of that
+# dashboard is L3/L4 and populates now.
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
