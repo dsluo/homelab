@@ -13,7 +13,7 @@ spec:
       namespace: kopiur-system
   components:
     - ../../../../components/oidc/envoy
-    - ../../../../components/networkpolicy/api-only
+    - ../../components/api-only
     - ../../../../components/kopiur
   interval: 1h
   path: ./kubernetes/apps/media/sabnzbd/app

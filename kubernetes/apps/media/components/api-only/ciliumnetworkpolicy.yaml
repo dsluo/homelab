@@ -7,6 +7,10 @@
 # After this, the UI is reachable only through the gateway — where that
 # SecurityPolicy is — and direct pod-to-pod access is limited to /api, which
 # takes an API key. Requires ${APP} and ${APP_PORT}.
+#
+# Local to this namespace rather than in kubernetes/components/: the sibling
+# rule below names `media` outright, so it isn't shared, and the *arr auth
+# behaviour it compensates for isn't either.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:

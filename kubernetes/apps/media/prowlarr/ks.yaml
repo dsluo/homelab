@@ -12,7 +12,7 @@ spec:
   components:
     - ../../../../components/database
     - ../../../../components/oidc/envoy
-    - ../../../../components/networkpolicy/api-only
+    - ../../components/api-only
   interval: 1h
   path: ./kubernetes/apps/media/prowlarr/app
   postBuild:
