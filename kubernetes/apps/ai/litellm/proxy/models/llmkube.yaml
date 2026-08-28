@@ -1,6 +1,6 @@
 ---
-# Hand-written replacements for what ../operator's llmkube auto-registration
-# used to generate (now off — see ../operator/helmrelease.yaml). Written out
+# Hand-written replacements for what ../../operator's llmkube auto-registration
+# used to generate (now off — see ../../operator/helmrelease.yaml). Written out
 # because the operator hardcodes ModelName to the InferenceService name
 # (internal/controller/llmkube_projection.go) with no knob, and we want the
 # client-facing IDs namespaced by backend the way bifrost's llmkube provider
@@ -37,7 +37,7 @@ spec:
     # (Repeated per document — YAML anchors do not cross a --- boundary.)
     apiKey: sk-llmkube-noauth
   info:
-    # ../../llmkube/models/qwen3-8-27b-mtp.yaml contextSize, which is also what
+    # ../../../llmkube/models/qwen3-8-27b-mtp.yaml contextSize, which is also what
     # the GGUF reports and what the projection read out of Model.status.
     maxInputTokens: 262144
 ---

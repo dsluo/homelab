@@ -23,7 +23,7 @@ spec:
       key: LITELLM_MASTER_KEY
 
   # No modelSelector: adopts every LiteLLMModel in ai, all of them now written
-  # by hand in ./models.yaml. The operator's llmkube auto-registration is off
+  # by hand in ./models/llmkube.yaml. The operator's llmkube auto-registration is off
   # (../operator/helmrelease.yaml) because it hardcodes both the client-facing
   # model name and an openai/ provider prefix the rerank path cannot route.
 
@@ -58,6 +58,16 @@ spec:
         secretKeyRef:
           name: litellm-postgres-secret
           key: password
+
+    # The chatgpt provider (models in ./models/chatgpt.yaml) authenticates out of
+    # an auth.json it both reads and rewrites: every request reads the file, and
+    # an expired access_token is refreshed against auth.openai.com and written
+    # back. Default location is $HOME/.config/litellm/chatgpt, which is
+    # container-local — pointed at the kopiur PVC below so one device-code login
+    # survives restarts. A read-only mount (a Secret) would "work" but re-refresh
+    # on every single request, and OpenAI rotates the refresh_token on each one.
+    - name: CHATGPT_TOKEN_DIR
+      value: /var/lib/litellm/chatgpt
 
     # /ui SSO against pocket-id via litellm's "generic" OIDC provider, which has
     # no discovery-document path — hence the endpoints wired individually out of
@@ -114,6 +124,14 @@ spec:
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 30
+
+  volumes:
+    - name: chatgpt-auth
+      persistentVolumeClaim:
+        claimName: litellm
+  volumeMounts:
+    - name: chatgpt-auth
+      mountPath: /var/lib/litellm/chatgpt
 
   route:
     hostnames:

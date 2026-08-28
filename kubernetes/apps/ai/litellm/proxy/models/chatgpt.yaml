@@ -1,0 +1,88 @@
+---
+# ChatGPT subscription models (https://docs.litellm.ai/docs/providers/chatgpt).
+# This is the ChatGPT plan's own Codex backend, not the OpenAI platform API: no
+# API key and no per-token bill, but plan rate limits apply and the quota is
+# shared with the Codex CLI.
+#
+# sol/luna/terra are the three gpt-5.6 variants the backend accepts; bare
+# gpt-5.6 is NOT one of them, nor are gpt-5.6-pro, -cyber or -codex. sol is the
+# Codex CLI's configured default here.
+#
+# This set is VERIFIED against the backend, not copied from a list. Neither
+# available list is authoritative: litellm's provider docs and its cost map both
+# top out at chatgpt/gpt-5.4, and of the six models that page advertises only
+# gpt-5.4 is still accepted — gpt-5.4-pro, gpt-5.3-codex, gpt-5.3-codex-spark,
+# gpt-5.3-instant and gpt-5.3-chat-latest all return 400 "model is not
+# supported". Conversely every model below appears in NO chatgpt/* cost map entry
+# yet routes fine. litellm has no allowlist for this provider (no model check in
+# llms/chatgpt/responses/transformation.py) — it forwards the string and the
+# backend decides, so the only way to know is to ask it:
+#
+#   codex exec -m <model> --skip-git-repo-check "Reply with exactly: OK"
+#
+# spec.params.model is the same string as modelName here, unlike ./llmkube.yaml
+# next door — "chatgpt" is a real entry in litellm.provider_list, so the prefix
+# both routes to the provider and namespaces the client-facing ID by backend.
+#
+# info is MANDATORY here, not documentation. litellm cannot infer it: the cost
+# map has no chatgpt/gpt-5.6-* key, and while it does have a bare gpt-5.6-sol,
+# that entry is tagged litellm_provider: openai, so _check_provider_match
+# (utils.py) rejects it for this provider — and its mere existence as an exact
+# key also short-circuits the capability-generalization fallback, which bails
+# whenever any candidate name is a known key. Net result without info:
+# get_model_info raises "This model isn't mapped yet". The numbers below are
+# those openai-provider entries, which are the same underlying models.
+#
+# mode is responses even though the map says chat: this backend is
+# Responses-native and /chat/completions is bridged onto it.
+# supportsPromptCaching is deliberately unset — the platform API supports it,
+# this backend is unverified.
+#
+# Auth is an OAuth device-code login in a file, NOT a Secret — see
+# CHATGPT_TOKEN_DIR in ../proxy.yaml. Do that login BEFORE these models take
+# traffic: resolving a chatgpt/* model calls get_llm_provider, which triggers the
+# device flow as a side effect and then blocks polling for up to 15 minutes.
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: chatgpt-gpt-5-6-sol
+spec:
+  modelName: chatgpt/gpt-5.6-sol
+  params:
+    model: chatgpt/gpt-5.6-sol
+  info:
+    mode: responses
+    maxInputTokens: 922000
+    maxOutputTokens: 128000
+    supportsFunctionCalling: true
+    supportsVision: true
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: chatgpt-gpt-5-6-luna
+spec:
+  modelName: chatgpt/gpt-5.6-luna
+  params:
+    model: chatgpt/gpt-5.6-luna
+  info:
+    mode: responses
+    maxInputTokens: 922000
+    maxOutputTokens: 128000
+    supportsFunctionCalling: true
+    supportsVision: true
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: chatgpt-gpt-5-6-terra
+spec:
+  modelName: chatgpt/gpt-5.6-terra
+  params:
+    model: chatgpt/gpt-5.6-terra
+  info:
+    mode: responses
+    maxInputTokens: 922000
+    maxOutputTokens: 128000
+    supportsFunctionCalling: true
+    supportsVision: true
