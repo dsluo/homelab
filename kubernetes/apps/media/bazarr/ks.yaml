@@ -13,12 +13,14 @@ spec:
       namespace: kopiur-system
   components:
     - ../../../../components/oidc/envoy
+    - ../../../../components/networkpolicy/api-only
     - ../../../../components/kopiur
   interval: 1h
   path: ./kubernetes/apps/media/bazarr/app
   postBuild:
     substitute:
       APP: *app
+      APP_PORT: "6767"
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/bazarr.svg"
       OIDC_APP_NAME: Bazarr
       KOPIUR_CAPACITY: 5Gi

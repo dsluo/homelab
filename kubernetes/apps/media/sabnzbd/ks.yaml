@@ -13,12 +13,14 @@ spec:
       namespace: kopiur-system
   components:
     - ../../../../components/oidc/envoy
+    - ../../../../components/networkpolicy/api-only
     - ../../../../components/kopiur
   interval: 1h
   path: ./kubernetes/apps/media/sabnzbd/app
   postBuild:
     substitute:
       APP: *app
+      APP_PORT: "8080"
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/sabnzbd.svg"
       OIDC_APP_NAME: SABnzbd
       KOPIUR_CAPACITY: 5Gi
