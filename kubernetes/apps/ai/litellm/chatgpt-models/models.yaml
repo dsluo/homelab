@@ -1,15 +1,14 @@
 ---
-# ChatGPT subscription models (https://docs.litellm.ai/docs/providers/chatgpt):
-# the plan's Codex backend, not the platform API — no API key, but plan rate
-# limits shared with the Codex CLI. No published model list is accurate; litellm
-# forwards the string and the backend decides. Verify a candidate with:
-#   codex exec -m <model> --skip-git-repo-check "Reply with exactly: OK"
-# info is mandatory — the cost map cannot resolve chatgpt/* names, so litellm
-# errors without it. mode is responses (Responses-native backend).
-# These live in their own Kustomization only so ../ks.yaml can gate them behind
-# ../chatgpt-login: registering one before the device-code login has written
-# auth.json crashloops the whole proxy, unrecoverably. Read that Job before
-# moving these back in with the llmkube models.
+# ChatGPT subscription models: the plan's Codex backend, not the platform API
+# (https://docs.litellm.ai/docs/providers/chatgpt). No published model list —
+# verify a candidate with `codex exec -m <model> --skip-git-repo-check`.
+# info is mandatory; the cost map cannot resolve chatgpt/* names. mode must stay
+# responses — it is what bridges completion() to /responses, and the Codex
+# backend serves nothing else. The UI health check 400s regardless (upstream
+# #38085), which is cosmetic.
+# Own Kustomization only so ../ks.yaml can gate these behind ../chatgpt-login:
+# registering one before that Job writes auth.json crashloops the proxy,
+# unrecoverably.
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
