@@ -21,7 +21,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      APP_PORT: "8989"
+      APP_PORT: '"8989"'
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/sonarr.svg"
       OIDC_APP_NAME: Sonarr
       KOPIUR_CAPACITY: 5Gi
