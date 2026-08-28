@@ -41,10 +41,13 @@ spec:
   path: ./kubernetes/apps/ai/litellm/proxy
   components:
     - ../../../../components/database
+    - ../../../../components/kopiur
     - ../../../../components/oidc
   dependsOn:
     - name: external-secrets-config
       namespace: external-secrets
+    - name: kopiur-repository
+      namespace: kopiur-system
     - name: litellm-operator
     - name: pocket-id
       namespace: security
@@ -54,6 +57,74 @@ spec:
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/litellm.svg"
       OIDC_APP_NAME: LiteLLM
       OIDC_CALLBACK_PATH: /sso/callback
+      # Holds one file: the ChatGPT OAuth auth.json (../proxy/proxy.yaml) —
+      # backed up because recreating it needs an interactive device-code login.
+      KOPIUR_CAPACITY: 1Gi
+      # Must match the -non_root image's 65534 identity. The mover's fsGroup is
+      # also what makes a fresh volume writable: the proxy CRD has no
+      # securityContext, so no fsGroup ever comes from the pod itself.
+      KOPIUR_UID: "65534"
+      KOPIUR_GID: "65534"
+    substituteFrom:
+      - name: cluster-secrets
+        kind: Secret
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: false
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app litellm-chatgpt-login
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/ai/litellm/chatgpt-login
+  dependsOn:
+    # For the PVC the Job mounts, which the kopiur component above creates.
+    - name: litellm
+  # A Job's pod template is immutable, so without force a Renovate image bump
+  # would fail to apply forever. Recreating is safe: the Job is a no-op once
+  # auth.json is valid.
+  force: true
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - name: cluster-secrets
+        kind: Secret
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  # Longer than the Job's own 15-minute device-code timeout, so Flux does not
+  # give up on a login someone is actively completing.
+  timeout: 20m
+  # The gate: litellm-chatgpt-models below blocks until this Job completes.
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app litellm-chatgpt-models
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/ai/litellm/chatgpt-models
+  dependsOn:
+    # Load-bearing, not just ordering. Registering a chatgpt model with no
+    # auth.json blocks the proxy's startup event for 15 minutes per model until
+    # the liveness probe crashloops it — and applyMode: api persists the models
+    # in Postgres, so reverting the commit cannot undo it. Waiting on the login
+    # Job makes that state unreachable.
+    - name: litellm-chatgpt-login
+  postBuild:
+    substitute:
+      APP: *app
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

@@ -1,0 +1,56 @@
+---
+# ChatGPT subscription models (https://docs.litellm.ai/docs/providers/chatgpt):
+# the plan's Codex backend, not the platform API — no API key, but plan rate
+# limits shared with the Codex CLI. No published model list is accurate; litellm
+# forwards the string and the backend decides. Verify a candidate with:
+#   codex exec -m <model> --skip-git-repo-check "Reply with exactly: OK"
+# info is mandatory — the cost map cannot resolve chatgpt/* names, so litellm
+# errors without it. mode is responses (Responses-native backend).
+# These live in their own Kustomization only so ../ks.yaml can gate them behind
+# ../chatgpt-login: registering one before the device-code login has written
+# auth.json crashloops the whole proxy, unrecoverably. Read that Job before
+# moving these back in with the llmkube models.
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: chatgpt-gpt-5-6-sol
+spec:
+  modelName: chatgpt/gpt-5.6-sol
+  params:
+    model: chatgpt/gpt-5.6-sol
+  info:
+    mode: responses
+    maxInputTokens: 922000
+    maxOutputTokens: 128000
+    supportsFunctionCalling: true
+    supportsVision: true
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: chatgpt-gpt-5-6-luna
+spec:
+  modelName: chatgpt/gpt-5.6-luna
+  params:
+    model: chatgpt/gpt-5.6-luna
+  info:
+    mode: responses
+    maxInputTokens: 922000
+    maxOutputTokens: 128000
+    supportsFunctionCalling: true
+    supportsVision: true
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: chatgpt-gpt-5-6-terra
+spec:
+  modelName: chatgpt/gpt-5.6-terra
+  params:
+    model: chatgpt/gpt-5.6-terra
+  info:
+    mode: responses
+    maxInputTokens: 922000
+    maxOutputTokens: 128000
+    supportsFunctionCalling: true
+    supportsVision: true

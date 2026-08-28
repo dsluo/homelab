@@ -4,7 +4,10 @@ kind: LiteLLMProxy
 metadata:
   name: litellm
 spec:
-  image: ghcr.io/berriai/litellm:v1.98.0@sha256:20b5044b619055374061a6d5b7b08754cad75aeabbf82ddf4f69cc0cf80ddaf4
+  # -non_root, not the default image (uid 0): the CRD has no securityContext,
+  # so identity must come from the image. Runs as 65534:65534 — keep
+  # ../ks.yaml's KOPIUR_UID/GID matching.
+  image: ghcr.io/berriai/litellm-non_root:v1.98.0@sha256:157aaf0a519713663ec6abefe73fa48bf12f638b0e63fb2b209ba0eae68e6bd7
   replicas: 1
 
   # Pod template rather than the Deployment, which is the operator's — reloader
@@ -22,10 +25,12 @@ spec:
       name: litellm-secret
       key: LITELLM_MASTER_KEY
 
-  # No modelSelector: adopts every LiteLLMModel in ai, all of them now written
-  # by hand in ./models.yaml. The operator's llmkube auto-registration is off
-  # (../operator/helmrelease.yaml) because it hardcodes both the client-facing
-  # model name and an openai/ provider prefix the rerank path cannot route.
+  # No modelSelector: adopts every LiteLLMModel in ai, wherever it is applied
+  # from — ./models/llmkube.yaml here, plus ../chatgpt-models, which is a
+  # separate Kustomization only so it can be gated behind the device login.
+  # The operator's llmkube auto-registration is off (../operator/helmrelease.yaml)
+  # because it hardcodes both the client-facing model name and an openai/
+  # provider prefix the rerank path cannot route.
 
   env:
     - name: LITELLM_MASTER_KEY
@@ -58,6 +63,12 @@ spec:
         secretKeyRef:
           name: litellm-postgres-secret
           key: password
+
+    # The chatgpt provider (../chatgpt-models/models.yaml) reads AND rewrites its
+    # auth.json on token refresh, so it lives on the kopiur PVC below rather
+    # than in a read-only Secret mount.
+    - name: CHATGPT_TOKEN_DIR
+      value: /var/lib/litellm/chatgpt
 
     # /ui SSO against pocket-id via litellm's "generic" OIDC provider, which has
     # no discovery-document path — hence the endpoints wired individually out of
@@ -114,6 +125,14 @@ spec:
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 30
+
+  volumes:
+    - name: chatgpt-auth
+      persistentVolumeClaim:
+        claimName: litellm
+  volumeMounts:
+    - name: chatgpt-auth
+      mountPath: /var/lib/litellm/chatgpt
 
   route:
     hostnames:

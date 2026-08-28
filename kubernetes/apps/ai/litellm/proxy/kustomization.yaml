@@ -5,5 +5,5 @@ resources:
   - ./externalsecret.yaml
   - ./keys-externalsecret.yaml
   - ./proxy.yaml
-  - ./models.yaml
+  - ./models
   - ./usergroup.yaml
