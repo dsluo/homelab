@@ -1,0 +1,17 @@
+---
+# hubble-ui has no auth of its own; the SecurityPolicy from
+# components/oidc/envoy attaches to this route by name and is the only gate.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: hubble
+spec:
+  hostnames:
+    - "hubble.${SECRET_DOMAIN}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+  rules:
+    - backendRefs:
+        - name: hubble-ui
+          port: 80

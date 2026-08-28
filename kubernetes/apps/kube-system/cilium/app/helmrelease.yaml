@@ -34,7 +34,39 @@ spec:
     gatewayAPI:
       enabled: false
     hubble:
-      enabled: false
+      enabled: true
+      metrics:
+        # The bundled *-namespace dashboards render empty without these
+        # contexts — they filter on the namespace labels and group by
+        # source/destination. httpV2 is absent: it needs envoy.enabled.
+        #
+        # dns:query is the one unbounded label (a series per resolved name).
+        # It stays because it supplies the domain set for hermes' toFQDNs
+        # allowlist; drop it first if vmsingle sheds rows.
+        enabled:
+          - "dns:query;labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+          - "drop:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+          - "flow:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+          - "tcp:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+          - "icmp:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+          - "port-distribution:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+        dashboards:
+          # Writes ConfigMaps only. grafana-operator reads them through the
+          # CRs in ../hubble/grafanadashboard.yaml, not by watching labels.
+          enabled: true
+        serviceMonitor:
+          enabled: true
+      relay:
+        enabled: true
+        # Hashes hubble-relay/configmap.yaml only — not the TLS Secret, whose
+        # leaf the helm method reuses across upgrades.
+        rollOutPods: true
+        prometheus:
+          enabled: true
+          serviceMonitor:
+            enabled: true
+      ui:
+        enabled: true
     ipam:
       mode: kubernetes
     ipv4NativeRoutingCIDR: 10.244.0.0/16

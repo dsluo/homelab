@@ -1,0 +1,57 @@
+---
+# allowCrossNamespaceImport is required: the ConfigMaps are in kube-system, the
+# Grafana instance is in observability.
+#
+# The chart's fourth dashboard, hubble-l7-http-metrics-by-workload, is left
+# unpublished — it is entirely hubble_http_*, which needs envoy.enabled. The
+# HTTP row on `hubble` below is blank for the same reason.
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: hubble
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  allowCrossNamespaceImport: true
+  folder: Cilium
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: VictoriaMetrics
+  configMapRef:
+    name: hubble-dashboard
+    key: hubble-dashboard.json
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: hubble-network-overview-namespace
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  allowCrossNamespaceImport: true
+  folder: Cilium
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: VictoriaMetrics
+  configMapRef:
+    name: hubble-network-overview-namespace
+    key: hubble-network-overview-namespace.json
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: hubble-dns-namespace
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  allowCrossNamespaceImport: true
+  folder: Cilium
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: VictoriaMetrics
+  configMapRef:
+    name: hubble-dns-namespace
+    key: hubble-dns-namespace.json

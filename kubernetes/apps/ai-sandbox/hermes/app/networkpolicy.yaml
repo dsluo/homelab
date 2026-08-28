@@ -75,8 +75,8 @@ spec:
     # NOTE: `toServices` can't be paired with `toPorts`, so this allows whatever
     # ports the backends expose. qwen and the searxng proxy are 8080-only; memini
     # also exposes :9090 (metrics), which hermes can therefore reach. Acceptable
-    # for a sandbox allowlist. (Verifying enforcement needs Hubble, which is
-    # currently disabled cluster-wide — see kube-system/cilium.)
+    # for a sandbox allowlist. (Verify with `hubble observe --namespace
+    # ai-sandbox --verdict DROPPED`.)
     - toServices:
         # Qwen chat model (llmkube), reached at http://qwen3-8-27b-mtp.ai:8080/v1.
         - k8sService:
