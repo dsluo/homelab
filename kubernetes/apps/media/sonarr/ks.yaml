@@ -14,12 +14,14 @@ spec:
   components:
     - ../../../../components/database
     - ../../../../components/oidc/envoy
+    - ../../components/api-only
     - ../../../../components/kopiur
   interval: 1h
   path: ./kubernetes/apps/media/sonarr/app
   postBuild:
     substitute:
       APP: *app
+      APP_PORT: "8989"
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/sonarr.svg"
       OIDC_APP_NAME: Sonarr
       KOPIUR_CAPACITY: 5Gi

@@ -1,0 +1,66 @@
+---
+# Closes the in-cluster bypass (#1476): these apps set AUTH__REQUIRED to
+# DisabledForLocalAddresses and count all of 10.0.0.0/8 as local, so every pod
+# in the cluster reached their UI with no authentication at all. The Envoy OIDC
+# SecurityPolicy only ever sat on the LAN path.
+#
+# After this, the UI is reachable only through the gateway — where that
+# SecurityPolicy is — and direct pod-to-pod access is limited to /api, which
+# takes an API key. Requires ${APP} and ${APP_PORT}.
+#
+# Local to this namespace rather than in kubernetes/components/: the sibling
+# rule below names `media` outright, so it isn't shared, and the *arr auth
+# behaviour it compensates for isn't either.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ${APP}-api-only
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: ${APP}
+  ingress:
+    # Kubelet probes. `host` covers the node the pod runs on; talos0 needs
+    # kube-apiserver too, because the control plane shares the node IP and
+    # Cilium resolves that address to the apiserver identity, not to host.
+    - fromEntities:
+        - host
+        - remote-node
+        - kube-apiserver
+        - health
+    # The LAN path. Deliberately L4 — no http rules — for two reasons: the
+    # OIDC SecurityPolicy on the catch-all HTTPRoute is already the gate here,
+    # and keeping Cilium's proxy out of this path leaves the UI's websocket and
+    # SSE streams alone.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+            gateway.envoyproxy.io/owning-gateway-namespace: network
+            gateway.envoyproxy.io/owning-gateway-name: envoy-internal
+      toPorts:
+        - ports:
+            - port: "${APP_PORT}"
+              protocol: TCP
+    # Sibling apps in this namespace: API only. This is the *arr integration
+    # traffic — indexer sync, download-client calls, recyclarr — which is all
+    # /api and all API-keyed. The UI is not reachable on this path.
+    #
+    # The regex is full-match (Cilium compiles it to an Envoy safe_regex), so
+    # the alternation is what admits both `/api/v3/series` and sabnzbd's bare
+    # `/api?mode=queue`.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: media
+      toPorts:
+        - ports:
+            - port: "${APP_PORT}"
+              protocol: TCP
+          rules:
+            http:
+              - path: "/api([/?].*)?"
+              # Root-level health endpoint the *arr apps expose alongside the
+              # API; connection tests between them use it. Returns status only.
+              - path: "/ping"
+    # Anything else in the cluster is denied outright. A pod in another
+    # namespace that wants the API goes through the gateway's /api route like
+    # any other client; that route is exempt from OIDC by design.
