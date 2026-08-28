@@ -20,7 +20,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      APP_PORT: "8080"
+      APP_PORT: '"8080"'
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/sabnzbd.svg"
       OIDC_APP_NAME: SABnzbd
       KOPIUR_CAPACITY: 5Gi

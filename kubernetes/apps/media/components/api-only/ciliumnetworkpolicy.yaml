@@ -8,6 +8,11 @@
 # SecurityPolicy is — and direct pod-to-pod access is limited to /api, which
 # takes an API key. Requires ${APP} and ${APP_PORT}.
 #
+# ${APP_PORT} carries its own quotes (ks.yaml sets it to '"8989"' and so on).
+# The CRD types this port as a string, but kustomize re-emits a `"${APP_PORT}"`
+# scalar without the quotes, so substitution would otherwise yield a bare
+# number and the apply fails its dry-run.
+#
 # Local to this namespace rather than in kubernetes/components/: the sibling
 # rule below names `media` outright, so it isn't shared, and the *arr auth
 # behaviour it compensates for isn't either.
@@ -39,7 +44,7 @@ spec:
             gateway.envoyproxy.io/owning-gateway-name: envoy-internal
       toPorts:
         - ports:
-            - port: "${APP_PORT}"
+            - port: ${APP_PORT}
               protocol: TCP
     # Sibling apps in this namespace: API only. This is the *arr integration
     # traffic — indexer sync, download-client calls, recyclarr — which is all
@@ -53,7 +58,7 @@ spec:
             io.kubernetes.pod.namespace: media
       toPorts:
         - ports:
-            - port: "${APP_PORT}"
+            - port: ${APP_PORT}
               protocol: TCP
           rules:
             http:

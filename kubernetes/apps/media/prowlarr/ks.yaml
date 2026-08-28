@@ -18,7 +18,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      APP_PORT: "9696"
+      APP_PORT: '"9696"'
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/prowlarr.svg"
       OIDC_APP_NAME: Prowlarr
     substituteFrom:
