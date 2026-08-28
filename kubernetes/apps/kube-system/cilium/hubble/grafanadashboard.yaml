@@ -1,14 +1,10 @@
 ---
-# The chart only writes the dashboards to ConfigMaps (labelled for the
-# kube-prometheus-stack sidecar we don't run); grafana-operator publishes them
-# only through these CRs. allowCrossNamespaceImport is required — the ConfigMaps
-# are here in kube-system, the Grafana instance is in observability.
+# allowCrossNamespaceImport is required: the ConfigMaps are in kube-system, the
+# Grafana instance is in observability.
 #
-# hubble-l7-http-metrics-by-workload is deliberately not published: it reads
-# hubble_http_*, which needs the httpV2 metric handler and therefore
-# envoy.enabled (see the HelmRelease). The `hubble` dashboard below carries an
-# HTTP row off the same metrics — expect it blank until then; the rest of that
-# dashboard is L3/L4 and populates now.
+# The chart's fourth dashboard, hubble-l7-http-metrics-by-workload, is left
+# unpublished — it is entirely hubble_http_*, which needs envoy.enabled. The
+# HTTP row on `hubble` below is blank for the same reason.
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:

@@ -1,9 +1,6 @@
 ---
-# hubble-ui ships no authentication of its own — the SecurityPolicy from
-# components/oidc/envoy (attached by name to this route) is the only gate, so
-# this route must stay the single entrypoint. The service is created by the
-# cilium chart; hubble.ui.ingress stays disabled since we front it with Envoy
-# Gateway like everything else.
+# hubble-ui has no auth of its own; the SecurityPolicy from
+# components/oidc/envoy attaches to this route by name and is the only gate.
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:

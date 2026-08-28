@@ -36,22 +36,13 @@ spec:
     hubble:
       enabled: true
       metrics:
-        # The context options are load-bearing for the bundled dashboards: the
-        # *-namespace ones filter on source_namespace/destination_namespace and
-        # group by source/destination, which only exist when labelsContext and
-        # source/destinationContext are set. workload-name|reserved-identity
-        # keeps source/destination bounded — a workload name for in-cluster
-        # peers, otherwise a reserved identity (world, host, remote-node) rather
-        # than a per-IP series.
+        # The bundled *-namespace dashboards render empty without these
+        # contexts — they filter on the namespace labels and group by
+        # source/destination. httpV2 is absent: it needs envoy.enabled.
         #
-        # `dns:query` is the exception: it labels every series with the resolved
-        # name, so its cardinality is whatever the cluster looks up. Kept anyway
-        # because it is what supplies the domain set for hermes' deferred
-        # toFQDNs allowlist (#1475). Drop it first if vmsingle starts shedding
-        # rows.
-        #
-        # No httpV2 here: L7 metrics are only emitted for pods with Layer 7
-        # visibility, which needs envoy.enabled above (the next step of #1475).
+        # dns:query is the one unbounded label (a series per resolved name).
+        # It stays because it supplies the domain set for hermes' toFQDNs
+        # allowlist; drop it first if vmsingle sheds rows.
         enabled:
           - "dns:query;labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
           - "drop:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
@@ -60,18 +51,15 @@ spec:
           - "icmp:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
           - "port-distribution:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
         dashboards:
-          # ConfigMaps only; the GrafanaDashboard CRs that publish them live in
-          # ../hubble/grafanadashboard.yaml (grafana-operator reads a ConfigMap
-          # through a CR, it does not watch dashboard labels).
+          # Writes ConfigMaps only. grafana-operator reads them through the
+          # CRs in ../hubble/grafanadashboard.yaml, not by watching labels.
           enabled: true
         serviceMonitor:
           enabled: true
       relay:
         enabled: true
-        # Rolls relay when its own ConfigMap changes (the annotation hashes
-        # hubble-relay/configmap.yaml, nothing else) — the relay counterpart of
-        # rollOutCiliumPods below. Certs are not the reason: the helm TLS method
-        # looks up hubble-relay-client-certs and reuses the existing leaf.
+        # Hashes hubble-relay/configmap.yaml only — not the TLS Secret, whose
+        # leaf the helm method reuses across upgrades.
         rollOutPods: true
         prometheus:
           enabled: true
