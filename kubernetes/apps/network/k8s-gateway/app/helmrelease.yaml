@@ -18,4 +18,9 @@ spec:
       annotations:
         lbipam.cilium.io/ips: 10.0.42.128
       externalTrafficPolicy: Cluster
+      # Without this the Service publishes UDP only, so every TCP query to the
+      # VIP is dropped SERVICE_BACKEND_NOT_FOUND — including CoreDNS' fallback
+      # when a `forward crayon.club` response comes back truncated. The pod
+      # already serves TCP on 1053; only the port declarations were missing.
+      useTcp: true
     watchedResources: ["HTTPRoute", "Service"]
