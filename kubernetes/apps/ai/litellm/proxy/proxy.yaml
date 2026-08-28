@@ -25,10 +25,12 @@ spec:
       name: litellm-secret
       key: LITELLM_MASTER_KEY
 
-  # No modelSelector: adopts every LiteLLMModel in ai, all of them now written
-  # by hand in ./models/llmkube.yaml. The operator's llmkube auto-registration is off
-  # (../operator/helmrelease.yaml) because it hardcodes both the client-facing
-  # model name and an openai/ provider prefix the rerank path cannot route.
+  # No modelSelector: adopts every LiteLLMModel in ai, wherever it is applied
+  # from — ./models/llmkube.yaml here, plus ../chatgpt-models, which is a
+  # separate Kustomization only so it can be gated behind the device login.
+  # The operator's llmkube auto-registration is off (../operator/helmrelease.yaml)
+  # because it hardcodes both the client-facing model name and an openai/
+  # provider prefix the rerank path cannot route.
 
   env:
     - name: LITELLM_MASTER_KEY
@@ -62,7 +64,7 @@ spec:
           name: litellm-postgres-secret
           key: password
 
-    # The chatgpt provider (./models/chatgpt.yaml) reads AND rewrites its
+    # The chatgpt provider (../chatgpt-models/models.yaml) reads AND rewrites its
     # auth.json on token refresh, so it lives on the kopiur PVC below rather
     # than in a read-only Secret mount.
     - name: CHATGPT_TOKEN_DIR

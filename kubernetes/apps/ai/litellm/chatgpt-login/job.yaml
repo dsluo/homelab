@@ -1,0 +1,61 @@
+---
+# The gate. litellm-chatgpt-models dependsOn this Kustomization with wait: true
+# (../ks.yaml), so Flux blocks on this Job completing before any chatgpt/* model
+# is ever registered — which is the whole point: registering one with no
+# auth.json blocks the proxy's startup event for 15 minutes per model until the
+# liveness probe crashloops it, and applyMode: api persists the models in
+# Postgres, so a revert cannot undo it.
+#
+# Idempotent: with a valid auth.json, get_access_token() returns the cached
+# token and this exits immediately. It blocks only when there is no usable
+# token, which is exactly when it should. The verification URL and device code
+# are printed to this pod's logs — that is where you complete the flow.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: litellm-chatgpt-login
+spec:
+  # One attempt: a retry would silently start a second 15-minute flow, and
+  # litellm stores a cooldown that rate-limits repeat device-code requests.
+  # So a timed-out login stays Failed, and re-applying an unchanged Job will
+  # not restart it — delete the Job and let Flux recreate it.
+  backoffLimit: 0
+  activeDeadlineSeconds: 960
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        # Matches the proxy's -non_root image and ../ks.yaml's KOPIUR_UID/GID.
+        # _write_auth_file swallows OSError into a log line, so an auth.json
+        # written under any other uid makes token refreshes silently stop
+        # persisting instead of failing loudly.
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+      containers:
+        - name: login
+          # Must track ../proxy/proxy.yaml — this runs litellm's own
+          # Authenticator, so it needs the same litellm. Renovate bumps both.
+          image: ghcr.io/berriai/litellm-non_root:v1.98.0@sha256:157aaf0a519713663ec6abefe73fa48bf12f638b0e63fb2b209ba0eae68e6bd7
+          # litellm has no login CLI: the device flow only ever runs as a side
+          # effect of resolving a chatgpt model. Calling the Authenticator
+          # directly is what lets it happen here instead of inside the proxy.
+          command:
+            - python
+            - -c
+            - |
+              from litellm.llms.chatgpt.authenticator import Authenticator
+              Authenticator().get_access_token()
+              print("auth.json is valid", flush=True)
+          env:
+            # Same path as ../proxy/proxy.yaml, on the same PVC.
+            - name: CHATGPT_TOKEN_DIR
+              value: /var/lib/litellm/chatgpt
+          volumeMounts:
+            - name: chatgpt-auth
+              mountPath: /var/lib/litellm/chatgpt
+      volumes:
+        - name: chatgpt-auth
+          persistentVolumeClaim:
+            # Created by the kopiur component on the litellm Kustomization.
+            claimName: litellm

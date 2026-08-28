@@ -6,9 +6,10 @@
 #   codex exec -m <model> --skip-git-repo-check "Reply with exactly: OK"
 # info is mandatory — the cost map cannot resolve chatgpt/* names, so litellm
 # errors without it. mode is responses (Responses-native backend).
-# Auth is a device-code login file (CHATGPT_TOKEN_DIR in ../proxy.yaml); do the
-# login before these take traffic, or the first request blocks on the device
-# flow for up to 15 minutes.
+# These live in their own Kustomization only so ../ks.yaml can gate them behind
+# ../chatgpt-login: registering one before the device-code login has written
+# auth.json crashloops the whole proxy, unrecoverably. Read that Job before
+# moving these back in with the llmkube models.
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
