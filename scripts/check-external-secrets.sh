@@ -36,9 +36,9 @@ function main() {
             || fail "${file} is not included by ${kustomization_file}"
 
         secret_count=$((secret_count + $(jq 'length' <<<"${documents}")))
-        field_count=$((field_count + $(jq '[.[].spec.data | length] | add // 0' <<<"${documents}")))
+        field_count=$((field_count + $(jq '[.[].spec.target.template.data | length] | add // 0' <<<"${documents}")))
 
-        invalid="$(jq -r '
+        invalid="$(jq -r --arg namespace "${namespace}" '
             .[]
             | select(
                 .apiVersion != "external-secrets.io/v1"
@@ -49,7 +49,12 @@ function main() {
                 or .spec.target.creationPolicy != "Owner"
                 or .spec.target.deletionPolicy != "Retain"
                 or (.spec.target.template.type | type) != "string"
-                or (.spec.dataFrom != null)
+                or .spec.target.template.mergePolicy != "Replace"
+                or (.spec.target.template.data | type) != "object"
+                or (.spec.data != null)
+                or (.spec.dataFrom | length) != 1
+                or (.spec.dataFrom[0] | keys) != ["extract"]
+                or .spec.dataFrom[0].extract.key != ("k8s-" + $namespace + "-" + .spec.target.name)
                 or .metadata.name != .spec.target.name
             )
             | .metadata.name
@@ -63,16 +68,18 @@ function main() {
                 type: .spec.target.template.type,
                 labels: (.spec.target.template.metadata.labels // {}),
                 annotations: (.spec.target.template.metadata.annotations // {}),
-                keys: ([.spec.data[].secretKey] | sort)
+                keys: (.spec.target.template.data | keys)
             }
         ' <<<"${documents}")"$'\n'
 
-        while IFS=$'\t' read -r target secret_key remote_key; do
+        while IFS=$'\t' read -r target remote_key secret_key template_value; do
             [[ -n "${target}" ]] || continue
-            [[ "${remote_key}" == "k8s-${namespace}-${target}/${secret_key}" ]] \
-                || fail "mapping mismatch in ${file}: ${secret_key} -> ${remote_key}"
-        done < <(jq -r '.[] as $secret | $secret.spec.data[]
-            | [$secret.spec.target.name, .secretKey, .remoteRef.key]
+            [[ "${remote_key}" == "k8s-${namespace}-${target}" ]] \
+                || fail "item mapping mismatch in ${file}: ${target} -> ${remote_key}"
+            [[ "${template_value}" == "{{ index . \"${secret_key}\" }}" ]] \
+                || fail "template mapping mismatch in ${file}: ${secret_key}"
+        done < <(jq -r '.[] as $secret | $secret.spec.target.template.data | to_entries[]
+            | [$secret.spec.target.name, $secret.spec.dataFrom[0].extract.key, .key, .value]
             | @tsv' <<<"${documents}")
     done < <(find "${ROOT_DIR}/kubernetes/apps" -type f -name '*externalsecret.yaml' \
         ! -path '*/external-secrets/*' -print0)
@@ -93,7 +100,7 @@ function main() {
     source="$(yq eval-all --output-format=json --indent=0 \
         'select(.kind == "ExternalSecret" and .metadata.name == "cluster-secrets-source")' \
         "${source_file}" | jq --slurp '.[0]')"
-    [[ "$(jq '.spec.data | length' <<<"${source}")" -eq 3 ]] \
+    [[ "$(jq '.spec.target.template.data | length' <<<"${source}")" -eq 3 ]] \
         || fail "cluster-secrets-source must contain exactly three fields"
     invalid="$(jq -r '
         select(
@@ -103,7 +110,14 @@ function main() {
             or .spec.target.name != "cluster-secrets-source"
             or .spec.target.creationPolicy != "Owner"
             or .spec.target.deletionPolicy != "Retain"
-            or any(.spec.data[]; .remoteRef.key != ("k8s-cluster-secrets/" + .secretKey))
+            or .spec.target.template.mergePolicy != "Replace"
+            or (.spec.target.template.data | keys) != ["CLOUDFLARE_TUNNEL_ID", "GARAGE_ENDPOINT_URL", "SECRET_DOMAIN"]
+            or any(.spec.target.template.data | to_entries[];
+                .value != ("{{ index . \"" + .key + "\" }}"))
+            or (.spec.data != null)
+            or (.spec.dataFrom | length) != 1
+            or (.spec.dataFrom[0] | keys) != ["extract"]
+            or .spec.dataFrom[0].extract.key != "k8s-cluster-secrets"
         )
         | .metadata.name
     ' <<<"${source}")"
