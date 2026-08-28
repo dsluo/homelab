@@ -3,11 +3,9 @@
 # used to generate (now off — see ../../operator/helmrelease.yaml). Written out
 # because the operator hardcodes ModelName to the InferenceService name
 # (internal/controller/llmkube_projection.go) with no knob, and we want the
-# client-facing IDs namespaced by backend the way bifrost's llmkube provider
-# already does: provider name + llama.cpp --alias. One divergence — the 27b is
-# published as …-27B-MTP, where its --alias (and so bifrost's ID for it) is
-# plain Qwen/Qwen3.8-27B. Align the --alias if the two gateways ever need to
-# answer to the same string.
+# client-facing IDs namespaced by backend: provider name + llama.cpp --alias.
+# One divergence — the 27b is published as …-27B-MTP, where its --alias is
+# plain Qwen/Qwen3.8-27B.
 #
 # The cost of hand-writing: model_info no longer comes from the GGUF (context
 # length) or the runtime flags (mode), and a new InferenceService needs an entry

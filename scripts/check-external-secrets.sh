@@ -2,10 +2,10 @@
 set -Eeuo pipefail
 
 readonly ROOT_DIR="$(git rev-parse --show-toplevel)"
-readonly EXPECTED_APP_SECRETS=33
-readonly EXPECTED_APP_FIELDS=66
+readonly EXPECTED_APP_SECRETS=32
+readonly EXPECTED_APP_FIELDS=62
 readonly EXPECTED_MANAGED_NAMESPACES=19
-readonly EXPECTED_APP_CONTRACT_SHA256="cde538a388b23b22ecff2bd95a8e182bbba46dc2e5e3323b25df972230a71b96"
+readonly EXPECTED_APP_CONTRACT_SHA256="539f3a24d8008cf948042e134528492d1ee7ddb2cf702bfc95801b72c7e74eea"
 
 function fail() {
     printf 'external-secrets check failed: %s\n' "$*" >&2
