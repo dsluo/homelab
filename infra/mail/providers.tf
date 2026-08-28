@@ -2,7 +2,7 @@ terraform {
   required_providers {
     migadu = {
       source  = "metio/migadu"
-      version = "2026.8.20"
+      version = "2026.8.27"
     }
 
     onepassword = {
