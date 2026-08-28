@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: ai
 resources:
   - ./namespace.yaml
-  - ./bifrost/ks.yaml
   # - ./llama-cpp/ks.yaml
   - ./litellm/ks.yaml
   - ./llmkube/ks.yaml
