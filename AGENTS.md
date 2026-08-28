@@ -54,6 +54,8 @@ kubernetes/apps/<ns>/<app>/
 
 **Kubernetes secrets come from 1Password through ESO — never commit plaintext.** Use one Secure Note per Secret named `k8s-<namespace>-<secret-name>`, keep field labels identical to Kubernetes keys, and reference fields explicitly from `externalsecret.yaml`. Cluster-wide values are fanned out as `cluster-secrets` and remain available through `postBuild.substituteFrom`. SOPS remains only for Talos, OpenTofu, and encrypted recovery documents.
 
+**Comments: short and load-bearing.** A comment states the non-obvious constraint in a line or two — what breaks if you change this, or why the obvious approach doesn't work. Don't write essay-style blocks that narrate investigation history, enumerate rejected alternatives, cite source files of third-party code, or argue the change is correct. That context belongs in the commit message, PR description, or memory — not in the manifest.
+
 **Operational loop:** `just reconcile` force-pulls from Git. To test a feature branch live before merging, `just flux-branch` points Flux at the current branch; `just flux-branch-reset` reverts to `main`.
 
 ## Memory
