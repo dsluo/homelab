@@ -41,4 +41,4 @@ TALOSCONFIG = "{{config_root}}/talos/clusterconfig/talosconfig"
 # ai/mcp
 "github:grafana/mcp-grafana" = "1.1.0"
 "pipx:unifi-network-mcp" = "0.27.3"
-"pipx:unifi-protect-mcp" = "0.7.5"
+"pipx:unifi-protect-mcp" = "0.7.7"
