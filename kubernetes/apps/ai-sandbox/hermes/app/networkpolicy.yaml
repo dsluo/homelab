@@ -17,6 +17,11 @@ spec:
       app.kubernetes.io/name: hermes
   egress:
     # Cluster DNS (Helm-managed CoreDNS in kube-system).
+    #
+    # matchPattern "*" allows every name — this restricts nothing. It exists to
+    # put the agent's DNS proxy in the path, which is the only way hubble emits
+    # hubble_dns_* at all, so the toFQDNs allowlist (README, deferred) can be
+    # written from what hermes actually resolves rather than guessed.
     - toEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: kube-system
@@ -27,6 +32,9 @@ spec:
               protocol: UDP
             - port: "53"
               protocol: TCP
+          rules:
+            dns:
+              - matchPattern: "*"
     # Pocket-ID, reached through the envoy-cloudflare gateway that fronts it.
     #
     # This is new relative to openclaw and is the one real widening in this

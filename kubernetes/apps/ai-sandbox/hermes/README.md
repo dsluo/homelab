@@ -225,10 +225,12 @@ hermes pod, and run `hermes claw migrate --source <path>`.
   hourly (kopia dedupes them, so this is waste rather than breakage).
 - **Per-domain egress allowlist.** The policy still permits any public host on
   443/80. The tighter model is a `toFQDNs` allowlist of just the provider
-  domains the agent needs (`api.anthropic.com`, `*.openrouter.ai`, …). That
-  needs the CoreDNS egress rule upgraded to L7 (`rules: { dns: [{ matchPattern:
-  "*" }] }`) so Cilium's DNS proxy can learn the mappings — note that would be
-  the cluster's first L7 policy. Deferred until the needed domain set is known.
+  domains the agent needs (`api.anthropic.com`, `*.openrouter.ai`, …). The L7
+  DNS half of that is now in place — the CoreDNS rule carries `rules: { dns:
+  [{ matchPattern: "*" }] }`, the cluster's first L7 policy — so the proxy is
+  learning the mappings and hubble is recording them. What remains is reading
+  the domain set off `hubble_dns_queries_total` once it has run long enough to
+  be representative, then narrowing the `0.0.0.0/0` rule to it.
 - **Dedicated Gateway for pocket-id**, which would let the egress rule above
   name only the IdP's own Envoy pods instead of every route behind
   envoy-cloudflare. Out of scope here because it touches `security/pocket-id`
