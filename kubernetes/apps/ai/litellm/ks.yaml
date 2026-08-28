@@ -62,10 +62,17 @@ spec:
       # interactive device-code login, so a lost volume otherwise costs a
       # 15-minute blocked request and a trip to auth.openai.com.
       KOPIUR_CAPACITY: 1Gi
-      # The berriai/litellm image runs the proxy as root; the movers have to
-      # write the restored auth.json as the uid that will refresh it in place.
-      KOPIUR_UID: "0"
-      KOPIUR_GID: "0"
+      # Match the -non_root image's runtime identity (../proxy/proxy.yaml), so
+      # the movers write the restored auth.json as the uid that refreshes it in
+      # place. These also carry the volume's permissions on their own: the proxy
+      # pod gets no fsGroup, because the CRD has no securityContext to put one
+      # in, so the mover's fsGroup is the only thing that makes a fresh volume
+      # writable — it leaves the root group-owned by KOPIUR_GID at 0775, and a
+      # bare zfspv volume is otherwise root:root 0755. Verified on the
+      # deploy-or-restore path too: the populator applies the fsGroup even when
+      # no snapshot exists yet.
+      KOPIUR_UID: "65534"
+      KOPIUR_GID: "65534"
     substituteFrom:
       - name: cluster-secrets
         kind: Secret

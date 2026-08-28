@@ -4,7 +4,15 @@ kind: LiteLLMProxy
 metadata:
   name: litellm
 spec:
-  image: ghcr.io/berriai/litellm:v1.98.0@sha256:20b5044b619055374061a6d5b7b08754cad75aeabbf82ddf4f69cc0cf80ddaf4
+  # -non_root, not the default image, which runs as uid 0. The operator's CRD
+  # exposes no securityContext (checked through chart 0.0.16) — no runAsUser, no
+  # fsGroup — so the runtime user can only come from the image's own USER, and
+  # this variant additionally owns /app as that user. Forcing the default image
+  # to a non-root uid is not an equivalent fix even once the CRD grows the knob:
+  # there /app stays root:root 0755 and HOME resolves to an unwritable /.
+  # Runtime identity is 65534:65534, which ../ks.yaml's KOPIUR_UID/GID must keep
+  # matching — do not swap this image back without revisiting them.
+  image: ghcr.io/berriai/litellm-non_root:v1.98.0@sha256:157aaf0a519713663ec6abefe73fa48bf12f638b0e63fb2b209ba0eae68e6bd7
   replicas: 1
 
   # Pod template rather than the Deployment, which is the operator's — reloader
