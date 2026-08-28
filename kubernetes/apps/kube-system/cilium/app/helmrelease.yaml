@@ -40,11 +40,12 @@ spec:
         # contexts — they filter on the namespace labels and group by
         # source/destination. httpV2 is absent: it needs envoy.enabled.
         #
-        # dns:query is the one unbounded label (a series per resolved name).
-        # It stays because it supplies the domain set for hermes' toFQDNs
-        # allowlist; drop it first if vmsingle sheds rows.
+        # No `query` option on the dns handler: it labels every series with the
+        # resolved name, which is unbounded. Re-add it temporarily when the
+        # hermes toFQDNs allowlist (#1475) is being written — that is the only
+        # thing that needs it, and hermes is parked.
         enabled:
-          - "dns:query;labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+          - "dns:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
           - "drop:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
           - "flow:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
           - "tcp:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
