@@ -57,20 +57,12 @@ spec:
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/litellm.svg"
       OIDC_APP_NAME: LiteLLM
       OIDC_CALLBACK_PATH: /sso/callback
-      # The PVC holds one file: the ChatGPT OAuth auth.json (../proxy/proxy.yaml).
-      # Small, but backed up on purpose — the only way to recreate it is another
-      # interactive device-code login, so a lost volume otherwise costs a
-      # 15-minute blocked request and a trip to auth.openai.com.
+      # Holds one file: the ChatGPT OAuth auth.json (../proxy/proxy.yaml) —
+      # backed up because recreating it needs an interactive device-code login.
       KOPIUR_CAPACITY: 1Gi
-      # Match the -non_root image's runtime identity (../proxy/proxy.yaml), so
-      # the movers write the restored auth.json as the uid that refreshes it in
-      # place. These also carry the volume's permissions on their own: the proxy
-      # pod gets no fsGroup, because the CRD has no securityContext to put one
-      # in, so the mover's fsGroup is the only thing that makes a fresh volume
-      # writable — it leaves the root group-owned by KOPIUR_GID at 0775, and a
-      # bare zfspv volume is otherwise root:root 0755. Verified on the
-      # deploy-or-restore path too: the populator applies the fsGroup even when
-      # no snapshot exists yet.
+      # Must match the -non_root image's 65534 identity. The mover's fsGroup is
+      # also what makes a fresh volume writable: the proxy CRD has no
+      # securityContext, so no fsGroup ever comes from the pod itself.
       KOPIUR_UID: "65534"
       KOPIUR_GID: "65534"
     substituteFrom:
