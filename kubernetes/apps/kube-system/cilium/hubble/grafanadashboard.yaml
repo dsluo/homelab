@@ -3,8 +3,9 @@
 # Grafana instance is in observability.
 #
 # The chart's fourth dashboard, hubble-l7-http-metrics-by-workload, is left
-# unpublished — it is entirely hubble_http_*, which needs envoy.enabled. The
-# HTTP row on `hubble` below is blank for the same reason.
+# unpublished — it is entirely hubble_http_*, which needs the httpV2 metric
+# handler the HelmRelease leaves off. The HTTP row on `hubble` below is blank
+# for the same reason.
 #
 # Expect one more blank panel: hubble-dns-namespace's "Top 10 DNS queries"
 # groups `by (query)`, a label the dns handler only emits with its `query`

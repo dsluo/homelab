@@ -30,7 +30,16 @@ spec:
     endpointRoutes:
       enabled: true
     envoy:
-      enabled: false
+      # Run the L7 proxy as a standalone DaemonSet rather than as a process
+      # inside the agent pod, so an agent restart no longer takes the proxy
+      # down with it. Not a capability gate: L7 policy and the DNS proxy work
+      # either way, and Envoy is only inserted for the endpoints and ports an
+      # L7 rule selects.
+      enabled: true
+      rollOutPods: true
+      prometheus:
+        serviceMonitor:
+          enabled: true
     gatewayAPI:
       enabled: false
     hubble:
@@ -38,7 +47,9 @@ spec:
       metrics:
         # The bundled *-namespace dashboards render empty without these
         # contexts — they filter on the namespace labels and group by
-        # source/destination. httpV2 is absent: it needs envoy.enabled.
+        # source/destination. httpV2 is absent: it only reports flows an L7
+        # HTTP rule redirects through the proxy, so today it would cover
+        # media's /api component and nothing else.
         #
         # No `query` option on the dns handler: it labels every series with the
         # resolved name, which is unbounded. Re-add it temporarily when the
