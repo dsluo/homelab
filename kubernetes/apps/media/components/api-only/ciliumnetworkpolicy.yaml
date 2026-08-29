@@ -21,6 +21,16 @@ spec:
     matchLabels:
       app.kubernetes.io/name: ${APP}
   ingress:
+    # Duplicated from components/oidc/envoy so this component is safe on its
+    # own: any ingress rule flips the endpoint to default-deny, so without a
+    # probe allowance an app that dropped the oidc component would fail its
+    # kubelet probes and never go Ready — silently, since these Kustomizations
+    # are wait: false. Cilium unions the rules, so pairing them costs nothing.
+    - fromEntities:
+        - host
+        - remote-node
+        - kube-apiserver
+        - health
     # Sibling apps in this namespace: API only. This is the *arr integration
     # traffic — indexer sync, download-client calls, recyclarr — which is all
     # /api and all API-keyed. The UI is not reachable on this path.
