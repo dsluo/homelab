@@ -54,12 +54,11 @@ spec:
   # Adds 443 alongside the operator's 1411 so the issuer URL needs no port.
   # The operator owns the http/metrics ports; extra ports are merged in.
   serviceTemplate:
-    spec:
-      ports:
-        - name: https
-          port: 443
-          targetPort: 1411
-          protocol: TCP
+    ports:
+      - name: https
+        port: 443
+        targetPort: 1411
+        protocol: TCP
 
   # Restated only to flip scheme to HTTPS — the pod no longer serves cleartext
   # on 1411, and an HTTP probe against it fails, so the pod would never go
