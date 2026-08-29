@@ -44,6 +44,21 @@ spec:
           # dials fine there.
           # - name: autopath
           #   parameters: "@kubernetes"
+          # Split-horizon for the IdP. Without this, in-cluster OIDC clients
+          # resolve pocket-id via k8s-gateway to the envoy-cloudflare VIP, so
+          # every one of them needs an egress rule allowing those gateway pods
+          # — which transitively grants it every route behind that gateway.
+          # Sending the name straight at the Service makes `toServices` on
+          # pocket-id the whole allowance. External resolution is unaffected:
+          # it never passes through here.
+          #
+          # Placement is cosmetic — CoreDNS orders plugins by its own build,
+          # and rewrite always runs before kubernetes/forward.
+          - name: rewrite
+            parameters: stop
+            configBlock: |-
+              name exact pocket-id.${SECRET_DOMAIN} pocket-id.security.svc.cluster.local
+              answer auto
           - name: forward
             parameters: ${SECRET_DOMAIN} 10.0.42.128
           - name: forward

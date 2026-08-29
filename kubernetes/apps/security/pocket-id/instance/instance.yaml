@@ -40,6 +40,52 @@ spec:
   auditLogRetentionDays: 180
 
   appUrl: "https://pocket-id.${SECRET_DOMAIN}"
+
+  # Terminate TLS in the pod rather than only at the gateway. This is what lets
+  # in-cluster clients reach the issuer directly: CoreDNS rewrites
+  # `pocket-id.${SECRET_DOMAIN}` to this Service, and the OIDC issuer is an
+  # https:// URL, so the Service itself has to answer TLS under that name.
+  # Consequences elsewhere: the gateway's backend hop needs the
+  # BackendTLSPolicy, and the probes below need scheme HTTPS.
+  tls:
+    secretRef:
+      name: pocket-id-tls
+
+  # Adds 443 alongside the operator's 1411 so the issuer URL needs no port.
+  # The operator owns the http/metrics ports; extra ports are merged in.
+  serviceTemplate:
+    spec:
+      ports:
+        - name: https
+          port: 443
+          targetPort: 1411
+          protocol: TCP
+
+  # Restated only to flip scheme to HTTPS — the pod no longer serves cleartext
+  # on 1411, and an HTTP probe against it fails, so the pod would never go
+  # ready. Thresholds match the operator's defaults; kubelet does not verify
+  # the cert on an HTTPS probe, so the pod-IP/hostname mismatch is fine.
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 1411
+      scheme: HTTPS
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+  livenessProbe:
+    httpGet:
+      path: /readyz
+      port: 1411
+      scheme: HTTPS
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 10
+    successThreshold: 1
+    failureThreshold: 5
+
   route:
     enabled: true
     parentRefs:

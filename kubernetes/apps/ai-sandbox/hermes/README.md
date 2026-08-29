@@ -37,12 +37,19 @@ for what actually changed.
   See [Authentication](#authentication).
 - **Pinned to `talos1`** (worker, has the gVisor extension); never the
   control-plane / GPU host `talos0`.
-- **Egress is default-deny** (`app/networkpolicy.yaml`): cluster DNS, the
-  envoy-cloudflare gateway pods (for Pocket-ID — see below), a short allowlist
-  of named in-cluster services (the Qwen model, memini, and the SearXNG MCP
-  proxy — via Cilium `toServices`), and the *public* internet (private /
-  link-local CIDRs excluded). kube-apiserver, the rest of the LAN, and every
-  other namespace/service are unreachable.
+- **Egress is default-deny** (`app/networkpolicy.yaml`): cluster DNS, two named
+  in-cluster services via Cilium `toServices` (`svc/litellm` in `ai`, and
+  `svc/pocket-id` in `security` for the dashboard's own OIDC — see below), and
+  the *public* internet (private / link-local CIDRs excluded). kube-apiserver,
+  the rest of the LAN, and every other namespace/service are unreachable — the
+  models, memini, and the MCP servers included. Anything in-cluster the agent
+  gets, it gets through the LiteLLM proxy.
+
+  Note the IdP is reached at its *Service*, not through the gateway that fronts
+  it. That depends on the cluster-wide CoreDNS rewrite of
+  `pocket-id.${SECRET_DOMAIN}` (`apps/kube-system/coredns`) plus Pocket-ID
+  terminating TLS in-pod; without both, this rule resolves to the shared
+  envoy-cloudflare VIP and login fails.
 
 ### The uid is not a free choice
 
@@ -165,23 +172,31 @@ kubectl -n ai-sandbox exec -it deploy/hermes -- hermes setup
 ```
 
 The dashboard is at `https://hermes.${SECRET_DOMAIN}/`, behind a Pocket-ID
-login. To point the agent at the in-cluster Qwen model instead of an external
-provider (reachable per the egress policy):
+login. To point the agent at an in-cluster model instead of an external
+provider, go through LiteLLM — the model services themselves are not reachable
+from the sandbox:
 
 ```sh
 kubectl -n ai-sandbox exec -it deploy/hermes -- sh -c '
   hermes config set model.provider custom
   hermes config set model.default qwen3-8-27b-mtp
-  hermes config set model.base_url http://qwen3-8-27b-mtp.ai:8080/v1
+  hermes config set model.base_url http://litellm.ai.svc.cluster.local:4000/v1
+  hermes config set model.api_key sk-...
   hermes config set model.context_length 262144
 '
 ```
 
-`api_key` needs to be any non-empty string — llama.cpp requires the header but
-doesn't validate it. Note this is a one-shot exec against the PVC rather than
-openclaw's every-boot config-patch script: Hermes persists config properly and
-doesn't rewrite it out from under us, so the self-healing patch loop openclaw
-needed isn't warranted here.
+Use the **fully qualified** name. `http://litellm.ai:4000/v1` — the short form
+used elsewhere in this repo — is a trap here: the pod runs `ndots: 1`, so a
+name containing a dot resolves as absolute first, and `litellm.ai` is a real
+public domain. The egress policy drops it (public egress is 443/80 only), so it
+fails rather than leaks, but confusingly.
+
+Unlike llama.cpp, LiteLLM validates `api_key`, so it needs a real virtual key.
+Note this is a one-shot exec against the PVC rather than openclaw's every-boot
+config-patch script: Hermes persists config properly and doesn't rewrite it out
+from under us, so the self-healing patch loop openclaw needed isn't warranted
+here.
 
 > **Unattended gateways should enable tool-loop hard stops.**
 > `tool_loop_guardrails.hard_stop_enabled` defaults to `false`, which only makes
