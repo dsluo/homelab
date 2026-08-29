@@ -70,6 +70,14 @@ spec:
     - name: CHATGPT_TOKEN_DIR
       value: /var/lib/litellm/chatgpt
 
+    # Swagger is served at / by default, and litellm only registers the root
+    # redirect when DOCS_URL is off "/" — so moving the docs is what makes
+    # ROOT_REDIRECT_URL take effect, not just an aesthetic choice.
+    - name: DOCS_URL
+      value: /docs
+    - name: ROOT_REDIRECT_URL
+      value: /ui
+
     # /ui SSO against pocket-id via litellm's "generic" OIDC provider, which has
     # no discovery-document path — hence the endpoints wired individually out of
     # the Secret the pocket-id operator writes. Who may log in is gated at
