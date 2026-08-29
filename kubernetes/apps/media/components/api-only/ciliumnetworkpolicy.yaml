@@ -1,21 +1,17 @@
 ---
-# Closes the in-cluster bypass (#1476): these apps set AUTH__REQUIRED to
-# DisabledForLocalAddresses and count all of 10.0.0.0/8 as local, so every pod
-# in the cluster reached their UI with no authentication at all. The Envoy OIDC
-# SecurityPolicy only ever sat on the LAN path.
-#
-# After this, the UI is reachable only through the gateway — where that
-# SecurityPolicy is — and direct pod-to-pod access is limited to /api, which
-# takes an API key. Requires ${APP} and ${APP_PORT}.
+# The in-cluster exception to components/oidc/envoy's default-deny (#1476):
+# sibling *arr apps integrate with each other pod-to-pod, and that traffic must
+# keep working without opening the UI back up. Cilium unions ingress across
+# policies selecting the same endpoint, so this only adds. Requires ${APP} and
+# ${APP_PORT}.
 #
 # ${APP_PORT} carries its own quotes (ks.yaml sets it to '"8989"' and so on).
 # The CRD types this port as a string, but kustomize re-emits a `"${APP_PORT}"`
 # scalar without the quotes, so substitution would otherwise yield a bare
 # number and the apply fails its dry-run.
 #
-# Local to this namespace rather than in kubernetes/components/: the sibling
-# rule below names `media` outright, so it isn't shared, and the *arr auth
-# behaviour it compensates for isn't either.
+# Local to this namespace rather than in kubernetes/components/: the rule below
+# names `media` outright, so it isn't shared.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -25,27 +21,6 @@ spec:
     matchLabels:
       app.kubernetes.io/name: ${APP}
   ingress:
-    # Kubelet probes. `host` covers the node the pod runs on; talos0 needs
-    # kube-apiserver too, because the control plane shares the node IP and
-    # Cilium resolves that address to the apiserver identity, not to host.
-    - fromEntities:
-        - host
-        - remote-node
-        - kube-apiserver
-        - health
-    # The LAN path. Deliberately L4 — no http rules — for two reasons: the
-    # OIDC SecurityPolicy on the catch-all HTTPRoute is already the gate here,
-    # and keeping Cilium's proxy out of this path leaves the UI's websocket and
-    # SSE streams alone.
-    - fromEndpoints:
-        - matchLabels:
-            io.kubernetes.pod.namespace: network
-            gateway.envoyproxy.io/owning-gateway-namespace: network
-            gateway.envoyproxy.io/owning-gateway-name: envoy-internal
-      toPorts:
-        - ports:
-            - port: ${APP_PORT}
-              protocol: TCP
     # Sibling apps in this namespace: API only. This is the *arr integration
     # traffic — indexer sync, download-client calls, recyclarr — which is all
     # /api and all API-keyed. The UI is not reachable on this path.
@@ -66,6 +41,3 @@ spec:
               # Root-level health endpoint the *arr apps expose alongside the
               # API; connection tests between them use it. Returns status only.
               - path: "/ping"
-    # Anything else in the cluster is denied outright. A pod in another
-    # namespace that wants the API goes through the gateway's /api route like
-    # any other client; that route is exempt from OIDC by design.
