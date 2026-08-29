@@ -1,0 +1,20 @@
+---
+# The pod terminates TLS itself (spec.tls on the instance), so the gateway's
+# hop to the backend is HTTPS, not plaintext. Without this the external route
+# breaks: Envoy would speak cleartext to a TLS listener.
+#
+# `hostname` is the SNI Envoy sends and the name it validates — it must match
+# the cert's dnsName, not the Service name.
+apiVersion: gateway.networking.k8s.io/v1
+kind: BackendTLSPolicy
+metadata:
+  name: pocket-id
+spec:
+  targetRefs:
+    - group: ""
+      kind: Service
+      name: pocket-id
+      sectionName: http
+  validation:
+    hostname: "pocket-id.${SECRET_DOMAIN}"
+    wellKnownCACertificates: System
