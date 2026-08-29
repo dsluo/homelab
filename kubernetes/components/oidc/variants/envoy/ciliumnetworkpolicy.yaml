@@ -1,0 +1,36 @@
+---
+# The SecurityPolicy next to this file is only a gate if the pod can't be
+# reached around it. Ingress here is default-deny except the gateway that
+# carries the OIDC filter, so forward auth cannot be bypassed from inside the
+# cluster (#1476). Apps needing an in-cluster exception add a second, additive
+# CNP — see kubernetes/apps/media/components/api-only.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ${APP}-envoy-only
+spec:
+  endpointSelector:
+    matchLabels:
+      # ${NETPOL_APP} exists for pods whose name label isn't ${APP} — hubble-ui
+      # is served by the `hubble` Kustomization. A selector that matches
+      # nothing is a silently inert policy, not an error.
+      app.kubernetes.io/name: ${NETPOL_APP:=${APP}}
+  ingress:
+    # Kubelet probes. `host` covers the node the pod runs on; talos0 needs
+    # kube-apiserver too, because the control plane shares the node IP and
+    # Cilium resolves that address to the apiserver identity, not to host.
+    - fromEntities:
+        - host
+        - remote-node
+        - kube-apiserver
+        - health
+    # Deliberately L4 with no port constraint: Envoy only forwards to ports an
+    # HTTPRoute backendRef names, so narrowing here buys nothing and would
+    # force every consumer to declare one. No http rules either — the
+    # SecurityPolicy is already the gate, and keeping Cilium's proxy off this
+    # path leaves websocket and SSE streams alone.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+            gateway.envoyproxy.io/owning-gateway-namespace: network
+            gateway.envoyproxy.io/owning-gateway-name: ${NETPOL_GATEWAY:=envoy-internal}

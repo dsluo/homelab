@@ -44,6 +44,10 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      # The workload this Kustomization fronts is hubble-ui, deployed by the
+      # cilium chart next door; ${APP} is `hubble` for the OIDC client's sake.
+      # components/oidc/envoy's default-deny needs the pod's real name label.
+      NETPOL_APP: hubble-ui
       OIDC_APP_NAME: Hubble
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/cilium.svg"
     substituteFrom:
