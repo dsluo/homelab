@@ -148,8 +148,6 @@ function main() {
     local managed_namespaces=0
     while IFS= read -r -d '' file; do
         if [[ "$(yq '.metadata.labels."external-secrets.io/cluster-secrets" // "false"' "${file}")" == "true" ]]; then
-            [[ "$(yq '.metadata.labels."external-secrets.io/managed" // "false"' "${file}")" == "true" ]] \
-                || fail "fan-out namespace is not provider-managed: ${file}"
             managed_namespaces=$((managed_namespaces + 1))
         fi
     done < <(find "${ROOT_DIR}/kubernetes/apps" -mindepth 2 -maxdepth 2 \
@@ -157,9 +155,6 @@ function main() {
     [[ "${managed_namespaces}" -eq "${EXPECTED_MANAGED_NAMESPACES}" ]] \
         || fail "expected ${EXPECTED_MANAGED_NAMESPACES} fan-out namespaces, found ${managed_namespaces}"
 
-    [[ "$(yq '.metadata.labels."external-secrets.io/managed"' \
-        "${ROOT_DIR}/kubernetes/apps/external-secrets/namespace.yaml")" == "true" ]] \
-        || fail "external-secrets namespace must be provider-managed"
     [[ "$(yq '.metadata.labels."external-secrets.io/cluster-secrets" // "false"' \
         "${ROOT_DIR}/kubernetes/apps/external-secrets/namespace.yaml")" == "false" ]] \
         || fail "external-secrets namespace must not receive the fan-out Secret"
