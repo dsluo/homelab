@@ -47,9 +47,14 @@ spec:
       metrics:
         # The bundled *-namespace dashboards render empty without these
         # contexts — they filter on the namespace labels and group by
-        # source/destination. httpV2 is absent: it only reports flows an L7
-        # HTTP rule redirects through the proxy, so today it would cover
-        # media's /api component and nothing else.
+        # source/destination.
+        #
+        # httpV2 carries a wider labelsContext than the rest on purpose: its
+        # dashboard groups by source_workload/destination_workload, and the
+        # `source`/`destination` labels sourceContext emits do not satisfy that
+        # despite holding the same value. It only sees flows an L7 HTTP rule
+        # puts through the proxy — today just the sibling-to-sibling half of
+        # media's api-only component.
         #
         # No `query` option on the dns handler: it labels every series with the
         # resolved name, which is unbounded. Re-add it temporarily when the
@@ -57,6 +62,7 @@ spec:
         # thing that needs it, and hermes is parked.
         enabled:
           - "dns:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+          - "httpV2:labelsContext=source_namespace,source_workload,destination_namespace,destination_workload;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
           - "drop:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
           - "flow:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
           - "tcp:labelsContext=source_namespace,destination_namespace;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
