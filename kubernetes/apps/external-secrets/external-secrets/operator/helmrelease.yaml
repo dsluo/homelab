@@ -9,27 +9,16 @@ spec:
     name: *app
   interval: 1h
   values:
-    fullnameOverride: external-secrets
-    installCRDs: true
-    crds:
-      createClusterExternalSecret: true
-      createClusterGenerator: false
-      createClusterPushSecret: false
-      createClusterSecretStore: true
-      createPushSecret: false
-      createSecretStore: false
-    processClusterExternalSecret: true
-    processClusterGenerator: false
-    processClusterPushSecret: false
-    processClusterStore: true
-    processPushSecret: false
-    processSecretStore: false
-    genericTargets:
-      enabled: false
+    leaderElect: true
     rbac:
+      # Chart default grants serviceaccounts/token create cluster-wide. The
+      # narrow external-secrets-token-request Role in config/rbac.yaml replaces it.
       serviceAccountTokenCreate: false
-      servicebindings:
-        create: false
     serviceMonitor:
       enabled: true
-      renderMode: skipIfMissing
+    grafanaDashboard:
+      enabled: true
+    webhook:
+      replicaCount: 2
+      podDisruptionBudget:
+        enabled: true
