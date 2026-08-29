@@ -1,9 +1,11 @@
 ---
 # The SecurityPolicy next to this file is only a gate if the pod can't be
 # reached around it. Ingress here is default-deny except the gateway that
-# carries the OIDC filter, so forward auth cannot be bypassed from inside the
-# cluster (#1476). Apps needing an in-cluster exception add a second, additive
-# CNP — see kubernetes/apps/media/components/api-only.
+# carries the OIDC filter, so an ordinary pod can't bypass forward auth
+# (#1476). Node identities are still allowed unconditionally below, so a
+# hostNetwork pod would keep a way in — there are none today. Apps needing an
+# in-cluster exception add a second, additive CNP — see
+# kubernetes/apps/media/components/api-only.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -33,4 +35,8 @@ spec:
         - matchLabels:
             io.kubernetes.pod.namespace: network
             gateway.envoyproxy.io/owning-gateway-namespace: network
+            # Every consumer is on envoy-internal today. An app routed via
+            # envoy-cloudflare or envoy-towonel must override this or the
+            # policy denies its only path in — it fails closed, so the symptom
+            # is an unreachable app rather than an open one.
             gateway.envoyproxy.io/owning-gateway-name: ${NETPOL_GATEWAY:=envoy-internal}
