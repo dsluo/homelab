@@ -19,15 +19,19 @@ spec:
       count: 2 # 3090 Ti + 3070 on talos1
       vendor: nvidia
       layers: 999 # preset ngl=999 (full offload)
-      # Emit a single --tensor-split 6,1 (preset value). llmkube derives the
-      # ratio from the layerSplit range sizes (6 vs 1), so we must NOT also pass
-      # --tensor-split in extraArgs or llama.cpp gets it twice. The ranges only
-      # express the 6:1 proportion; they need not match the real layer count.
+      # Emit a single --tensor-split 7,1. llmkube derives the ratio from the
+      # layerSplit range sizes (7 vs 1), so we must NOT also pass --tensor-split
+      # in extraArgs or llama.cpp gets it twice. The ranges only express the 7:1
+      # proportion; they need not match the real layer count.
+      #
+      # 7:1, not the preset 6:1: this quant back-loads its bits, so the 3070 held
+      # 20% of the weights at 6:1 (3209 MiB) and could not also fit the MTP draft
+      # compute buffer. One layer less puts it back under the ~2920 MiB that fit.
       sharding:
         strategy: layer
         layerSplit:
-          - "0-5" # 3090 Ti — 6 parts
-          - "6-6" # 3070 — 1 part
+          - "0-6" # 3090 Ti — 7 parts
+          - "7-7" # 3070 — 1 part
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
