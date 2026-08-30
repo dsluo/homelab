@@ -20,8 +20,6 @@ spec:
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
-      - name: cluster-secrets
-        kind: Secret
       - name: flux-operator-oidc-credentials
         kind: Secret
         optional: true

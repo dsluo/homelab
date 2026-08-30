@@ -11,8 +11,8 @@ spec:
   values:
     leaderElect: true
     rbac:
-      # Chart default grants serviceaccounts/token create cluster-wide. The
-      # narrow external-secrets-token-request Role in config/rbac.yaml replaces it.
+      # Chart default grants serviceaccounts/token create cluster-wide, letting
+      # ESO mint a token for any ServiceAccount. No store here needs TokenRequest.
       serviceAccountTokenCreate: false
     serviceMonitor:
       enabled: true

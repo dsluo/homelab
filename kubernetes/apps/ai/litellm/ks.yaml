@@ -21,8 +21,6 @@ spec:
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
-      - name: cluster-secrets
-        kind: Secret
   prune: true
   sourceRef:
     kind: GitRepository
@@ -70,8 +68,6 @@ spec:
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
-      - name: cluster-secrets
-        kind: Secret
   prune: true
   sourceRef:
     kind: GitRepository
@@ -100,8 +96,6 @@ spec:
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
-      - name: cluster-secrets
-        kind: Secret
   prune: true
   sourceRef:
     kind: GitRepository
@@ -134,8 +128,6 @@ spec:
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
-      - name: cluster-secrets
-        kind: Secret
   prune: true
   sourceRef:
     kind: GitRepository

@@ -30,18 +30,6 @@ spec:
           app.kubernetes.io/name: flux
       kustomize:
         patches:
-          - # The Flux Operator owns this namespace and otherwise removes labels
-            # added by the cluster-apps Kustomization.
-            patch: |
-              apiVersion: v1
-              kind: Namespace
-              metadata:
-                name: flux-system
-                labels:
-                  external-secrets.io/cluster-secrets: "true"
-            target:
-              kind: Namespace
-              name: flux-system
           - # Increase the number of workers
             patch: |
               - op: add

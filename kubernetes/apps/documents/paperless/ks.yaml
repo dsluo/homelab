@@ -30,8 +30,6 @@ spec:
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
-      - name: cluster-secrets
-        kind: Secret
       - name: paperless-oidc-credentials
         kind: Secret
         optional: true
