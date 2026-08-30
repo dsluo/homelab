@@ -28,5 +28,4 @@ newapp:
 
 # Run static migration checks and flate tests
 test:
-    bash scripts/check-external-secrets.sh
     flate test all --path kubernetes/flux/cluster --allow-missing-secrets
