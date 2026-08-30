@@ -21,7 +21,7 @@ spec:
               tag: 2026.8.28-a30b2d474@sha256:addd2cf36efb4b9815a2820a522aef7cce4da0d1c0e4527f6675f5663332fc9b
             env:
               SEARXNG_PORT: &port 8080
-              SEARXNG_BASE_URL: https://search.${SECRET_DOMAIN}
+              SEARXNG_BASE_URL: https://search.${DOMAIN}
               SEARXNG_VALKEY_URL: valkey://searxng-valkey.ai.svc.cluster.local:6379/0
             envFrom:
               - secretRef:
@@ -83,7 +83,7 @@ spec:
     route:
       *app :
         hostnames:
-          - "search.${SECRET_DOMAIN}"
+          - "search.${DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network

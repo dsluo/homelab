@@ -83,7 +83,7 @@ spec:
     # the Secret the pocket-id operator writes. Who may log in is gated at
     # pocket-id by the litellm-users group (usergroup.yaml), not here.
     - name: PROXY_BASE_URL
-      value: "https://litellm.${SECRET_DOMAIN}"
+      value: "https://litellm.${DOMAIN}"
     - name: GENERIC_CLIENT_ID
       valueFrom:
         secretKeyRef:
@@ -144,7 +144,7 @@ spec:
 
   route:
     hostnames:
-      - "litellm.${SECRET_DOMAIN}"
+      - "litellm.${DOMAIN}"
     parentRefs:
       - name: envoy-internal
         namespace: network

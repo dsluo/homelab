@@ -33,6 +33,8 @@ spec:
       # role/database/secret predate the component and use the undashed name
       DB_APP: pocketid
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
   prune: true

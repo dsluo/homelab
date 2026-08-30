@@ -84,7 +84,7 @@ spec:
     route:
       *app :
         hostnames:
-          - &host "radarr.${SECRET_DOMAIN}"
+          - &host "radarr.${DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network

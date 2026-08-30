@@ -141,7 +141,7 @@ spec:
     route:
       *app :
         hostnames:
-          - &host qb.${SECRET_DOMAIN}
+          - &host qb.${DOMAIN}
         parentRefs:
           - name: envoy-internal
             namespace: network

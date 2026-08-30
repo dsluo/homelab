@@ -13,6 +13,8 @@ spec:
   path: ./kubernetes/apps/openebs-system/openebs/app
   postBuild:
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
   prune: true

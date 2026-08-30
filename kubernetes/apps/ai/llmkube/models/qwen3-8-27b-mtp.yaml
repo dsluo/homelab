@@ -119,7 +119,7 @@ metadata:
   name: qwen3-8-27b-mtp
 spec:
   hostnames:
-    - "qwen.${SECRET_DOMAIN}"
+    - "qwen.${DOMAIN}"
   parentRefs:
     - name: envoy-internal
       namespace: network

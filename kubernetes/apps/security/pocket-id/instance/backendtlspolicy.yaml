@@ -16,5 +16,5 @@ spec:
       name: pocket-id
       sectionName: http
   validation:
-    hostname: "pocket-id.${SECRET_DOMAIN}"
+    hostname: "pocket-id.${DOMAIN}"
     wellKnownCACertificates: System

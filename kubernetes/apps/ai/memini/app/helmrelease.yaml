@@ -63,7 +63,7 @@ spec:
       ui:
         enabled: true
         hostnames:
-          - "memini.${SECRET_DOMAIN}"
+          - "memini.${DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network

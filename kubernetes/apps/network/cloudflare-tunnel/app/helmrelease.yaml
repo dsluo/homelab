@@ -72,15 +72,15 @@ spec:
             ingress:
               # Apex domain — the wildcard below does NOT match the bare apex, so
               # an explicit rule is required (e.g. Matrix /.well-known delegation).
-              - hostname: "${SECRET_DOMAIN}"
+              - hostname: "${DOMAIN}"
                 originRequest:
                   http2Origin: true
-                  originServerName: cloudflare.${SECRET_DOMAIN}
+                  originServerName: cloudflare.${DOMAIN}
                 service: https://envoy-cloudflare.{{ .Release.Namespace }}.svc.cluster.local:443
-              - hostname: "*.${SECRET_DOMAIN}"
+              - hostname: "*.${DOMAIN}"
                 originRequest:
                   http2Origin: true
-                  originServerName: cloudflare.${SECRET_DOMAIN}
+                  originServerName: cloudflare.${DOMAIN}
                 service: https://envoy-cloudflare.{{ .Release.Namespace }}.svc.cluster.local:443
               - service: http_status:404
     persistence:

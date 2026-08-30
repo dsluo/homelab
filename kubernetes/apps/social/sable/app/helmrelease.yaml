@@ -57,7 +57,7 @@ spec:
     route:
       *app :
         hostnames:
-          - "chat.${SECRET_DOMAIN}"
+          - "chat.${DOMAIN}"
         parentRefs:
           - name: envoy-cloudflare
             namespace: network

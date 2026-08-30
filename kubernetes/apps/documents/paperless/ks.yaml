@@ -28,6 +28,8 @@ spec:
       KOPIUR_UID: "4001"
       KOPIUR_GID: "4001"
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
       - name: paperless-oidc-credentials

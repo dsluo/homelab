@@ -4,7 +4,7 @@ kind: HTTPRoute
 metadata:
   name: github-webhook
 spec:
-  hostnames: ["flux-webhook.${SECRET_DOMAIN}"]
+  hostnames: ["flux-webhook.${DOMAIN}"]
   parentRefs:
     - name: envoy-cloudflare
       namespace: network

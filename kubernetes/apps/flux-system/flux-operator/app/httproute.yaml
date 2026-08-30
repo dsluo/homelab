@@ -4,7 +4,7 @@ kind: HTTPRoute
 metadata:
   name: flux-operator
 spec:
-  hostnames: ["flux.${SECRET_DOMAIN}"]
+  hostnames: ["flux.${DOMAIN}"]
   parentRefs:
     - name: envoy-internal
       namespace: network

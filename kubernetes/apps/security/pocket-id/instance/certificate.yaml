@@ -8,5 +8,5 @@ spec:
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
-  commonName: "pocket-id.${SECRET_DOMAIN}"
-  dnsNames: ["pocket-id.${SECRET_DOMAIN}"]
+  commonName: "pocket-id.${DOMAIN}"
+  dnsNames: ["pocket-id.${DOMAIN}"]

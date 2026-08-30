@@ -30,7 +30,7 @@ spec:
               tag: 3.1.0
             env:
               # host
-              PAPERLESS_URL: https://paperless.${SECRET_DOMAIN}
+              PAPERLESS_URL: https://paperless.${DOMAIN}
               PAPERLESS_PORT: &port 8000
 
               PAPERLESS_SECRET_KEY:
@@ -163,7 +163,7 @@ spec:
     route:
       paperless:
         hostnames:
-          - "paperless.${SECRET_DOMAIN}"
+          - "paperless.${DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network

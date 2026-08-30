@@ -11,6 +11,8 @@ spec:
   path: ./kubernetes/apps/flux-system/konflate/app
   postBuild:
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
   prune: true

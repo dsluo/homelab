@@ -45,7 +45,7 @@ spec:
       plugin_admin_enabled: "false"
     server:
       enable_gzip: "true"
-      root_url: https://grafana.${SECRET_DOMAIN}
+      root_url: https://grafana.${DOMAIN}
   deployment:
     spec:
       strategy:
@@ -85,7 +85,7 @@ spec:
   httpRoute:
     spec:
       hostnames:
-        - "grafana.${SECRET_DOMAIN}"
+        - "grafana.${DOMAIN}"
       parentRefs:
         - name: envoy-internal
           namespace: network

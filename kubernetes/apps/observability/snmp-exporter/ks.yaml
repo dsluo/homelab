@@ -12,8 +12,10 @@ spec:
   path: ./kubernetes/apps/observability/snmp-exporter/app
   postBuild:
     substituteFrom:
-      - kind: Secret
-        name: cluster-secrets
+      - name: cluster-global-config
+        kind: ConfigMap
+      - name: cluster-secrets
+        kind: Secret
   prune: true
   sourceRef:
     kind: GitRepository

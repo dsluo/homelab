@@ -5,7 +5,7 @@ metadata:
   name: towonel-agent
 spec:
   endpoints:
-    - dnsName: "towonel.${SECRET_DOMAIN}"
+    - dnsName: "towonel.${DOMAIN}"
       recordType: CNAME
       targets: ["edge-na.towonel.dev"]
       providerSpecific:

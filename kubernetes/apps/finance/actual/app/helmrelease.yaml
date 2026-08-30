@@ -43,7 +43,7 @@ spec:
                   secretKeyRef:
                     name: *oidcSecret
                     key: OIDC_CLIENT_SECRET
-              ACTUAL_OPENID_SERVER_HOSTNAME: "https://actual.${SECRET_DOMAIN}"
+              ACTUAL_OPENID_SERVER_HOSTNAME: "https://actual.${DOMAIN}"
             probes:
               liveness:
                 enabled: true
@@ -80,7 +80,7 @@ spec:
     route:
       ? *app
       : hostnames:
-          - "actual.${SECRET_DOMAIN}"
+          - "actual.${DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network

@@ -27,6 +27,8 @@ spec:
       KOPIUR_UID: "4009"
       KOPIUR_GID: "4009"
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
   prune: true

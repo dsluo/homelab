@@ -30,7 +30,7 @@ spec:
     route:
       *app :
         hostnames:
-          - "{{app}}.${SECRET_DOMAIN}"
+          - "{{app}}.${DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network

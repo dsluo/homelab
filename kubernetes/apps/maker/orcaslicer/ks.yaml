@@ -25,6 +25,8 @@ spec:
       KOPIUR_UID: "911"
       KOPIUR_GID: "911"
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
   prune: true

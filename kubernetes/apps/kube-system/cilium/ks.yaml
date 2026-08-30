@@ -11,6 +11,8 @@ spec:
   path: ./kubernetes/apps/kube-system/cilium/app
   postBuild:
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
   prune: true
@@ -51,6 +53,8 @@ spec:
       OIDC_APP_NAME: Hubble
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/cilium.svg"
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
   prune: true
