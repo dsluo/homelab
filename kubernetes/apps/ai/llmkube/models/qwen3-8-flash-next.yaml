@@ -21,15 +21,20 @@ spec:
       count: 2 # 3090 Ti + 3070 on talos1
       vendor: nvidia
       layers: 999 # ngl=999; expert tensors come back off the GPU via moeCPULayers
-      # Emit a single --tensor-split 5,1. Only the ratio matters, not the range
-      # sizes. 5:1 puts ~3.9 GB of the ~23 GB of GPU-resident weights on the
-      # 3070, leaving it ~3 GB for compute buffers — the same buffer starvation
-      # that forced 7:1 on the 27B applies here.
+      # Emit a single --tensor-split 6,1. Only the ratio matters, not the range
+      # sizes.
+      #
+      # This ratio splits LAYERS, and moeCPULayers below makes the low-numbered
+      # ones nearly free on the GPU — so the byte split is far more lopsided
+      # than the ratio reads. 6:1 gives GPU0 layers 0-40, but only 41-22=19 of
+      # those still carry experts, while GPU1's 7 layers all do. Measured:
+      # 21630 MiB on the 3090 Ti, 6363 MiB on the 3070. Retune this and
+      # moeCPULayers together; changing one alone moves both GPUs.
       sharding:
         strategy: layer
         layerSplit:
-          - "0-4" # 3090 Ti — 5 parts
-          - "5-5" # 3070 — 1 part
+          - "0-5" # 3090 Ti — 6 parts
+          - "6-6" # 3070 — 1 part
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
@@ -53,10 +58,13 @@ spec:
   #   MoE experts           41.8 GB  -> 0.872 GB/layer x 48 layers, split here
   #   attn / norms / output  3.9 GB  -> GPU
   #
-  # At moeCPULayers=26: CPU holds 28.8 + 22.7 = 51.5 GB, GPU holds 23.1 GB of
-  # weights plus KV and compute buffers. Viable range is 23..29 — below 23 the
-  # GPUs OOM, above 29 the node does. Lower the number to trade RAM for VRAM.
-  moeCPULayers: 26
+  # At 22: CPU holds 28.8 + 19.2 = 48 GB, the GPUs hold the rest. Lower this to
+  # trade RAM for VRAM. Do not raise it past ~29 (the node OOMs) and do not drop
+  # it far below 22 without also widening the tensor-split above.
+  #
+  # 26 also ran, but left the 3070 at 90% while the 3090 Ti sat at 71%; 22 with
+  # a 6:1 split balances them at 88%/78% and measured no slower.
+  moeCPULayers: 22
   # NOT the "ple_ngram_embd" name upstream discussion uses — this GGUF calls the
   # 51B per-layer embedding table per_layer_token_embd, and a regex that misses
   # it puts 28.8 GB back on the GPU.
@@ -93,16 +101,19 @@ spec:
     - "0.0"
     - --repeat-penalty
     - "1.0"
-    # Default effort is xhigh; with the experts on CPU that spends minutes per
-    # reply. Raise once the tok/s is known.
+    # Default effort is xhigh, which at ~32 tok/s would spend minutes of
+    # thinking per reply. medium keeps latency sane.
     - --chat-template-kwargs
     - '{"reasoning_effort":"medium"}'
 
+  # Measured on talos1 at this config: ~450 tok/s prompt on a 6.3k-token
+  # prompt, ~32 tok/s generation. The first request after a swap is far
+  # slower (~170 tok/s prompt) while mmap faults the CPU-side weights in.
   resources:
     # Experts run on CPU here, so this is real compute, not the 1 core the
     # fully-offloaded 27B needs.
     cpu: "8"
-    # Covers the 51.5 GB of CPU-resident weights. Fits only because the pool
+    # Covers the 48 GB of CPU-resident weights. Fits only because the pool
     # never runs this and the 27B at once — together they exceed the node.
     memory: 50Gi
     gpu: 2
