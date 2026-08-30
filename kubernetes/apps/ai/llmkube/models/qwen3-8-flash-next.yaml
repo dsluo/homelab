@@ -22,7 +22,7 @@ spec:
       count: 2 # 3090 Ti + 3070 on talos1
       vendor: nvidia
       layers: 999 # ngl=999; expert tensors come back off the GPU via moeCPULayers
-      # Emit a single --tensor-split 8,1. Only the ratio matters, not the range
+      # Emit a single --tensor-split 9,1. Only the ratio matters, not the range
       # sizes.
       #
       # This ratio splits LAYERS, and moeCPULayers below makes the low-numbered
@@ -42,9 +42,18 @@ spec:
       # 8:1 is the balance point, measured at contextSize 131072 /
       # moeCPULayers 30 -- do not go further:
       #
-      #   7:1  3614 free / 820 free   works, 3070 on the edge
-      #   8:1  2232 free / 2236 free  works, even
-      #   9:1  crashloops -- GPU0 cannot allocate its 2112 MiB KV block
+      #   at IQ3_XXS + moeCPULayers 30:
+      #     7:1  3614 free / 820 free   works, 3070 on the edge
+      #     8:1  2232 free / 2236 free  works, even
+      #     9:1  crashloops -- GPU0 cannot allocate its 2112 MiB KV block
+      #
+      #   at Q4_K_XL + moeCPULayers 36:
+      #     8:1  crashloops -- GPU1 short 256 MiB on KV
+      #     9:1  current; GPU0 can now take the layer because moeCPULayers 36
+      #          unloaded six of its own
+      #
+      # The pairing is the point: a bigger quant grows GPU1's five expert layers
+      # with nothing to offset them, and only the split reaches GPU1.
       #
       # Each ratio step moves ~1.4 GB from GPU1 to GPU0, so from 8:1 another
       # step leaves the 3090 Ti near 830 MiB -- under the single contiguous
@@ -53,8 +62,8 @@ spec:
       sharding:
         strategy: layer
         layerSplit:
-          - "0-7" # 3090 Ti — 8 parts
-          - "8-8" # 3070 — 1 part
+          - "0-8" # 3090 Ti — 9 parts
+          - "9-9" # 3070 — 1 part
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
