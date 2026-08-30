@@ -9,11 +9,11 @@ spec:
   # ends at resolve/main so prefix + "/" + entry is a valid HF download URL.
   source: https://huggingface.co/unsloth/Qwen3.8-Flash-Next-GGUF/resolve/main
   files:
-    - UD-IQ1_M/Qwen3.8-Flash-Next-UD-IQ1_M-00001-of-00003.gguf
-    - UD-IQ1_M/Qwen3.8-Flash-Next-UD-IQ1_M-00002-of-00003.gguf
-    - UD-IQ1_M/Qwen3.8-Flash-Next-UD-IQ1_M-00003-of-00003.gguf
+    - UD-IQ3_XXS/Qwen3.8-Flash-Next-UD-IQ3_XXS-00001-of-00003.gguf
+    - UD-IQ3_XXS/Qwen3.8-Flash-Next-UD-IQ3_XXS-00002-of-00003.gguf
+    - UD-IQ3_XXS/Qwen3.8-Flash-Next-UD-IQ3_XXS-00003-of-00003.gguf
   format: gguf
-  quantization: UD-IQ1_M
+  quantization: UD-IQ3_XXS
   hardware:
     accelerator: cuda
     gpu:
@@ -21,20 +21,39 @@ spec:
       count: 2 # 3090 Ti + 3070 on talos1
       vendor: nvidia
       layers: 999 # ngl=999; expert tensors come back off the GPU via moeCPULayers
-      # Emit a single --tensor-split 6,1. Only the ratio matters, not the range
+      # Emit a single --tensor-split 8,1. Only the ratio matters, not the range
       # sizes.
       #
       # This ratio splits LAYERS, and moeCPULayers below makes the low-numbered
       # ones nearly free on the GPU — so the byte split is far more lopsided
-      # than the ratio reads. 6:1 gives GPU0 layers 0-40, but only 41-22=19 of
-      # those still carry experts, while GPU1's 7 layers all do. Measured:
-      # 21630 MiB on the 3090 Ti, 6363 MiB on the 3070. Retune this and
-      # moeCPULayers together; changing one alone moves both GPUs.
+      # than the ratio reads. Every layer moeCPULayers claims comes off GPU0's
+      # low end, so raising it unloads GPU0 and leaves GPU1 carrying relatively
+      # more.
+      #
+      # Measured at 30 + 7:1 with contextSize 131072: 20502 MiB (83%, 3614 free)
+      # on the 3090 Ti and 7023 MiB (86%, 820 free) on the 3070.
+      #
+      # Raising moeCPULayers unloads GPU0 only, but KV and compute buffers grow
+      # on BOTH cards, so widening the context to 131072 left GPU1 with just
+      # 820 MiB free against the 3090 Ti's 3614. Only this ratio can relieve
+      # GPU1; more CPU offload cannot.
+      #
+      # 8:1 is the balance point, measured at contextSize 131072 /
+      # moeCPULayers 30 -- do not go further:
+      #
+      #   7:1  3614 free / 820 free   works, 3070 on the edge
+      #   8:1  2232 free / 2236 free  works, even
+      #   9:1  crashloops -- GPU0 cannot allocate its 2112 MiB KV block
+      #
+      # Each ratio step moves ~1.4 GB from GPU1 to GPU0, so from 8:1 another
+      # step leaves the 3090 Ti near 830 MiB -- under the single contiguous
+      # 2112 MiB the KV cache needs. Free VRAM on GPU0 is therefore not
+      # spendable down to zero: it must stay above that block.
       sharding:
         strategy: layer
         layerSplit:
-          - "0-5" # 3090 Ti — 6 parts
-          - "6-6" # 3070 — 1 part
+          - "0-7" # 3090 Ti — 8 parts
+          - "8-8" # 3070 — 1 part
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
@@ -51,31 +70,63 @@ spec:
   # No spec.replicas -- the ModelPool owns a pooled member's replica count.
   priorityClassName: gpu-preemptible
 
-  # 74.5 GB of weights against ~30 GB of VRAM, so most of the model lives in
-  # host RAM. Two placements do the work, and the split is what makes it fit:
+  # 82.0 GB of weights against ~34 GB of VRAM, so most of the model lives
+  # off-GPU. Two placements do the work, and the split is what makes it fit:
   #
-  #   per_layer_token_embd  28.8 GB  -> CPU (tensorOverrides below)
-  #   MoE experts           41.8 GB  -> 0.872 GB/layer x 48 layers, split here
-  #   attn / norms / output  3.9 GB  -> GPU
+  #   per_layer_token_embd  31.7 GB  -> CPU (tensorOverrides below)
+  #   MoE experts           46.0 GB  -> 0.960 GB/layer x 48 layers, split here
+  #   attn / norms / output   4.3 GB  -> GPU
   #
-  # At 22: CPU holds 28.8 + 19.2 = 48 GB, the GPUs hold the rest. Lower this to
-  # trade RAM for VRAM. Do not raise it past ~29 (the node OOMs) and do not drop
-  # it far below 22 without also widening the tensor-split above.
+  # At 30: CPU holds 31.7 + 28.8 = 60.5 GB, the GPUs hold the rest. Lower this
+  # to trade host memory for VRAM.
   #
-  # 26 also ran, but left the 3070 at 90% while the 3090 Ti sat at 71%; 22 with
-  # a 6:1 split balances them at 88%/78% and measured no slower.
-  moeCPULayers: 22
+  # 26 could not fit contextSize 131072: GPU0 came up 1054.78 MiB short on the
+  # prompt-processing compute buffer and llama-server crashlooped. Every layer
+  # this claims comes off GPU0, which is exactly where that shortfall was, so
+  # 30 frees ~3.8 GB there -- ample margin over the 1 GB deficit.
+  #
+  # The old "do not exceed ~29, the node OOMs" ceiling was wrong. llama.cpp
+  # mmaps the GGUF, so CPU-side weights are page cache, not anonymous memory --
+  # measured 41 GiB cache against 2.4 GiB RSS. They are evictable, and eviction
+  # is cheap: under load the node sustained 26 MiB/s of reads and 3.9k major
+  # faults/s and still turned in 317 tok/s prompt eval. Only a cold whole-model
+  # fault-in is slow. So 60.5 GB against 62 GiB of RAM is fine even though it
+  # cannot all stay resident -- the sparse per_layer_token_embd lookups are
+  # what stream, and they stream well. Going 26 -> 30 alongside a 4x context
+  # measured no slower: 369 tok/s prompt at 9k and 30-33 tok/s generation,
+  # unchanged.
+  moeCPULayers: 30
   # NOT the "ple_ngram_embd" name upstream discussion uses — this GGUF calls the
   # 51B per-layer embedding table per_layer_token_embd, and a regex that misses
-  # it puts 28.8 GB back on the GPU.
+  # it puts 31.7 GB back on the GPU.
   tensorOverrides:
     - per_layer_token_embd=CPU
 
   # --- typed preset fields ---
   # Hybrid attention (SSM layers + full attention every 4th) means KV is cheap:
-  # only 12 of 48 layers cache, at 2 KV heads, so 32768 costs well under 1 GB at
-  # f16. Room to raise this a long way — weights, not context, are the ceiling.
-  contextSize: 32768
+  # only 12 of 48 layers cache, at 2 KV heads, so it costs roughly 12 MiB per
+  # 1k tokens at f16.
+  #
+  # KV is not the only thing that grows with this. The prompt-processing
+  # compute buffer scales with batchSize x context for the full-attention
+  # layers, and it -- not the KV -- is what actually ran GPU0 out of memory at
+  # 131072 on moeCPULayers 26. Budget for both, and note batchSize is the other
+  # lever if VRAM ever gets tight (at the cost of prompt-eval throughput).
+  #
+  # Everything here is preallocated at load, so overshooting crashloops the pod
+  # at startup rather than failing a request -- and because this is a ModelPool
+  # member, a crashlooping load strands the pool in Swapping and takes the 27B
+  # down with it. Do not deploy a context bump without watching the load.
+  #
+  # Depth costs time, not memory: prompt eval falls from 369 tok/s at 9k to 229
+  # at 68k, so a 68k prompt is ~5 minutes to first token and a full 131k window
+  # roughly 10. That is what responseHeaderTimeout on the ModelRouter has to
+  # cover -- at the old 600s a 68k request would have failed. Verified end to
+  # end: a needle planted mid-prompt at 68013 tokens came back exact.
+  #
+  # Keep the litellm entry's maxInputTokens in step:
+  # ../../litellm/proxy/models/llmkube.yaml
+  contextSize: 131072
   parallelSlots: 1 # slots divide contextSize, and CPU-side experts do not
   # parallelise well — one slot gets the whole window
   batchSize: 1024
@@ -101,20 +152,39 @@ spec:
     - "0.0"
     - --repeat-penalty
     - "1.0"
-    # Default effort is xhigh, which at ~32 tok/s would spend minutes of
-    # thinking per reply. medium keeps latency sane.
+    # xhigh is the model default and the best-quality setting; it spends
+    # minutes of thinking per reply at this generation rate, which is why the
+    # ModelRouter's responseHeaderTimeout had to go up with it. Drop to
+    # "medium" here if latency matters more than answer quality.
     - --chat-template-kwargs
-    - '{"reasoning_effort":"medium"}'
+    - '{"reasoning_effort":"xhigh"}'
 
-  # Measured on talos1 at this config: ~450 tok/s prompt on a 6.3k-token
-  # prompt, ~32 tok/s generation. The first request after a swap is far
-  # slower (~170 tok/s prompt) while mmap faults the CPU-side weights in.
+  # Measured warm on talos1, uncached prompts: 371 tok/s prompt eval on 9.2k
+  # tokens (284 on 2.5k -- smaller batches amortize the fixed cost worse), and
+  # 31 tok/s generation regardless of prompt size. UD-IQ1_M at moeCPULayers=22
+  # did 317 / 31, so the extra 8.7 GB on the CPU side costs nothing measurable
+  # once the page cache is warm: major faults sit at 3-4.5k/s either way.
+  #
+  # Give it time to warm. The same prompt read 308 tok/s twenty minutes after
+  # load and 371 once settled -- benchmark a fresh pod and you will understate
+  # it. Randomize the prompt too, or llama.cpp's prefix cache returns
+  # cached_tokens and reports a meaningless five-figure tok/s.
+  #
+  # The cold path is the only place this quant is worse. The first request
+  # after a load or a pool swap pays the fault-in: 72k major faults/s, and a
+  # small prompt measured 4 tok/s prompt eval (14.5s to first token). Budget
+  # for that on the first request, not the steady state.
   resources:
     # Experts run on CPU here, so this is real compute, not the 1 core the
     # fully-offloaded 27B needs.
     cpu: "8"
-    # Covers the 48 GB of CPU-resident weights. Fits only because the pool
-    # never runs this and the 27B at once — together they exceed the node.
+    # NOT sized to the 56.7 GB of CPU-side weights, and deliberately so: those
+    # are mmap'd page cache and the container's real anonymous footprint is
+    # ~2.4 GiB. This request exists to soft-reserve page cache -- it is the only
+    # thing stopping the scheduler from packing talos1 with pods that would
+    # evict the model and push it back to cold-load speeds. 50Gi is near the
+    # most that still schedules (62893Mi allocatable, ~8 GB requested by
+    # everything else).
     memory: 50Gi
     gpu: 2
 

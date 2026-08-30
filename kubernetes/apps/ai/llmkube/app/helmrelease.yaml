@@ -33,8 +33,12 @@ spec:
       enabled: true
       mode: perService
       # A ZFS dataset gets a quota and no reservation, so this is a ceiling,
-      # not an allocation — each cache costs only the weights it holds.
-      size: 100Gi
+      # not an allocation — each cache costs only the weights it holds. Sized to
+      # hold two quants of the largest model at once: a quantization change
+      # writes to a new content-hash directory and the old one is still there
+      # until it is reaped, so 100Gi could not have swapped flash-next's 82 GB
+      # in on top of the 74.5 GB already cached. tank has ~719 GB free.
+      size: 250Gi
     priorityClasses:
       enabled: true
     metrics:
