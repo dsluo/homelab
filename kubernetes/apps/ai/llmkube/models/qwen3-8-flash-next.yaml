@@ -9,11 +9,12 @@ spec:
   # ends at resolve/main so prefix + "/" + entry is a valid HF download URL.
   source: https://huggingface.co/unsloth/Qwen3.8-Flash-Next-GGUF/resolve/main
   files:
-    - UD-IQ3_XXS/Qwen3.8-Flash-Next-UD-IQ3_XXS-00001-of-00003.gguf
-    - UD-IQ3_XXS/Qwen3.8-Flash-Next-UD-IQ3_XXS-00002-of-00003.gguf
-    - UD-IQ3_XXS/Qwen3.8-Flash-Next-UD-IQ3_XXS-00003-of-00003.gguf
+    - UD-Q4_K_XL/Qwen3.8-Flash-Next-UD-Q4_K_XL-00001-of-00004.gguf
+    - UD-Q4_K_XL/Qwen3.8-Flash-Next-UD-Q4_K_XL-00002-of-00004.gguf
+    - UD-Q4_K_XL/Qwen3.8-Flash-Next-UD-Q4_K_XL-00003-of-00004.gguf
+    - UD-Q4_K_XL/Qwen3.8-Flash-Next-UD-Q4_K_XL-00004-of-00004.gguf
   format: gguf
-  quantization: UD-IQ3_XXS
+  quantization: UD-Q4_K_XL
   hardware:
     accelerator: cuda
     gpu:
@@ -70,20 +71,29 @@ spec:
   # No spec.replicas -- the ModelPool owns a pooled member's replica count.
   priorityClassName: gpu-preemptible
 
-  # 82.0 GB of weights against ~34 GB of VRAM, so most of the model lives
+  # 111.3 GB of weights against ~34 GB of VRAM, so most of the model lives
   # off-GPU. Two placements do the work, and the split is what makes it fit:
   #
-  #   per_layer_token_embd  31.7 GB  -> CPU (tensorOverrides below)
-  #   MoE experts           46.0 GB  -> 0.960 GB/layer x 48 layers, split here
-  #   attn / norms / output   4.3 GB  -> GPU
+  #   per_layer_token_embd  43.0 GB  -> CPU (tensorOverrides below)
+  #   MoE experts           62.5 GB  -> 1.303 GB/layer x 48 layers, split here
+  #   attn / norms / output   5.8 GB  -> GPU
   #
-  # At 30: CPU holds 31.7 + 28.8 = 60.5 GB, the GPUs hold the rest. Lower this
-  # to trade host memory for VRAM.
+  # At 36: CPU holds 43.0 + 46.9 = 89.9 GB, the GPUs hold the rest -- and 36 is
+  # chosen so GPU-resident weights stay at ~21.5 GB, exactly where IQ3_XXS at 30
+  # had them, so the VRAM budget is unchanged by the quant jump.
   #
   # 26 could not fit contextSize 131072: GPU0 came up 1054.78 MiB short on the
   # prompt-processing compute buffer and llama-server crashlooped. Every layer
   # this claims comes off GPU0, which is exactly where that shortfall was, so
   # 30 frees ~3.8 GB there -- ample margin over the 1 GB deficit.
+  #
+  # Judge this against the EXPERT bytes alone (36 x 1.303 = 46.9 GB), not the
+  # 89.9 GB total. per_layer_token_embd is a sparse per-token lookup that never
+  # goes resident: at IQ3_XXS the CPU side was 60.5 GB while warm page cache sat
+  # at 23-27 GiB, tracking the 28.8 GB of experts almost exactly while the
+  # 31.7 GB ngram table streamed off disk. 46.9 GB is the first config where the
+  # experts themselves approach what the kernel has been observed holding
+  # (~41 GiB at IQ1_M), so this is where generation may finally slow.
   #
   # The old "do not exceed ~29, the node OOMs" ceiling was wrong. llama.cpp
   # mmaps the GGUF, so CPU-side weights are page cache, not anonymous memory --
@@ -95,10 +105,10 @@ spec:
   # what stream, and they stream well. Going 26 -> 30 alongside a 4x context
   # measured no slower: 369 tok/s prompt at 9k and 30-33 tok/s generation,
   # unchanged.
-  moeCPULayers: 30
+  moeCPULayers: 36
   # NOT the "ple_ngram_embd" name upstream discussion uses — this GGUF calls the
   # 51B per-layer embedding table per_layer_token_embd, and a regex that misses
-  # it puts 31.7 GB back on the GPU.
+  # it puts 43.0 GB back on the GPU.
   tensorOverrides:
     - per_layer_token_embd=CPU
 
