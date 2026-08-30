@@ -28,9 +28,10 @@ spec:
       # ones nearly free on the GPU — so the byte split is far more lopsided
       # than the ratio reads. Every layer moeCPULayers claims comes off GPU0's
       # low end, so raising it starves GPU0 and leaves GPU1 carrying relatively
-      # more. 22 + 6:1 measured 21630/6363 MiB; the earlier 26 + 5:1 pushed the
-      # 3070 to 90% against the 3090 Ti's 71%. 26 needs 7:1 to stay balanced.
-      # Retune this and moeCPULayers together; changing one alone moves both.
+      # more. 26 + 7:1 measured 21632 MiB (88%) on the 3090 Ti and 6181 MiB
+      # (75%) on the 3070; the earlier 26 + 5:1 pushed the 3070 to 90% against
+      # the 3090 Ti's 71%. Retune this and moeCPULayers together; changing one
+      # alone moves both GPUs.
       sharding:
         strategy: layer
         layerSplit:
@@ -79,9 +80,19 @@ spec:
 
   # --- typed preset fields ---
   # Hybrid attention (SSM layers + full attention every 4th) means KV is cheap:
-  # only 12 of 48 layers cache, at 2 KV heads, so 32768 costs well under 1 GB at
-  # f16. Room to raise this a long way — weights, not context, are the ceiling.
-  contextSize: 32768
+  # only 12 of 48 layers cache, at 2 KV heads, so this costs roughly 12 MiB per
+  # 1k tokens at f16 — about 1.5 GB here, against the 2484/1662 MiB the two GPUs
+  # had free at 32768.
+  #
+  # 262144 (the model's native window) is the next target but does NOT fit
+  # today: it needs ~2.5 GB of KV on GPU0 alone. Buy the room by raising
+  # moeCPULayers — streaming more experts is nearly free — and retune the
+  # tensor-split with it. KV is preallocated at load, so overshooting crashloops
+  # the pod at startup rather than failing a request.
+  #
+  # Keep the litellm entry's maxInputTokens in step:
+  # ../../litellm/proxy/models/llmkube.yaml
+  contextSize: 131072
   parallelSlots: 1 # slots divide contextSize, and CPU-side experts do not
   # parallelise well — one slot gets the whole window
   batchSize: 1024
@@ -114,11 +125,21 @@ spec:
     - --chat-template-kwargs
     - '{"reasoning_effort":"xhigh"}'
 
-  # Unmeasured at this quant. UD-IQ1_M at moeCPULayers=22 did 317 tok/s prompt
-  # on a 7k-token prompt and 31 tok/s generation; IQ3_XXS moves 10.7 GB more
-  # onto the CPU side, so expect generation to fall. Re-measure before trusting
-  # any number here. A cold load faults the weights in at ~300 MiB/s and the
-  # first request after a swap is much slower than steady state.
+  # Measured warm on talos1, uncached prompts: 371 tok/s prompt eval on 9.2k
+  # tokens (284 on 2.5k -- smaller batches amortize the fixed cost worse), and
+  # 31 tok/s generation regardless of prompt size. UD-IQ1_M at moeCPULayers=22
+  # did 317 / 31, so the extra 8.7 GB on the CPU side costs nothing measurable
+  # once the page cache is warm: major faults sit at 3-4.5k/s either way.
+  #
+  # Give it time to warm. The same prompt read 308 tok/s twenty minutes after
+  # load and 371 once settled -- benchmark a fresh pod and you will understate
+  # it. Randomize the prompt too, or llama.cpp's prefix cache returns
+  # cached_tokens and reports a meaningless five-figure tok/s.
+  #
+  # The cold path is the only place this quant is worse. The first request
+  # after a load or a pool swap pays the fault-in: 72k major faults/s, and a
+  # small prompt measured 4 tok/s prompt eval (14.5s to first token). Budget
+  # for that on the first request, not the steady state.
   resources:
     # Experts run on CPU here, so this is real compute, not the 1 core the
     # fully-offloaded 27B needs.
