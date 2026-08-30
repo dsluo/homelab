@@ -1,19 +1,51 @@
 ---
+# Split out so the app below can substituteFrom the Secret this creates —
+# Flux substitutes before it applies, so one Kustomization cannot do both.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: cloudflare-tunnel-id
+spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
+  healthChecks:
+    - apiVersion: external-secrets.io/v1
+      kind: ClusterExternalSecret
+      name: cloudflare-tunnel-id
+    - apiVersion: v1
+      kind: Secret
+      name: cloudflare-tunnel-id
+      namespace: network
+  healthCheckExprs:
+    - apiVersion: external-secrets.io/v1
+      kind: ClusterExternalSecret
+      failed: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
+      current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
+  interval: 1h
+  path: ./kubernetes/apps/network/cloudflare-tunnel/tunnel-id
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: network
+  wait: true
+---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: cloudflare-tunnel
 spec:
   dependsOn:
-    - name: external-secrets-config
-      namespace: external-secrets
+    - name: cloudflare-tunnel-id
   interval: 1h
   path: ./kubernetes/apps/network/cloudflare-tunnel/app
   postBuild:
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
-      - name: cluster-secrets
+      - name: cloudflare-tunnel-id
         kind: Secret
   prune: true
   sourceRef:
