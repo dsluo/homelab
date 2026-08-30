@@ -47,6 +47,25 @@ spec:
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
+  name: llmkube-qwen3-8-flash-next
+spec:
+  modelName: llmkube/Qwen/Qwen3.8-Flash-Next
+  params:
+    # Must equal the ModelRouter backend name — BackendNameMatch routes on it.
+    model: openai/qwen3-8-flash-next
+    # The router-proxy, not the Service: flash-next and the 27b are both
+    # ModelPool members and cannot be resident at once, so the proxy is what
+    # swaps this one in before dispatching.
+    apiBase: http://inference-router-proxy.ai.svc.cluster.local:8080/v1
+    apiKey: sk-llmkube-noauth
+  info:
+    # ../../../llmkube/models/qwen3-8-flash-next.yaml contextSize. Well under
+    # the model's native 262144 — raise both together if it is ever widened.
+    maxInputTokens: 32768
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
   name: llmkube-qwen3-embedding-0-6b
 spec:
   modelName: llmkube/Qwen/Qwen3-Embedding-0.6B
