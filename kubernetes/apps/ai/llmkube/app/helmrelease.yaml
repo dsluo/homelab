@@ -52,6 +52,13 @@ spec:
       inferencePodMonitor:
         enabled: true
         additionalLabels: null
+      # The router-proxy's own listener, which carries the llmkube_router_* and
+      # llmkube_modelpool_* series (swap count/duration, hold duration, coalesced
+      # and held requests). The pool metrics are emitted by the proxy, not the
+      # controller, so the ServiceMonitor below does not cover them.
+      routerPodMonitor:
+        enabled: true
+        additionalLabels: null
       # Scrapes the controller-manager's own llmkube_* metrics, which the
       # Operator health row added to the llmkube-inference dashboard in 0.9.14
       # reads (reconcile rate/duration, time-to-ready, fleet readiness, replica

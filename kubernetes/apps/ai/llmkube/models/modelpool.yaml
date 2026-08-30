@@ -1,0 +1,19 @@
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: ModelPool
+metadata:
+  name: talos1-gpu
+spec:
+  # Informational — members declare their own resource requests. nodeSelector is
+  # deliberately unset: the operator never reads it, and members land on talos1
+  # anyway because it is the only node advertising nvidia.com/gpu: 2.
+  gpu: 2
+  swapPolicy: sticky
+  # Caps how long the router holds a request while the incumbent drains and the
+  # target cold-loads — and therefore also how long a request hangs while a Wolf
+  # session holds the GPUs, before 503 + Retry-After.
+  swapBudget: 300s
+  default: qwen3-8-27b-mtp
+  members:
+    - inferenceServiceRef:
+        name: qwen3-8-27b-mtp
