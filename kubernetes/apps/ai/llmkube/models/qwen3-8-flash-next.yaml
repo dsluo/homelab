@@ -46,7 +46,7 @@ spec:
   # b10666 already carries qwen4exp (merged upstream 2026-08-27, six commits
   # before this build). Do NOT roll this tag back below b10666 — older builds
   # cannot load the architecture at all.
-  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b10666@sha256:150b59966fb5b2cb1a8fa9d226267c56ebd22c520c7b3640331cde87f3c4fb01
+  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b10689@sha256:e52c610406cd18714902d1ca3bffadebca4a2a8370faaba8a5be5cc5d5203921
   runtimeClassName: nvidia
   # No spec.replicas -- the ModelPool owns a pooled member's replica count.
   priorityClassName: gpu-preemptible
