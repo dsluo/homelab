@@ -18,23 +18,23 @@ spec:
       replicaCount: 1
       leaderElection:
         enabled: false
-      # Pin to the GPU node (talos1). The controller mounts the model-cache PVC
-      # that inference pods also share; openebs-zfspv is node-local, so the
-      # controller must live on the same node where GPU inference schedules.
-      nodeSelector:
-        kubernetes.io/hostname: talos1
       resources:
         requests:
           cpu: 10m
           memory: 256Mi
         limits:
           memory: 1Gi
-    # Shared model cache PVC. openebs-zfspv is node-local, so this binds on the
-    # controller's node (talos1) and is read by inference pods scheduled there.
+    # One cache PVC per InferenceService, bound wherever its pod schedules.
+    # `shared` mode's single PVC would need an RWX class to be readable from
+    # both nodes; openebs-zfspv is node-local, so it would pin every inference
+    # pod — including the CPU-only ones — to whichever node the PVC bound on.
+    # The tradeoff is no cross-service dedup.
     modelCache:
       enabled: true
+      mode: perService
+      # A ZFS dataset gets a quota and no reservation, so this is a ceiling,
+      # not an allocation — each cache costs only the weights it holds.
       size: 100Gi
-      accessMode: ReadWriteOnce
     priorityClasses:
       enabled: true
     metrics:
