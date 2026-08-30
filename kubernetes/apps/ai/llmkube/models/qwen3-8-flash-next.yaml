@@ -9,11 +9,11 @@ spec:
   # ends at resolve/main so prefix + "/" + entry is a valid HF download URL.
   source: https://huggingface.co/unsloth/Qwen3.8-Flash-Next-GGUF/resolve/main
   files:
-    - UD-IQ1_M/Qwen3.8-Flash-Next-UD-IQ1_M-00001-of-00003.gguf
-    - UD-IQ1_M/Qwen3.8-Flash-Next-UD-IQ1_M-00002-of-00003.gguf
-    - UD-IQ1_M/Qwen3.8-Flash-Next-UD-IQ1_M-00003-of-00003.gguf
+    - UD-IQ3_XXS/Qwen3.8-Flash-Next-UD-IQ3_XXS-00001-of-00003.gguf
+    - UD-IQ3_XXS/Qwen3.8-Flash-Next-UD-IQ3_XXS-00002-of-00003.gguf
+    - UD-IQ3_XXS/Qwen3.8-Flash-Next-UD-IQ3_XXS-00003-of-00003.gguf
   format: gguf
-  quantization: UD-IQ1_M
+  quantization: UD-IQ3_XXS
   hardware:
     accelerator: cuda
     gpu:
@@ -21,20 +21,21 @@ spec:
       count: 2 # 3090 Ti + 3070 on talos1
       vendor: nvidia
       layers: 999 # ngl=999; expert tensors come back off the GPU via moeCPULayers
-      # Emit a single --tensor-split 6,1. Only the ratio matters, not the range
+      # Emit a single --tensor-split 7,1. Only the ratio matters, not the range
       # sizes.
       #
       # This ratio splits LAYERS, and moeCPULayers below makes the low-numbered
       # ones nearly free on the GPU — so the byte split is far more lopsided
-      # than the ratio reads. 6:1 gives GPU0 layers 0-40, but only 41-22=19 of
-      # those still carry experts, while GPU1's 7 layers all do. Measured:
-      # 21630 MiB on the 3090 Ti, 6363 MiB on the 3070. Retune this and
-      # moeCPULayers together; changing one alone moves both GPUs.
+      # than the ratio reads. Every layer moeCPULayers claims comes off GPU0's
+      # low end, so raising it starves GPU0 and leaves GPU1 carrying relatively
+      # more. 22 + 6:1 measured 21630/6363 MiB; the earlier 26 + 5:1 pushed the
+      # 3070 to 90% against the 3090 Ti's 71%. 26 needs 7:1 to stay balanced.
+      # Retune this and moeCPULayers together; changing one alone moves both.
       sharding:
         strategy: layer
         layerSplit:
-          - "0-5" # 3090 Ti — 6 parts
-          - "6-6" # 3070 — 1 part
+          - "0-6" # 3090 Ti — 7 parts
+          - "7-7" # 3070 — 1 part
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
@@ -51,23 +52,28 @@ spec:
   # No spec.replicas -- the ModelPool owns a pooled member's replica count.
   priorityClassName: gpu-preemptible
 
-  # 74.5 GB of weights against ~30 GB of VRAM, so most of the model lives in
-  # host RAM. Two placements do the work, and the split is what makes it fit:
+  # 82.0 GB of weights against ~34 GB of VRAM, so most of the model lives
+  # off-GPU. Two placements do the work, and the split is what makes it fit:
   #
-  #   per_layer_token_embd  28.8 GB  -> CPU (tensorOverrides below)
-  #   MoE experts           41.8 GB  -> 0.872 GB/layer x 48 layers, split here
-  #   attn / norms / output  3.9 GB  -> GPU
+  #   per_layer_token_embd  31.7 GB  -> CPU (tensorOverrides below)
+  #   MoE experts           46.0 GB  -> 0.960 GB/layer x 48 layers, split here
+  #   attn / norms / output   4.3 GB  -> GPU
   #
-  # At 22: CPU holds 28.8 + 19.2 = 48 GB, the GPUs hold the rest. Lower this to
-  # trade RAM for VRAM. Do not raise it past ~29 (the node OOMs) and do not drop
-  # it far below 22 without also widening the tensor-split above.
+  # At 26: CPU holds 31.7 + 25.0 = 56.7 GB, the GPUs hold the rest. Lower this
+  # to trade host memory for VRAM.
   #
-  # 26 also ran, but left the 3070 at 90% while the 3090 Ti sat at 71%; 22 with
-  # a 6:1 split balances them at 88%/78% and measured no slower.
-  moeCPULayers: 22
+  # The old "do not exceed ~29, the node OOMs" ceiling was wrong. llama.cpp
+  # mmaps the GGUF, so CPU-side weights are page cache, not anonymous memory --
+  # measured 41 GiB cache against 2.4 GiB RSS. They are evictable, and eviction
+  # is cheap: under load the node sustained 26 MiB/s of reads and 3.9k major
+  # faults/s and still turned in 317 tok/s prompt eval. Only a cold whole-model
+  # fault-in is slow. So 56.7 GB against 62 GiB of RAM is fine even though it
+  # cannot all stay resident -- the sparse per_layer_token_embd lookups are
+  # what stream, and they stream well.
+  moeCPULayers: 26
   # NOT the "ple_ngram_embd" name upstream discussion uses — this GGUF calls the
   # 51B per-layer embedding table per_layer_token_embd, and a regex that misses
-  # it puts 28.8 GB back on the GPU.
+  # it puts 31.7 GB back on the GPU.
   tensorOverrides:
     - per_layer_token_embd=CPU
 
@@ -101,20 +107,29 @@ spec:
     - "0.0"
     - --repeat-penalty
     - "1.0"
-    # Default effort is xhigh, which at ~32 tok/s would spend minutes of
-    # thinking per reply. medium keeps latency sane.
+    # xhigh is the model default and the best-quality setting; it spends
+    # minutes of thinking per reply at this generation rate, which is why the
+    # ModelRouter's responseHeaderTimeout had to go up with it. Drop to
+    # "medium" here if latency matters more than answer quality.
     - --chat-template-kwargs
-    - '{"reasoning_effort":"medium"}'
+    - '{"reasoning_effort":"xhigh"}'
 
-  # Measured on talos1 at this config: ~450 tok/s prompt on a 6.3k-token
-  # prompt, ~32 tok/s generation. The first request after a swap is far
-  # slower (~170 tok/s prompt) while mmap faults the CPU-side weights in.
+  # Unmeasured at this quant. UD-IQ1_M at moeCPULayers=22 did 317 tok/s prompt
+  # on a 7k-token prompt and 31 tok/s generation; IQ3_XXS moves 10.7 GB more
+  # onto the CPU side, so expect generation to fall. Re-measure before trusting
+  # any number here. A cold load faults the weights in at ~300 MiB/s and the
+  # first request after a swap is much slower than steady state.
   resources:
     # Experts run on CPU here, so this is real compute, not the 1 core the
     # fully-offloaded 27B needs.
     cpu: "8"
-    # Covers the 48 GB of CPU-resident weights. Fits only because the pool
-    # never runs this and the 27B at once — together they exceed the node.
+    # NOT sized to the 56.7 GB of CPU-side weights, and deliberately so: those
+    # are mmap'd page cache and the container's real anonymous footprint is
+    # ~2.4 GiB. This request exists to soft-reserve page cache -- it is the only
+    # thing stopping the scheduler from packing talos1 with pods that would
+    # evict the model and push it back to cold-load speeds. 50Gi is near the
+    # most that still schedules (62893Mi allocatable, ~8 GB requested by
+    # everything else).
     memory: 50Gi
     gpu: 2
 
