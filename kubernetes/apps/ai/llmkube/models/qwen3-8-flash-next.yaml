@@ -30,8 +30,9 @@ spec:
       # low end, so raising it starves GPU0 and leaves GPU1 carrying relatively
       # more. 26 + 7:1 measured 21632 MiB (88%) on the 3090 Ti and 6181 MiB
       # (75%) on the 3070; the earlier 26 + 5:1 pushed the 3070 to 90% against
-      # the 3090 Ti's 71%. Retune this and moeCPULayers together; changing one
-      # alone moves both GPUs.
+      # the 3090 Ti's 71%. 30 takes another four layers off GPU0 only, so 7:1
+      # should land both near 75% -- verify, and retune this with moeCPULayers;
+      # changing one alone moves both GPUs.
       sharding:
         strategy: layer
         layerSplit:
@@ -60,8 +61,13 @@ spec:
   #   MoE experts           46.0 GB  -> 0.960 GB/layer x 48 layers, split here
   #   attn / norms / output   4.3 GB  -> GPU
   #
-  # At 26: CPU holds 31.7 + 25.0 = 56.7 GB, the GPUs hold the rest. Lower this
+  # At 30: CPU holds 31.7 + 28.8 = 60.5 GB, the GPUs hold the rest. Lower this
   # to trade host memory for VRAM.
+  #
+  # 26 could not fit contextSize 131072: GPU0 came up 1054.78 MiB short on the
+  # prompt-processing compute buffer and llama-server crashlooped. Every layer
+  # this claims comes off GPU0, which is exactly where that shortfall was, so
+  # 30 frees ~3.8 GB there -- ample margin over the 1 GB deficit.
   #
   # The old "do not exceed ~29, the node OOMs" ceiling was wrong. llama.cpp
   # mmaps the GGUF, so CPU-side weights are page cache, not anonymous memory --
@@ -71,7 +77,7 @@ spec:
   # fault-in is slow. So 56.7 GB against 62 GiB of RAM is fine even though it
   # cannot all stay resident -- the sparse per_layer_token_embd lookups are
   # what stream, and they stream well.
-  moeCPULayers: 26
+  moeCPULayers: 30
   # NOT the "ple_ngram_embd" name upstream discussion uses — this GGUF calls the
   # 51B per-layer embedding table per_layer_token_embd, and a regex that misses
   # it puts 31.7 GB back on the GPU.
@@ -84,11 +90,16 @@ spec:
   # 1k tokens at f16 — about 1.5 GB here, against the 2484/1662 MiB the two GPUs
   # had free at 32768.
   #
-  # 262144 (the model's native window) is the next target but does NOT fit
-  # today: it needs ~2.5 GB of KV on GPU0 alone. Buy the room by raising
-  # moeCPULayers — streaming more experts is nearly free — and retune the
-  # tensor-split with it. KV is preallocated at load, so overshooting crashloops
-  # the pod at startup rather than failing a request.
+  # KV is not the only thing that grows with this. The prompt-processing
+  # compute buffer scales with batchSize x context for the full-attention
+  # layers, and it -- not the KV -- is what actually ran GPU0 out of memory at
+  # 131072 on moeCPULayers 26. Budget for both, and note batchSize is the other
+  # lever if VRAM ever gets tight (at the cost of prompt-eval throughput).
+  #
+  # Everything here is preallocated at load, so overshooting crashloops the pod
+  # at startup rather than failing a request -- and because this is a ModelPool
+  # member, a crashlooping load strands the pool in Swapping and takes the 27B
+  # down with it. Do not deploy a context bump without watching the load.
   #
   # Keep the litellm entry's maxInputTokens in step:
   # ../../litellm/proxy/models/llmkube.yaml
