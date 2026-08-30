@@ -12,8 +12,13 @@ spec:
   # Caps how long the router holds a request while the incumbent drains and the
   # target cold-loads — and therefore also how long a request hangs while a Wolf
   # session holds the GPUs, before 503 + Retry-After.
-  swapBudget: 300s
+  #
+  # 900s, not 300s: swapping in flash-next cold-reads 74.5 GB off the cache PVC,
+  # which does not finish inside the budget the 16 GB 27B needed.
+  swapBudget: 900s
   default: qwen3-8-27b-mtp
   members:
     - inferenceServiceRef:
         name: qwen3-8-27b-mtp
+    - inferenceServiceRef:
+        name: qwen3-8-flash-next
