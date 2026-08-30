@@ -22,7 +22,7 @@ TALOSCONFIG = "{{config_root}}/talos/clusterconfig/talosconfig"
 "aqua:kubernetes/kubectl" = "1.34.3"
 "aqua:kubecolor/kubecolor" = "0.7.1"
 # app clis
-"aqua:cilium/cilium-cli" = "0.19.7"
+"aqua:cilium/cilium-cli" = "0.20.0"
 "aqua:cloudflare/cloudflared" = "2026.8.2"
 "github:cloudnative-pg/cloudnative-pg" = "1.30.0"
 "github:home-operations/kopiur" = "0.10.5"
