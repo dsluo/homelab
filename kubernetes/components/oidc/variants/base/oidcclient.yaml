@@ -7,9 +7,9 @@ metadata:
 spec:
   name: ${OIDC_APP_NAME:=${OIDC_APP:=${APP}}}
   clientID: ${OIDC_APP:=${APP}}
-  launchUrl: https://${SUBDOMAIN:=${OIDC_APP:=${APP}}}.${SECRET_DOMAIN}
+  launchUrl: https://${SUBDOMAIN:=${OIDC_APP:=${APP}}}.${DOMAIN}
   callbackUrls:
-    - https://${SUBDOMAIN:=${OIDC_APP:=${APP}}}.${SECRET_DOMAIN}${OIDC_CALLBACK_PATH:=/oauth2/callback}
+    - https://${SUBDOMAIN:=${OIDC_APP:=${APP}}}.${DOMAIN}${OIDC_CALLBACK_PATH:=/oauth2/callback}
   pkceEnabled: ${OIDC_PKCE_ENABLED:=false}
   logoUrl: ${APP_ICON_URL}
   secret:

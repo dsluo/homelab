@@ -77,12 +77,12 @@ spec:
               # Public origin, used to reconstruct the OIDC redirect_uri behind
               # the Envoy gateway. Without it the callback would be built from
               # the pod-internal host and Pocket-ID would reject the redirect.
-              HERMES_DASHBOARD_PUBLIC_URL: "https://hermes.${SECRET_DOMAIN}"
+              HERMES_DASHBOARD_PUBLIC_URL: "https://hermes.${DOMAIN}"
               # Self-hosted OIDC against Pocket-ID (plugins/dashboard_auth/self_hosted).
               # A non-loopback bind fails CLOSED unless an auth provider is
               # registered, so these three are load-bearing: get them wrong and
               # the dashboard refuses to start rather than serving unauthenticated.
-              HERMES_DASHBOARD_OIDC_ISSUER: "https://pocket-id.${SECRET_DOMAIN}"
+              HERMES_DASHBOARD_OIDC_ISSUER: "https://pocket-id.${DOMAIN}"
               HERMES_DASHBOARD_OIDC_CLIENT_ID:
                 valueFrom:
                   secretKeyRef:
@@ -168,7 +168,7 @@ spec:
       internal:
         enabled: true
         hostnames:
-          - "hermes.${SECRET_DOMAIN}"
+          - "hermes.${DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network

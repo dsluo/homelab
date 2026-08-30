@@ -5,7 +5,7 @@ metadata:
   name: vmagent-metrics-ingest
 spec:
   hostnames:
-    - "metrics-ingest.${SECRET_DOMAIN}"
+    - "metrics-ingest.${DOMAIN}"
   parentRefs:
     - name: envoy-internal
       namespace: network

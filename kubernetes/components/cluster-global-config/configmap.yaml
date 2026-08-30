@@ -1,0 +1,8 @@
+---
+# Plain resource, not a generator: Flux's substituteFrom needs a stable name.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-global-config
+data:
+  DOMAIN: crayon.club

@@ -39,11 +39,11 @@ spec:
 
   auditLogRetentionDays: 180
 
-  appUrl: "https://pocket-id.${SECRET_DOMAIN}"
+  appUrl: "https://pocket-id.${DOMAIN}"
 
   # Terminate TLS in the pod rather than only at the gateway. This is what lets
   # in-cluster clients reach the issuer directly: CoreDNS rewrites
-  # `pocket-id.${SECRET_DOMAIN}` to this Service, and the OIDC issuer is an
+  # `pocket-id.${DOMAIN}` to this Service, and the OIDC issuer is an
   # https:// URL, so the Service itself has to answer TLS under that name.
   # Consequences elsewhere: the gateway's backend hop needs the
   # BackendTLSPolicy, and the probes below need scheme HTTPS.
@@ -90,14 +90,14 @@ spec:
     parentRefs:
       - name: envoy-cloudflare
         namespace: network
-    hostnames: ["pocket-id.${SECRET_DOMAIN}"]
+    hostnames: ["pocket-id.${DOMAIN}"]
 
   smtp:
     host: smtp.migadu.com
     port: 465
     tls: tls
     skipCertVerify: false
-    from: &from "pocketid@${SECRET_DOMAIN}"
+    from: &from "pocketid@${DOMAIN}"
     user: *from
     password:
       valueFrom:

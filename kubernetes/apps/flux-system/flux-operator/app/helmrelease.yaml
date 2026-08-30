@@ -15,7 +15,7 @@ spec:
       networkPolicy:
         create: false
       config:
-        baseURL: "https://flux.${SECRET_DOMAIN}"
+        baseURL: "https://flux.${DOMAIN}"
         authentication:
           type: OAuth2
           oauth2:

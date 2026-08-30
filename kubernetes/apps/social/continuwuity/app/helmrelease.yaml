@@ -122,7 +122,7 @@ spec:
     route:
       *app :
         hostnames:
-          - "matrix.${SECRET_DOMAIN}"
+          - "matrix.${DOMAIN}"
         parentRefs:
           - name: envoy-cloudflare
             namespace: network
@@ -132,7 +132,7 @@ spec:
                 port: *port
       federation:
         hostnames:
-          - "federation.${SECRET_DOMAIN}"
+          - "federation.${DOMAIN}"
         parentRefs:
           - name: envoy-cloudflare
             namespace: network
@@ -142,7 +142,7 @@ spec:
                 port: *port
       well-known:
         hostnames:
-          - "${SECRET_DOMAIN}"
+          - "${DOMAIN}"
         parentRefs:
           - name: envoy-cloudflare
             namespace: network

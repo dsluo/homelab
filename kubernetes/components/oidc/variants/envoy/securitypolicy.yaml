@@ -10,9 +10,9 @@ spec:
       name: ${HTTPROUTE_NAME:=${APP}}
   oidc:
     provider:
-      issuer: "https://pocket-id.${SECRET_DOMAIN}"
+      issuer: "https://pocket-id.${DOMAIN}"
     clientID: "${OIDC_APP:=${APP}}"
     clientSecret:
       name: "${OIDC_APP:=${APP}}-oidc-credentials"
-    redirectURL: "https://${SUBDOMAIN:=${OIDC_APP:=${APP}}}.${SECRET_DOMAIN}/oauth2/callback"
+    redirectURL: "https://${SUBDOMAIN:=${OIDC_APP:=${APP}}}.${DOMAIN}/oauth2/callback"
     logoutPath: "/logout"

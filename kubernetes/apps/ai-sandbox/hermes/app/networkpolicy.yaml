@@ -60,7 +60,7 @@ spec:
         # the issuer server-side for OIDC discovery, the token exchange, and
         # the JWKS fetch. This is a direct hit on the IdP Service rather than
         # on the gateway that fronts it: CoreDNS rewrites
-        # `pocket-id.${SECRET_DOMAIN}` to this Service cluster-wide, and the
+        # `pocket-id.${DOMAIN}` to this Service cluster-wide, and the
         # pod terminates TLS itself. Going via envoy-cloudflare instead would
         # transitively allow every route behind that gateway.
         - k8sService:

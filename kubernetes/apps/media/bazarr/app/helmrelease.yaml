@@ -60,7 +60,7 @@ spec:
     route:
       *app :
         hostnames:
-          - &host "bazarr.${SECRET_DOMAIN}"
+          - &host "bazarr.${DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network

@@ -18,6 +18,8 @@ spec:
       APP_ICON_URL: "https://raw.githubusercontent.com/fluxcd/website/refs/heads/main/assets/icons/logo.svg"
       OIDC_APP_NAME: Flux Operator
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
       - name: flux-operator-oidc-credentials

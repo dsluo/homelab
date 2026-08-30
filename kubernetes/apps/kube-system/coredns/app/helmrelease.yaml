@@ -57,10 +57,10 @@ spec:
           - name: rewrite
             parameters: stop
             configBlock: |-
-              name exact pocket-id.${SECRET_DOMAIN} pocket-id.security.svc.cluster.local
+              name exact pocket-id.${DOMAIN} pocket-id.security.svc.cluster.local
               answer auto
           - name: forward
-            parameters: ${SECRET_DOMAIN} 10.0.42.128
+            parameters: ${DOMAIN} 10.0.42.128
           - name: forward
             parameters: . /etc/resolv.conf
           - name: cache

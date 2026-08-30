@@ -26,6 +26,8 @@ spec:
       KOPIUR_GID: "{{kopiur_gid}}"
       {%- endif %}
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
   prune: true

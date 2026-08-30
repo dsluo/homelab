@@ -50,6 +50,8 @@ spec:
       KOPIUR_UID: "10000"
       KOPIUR_GID: "10000"
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
   prune: true

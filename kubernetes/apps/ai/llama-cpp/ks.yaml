@@ -13,6 +13,8 @@ spec:
     substitute:
       APP: *app
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
   prune: true

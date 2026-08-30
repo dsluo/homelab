@@ -11,6 +11,8 @@ spec:
   path: ./kubernetes/apps/kube-system/reloader/app
   postBuild:
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
   prune: true

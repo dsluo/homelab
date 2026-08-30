@@ -47,6 +47,8 @@ spec:
   path: ./kubernetes/apps/kopiur-system/kopiur/repository
   postBuild:
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
   prune: true

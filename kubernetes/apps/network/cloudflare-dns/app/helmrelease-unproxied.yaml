@@ -35,7 +35,7 @@ spec:
     # Distinct owner id so this instance and cloudflare-dns-proxied don't fight
     # over each other's records (they manage disjoint gateways/hostnames).
     txtOwnerId: unproxied
-    domainFilters: ["${SECRET_DOMAIN}"]
+    domainFilters: ["${DOMAIN}"]
     serviceMonitor:
       enabled: true
     podAnnotations:

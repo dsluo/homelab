@@ -15,7 +15,7 @@ spec:
       verifyImages: true
       prComments: true
       statusChecks: true
-      publicUrl: https://konflate.${SECRET_DOMAIN}
+      publicUrl: https://konflate.${DOMAIN}
     secret:
       existingSecret: konflate-secret
     deploymentAnnotations:
@@ -27,7 +27,7 @@ spec:
           namespace: network
           sectionName: https
       hostnames:
-        - konflate.${SECRET_DOMAIN}
+        - konflate.${DOMAIN}
     resources:
       limits:
         memory: 2Gi

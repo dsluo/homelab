@@ -11,6 +11,8 @@ spec:
   path: ./kubernetes/apps/kube-system/snapshot-controller/app
   postBuild:
     substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
       - name: cluster-secrets
         kind: Secret
   prune: true

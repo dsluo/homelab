@@ -75,7 +75,7 @@ spec:
     route:
       *app :
         hostnames:
-          - "seerr.${SECRET_DOMAIN}"
+          - "seerr.${DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network

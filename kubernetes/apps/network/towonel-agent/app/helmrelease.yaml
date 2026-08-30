@@ -18,7 +18,7 @@ spec:
       logLevel: info
       healthPort: 9090
       services:
-        - hostname: "*.${SECRET_DOMAIN}"
+        - hostname: "*.${DOMAIN}"
           origin: envoy-towonel.network.svc.cluster.local:443
       inviteTokenSecret:
         name: towonel-agent-secret

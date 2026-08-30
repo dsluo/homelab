@@ -84,7 +84,7 @@ spec:
     route:
       *app :
         hostnames:
-          - &host "sonarr.${SECRET_DOMAIN}"
+          - &host "sonarr.${DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network

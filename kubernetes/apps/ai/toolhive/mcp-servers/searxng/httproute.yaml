@@ -5,7 +5,7 @@ metadata:
   name: mcp-searxng
 spec:
   hostnames:
-    - "search-mcp.${SECRET_DOMAIN}"
+    - "search-mcp.${DOMAIN}"
   parentRefs:
     - name: envoy-internal
       namespace: network

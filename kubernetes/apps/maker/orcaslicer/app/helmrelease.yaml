@@ -61,7 +61,7 @@ spec:
     route:
       *app :
         hostnames:
-          - "orcaslicer.${SECRET_DOMAIN}"
+          - "orcaslicer.${DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network

@@ -60,7 +60,7 @@ spec:
     route:
       jellyfin:
         hostnames:
-          - "jellyfin.${SECRET_DOMAIN}"
+          - "jellyfin.${DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network

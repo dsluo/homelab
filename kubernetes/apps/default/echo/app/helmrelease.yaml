@@ -61,7 +61,7 @@ spec:
           - port: http
     route:
       app:
-        hostnames: ["{{ .Release.Name }}.${SECRET_DOMAIN}"]
+        hostnames: ["{{ .Release.Name }}.${DOMAIN}"]
         parentRefs:
           - name: envoy-cloudflare
             namespace: network

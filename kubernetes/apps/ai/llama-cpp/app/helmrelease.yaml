@@ -106,7 +106,7 @@ spec:
     route:
       ? *app
       : hostnames:
-          - "llama.${SECRET_DOMAIN}"
+          - "llama.${DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network

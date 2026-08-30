@@ -47,7 +47,7 @@ for what actually changed.
 
   Note the IdP is reached at its *Service*, not through the gateway that fronts
   it. That depends on the cluster-wide CoreDNS rewrite of
-  `pocket-id.${SECRET_DOMAIN}` (`apps/kube-system/coredns`) plus Pocket-ID
+  `pocket-id.${DOMAIN}` (`apps/kube-system/coredns`) plus Pocket-ID
   terminating TLS in-pod; without both, this rule resolves to the shared
   envoy-cloudflare VIP and login fails.
 
@@ -103,7 +103,7 @@ Because the pod now authenticates itself, it needs to reach the issuer
 server-side — for discovery, the token exchange, and the JWKS fetch. That took
 a new egress rule, and the obvious form of it does not work:
 
-`pocket-id.${SECRET_DOMAIN}` resolves (via k8s-gateway) to the
+`pocket-id.${DOMAIN}` resolves (via k8s-gateway) to the
 **envoy-cloudflare** LoadBalancer VIP — not envoy-internal, which fronts hermes
 itself. With Cilium's kube-proxy replacement, a service VIP is DNAT'd to its
 backend pod *before* the destination identity is resolved for policy, so the
@@ -171,7 +171,7 @@ Provider API keys are therefore *not* in an ESO-managed Secret — they live in
 kubectl -n ai-sandbox exec -it deploy/hermes -- hermes setup
 ```
 
-The dashboard is at `https://hermes.${SECRET_DOMAIN}/`, behind a Pocket-ID
+The dashboard is at `https://hermes.${DOMAIN}/`, behind a Pocket-ID
 login. To point the agent at an in-cluster model instead of an external
 provider, go through LiteLLM — the model services themselves are not reachable
 from the sandbox:
@@ -281,7 +281,7 @@ Can't be verified from manifests:
       browser tools) is the most likely thing to complain.
 - [ ] **`config` PVC is writable** by uid 10000 at `/opt/data` under
       `fsGroup: 10000` on OpenEBS-ZFS.
-- [ ] **OIDC works end-to-end**: `https://hermes.${SECRET_DOMAIN}/` redirects to
+- [ ] **OIDC works end-to-end**: `https://hermes.${DOMAIN}/` redirects to
       Pocket-ID and back to `/auth/callback`. A failure here is a pod that never
       goes ready (fail-closed), so check pod logs for the specific missing-env
       error before touching Pocket-ID.
@@ -295,5 +295,5 @@ Can't be verified from manifests:
 - [ ] Agent can reach the in-cluster LLM (`ai` :8080) and the public internet.
 - [ ] Negative check: from inside the pod, kube-apiserver and a LAN host
       (e.g. 10.0.42.1) are **unreachable**; DNS still resolves; and
-      `pocket-id.${SECRET_DOMAIN}` IS reachable.
+      `pocket-id.${DOMAIN}` IS reachable.
 - [ ] **`/dev/shm` is 1Gi** and browser tools work.
