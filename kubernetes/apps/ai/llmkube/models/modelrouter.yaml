@@ -1,0 +1,25 @@
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: ModelRouter
+metadata:
+  name: inference
+spec:
+  # Routes an unmatched request to the backend whose name equals the request's
+  # "model" field, so a new pool member costs one backend entry and no rules.
+  defaultRouteStrategy: BackendNameMatch
+  defaultRoute: qwen3-8-27b-mtp
+  backends:
+    - name: qwen3-8-27b-mtp
+      inferenceServiceRef:
+        name: qwen3-8-27b-mtp
+  proxy:
+    # The 120s default is a max-generation cap on non-streaming completions,
+    # which a thinking 27B blows past. Streaming never reaches it (the first SSE
+    # chunk lands early), but litellm dispatches both.
+    responseHeaderTimeout: 600s
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        memory: 256Mi

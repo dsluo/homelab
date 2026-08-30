@@ -38,7 +38,9 @@ spec:
   runtime: llamacpp
   image: ghcr.io/ggml-org/llama.cpp:server-cuda-b10666@sha256:150b59966fb5b2cb1a8fa9d226267c56ebd22c520c7b3640331cde87f3c4fb01
   runtimeClassName: nvidia
-  replicas: 1
+  # No spec.replicas -- the ModelPool in ./modelpool.yaml owns a pooled member's
+  # replica count, and a value here would make Flux fight the controller on a swap.
+
   # Negative priority (value -100) so games-on-whales Wolf streaming sessions
   # (default priority 0) preempt this pod and free a GPU on talos1. See
   # ./priorityclass.yaml and kubernetes/apps/games/games-on-whales/README.md.

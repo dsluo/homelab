@@ -6,3 +6,5 @@ resources:
   - ./qwen3-8-27b-mtp.yaml
   - ./qwen3-embedding-0-6b.yaml
   - ./qwen3-reranker-0-6b.yaml
+  - ./modelpool.yaml
+  - ./modelrouter.yaml

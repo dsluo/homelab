@@ -14,9 +14,11 @@
 # spec.params.model is NOT the client-facing name — it is litellm's provider
 # routing prefix plus the string forwarded upstream, and never leaves the proxy.
 # The prefix must resolve against litellm.provider_list; "llmkube/" is not a
-# provider and would raise "LLM Provider NOT provided". llama.cpp ignores the
-# forwarded model string (it serves whatever it loaded), so the modelRef the
-# projection used is kept verbatim rather than swapped for the --alias.
+# provider and would raise "LLM Provider NOT provided". The forwarded string is
+# load-bearing for the 27b: it reaches the router-proxy, whose BackendNameMatch
+# strategy picks the backend by it, so it must equal the ModelRouter backend
+# name. The entries that still hit llama.cpp directly ignore it (it serves
+# whatever it loaded), so they keep the modelRef the projection used.
 #
 # metadata.name is deliberately NOT the InferenceService name: the generated
 # models carry a controller ownerReference to their InferenceService, so reusing
@@ -29,7 +31,10 @@ spec:
   modelName: llmkube/Qwen/Qwen3.8-27B-MTP
   params:
     model: openai/qwen3-8-27b-mtp
-    apiBase: http://qwen3-8-27b-mtp.ai.svc.cluster.local:8080/v1
+    # The router-proxy, not the Service: qwen is a ModelPool member, and the proxy
+    # is what makes a non-resident member resident before dispatching to it.
+    # See ../../../llmkube/models/modelrouter.yaml.
+    apiBase: http://inference-router-proxy.ai.svc.cluster.local:8080/v1
     # llama.cpp runs without --api-key, but litellm's openai provider errors on
     # an unset key and falls back to OPENAI_API_KEY. Any non-empty string does.
     # (Repeated per document — YAML anchors do not cross a --- boundary.)
