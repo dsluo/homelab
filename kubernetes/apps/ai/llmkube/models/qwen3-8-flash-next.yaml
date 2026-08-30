@@ -21,7 +21,7 @@ spec:
       count: 2 # 3090 Ti + 3070 on talos1
       vendor: nvidia
       layers: 999 # ngl=999; expert tensors come back off the GPU via moeCPULayers
-      # Emit a single --tensor-split 7,1. Only the ratio matters, not the range
+      # Emit a single --tensor-split 8,1. Only the ratio matters, not the range
       # sizes.
       #
       # This ratio splits LAYERS, and moeCPULayers below makes the low-numbered
@@ -33,18 +33,27 @@ spec:
       # Measured at 30 + 7:1 with contextSize 131072: 20502 MiB (83%, 3614 free)
       # on the 3090 Ti and 7023 MiB (86%, 820 free) on the 3070.
       #
-      # THE 3070 IS NOW THE CONSTRAINT, which inverts what this file assumed
-      # while the window was 32768 (then: 21632/2484 free on the 3090 Ti against
-      # 6181/1662 on the 3070). Raising moeCPULayers unloads GPU0 only, but KV
-      # and compute buffers grow on BOTH cards, so widening the context handed
-      # GPU1 another 842 MiB with nothing to offset it. More CPU offload cannot
-      # help GPU1 -- going wider needs the split shifted toward the 3090 Ti, or
-      # a smaller batchSize.
+      # Raising moeCPULayers unloads GPU0 only, but KV and compute buffers grow
+      # on BOTH cards, so widening the context to 131072 left GPU1 with just
+      # 820 MiB free against the 3090 Ti's 3614. Only this ratio can relieve
+      # GPU1; more CPU offload cannot.
+      #
+      # 8:1 is the balance point, measured at contextSize 131072 /
+      # moeCPULayers 30 -- do not go further:
+      #
+      #   7:1  3614 free / 820 free   works, 3070 on the edge
+      #   8:1  2232 free / 2236 free  works, even
+      #   9:1  crashloops -- GPU0 cannot allocate its 2112 MiB KV block
+      #
+      # Each ratio step moves ~1.4 GB from GPU1 to GPU0, so from 8:1 another
+      # step leaves the 3090 Ti near 830 MiB -- under the single contiguous
+      # 2112 MiB the KV cache needs. Free VRAM on GPU0 is therefore not
+      # spendable down to zero: it must stay above that block.
       sharding:
         strategy: layer
         layerSplit:
-          - "0-6" # 3090 Ti — 7 parts
-          - "7-7" # 3070 — 1 part
+          - "0-7" # 3090 Ti — 8 parts
+          - "8-8" # 3070 — 1 part
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
