@@ -1,0 +1,127 @@
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: Model
+metadata:
+  name: qwen3-8-flash-next
+spec:
+  # Sharded GGUF: source is a repo PREFIX and files[] selects the shards, with
+  # files[0] handed to llama.cpp (it discovers the siblings itself). The prefix
+  # ends at resolve/main so prefix + "/" + entry is a valid HF download URL.
+  source: https://huggingface.co/unsloth/Qwen3.8-Flash-Next-GGUF/resolve/main
+  files:
+    - UD-IQ1_M/Qwen3.8-Flash-Next-UD-IQ1_M-00001-of-00003.gguf
+    - UD-IQ1_M/Qwen3.8-Flash-Next-UD-IQ1_M-00002-of-00003.gguf
+    - UD-IQ1_M/Qwen3.8-Flash-Next-UD-IQ1_M-00003-of-00003.gguf
+  format: gguf
+  quantization: UD-IQ1_M
+  hardware:
+    accelerator: cuda
+    gpu:
+      enabled: true
+      count: 2 # 3090 Ti + 3070 on talos1
+      vendor: nvidia
+      layers: 999 # ngl=999; expert tensors come back off the GPU via moeCPULayers
+      # Emit a single --tensor-split 5,1. Only the ratio matters, not the range
+      # sizes. 5:1 puts ~3.9 GB of the ~23 GB of GPU-resident weights on the
+      # 3070, leaving it ~3 GB for compute buffers — the same buffer starvation
+      # that forced 7:1 on the 27B applies here.
+      sharding:
+        strategy: layer
+        layerSplit:
+          - "0-4" # 3090 Ti — 5 parts
+          - "5-5" # 3070 — 1 part
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: InferenceService
+metadata:
+  name: qwen3-8-flash-next
+spec:
+  modelRef: qwen3-8-flash-next
+  runtime: llamacpp
+  # b10666 already carries qwen4exp (merged upstream 2026-08-27, six commits
+  # before this build). Do NOT roll this tag back below b10666 — older builds
+  # cannot load the architecture at all.
+  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b10666@sha256:150b59966fb5b2cb1a8fa9d226267c56ebd22c520c7b3640331cde87f3c4fb01
+  runtimeClassName: nvidia
+  # No spec.replicas -- the ModelPool owns a pooled member's replica count.
+  priorityClassName: gpu-preemptible
+
+  # 74.5 GB of weights against ~30 GB of VRAM, so most of the model lives in
+  # host RAM. Two placements do the work, and the split is what makes it fit:
+  #
+  #   per_layer_token_embd  28.8 GB  -> CPU (tensorOverrides below)
+  #   MoE experts           41.8 GB  -> 0.872 GB/layer x 48 layers, split here
+  #   attn / norms / output  3.9 GB  -> GPU
+  #
+  # At moeCPULayers=26: CPU holds 28.8 + 22.7 = 51.5 GB, GPU holds 23.1 GB of
+  # weights plus KV and compute buffers. Viable range is 23..29 — below 23 the
+  # GPUs OOM, above 29 the node does. Lower the number to trade RAM for VRAM.
+  moeCPULayers: 26
+  # NOT the "ple_ngram_embd" name upstream discussion uses — this GGUF calls the
+  # 51B per-layer embedding table per_layer_token_embd, and a regex that misses
+  # it puts 28.8 GB back on the GPU.
+  tensorOverrides:
+    - per_layer_token_embd=CPU
+
+  # --- typed preset fields ---
+  # Hybrid attention (SSM layers + full attention every 4th) means KV is cheap:
+  # only 12 of 48 layers cache, at 2 KV heads, so 32768 costs well under 1 GB at
+  # f16. Room to raise this a long way — weights, not context, are the ceiling.
+  contextSize: 32768
+  parallelSlots: 1 # slots divide contextSize, and CPU-side experts do not
+  # parallelise well — one slot gets the whole window
+  batchSize: 1024
+  uBatchSize: 256 # same 3070 compute-buffer ceiling the 27B landed on
+  jinja: true # required for the chat-template-kwargs below
+
+  # KV left at f16 deliberately: q8_0 would save only a few hundred MB here and
+  # quantized KV is unproven against the SSM layers of a brand-new architecture.
+
+  extraArgs:
+    - --alias
+    - Qwen/Qwen3.8-Flash-Next
+    # Unsloth's thinking-mode preset for this model, unmodified.
+    - --temp
+    - "1.0"
+    - --top-p
+    - "0.95"
+    - --top-k
+    - "20"
+    - --min-p
+    - "0.0"
+    - --presence-penalty
+    - "0.0"
+    - --repeat-penalty
+    - "1.0"
+    # Default effort is xhigh; with the experts on CPU that spends minutes per
+    # reply. Raise once the tok/s is known.
+    - --chat-template-kwargs
+    - '{"reasoning_effort":"medium"}'
+
+  resources:
+    # Experts run on CPU here, so this is real compute, not the 1 core the
+    # fully-offloaded 27B needs.
+    cpu: "8"
+    # Covers the 51.5 GB of CPU-resident weights. Fits only because the pool
+    # never runs this and the 27B at once — together they exceed the node.
+    memory: 50Gi
+    gpu: 2
+
+  endpoint:
+    port: 8080
+    type: ClusterIP
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: qwen3-8-flash-next
+spec:
+  hostnames:
+    - "flash.${DOMAIN}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+  rules:
+    - backendRefs:
+        - name: qwen3-8-flash-next
+          port: 8080
