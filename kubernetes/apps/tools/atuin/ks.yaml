@@ -1,0 +1,26 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app atuin
+spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
+  interval: 1h
+  path: ./kubernetes/apps/tools/atuin/app
+  components:
+    - ../../../../components/database
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: tools
+  wait: false
