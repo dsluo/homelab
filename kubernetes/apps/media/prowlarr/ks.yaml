@@ -12,13 +12,12 @@ spec:
   components:
     - ../../../../components/database
     - ../../../../components/oidc/envoy
-    - ../../components/api-only
+    - ../../components/sibling-access
   interval: 1h
   path: ./kubernetes/apps/media/prowlarr/app
   postBuild:
     substitute:
       APP: *app
-      APP_PORT: '"9696"'
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/prowlarr.svg"
       OIDC_APP_NAME: Prowlarr
     substituteFrom:
