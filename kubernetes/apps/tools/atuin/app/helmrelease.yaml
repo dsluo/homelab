@@ -1,0 +1,55 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app atuin
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    controllers:
+      *app :
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          *app :
+            image:
+              repository: ghcr.io/atuinsh/atuin
+              tag: 18.20.1@sha256:ff9a5c426bb6df99adbc09505182d5aed1524d123f973c40b18de56d25c3562a
+            args: [start]
+            env:
+              DB_USERNAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: atuin-postgres-secret
+                    key: username
+              DB_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: atuin-postgres-secret
+                    key: password
+              ATUIN_DB_URI:
+                dependsOn: [DB_USERNAME, DB_PASSWORD]
+                value: postgres://$(DB_USERNAME):$(DB_PASSWORD)@postgres-rw.database.svc.cluster.local:5432/atuin
+              ATUIN_HOST: 0.0.0.0
+              ATUIN_PORT: &port 8888
+              ATUIN_OPEN_REGISTRATION: "true"
+    service:
+      *app :
+        ports:
+          http:
+            port: *port
+    route:
+      *app :
+        hostnames:
+          - "atuin.${DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: *app
+                port: *port
