@@ -45,11 +45,11 @@ spec:
       # not spendable down to zero: a ratio that leaves it under the single
       # contiguous 2112 MiB block the KV cache wants will not load.
       #
-      # Those numbers are stale for UD-IQ4_XS, which adds 0.227 GB per expert
-      # layer to whichever card holds it. moeCPULayers 32 pays that back on
-      # GPU0 only, so both cards should land near 1.0 GB free -- above the
-      # 820 MiB that 7:1 proved survivable, but thin, and unverified. Re-measure
-      # and re-tune this ratio once it loads.
+      # Under UD-IQ4_XS at moeCPULayers 32 the same 8:1 measures 666 MiB free
+      # on GPU0 and 682 MiB on GPU1 -- still balanced, so this is the right
+      # ratio, but thinner than anything above and below the 820 MiB that 7:1
+      # showed. There is no headroom left for a context, batch, or quant
+      # increase: the next one has to buy VRAM back somewhere first.
       sharding:
         strategy: layer
         layerSplit:
@@ -94,11 +94,13 @@ spec:
   # it nearly fit, and what streamed was the sparse per_layer_token_embd
   # lookups, which stream well.
   #
-  # UD-IQ4_XS breaks that. 28.8 + 39.7 = 68.5 GB against ~55 GB of usable page
-  # cache means ~13 GB is permanently resident nowhere, and the shortfall now
-  # has to come out of expert weights, which every token reads densely. Confirm
-  # generation throughput before trusting this quant -- UD-IQ3_XXS held 31 tok/s
-  # and there is no measurement saying this does.
+  # UD-IQ4_XS raises that to 28.8 + 39.7 = 68.5 GB, and the shortfall now comes
+  # out of expert weights, which every token reads densely rather than sparsely.
+  # It costs ~12% of generation throughput, not a cliff -- ZFS ARC on talos1 is
+  # uncapped (c_max 60.9 GiB) and gave 20.8 GiB back down to 13.0 GiB under the
+  # extra pressure, so resident weights went 19.7 -> 24.3 GiB. Capping
+  # zfs_arc_max is the lever that would buy real speed back here; the quant is
+  # not what is starving this node.
   moeCPULayers: 32
   # NOT the "ple_ngram_embd" name upstream discussion uses — this GGUF calls the
   # 51B per-layer embedding table per_layer_token_embd, and a regex that misses
@@ -163,13 +165,20 @@ spec:
     - --chat-template-kwargs
     - '{"reasoning_effort":"xhigh"}'
 
-  # Measured warm on talos1 under UD-IQ3_XXS at moeCPULayers 30, uncached
-  # prompts: 371 tok/s prompt eval on 9.2k tokens (284 on 2.5k -- smaller
-  # batches amortize the fixed cost worse), and 31 tok/s generation regardless
-  # of prompt size. UD-IQ1_M at moeCPULayers 22 did 317 / 31, so CPU-side
-  # weights cost nothing measurable *while they still fit in page cache*.
-  # UD-IQ4_XS is the first config where they do not; treat these as the
-  # baseline to regress against, not as current numbers.
+  # Measured on talos1 with randomized prompts and cache_prompt off, so these
+  # are worst-case: random tokens scatter MoE expert routing. Generation is the
+  # stable metric here; prompt eval swings with page-cache state.
+  #
+  #                     UD-IQ3_XXS/30    UD-IQ4_XS/32
+  #     6k prompt        28.0 tok/s       24.7 tok/s
+  #    24k prompt        24.9 tok/s       21.6 tok/s
+  #
+  # Natural text is much faster than this -- 371 tok/s prompt eval was measured
+  # on 9.2k of it under UD-IQ3_XXS. Compare like with like before concluding a
+  # regression.
+  #
+  # The first request after a load or a pool swap still pays the fault-in and
+  # reads roughly half these numbers; warm it before benchmarking.
   #
   # Give it time to warm. The same prompt read 308 tok/s twenty minutes after
   # load and 371 once settled -- benchmark a fresh pod and you will understate
