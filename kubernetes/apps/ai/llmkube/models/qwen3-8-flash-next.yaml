@@ -9,11 +9,11 @@ spec:
   # ends at resolve/main so prefix + "/" + entry is a valid HF download URL.
   source: https://huggingface.co/unsloth/Qwen3.8-Flash-Next-GGUF/resolve/main
   files:
-    - UD-IQ3_XXS/Qwen3.8-Flash-Next-UD-IQ3_XXS-00001-of-00003.gguf
-    - UD-IQ3_XXS/Qwen3.8-Flash-Next-UD-IQ3_XXS-00002-of-00003.gguf
-    - UD-IQ3_XXS/Qwen3.8-Flash-Next-UD-IQ3_XXS-00003-of-00003.gguf
+    - UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+    - UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+    - UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf
   format: gguf
-  quantization: UD-IQ3_XXS
+  quantization: UD-IQ4_XS
   hardware:
     accelerator: cuda
     gpu:
@@ -30,25 +30,26 @@ spec:
       # low end, so raising it unloads GPU0 and leaves GPU1 carrying relatively
       # more.
       #
-      # Measured at 30 + 7:1 with contextSize 131072: 20502 MiB (83%, 3614 free)
-      # on the 3090 Ti and 7023 MiB (86%, 820 free) on the 3070.
-      #
       # Raising moeCPULayers unloads GPU0 only, but KV and compute buffers grow
-      # on BOTH cards, so widening the context to 131072 left GPU1 with just
-      # 820 MiB free against the 3090 Ti's 3614. Only this ratio can relieve
-      # GPU1; more CPU offload cannot.
+      # on BOTH cards. Only this ratio can relieve GPU1; more CPU offload
+      # cannot.
       #
-      # 8:1 is the balance point, measured at contextSize 131072 /
-      # moeCPULayers 30 -- do not go further:
+      # Free VRAM per card, measured under UD-IQ3_XXS at contextSize 131072 /
+      # moeCPULayers 30:
       #
-      #   7:1  3614 free / 820 free   works, 3070 on the edge
-      #   8:1  2232 free / 2236 free  works, even
+      #   7:1  3614 / 820    works, 3070 on the edge
+      #   8:1  2232 / 2236   works, even
       #   9:1  crashloops -- GPU0 cannot allocate its 2112 MiB KV block
       #
-      # Each ratio step moves ~1.4 GB from GPU1 to GPU0, so from 8:1 another
-      # step leaves the 3090 Ti near 830 MiB -- under the single contiguous
-      # 2112 MiB the KV cache needs. Free VRAM on GPU0 is therefore not
-      # spendable down to zero: it must stay above that block.
+      # Each ratio step moves ~1.4 GB from GPU1 to GPU0. Free VRAM on GPU0 is
+      # not spendable down to zero: a ratio that leaves it under the single
+      # contiguous 2112 MiB block the KV cache wants will not load.
+      #
+      # Those numbers are stale for UD-IQ4_XS, which adds 0.227 GB per expert
+      # layer to whichever card holds it. moeCPULayers 32 pays that back on
+      # GPU0 only, so both cards should land near 1.0 GB free -- above the
+      # 820 MiB that 7:1 proved survivable, but thin, and unverified. Re-measure
+      # and re-tune this ratio once it loads.
       sharding:
         strategy: layer
         layerSplit:
@@ -70,35 +71,38 @@ spec:
   # No spec.replicas -- the ModelPool owns a pooled member's replica count.
   priorityClassName: gpu-preemptible
 
-  # 82.0 GB of weights against ~34 GB of VRAM, so most of the model lives
+  # 93.7 GB of weights against ~34 GB of VRAM, so most of the model lives
   # off-GPU. Two placements do the work, and the split is what makes it fit:
   #
-  #   per_layer_token_embd  31.7 GB  -> CPU (tensorOverrides below)
-  #   MoE experts           46.0 GB  -> 0.960 GB/layer x 48 layers, split here
-  #   attn / norms / output   4.3 GB  -> GPU
+  #   per_layer_token_embd  28.8 GB  -> CPU (tensorOverrides below)
+  #   MoE experts           59.5 GB  -> 1.240 GB/layer x 48 layers, split here
+  #   attn / norms / output   5.4 GB  -> GPU
   #
-  # At 30: CPU holds 31.7 + 28.8 = 60.5 GB, the GPUs hold the rest. Lower this
-  # to trade host memory for VRAM.
+  # per_layer_token_embd is IQ4_NL at every quant level, so it is 28.8 GB under
+  # UD-IQ3_XXS too -- the whole 11.7 GB step up to UD-IQ4_XS is expert weights,
+  # which is exactly what this field splits.
   #
-  # 26 could not fit contextSize 131072: GPU0 came up 1054.78 MiB short on the
-  # prompt-processing compute buffer and llama-server crashlooped. Every layer
-  # this claims comes off GPU0, which is exactly where that shortfall was, so
-  # 30 frees ~3.8 GB there -- ample margin over the 1 GB deficit.
+  # 32 holds GPU-side weights at what UD-IQ3_XXS/30 already fit. It is close to
+  # a floor rather than a choice: the GPUs cannot take more than ~25 GB of
+  # weights once KV and compute buffers are paid for at contextSize 131072, so
+  # every UD-IQ4_XS config leaves ~68 GB on the CPU side. Lowering this trades
+  # host memory for VRAM there is none of; raising it costs throughput below.
   #
-  # The old "do not exceed ~29, the node OOMs" ceiling was wrong. llama.cpp
-  # mmaps the GGUF, so CPU-side weights are page cache, not anonymous memory --
-  # measured 41 GiB cache against 2.4 GiB RSS. They are evictable, and eviction
-  # is cheap: under load the node sustained 26 MiB/s of reads and 3.9k major
-  # faults/s and still turned in 317 tok/s prompt eval. Only a cold whole-model
-  # fault-in is slow. So 60.5 GB against 62 GiB of RAM is fine even though it
-  # cannot all stay resident -- the sparse per_layer_token_embd lookups are
-  # what stream, and they stream well. Going 26 -> 30 alongside a 4x context
-  # measured no slower: 369 tok/s prompt at 9k and 30-33 tok/s generation,
-  # unchanged.
-  moeCPULayers: 30
+  # llama.cpp mmaps the GGUF, so CPU-side weights are page cache, not anonymous
+  # memory -- measured 41 GiB cache against 2.4 GiB RSS -- and eviction is
+  # cheap. Under UD-IQ3_XXS that made 60.5 GB against 62 GiB of RAM a non-issue:
+  # it nearly fit, and what streamed was the sparse per_layer_token_embd
+  # lookups, which stream well.
+  #
+  # UD-IQ4_XS breaks that. 28.8 + 39.7 = 68.5 GB against ~55 GB of usable page
+  # cache means ~13 GB is permanently resident nowhere, and the shortfall now
+  # has to come out of expert weights, which every token reads densely. Confirm
+  # generation throughput before trusting this quant -- UD-IQ3_XXS held 31 tok/s
+  # and there is no measurement saying this does.
+  moeCPULayers: 32
   # NOT the "ple_ngram_embd" name upstream discussion uses — this GGUF calls the
   # 51B per-layer embedding table per_layer_token_embd, and a regex that misses
-  # it puts 31.7 GB back on the GPU.
+  # it puts 28.8 GB back on the GPU.
   tensorOverrides:
     - per_layer_token_embd=CPU
 
@@ -159,11 +163,13 @@ spec:
     - --chat-template-kwargs
     - '{"reasoning_effort":"xhigh"}'
 
-  # Measured warm on talos1, uncached prompts: 371 tok/s prompt eval on 9.2k
-  # tokens (284 on 2.5k -- smaller batches amortize the fixed cost worse), and
-  # 31 tok/s generation regardless of prompt size. UD-IQ1_M at moeCPULayers=22
-  # did 317 / 31, so the extra 8.7 GB on the CPU side costs nothing measurable
-  # once the page cache is warm: major faults sit at 3-4.5k/s either way.
+  # Measured warm on talos1 under UD-IQ3_XXS at moeCPULayers 30, uncached
+  # prompts: 371 tok/s prompt eval on 9.2k tokens (284 on 2.5k -- smaller
+  # batches amortize the fixed cost worse), and 31 tok/s generation regardless
+  # of prompt size. UD-IQ1_M at moeCPULayers 22 did 317 / 31, so CPU-side
+  # weights cost nothing measurable *while they still fit in page cache*.
+  # UD-IQ4_XS is the first config where they do not; treat these as the
+  # baseline to regress against, not as current numbers.
   #
   # Give it time to warm. The same prompt read 308 tok/s twenty minutes after
   # load and 371 once settled -- benchmark a fresh pod and you will understate
