@@ -1,0 +1,51 @@
+---
+# The in-cluster exception to components/oidc/envoy's default-deny (#1476):
+# sibling *arr apps integrate with each other pod-to-pod, and that traffic has
+# to keep working without handing the UI to everything else in the namespace.
+# Cilium unions ingress across policies selecting the same endpoint, so this
+# only adds. Requires ${APP}.
+#
+# Clients are named rather than admitted by namespace. They already hold each
+# other's API keys, so restricting them to /api bought nothing; a stray pod in
+# `media` is what this actually keeps out. A new integration goes in the list.
+#
+# L4 with no port constraint, like the policy it complements. The integrations
+# reach well past /api — bazarr's SignalR feed to sonarr/radarr among them —
+# and keeping Cilium's proxy off this path leaves those streams alone.
+#
+# Local to this namespace rather than in kubernetes/components/: the rule below
+# names `media` and its apps outright, so it isn't shared.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ${APP}-sibling-access
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: ${APP}
+  ingress:
+    # Duplicated from components/oidc/envoy so this component is safe on its
+    # own: any ingress rule flips the endpoint to default-deny, so without a
+    # probe allowance an app that dropped the oidc component would fail its
+    # kubelet probes and never go Ready — silently, since these Kustomizations
+    # are wait: false. Cilium unions the rules, so pairing them costs nothing.
+    - fromEntities:
+        - host
+        - remote-node
+        - kube-apiserver
+        - health
+    # jellyfin, qbittorrent and sabnzbd are absent on purpose: they are polled,
+    # they never call a sibling.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: media
+          matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - bazarr
+                - prowlarr
+                - radarr
+                - recyclarr
+                - seerr
+                - sonarr

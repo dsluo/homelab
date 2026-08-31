@@ -5,7 +5,7 @@
 # (#1476). Node identities are still allowed unconditionally below, so a
 # hostNetwork pod would keep a way in — there are none today. Apps needing an
 # in-cluster exception add a second, additive CNP — see
-# kubernetes/apps/media/components/api-only.
+# kubernetes/apps/media/components/sibling-access.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:

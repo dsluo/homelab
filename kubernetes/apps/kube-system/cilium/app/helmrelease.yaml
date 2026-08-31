@@ -53,8 +53,9 @@ spec:
         # dashboard groups by source_workload/destination_workload, and the
         # `source`/`destination` labels sourceContext emits do not satisfy that
         # despite holding the same value. It only sees flows an L7 HTTP rule
-        # puts through the proxy — today just the sibling-to-sibling half of
-        # media's api-only component.
+        # puts through the proxy, and no policy in the cluster carries one now
+        # that media's sibling-access component is plain L4 — so
+        # hubble-l7-http-metrics-by-workload stays unfed until one comes back.
         #
         # No `query` option on the dns handler: it labels every series with the
         # resolved name, which is unbounded. Re-add it temporarily when the
