@@ -34,14 +34,23 @@ spec:
               ATUIN_DB_URI:
                 dependsOn: [DB_USERNAME, DB_PASSWORD]
                 value: postgres://$(DB_USERNAME):$(DB_PASSWORD)@postgres-rw.database.svc.cluster.local:5432/atuin
+              ATUIN_READ_DB_URI:
+                dependsOn: [DB_USERNAME, DB_PASSWORD]
+                value: postgres://$(DB_USERNAME):$(DB_PASSWORD)@postgres-r.database.svc.cluster.local:5432/atuin
               ATUIN_HOST: 0.0.0.0
               ATUIN_PORT: &port 8888
               ATUIN_OPEN_REGISTRATION: "true"
+
+              ATUIN_METRICS__ENABLE: "true"
+              ATUIN_METRICS__HOST: 0.0.0.0
+              ATUIN_METRICS__PORT: &metrics 9001
     service:
       *app :
         ports:
           http:
             port: *port
+          metrics:
+            port: *metrics
     route:
       *app :
         hostnames:

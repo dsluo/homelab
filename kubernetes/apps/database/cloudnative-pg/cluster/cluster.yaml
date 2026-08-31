@@ -24,7 +24,7 @@ spec:
   managed:
     services:
       # we're single node anyway
-      disabledDefaultServices: ["ro", "r"]
+      disabledDefaultServices: ["ro"]
     roles:
       # app stays inline: it's the bootstrap database owner, not a login role.
       # Per-app login roles are DatabaseRole resources created by
