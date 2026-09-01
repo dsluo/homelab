@@ -1,0 +1,57 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app atuin-ai
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    controllers:
+      *app :
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          *app :
+            image:
+              repository: ghcr.io/atuinsh/atuin-ai-server
+              # TODO: atuin-ai-server does not have semver yet
+              tag: main@sha256:3d11028588ebfddb0685169e35cbc7121d3577b6eee3831e845fbe5c28e48d92
+            env:
+              CHAT_API_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: atuin-ai-litellm-key
+                    key: CHAT_API_KEY
+              AUTH_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: atuin-ai-secret
+                    key: AUTH_TOKEN
+    service:
+      *app :
+        ports:
+          http:
+            port: &port 8080
+    route:
+      *app :
+        hostnames:
+          - "atuin-ai.${DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: *app
+                port: *port
+    persistence:
+      config:
+        type: configMap
+        name: atuin-ai-config
+        globalMounts:
+          - path: /etc/atuin-ai/config.toml
+            subPath: config.toml
+            readOnly: true

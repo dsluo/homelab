@@ -1,0 +1,13 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./helmrelease.yaml
+  - ./ocirepository.yaml
+  - ./externalsecret.yaml
+configMapGenerator:
+  - name: atuin-ai-config
+    files:
+      - ./resources/config.toml
+generatorOptions:
+  disableNameSuffixHash: true
