@@ -1,0 +1,33 @@
+---
+# Lives here, not next to its consumer: the operator resolves both spec.proxyRef
+# and spec.secretName in the VirtualKey's OWN namespace, so a copy in tools
+# would never find the proxy and its Secret would land in the wrong place.
+# reflector carries the Secret across to tools instead.
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: atuin-ai
+spec:
+  proxyRef: litellm
+  keyAlias: atuin-ai
+  secretName: atuin-ai-litellm-key
+  secretKey: CHAT_API_KEY
+  # reflector only mirrors a Secret whose SOURCE carries these; the mirror-side
+  # annotation alone does nothing. Needs the forked operator — stock 0.0.16 has
+  # no way to put any annotation on a minted Secret, and pre-creating one from
+  # Flux trips its SecretNotOwned check and the key is never minted.
+  secretAnnotations:
+    reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+    reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: tools
+    reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+  # Client-facing modelName values (./models, ../chatgpt-models), not the
+  # upstream params.model. A name matching nothing does not fail open — an
+  # empty list permits everything, but a wrong entry leaves the key able to
+  # call nothing. Must stay in sync with the [[models]] blocks in
+  # kubernetes/apps/tools/atuin/ai/resources/config.toml.
+  models:
+    - llmkube/Qwen/Qwen3.8-Flash-Next
+    - llmkube/Qwen/Qwen3.8-27B-MTP
+    - chatgpt/gpt-5.6-sol
+    - chatgpt/gpt-5.6-terra
+    - chatgpt/gpt-5.6-luna
