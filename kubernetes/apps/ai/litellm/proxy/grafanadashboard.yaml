@@ -1,0 +1,23 @@
+---
+# LiteLLM's own "Prod v2" dashboard, pinned to the commit that last touched it
+# rather than main — the operator refetches on every resyncPeriod, so an
+# unpinned ref would silently swap the dashboard under you.
+#
+# Its "Remaining requests/tokens" panels read litellm_remaining_requests and
+# litellm_remaining_tokens, which litellm only emits from provider rate-limit
+# response headers. Neither llmkube nor the chatgpt provider sends them, so
+# those two panels stay blank here.
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: litellm
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  allowCrossNamespaceImport: true
+  resyncPeriod: 1h
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: VictoriaMetrics
+  url: https://raw.githubusercontent.com/BerriAI/litellm/65b99d6bc36f534673158d05c32ecfd78a250c25/cookbook/litellm_proxy_server/grafana_dashboard/dashboard_v2/grafana_dashboard.json

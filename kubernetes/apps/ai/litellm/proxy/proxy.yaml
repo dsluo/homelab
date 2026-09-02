@@ -150,6 +150,19 @@ spec:
         namespace: network
         sectionName: https
 
+  # Renders a ServiceMonitor (converted to a VMServiceScrape by the VM operator)
+  # and appends `prometheus` to litellm_settings.callbacks — litellm serves no
+  # /metrics without that callback. It is a config.yaml change, so turning this
+  # on or off rolls the proxy even though applyMode is api.
+  metrics:
+    enabled: true
+    interval: 1m
+    # Unauthenticated, so no bearer-token Secret and no key to rotate.
+    # Deliberate: the route above has no path match, so /metrics — per-key spend
+    # and per-model usage — is served to the whole LAN through envoy-internal,
+    # not just to vmagent. Set a bearerTokenRef instead if that stops being ok.
+    requireAuth: false
+
   resources:
     requests:
       cpu: 100m
