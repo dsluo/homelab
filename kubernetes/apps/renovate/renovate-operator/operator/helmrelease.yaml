@@ -50,6 +50,9 @@ spec:
       dashboard:
         enabled: true
         grafanaDashboard:
+          # The Grafana instance lives in observability; without this the CR
+          # reconciles to nothing.
+          allowCrossNamespaceImport: true
           instanceSelector:
             matchLabels:
               dashboards: grafana

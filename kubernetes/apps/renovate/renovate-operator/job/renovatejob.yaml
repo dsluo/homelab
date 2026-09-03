@@ -23,7 +23,9 @@ spec:
     inline: |
       module.exports = {
         onboarding: false,
-        requireConfig: 'optional',
+        // Discovery returns every repo the App is installed on; 'required'
+        // keeps Renovate off the ones that were never onboarded.
+        requireConfig: 'required',
         // Commits go through the GitHub API so they are attributed to the App;
         // without it a GitHub App install needs a gitAuthor matching the bot user.
         platformCommit: 'enabled',
