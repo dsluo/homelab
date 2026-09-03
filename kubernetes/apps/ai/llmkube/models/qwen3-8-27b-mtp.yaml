@@ -40,7 +40,7 @@ metadata:
 spec:
   modelRef: qwen3-8-27b-mtp
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b10689@sha256:e52c610406cd18714902d1ca3bffadebca4a2a8370faaba8a5be5cc5d5203921
+  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b10752@sha256:031c0058432ab0769057273cdfda45848d00fef11e993448eef98c7ebb45a8c6
   runtimeClassName: nvidia
   # No spec.replicas -- the ModelPool in ./modelpool.yaml owns a pooled member's
   # replica count, and a value here would make Flux fight the controller on a swap.
