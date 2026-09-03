@@ -7,7 +7,7 @@ spec:
   # -non_root, not the default image (uid 0): the CRD has no securityContext,
   # so identity must come from the image. Runs as 65534:65534 — keep
   # ../ks.yaml's KOPIUR_UID/GID matching.
-  image: ghcr.io/berriai/litellm-non_root:v1.98.0@sha256:157aaf0a519713663ec6abefe73fa48bf12f638b0e63fb2b209ba0eae68e6bd7
+  image: ghcr.io/berriai/litellm-non_root:v1.99.1@sha256:47ade0259462ec54b18bcc44ff52bba4cee878c0267f8b893070bb79b4dcfbee
   replicas: 1
 
   # Pod template rather than the Deployment, which is the operator's — reloader
