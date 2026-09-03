@@ -1,0 +1,57 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: renovate-operator
+spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
+    - name: pocket-id
+      namespace: security
+  components:
+    - ../../../../components/oidc
+  interval: 1h
+  path: ./kubernetes/apps/renovate/renovate-operator/operator
+  postBuild:
+    substitute:
+      APP: renovate
+      OIDC_APP_NAME: Renovate
+      OIDC_CALLBACK_PATH: /auth/callback
+      # The chart enables PKCE by default; the pocket-id client does not.
+      OIDC_PKCE_ENABLED: "true"
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/mend-renovate.svg"
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: renovate
+  # The RenovateJob below needs the CRD this release installs.
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: renovate-job
+spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
+    - name: renovate-operator
+  interval: 1h
+  path: ./kubernetes/apps/renovate/renovate-operator/job
+  postBuild:
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: renovate
+  wait: false
