@@ -20,7 +20,7 @@ spec:
       OIDC_CALLBACK_PATH: /auth/callback
       # The chart enables PKCE by default; the pocket-id client does not.
       OIDC_PKCE_ENABLED: "true"
-      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/renovate.svg"
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/mend-renovate.svg"
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
