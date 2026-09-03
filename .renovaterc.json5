@@ -45,6 +45,16 @@
       "/^kustomization\\.ya?ml(?:\\.j2)?$/"
     ],
   },
+  // memini's chart labels its source as this Forgejo instance. detectPlatform()
+  // only sniffs hostnames containing "forgejo"/"gitea"/etc, so without this the
+  // host resolves to no platform and Renovate skips the changelog entirely.
+  // The releases API is public, so no token is needed.
+  hostRules: [
+    {
+      matchHost: "git.erwanleboucher.dev",
+      hostType: "forgejo",
+    },
+  ],
   packageRules: [
     {
       description: "Flux Operator Group",
@@ -76,6 +86,29 @@
         commitMessageTopic: "{{{groupName}}} group",
       },
       minimumGroupSize: 2,
+    },
+    {
+      description: "*arr upstreams tag a 4-part version (v6.4.3.10645) or release-<version>, but the images tag 3 parts; without extractVersion Renovate can't match the release and the PR ships no changelog",
+      matchDatasources: [
+        "docker"
+      ],
+      matchPackageNames: [
+        "ghcr.io/home-operations/prowlarr",
+        "ghcr.io/home-operations/qbittorrent",
+        "ghcr.io/home-operations/radarr",
+        "ghcr.io/home-operations/sonarr"
+      ],
+      extractVersion: "^(?:release-)?v?(?<version>\\d+\\.\\d+\\.\\d+)",
+    },
+    {
+      description: "searxng ships no GitHub releases or tags, so a plain link to CHANGELOG.rst is the only changelog Renovate can offer",
+      matchDatasources: [
+        "docker"
+      ],
+      matchPackageNames: [
+        "ghcr.io/searxng/searxng"
+      ],
+      changelogUrl: "https://github.com/searxng/searxng/blob/master/CHANGELOG.rst",
     },
     {
       description: "Auto-merge GitHub Actions",
