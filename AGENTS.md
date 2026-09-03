@@ -56,7 +56,7 @@ kubernetes/apps/<ns>/<app>/
 
 **Comments: short and load-bearing.** A comment states the non-obvious constraint in a line or two — what breaks if you change this, or why the obvious approach doesn't work. Don't write essay-style blocks that narrate investigation history, enumerate rejected alternatives, cite source files of third-party code, or argue the change is correct. That context belongs in the commit message, PR description, or memory — not in the manifest.
 
-**Operational loop:** `just reconcile` force-pulls from Git. To test a feature branch live before merging, `just flux-branch` points Flux at the current branch; `just flux-branch-reset` reverts to `main`.
+**Operational loop:** merging a PR to `main` fires a GitHub webhook that reconciles Flux right away — the merge *is* the deploy, so don't tell anyone to wait for a poll interval. `just reconcile` force-pulls when a sync is needed outside that path. To test a feature branch live before merging, `just flux-branch` points Flux at the current branch; `just flux-branch-reset` reverts to `main`.
 
 ## Memory
 
