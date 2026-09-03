@@ -128,6 +128,26 @@
       ],
     },
     {
+      description: "atuin labels org.opencontainers.image.source on its version tags but not on `latest`, and Renovate only reads labels from `latest`, so it resolves no sourceUrl and skips the changelog",
+      matchDatasources: [
+        "docker"
+      ],
+      matchPackageNames: [
+        "ghcr.io/atuinsh/atuin"
+      ],
+      sourceUrl: "https://github.com/atuinsh/atuin",
+    },
+    {
+      description: "The actual image carries no OCI labels on any tag, so Renovate has no repo to pull release notes from; its tags are upstream's minus the leading v",
+      matchDatasources: [
+        "docker"
+      ],
+      matchPackageNames: [
+        "ghcr.io/actualbudget/actual"
+      ],
+      sourceUrl: "https://github.com/actualbudget/actual",
+    },
+    {
       description: "searxng ships no GitHub releases or tags, so a plain link to CHANGELOG.rst is the only changelog Renovate can offer",
       matchDatasources: [
         "docker"
