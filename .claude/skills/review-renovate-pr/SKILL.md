@@ -12,7 +12,7 @@ Produce an evidence-backed verdict on whether a Renovate PR is safe to merge. De
 Accept any of:
 - PR number (e.g. `693`) → `owner/repo` is this repo
 - Full PR URL
-- "latest" → `gh pr list --author "app/renovate" --state open`, pick the newest, confirm with the user
+- "latest" → `gh pr list --state open --search "head:renovate/"`, pick the newest, confirm with the user
 - **No PR specified, or "all open" / "the open renovate PRs" / multiple PR numbers → batch mode (the default)**: review every open Renovate PR, one subagent per PR in parallel — read `references/batch.md` and follow it. Do not review PRs serially in the main context when there is more than one, and do not stop to ask which PRs to review.
 
 ## Tool rules

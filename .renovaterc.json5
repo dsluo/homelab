@@ -18,9 +18,6 @@
   dependencyDashboard: true,
   dependencyDashboardTitle: "Renovate Dashboard",
   timezone: "America/Detroit",
-  schedule: [
-    "* 14-16 * * *"
-  ],
   ignorePaths: [
     "**/*.sops.*"
   ],

@@ -1,0 +1,34 @@
+---
+apiVersion: renovate-operator.mogenius.com/v1alpha1
+kind: RenovateJob
+metadata:
+  name: renovate
+spec:
+  schedule: "0 * * * *"
+  image: ghcr.io/renovatebot/renovate:44.59.3@sha256:c59046f064f86fbda58c47185aa346f3478e08aeec6bf87888859779c25ab165
+  parallelism: 2
+  provider:
+    name: github
+  discoveryFilters:
+    - "dsluo/*"
+  skipForks: true
+  # The operator mints and refreshes the installation token itself, so there is
+  # no RENOVATE_TOKEN to keep in sync.
+  githubAppReference:
+    secretName: renovate-github-app
+    appIdSecretKey: APP_ID
+    installationIdSecretKey: INSTALL_ID
+    pemSecretKey: PEM
+  renovateConfig:
+    inline: |
+      module.exports = {
+        onboarding: false,
+        requireConfig: 'optional',
+        // Commits go through the GitHub API so they are attributed to the App;
+        // without it a GitHub App install needs a gitAuthor matching the bot user.
+        platformCommit: 'enabled',
+      };
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi

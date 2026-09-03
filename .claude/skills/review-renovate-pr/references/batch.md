@@ -5,7 +5,7 @@ Reviewing all open Renovate PRs in parallel subagents is the normal way this ski
 ## 1. Enumerate
 
 ```
-gh pr list --author "app/renovate" --state open --json number,title,labels,createdAt
+gh pr list --state open --search "head:renovate/" --json number,title,labels,createdAt
 ```
 
 ## 2. Dispatch — one subagent per PR, all in one message

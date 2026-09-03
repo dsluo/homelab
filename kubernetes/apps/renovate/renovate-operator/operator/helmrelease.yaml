@@ -1,0 +1,59 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app renovate-operator
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    # Without this every object is named renovate-operator-renovate-operator.
+    fullnameOverride: renovate-operator
+    crd:
+      install: true
+      # Ship the CRDs as ordinary release resources rather than through the
+      # chart's kubectl-image Helm hook Job, so upgrades ride the normal path.
+      mode: template
+    config:
+      logStorage:
+        mode: memory
+      jobTTLSecondsAfterFinished: 86400
+    route:
+      enabled: true
+      hostnames: ["renovate.${DOMAIN}"]
+      parentRefs:
+        - name: envoy-internal
+          namespace: network
+          sectionName: https
+    auth:
+      oidc:
+        enabled: true
+        issuerUrl: "https://pocket-id.${DOMAIN}"
+        clientId: renovate
+        existingSecret: renovate-oidc-credentials
+        secretKey: OIDC_CLIENT_SECRET
+        # TLS terminates at the Gateway; the chart only infers https from
+        # ingress.tls, which this deployment does not use.
+        redirectUrl: "https://renovate.${DOMAIN}/auth/callback"
+    authorization:
+      # pocket-id decides who may log in, and everyone who does is an admin.
+      # Leaving this on would hide every job until access rules are configured.
+      enabled: false
+    rbac:
+      ownNamespaceOnly: true
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+      dashboard:
+        enabled: true
+        grafanaDashboard:
+          instanceSelector:
+            matchLabels:
+              dashboards: grafana
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
