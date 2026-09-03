@@ -109,6 +109,13 @@
         "docker.io/nousresearch/hermes-agent"
       ],
       sourceUrl: "https://github.com/NousResearch/hermes-agent",
+      // A single release ran to 40k characters, so inline notes drown the PR.
+      // Link each release in the jump instead; `releases` is empty for a
+      // digest-only update, hence the newVersion fallback.
+      fetchChangeLogs: "off",
+      prBodyNotes: [
+        "{{#if releases}}📝 Release notes: {{#each releases}}[`{{{version}}}`](https://github.com/NousResearch/hermes-agent/releases/tag/{{{version}}}){{#unless @last}} · {{/unless}}{{/each}}{{else}}📝 [Release notes for `{{{newVersion}}}`](https://github.com/NousResearch/hermes-agent/releases/tag/{{{newVersion}}}){{/if}}"
+      ],
     },
     {
       description: "searxng ships no GitHub releases or tags, so a plain link to CHANGELOG.rst is the only changelog Renovate can offer",
