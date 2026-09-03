@@ -101,6 +101,19 @@
       extractVersion: "^(?:release-)?v?(?<version>\\d+\\.\\d+\\.\\d+)",
     },
     {
+      description: "postgres-containers publishes no releases or tags, so there is nothing for Renovate to fetch; link PostgreSQL's own notes for the minor version instead",
+      matchDatasources: [
+        "docker"
+      ],
+      matchPackageNames: [
+        "ghcr.io/cloudnative-pg/postgresql"
+      ],
+      // Tags are <version>-<flavor>-<distro>, so strip the suffix to build the URL.
+      prBodyNotes: [
+        "{{#if newVersion}}📝 [PostgreSQL {{lookup (split newVersion '-') 0}} release notes](https://www.postgresql.org/docs/release/{{lookup (split newVersion '-') 0}}/){{/if}}"
+      ],
+    },
+    {
       description: "The Docker Hub image carries no org.opencontainers.image.source label, so Renovate has no repo to pull release notes from; its tags match upstream's exactly",
       matchDatasources: [
         "docker"
