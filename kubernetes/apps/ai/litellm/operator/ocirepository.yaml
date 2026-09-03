@@ -9,11 +9,5 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    # TEMPORARY fork of upstream 0.0.19-dev, adding spec.secretAnnotations and
-    # spec.secretLabels to LiteLLMVirtualKey — which is what lets
-    # ../proxy/virtualkey.yaml hand its Secret to reflector. The chart also pins
-    # image.repository/digest to the matching build, so nothing is overridden in
-    # ./helmrelease.yaml. Point both back at home-operations once the change is
-    # released upstream.
-    tag: 0.0.19-virtualkey.1
-  url: oci://ghcr.io/dsluo/charts/litellm-operator
+    tag: 0.0.19
+  url: oci://ghcr.io/home-operations/charts/litellm-operator
