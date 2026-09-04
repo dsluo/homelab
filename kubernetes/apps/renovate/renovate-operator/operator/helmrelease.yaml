@@ -43,6 +43,12 @@ spec:
       enabled: false
     rbac:
       ownNamespaceOnly: true
+    policy:
+      # Bounds what a RenovateJob may make the operator do with its own
+      # credentials. The chart defaults already cover this job; its
+      # githubAppReference additionally needs the allow-ref label on the Secret,
+      # which job/externalsecret.yaml sets.
+      enabled: true
     metrics:
       enabled: true
       serviceMonitor:
