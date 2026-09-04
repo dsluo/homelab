@@ -33,6 +33,9 @@ spec:
   # provider prefix the rerank path cannot route.
 
   env:
+    - name: AUTO_REDIRECT_UI_LOGIN_TO_SSO
+      value: "true"
+
     - name: LITELLM_MASTER_KEY
       valueFrom:
         secretKeyRef:
