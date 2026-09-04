@@ -19,6 +19,20 @@ spec:
     appIdSecretKey: APP_ID
     installationIdSecretKey: INSTALL_ID
     pemSecretKey: PEM
+  webhook:
+    enabled: true
+    # GitHub signs each delivery with this token as the X-Hub-Signature-256
+    # HMAC secret; sync applies it when it creates each repo's hook.
+    authentication:
+      enabled: true
+      secretRef:
+        name: renovate-webhook
+        key: token
+    # Puts the operator's hook on every discovered repo, so Dependency Dashboard
+    # and rebase checkboxes fire a run instead of waiting for the hourly tick.
+    # Uses the App installation token, which needs Repository webhooks: RW.
+    sync:
+      enabled: true
   renovateConfig:
     inline: |
       module.exports = {

@@ -27,6 +27,19 @@ spec:
         - name: envoy-internal
           namespace: network
           sectionName: https
+    webhook:
+      enabled: true
+      route:
+        enabled: true
+        # Unlike the UI, this has to be reachable by GitHub, so it goes out
+        # through the Cloudflare gateway rather than envoy-internal. The chart
+        # derives WEBHOOK_BASE_URL from this hostname and appends it to
+        # policy.allowedHosts, which sync needs to write the hook URL.
+        hostnames: ["renovate-webhook.${DOMAIN}"]
+        parentRefs:
+          - name: envoy-cloudflare
+            namespace: network
+            sectionName: https
     auth:
       oidc:
         enabled: true
