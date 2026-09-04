@@ -18,8 +18,34 @@ spec:
       mode: template
     config:
       logStorage:
-        mode: memory
+        # DB 2 on the valkey below, so run logs outlive an operator restart.
+        mode: valkey
       jobTTLSecondsAfterFinished: 86400
+    valkey:
+      # Backs three things on one instance, split across DBs 0-2: the session
+      # store, Renovate's package cache (RENOVATE_REDIS_URL, forwarded to every
+      # executor job), and the log store above. The package cache is shared
+      # across repos, which is where the win is — all 20 resolve the same
+      # registries each cycle.
+      enabled: true
+      auth:
+        enabled: true
+        usersExistingSecret: renovate-valkey
+        aclUsers:
+          default:
+            # Without this the valkey pod reads key `default` while the
+            # operator reads `default-password` from the same Secret.
+            passwordKey: default-password
+      dataStorage:
+        # A cache and sessions only; a PVC would pin valkey to one node of two
+        # for data that is cheaper to rebuild than to move.
+        enabled: false
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 512Mi
     route:
       enabled: true
       hostnames: ["renovate.${DOMAIN}"]
