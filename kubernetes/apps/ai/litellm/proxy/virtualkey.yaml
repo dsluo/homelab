@@ -7,7 +7,7 @@ spec:
   proxyRef: litellm
   keyAlias: atuin-ai
   secretName: atuin-ai-litellm-key
-  secretKey: CHAT_API_KEY
+  secretKey: OPENAI_API_KEY
   secretAnnotations:
     reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
     reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: tools

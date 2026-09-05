@@ -34,7 +34,7 @@ spec:
     - name: external-secrets-config
       namespace: external-secrets
     # For the LiteLLMVirtualKey whose Secret reflector mirrors in here — the
-    # pod cannot start without CHAT_API_KEY. Ordering only: reflector copies
+    # pod cannot start without OPENAI_API_KEY. Ordering only: reflector copies
     # asynchronously, so a first deploy still waits on the mirror.
     - name: litellm
       namespace: ai
