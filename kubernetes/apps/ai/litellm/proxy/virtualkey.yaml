@@ -12,3 +12,27 @@ spec:
     reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
     reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: tools
     reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: opencode
+spec:
+  proxyRef: litellm
+  keyAlias: opencode
+  secretName: opencode-litellm-key
+  secretKey: OPENAI_API_KEY
+  models:
+    - "llmkube/*"
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: pi
+spec:
+  proxyRef: litellm
+  keyAlias: pi
+  secretName: pi-litellm-key
+  secretKey: OPENAI_API_KEY
+  models:
+    - "llmkube/*"
