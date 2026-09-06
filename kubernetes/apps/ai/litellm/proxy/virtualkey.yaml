@@ -36,3 +36,21 @@ spec:
   secretKey: OPENAI_API_KEY
   models:
     - "llmkube/*"
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: hister
+spec:
+  proxyRef: litellm
+  keyAlias: hister
+  secretName: hister-litellm-key
+  secretKey: OPENAI_API_KEY
+  # Hister only needs embeddings. A narrowly scoped key prevents this workload
+  # from spending against chat or reranking models through the shared proxy.
+  models:
+    - "llmkube/Qwen/Qwen3-Embedding-0.6B"
+  secretAnnotations:
+    reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+    reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: tools
+    reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"

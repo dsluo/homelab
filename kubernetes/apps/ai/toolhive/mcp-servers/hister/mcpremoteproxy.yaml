@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/toolhive.stacklok.dev/mcpremoteproxy_v1alpha1.json
+apiVersion: toolhive.stacklok.dev/v1alpha1
+kind: MCPRemoteProxy
+metadata:
+  name: hister-proxy
+spec:
+  remoteUrl: http://hister.tools.svc.cluster.local:4433/mcp
+  transport: streamable-http
+  proxyPort: 8080

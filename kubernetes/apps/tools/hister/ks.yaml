@@ -1,0 +1,43 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app hister
+spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
+    - name: pocket-id
+      namespace: security
+    - name: kopiur-repository
+      namespace: kopiur-system
+    - name: litellm
+      namespace: ai
+    - name: llmkube-models
+      namespace: ai
+  interval: 1h
+  path: ./kubernetes/apps/tools/hister/app
+  components:
+    - ../../../../components/database
+    - ../../../../components/oidc
+    - ../../../../components/kopiur
+  postBuild:
+    substitute:
+      APP: *app
+      DB_EXTENSIONS: '[{"name":"vector","ensure":"present"}]'
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/hister.svg"
+      OIDC_APP_NAME: Hister
+      OIDC_CALLBACK_PATH: /api/oauth/callback?provider=oidc
+      KOPIUR_CAPACITY: 10Gi
+      KOPIUR_UID: "65532"
+      KOPIUR_GID: "65532"
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: tools
+  wait: false
