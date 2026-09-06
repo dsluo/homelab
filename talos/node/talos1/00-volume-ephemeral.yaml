@@ -1,0 +1,10 @@
+---
+# Numbered ahead of the link config so the rendered document order matches
+# what the nodes already run; document order is not semantically meaningful.
+apiVersion: v1alpha1
+kind: VolumeConfig
+name: EPHEMERAL
+provisioning:
+  diskSelector:
+    match: disk.pretty_size >= "1 TB" && disk.model.startsWith("Samsung")
+  maxSize: 100GB

@@ -1,0 +1,34 @@
+---
+cluster:
+  # Disable built-in CoreDNS to use Helm-managed CoreDNS
+  coreDNS:
+    disabled: true
+
+  # Disable kube-proxy since Cilium replaces it
+  proxy:
+    disabled: true
+
+  # Enable MutatingAdmissionPolicy (and friends)
+  apiServer:
+    extraArgs:
+      feature-gates: MutatingAdmissionPolicy=true
+      runtime-config: admissionregistration.k8s.io/v1beta1=true
+
+  # Expose controller manager metrics for Prometheus scraping
+  controllerManager:
+    extraArgs:
+      bind-address: "0.0.0.0"
+
+  # Expose scheduler metrics for Prometheus scraping
+  scheduler:
+    extraArgs:
+      bind-address: "0.0.0.0"
+
+  # Expose etcd metrics for Prometheus scraping on port 2381
+  etcd:
+    extraArgs:
+      listen-metrics-urls: http://0.0.0.0:2381
+
+  # talos0 is the only node with a GPU-less workload budget to spare; the
+  # cluster is two nodes, so the control plane has to carry pods.
+  allowSchedulingOnControlPlanes: true

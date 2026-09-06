@@ -1,0 +1,8 @@
+---
+# Talos adds this label to control planes by default. talos0 runs workloads
+# (allowSchedulingOnControlPlanes), and the label would pull it out of
+# LoadBalancer endpoint selection.
+machine:
+  nodeLabels:
+    node.kubernetes.io/exclude-from-external-load-balancers:
+      $patch: delete

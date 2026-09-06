@@ -149,8 +149,8 @@ talos1 needs:
 ```sh
 # The extension is a schematic change → talos1 gets a new installer image and
 # REBOOTS. The sysctl applies in the same upgrade.
-talhelper genconfig
-talosctl upgrade -n 10.0.42.4 --image <factory-image-from-clusterconfig>
+just -f ../../../../talos/justfile apply   # or: cd talos && just apply
+talosctl upgrade -n 10.0.42.4 --image <factory-image-from-topf-render>
 # verify after reboot:
 talosctl -n 10.0.42.4 get extensions | grep -i gvisor
 talosctl -n 10.0.42.4 list /usr/local/bin | grep runsc
