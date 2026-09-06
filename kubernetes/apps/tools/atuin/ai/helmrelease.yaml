@@ -21,11 +21,11 @@ spec:
               # TODO: atuin-ai-server does not have semver yet
               tag: main@sha256:3d11028588ebfddb0685169e35cbc7121d3577b6eee3831e845fbe5c28e48d92
             env:
-              CHAT_API_KEY:
+              OPENAI_API_KEY:
                 valueFrom:
                   secretKeyRef:
                     name: atuin-ai-litellm-key
-                    key: CHAT_API_KEY
+                    key: OPENAI_API_KEY
               AUTH_TOKEN:
                 valueFrom:
                   secretKeyRef:
