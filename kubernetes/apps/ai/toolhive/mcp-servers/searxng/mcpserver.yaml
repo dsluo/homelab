@@ -17,6 +17,15 @@ spec:
       value: "8080"
     - name: MCP_HTTP_HOST
       value: "0.0.0.0"
+    # Without this, Express keeps `trust proxy` off and express-rate-limit keys
+    # every request by the socket peer — always the ToolHive proxy pod — so all
+    # clients share one bucket and trip 429 (-32029) together. The pod CIDR
+    # covers both hops (envoy-internal, ToolHive proxy) regardless of hop count.
+    - name: MCP_HTTP_TRUST_PROXY
+      value: "10.244.0.0/16"
+    # Default is 20/min, which a couple of agents reconnecting can exhaust.
+    - name: MCP_RATE_INIT_MAX
+      value: "120"
   podTemplateSpec:
     spec:
       containers:
