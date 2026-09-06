@@ -8,6 +8,8 @@ spec:
   # files[0] handed to llama.cpp (it discovers the siblings itself). The prefix
   # ends at resolve/main so prefix + "/" + entry is a valid HF download URL.
   source: https://huggingface.co/unsloth/Qwen3.8-Flash-Next-GGUF/resolve/main
+  sourceSecretRef:
+    name: llmkube-hf-secret
   files:
     - UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
     - UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
