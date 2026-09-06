@@ -5,7 +5,7 @@ clusterEndpoint: https://10.0.42.3:6443
 secretsPath: talsecret.sops.yaml
 patchesDir: patches
 
-talosVersion: v1.13.9
+talosVersion: v1.14.0
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 kubernetesVersion: v1.36.4
 

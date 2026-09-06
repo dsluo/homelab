@@ -1,8 +1,6 @@
 ---
-# gVisor (runsc) requires unprivileged user namespaces to build its
-# sandbox; Talos defaults user.max_user_namespaces to 0 (disabled).
-# Scoped to talos1, the only node with the gVisor extension and where
-# the hermes agent pod is pinned. (Lowers a KSPP hardening default.)
-machine:
-  sysctls:
-    user.max_user_namespaces: "11255"
+# gVisor needs unprivileged user namespaces; Talos defaults this to 0.
+apiVersion: v1alpha1
+kind: SysctlConfig
+params:
+  user.max_user_namespaces: "11255"
