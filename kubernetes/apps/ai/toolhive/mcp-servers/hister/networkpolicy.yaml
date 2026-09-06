@@ -1,0 +1,29 @@
+---
+# Only the internal Envoy data plane may reach this proxy; this prevents
+# ClusterIP bypass around the internal Gateway route.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mcp-hister
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: mcpremoteproxy
+      app.kubernetes.io/instance: hister
+  ingress:
+    - fromEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+            app.kubernetes.io/name: envoy
+            gateway.networking.k8s.io/gateway-name: envoy-internal
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
