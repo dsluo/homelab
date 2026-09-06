@@ -10,6 +10,8 @@ spec:
   # qwen35.nextn_predict_layers=1 plus blk.64.nextn.* tensors. The --spec-type
   # draft-mtp flags below therefore still apply unchanged.
   source: https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-UD-Q4_K_XL.gguf
+  sourceSecretRef:
+    name: llmkube-hf-secret
   format: gguf
   quantization: UD-Q4_K_XL
   hardware:

@@ -7,6 +7,8 @@ spec:
   # llama.cpp-packaged reranker build (rank head intact); serves memini's
   # /v1/rerank on CPU.
   source: https://huggingface.co/Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp/resolve/main/Qwen3-Reranker-0.6B-Q5_K_M.gguf
+  sourceSecretRef:
+    name: llmkube-hf-secret
   format: gguf
   quantization: Q5_K_M
   hardware:
