@@ -1,10 +1,26 @@
 ---
-# yaml-language-server: $schema=https://kube-schemas.pages.dev/toolhive.stacklok.dev/mcpremoteproxy_v1alpha1.json
-apiVersion: toolhive.stacklok.dev/v1alpha1
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/toolhive.stacklok.dev/mcpremoteproxy_v1beta1.json
+apiVersion: toolhive.stacklok.dev/v1beta1
 kind: MCPRemoteProxy
 metadata:
   name: hister-proxy
 spec:
   remoteUrl: http://hister.tools.svc.cluster.local:4433/mcp
+  # Without this the operator refuses any remoteUrl ending in cluster.local.
+  allowPrivateEndpoint: true
   transport: streamable-http
   proxyPort: 8080
+  # Hister runs with app.user_handling on, so /mcp rejects unauthenticated
+  # callers; the proxy injects the personal token on their behalf.
+  headerForward:
+    addHeadersFromSecret:
+      - headerName: Authorization
+        valueSecretRef:
+          name: hister-mcp-secret
+          key: AUTHORIZATION
+  resources:
+    requests:
+      cpu: 10m
+      memory: 128Mi
+    limits:
+      memory: 256Mi

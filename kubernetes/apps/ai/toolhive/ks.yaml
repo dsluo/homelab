@@ -83,6 +83,8 @@ spec:
       - name: cluster-global-config
         kind: ConfigMap
   dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
     - name: toolhive-crds
     - name: hister
       namespace: tools
