@@ -1,0 +1,30 @@
+---
+# The SecurityPolicy authenticates gateway traffic before it reaches this proxy.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mcp-hister
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: mcpremoteproxy
+      app.kubernetes.io/instance: hister
+  ingress:
+    - fromEntities:
+        - host
+        - remote-node
+        - kube-apiserver
+        - health
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+            gateway.envoyproxy.io/owning-gateway-namespace: network
+            gateway.envoyproxy.io/owning-gateway-name: envoy-internal
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP

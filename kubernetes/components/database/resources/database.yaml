@@ -8,3 +8,4 @@ spec:
   owner: ${DB_APP}
   cluster:
     name: postgres
+  extensions: ${EXTENSIONS:=[]}

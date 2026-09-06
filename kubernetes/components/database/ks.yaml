@@ -17,6 +17,10 @@ spec:
       # DB_APP overrides the database/role/secret name when it differs from the
       # app name (e.g. pocket-id -> pocketid).
       DB_APP: ${DB_APP:=${APP}}
+      # DATABASE_EXTENSIONS must be a single-line YAML flow sequence, e.g.
+      # `[{name: vector}]`. `q` must stay unset: its single-quote default keeps
+      # the value scalar until the nested Flux substitution parses the sequence.
+      EXTENSIONS: ${q:='}${DATABASE_EXTENSIONS:=}${q:='}
   prune: true
   sourceRef:
     kind: GitRepository

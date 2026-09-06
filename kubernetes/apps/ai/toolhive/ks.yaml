@@ -70,3 +70,30 @@ spec:
     namespace: flux-system
   targetNamespace: ai
   wait: false
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: mcp-hister
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/ai/toolhive/mcp-servers/hister
+  postBuild:
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
+    - name: toolhive-crds
+    - name: pocket-id
+      namespace: security
+    - name: hister
+      namespace: tools
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: false

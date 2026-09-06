@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/toolhive.stacklok.dev/mcpremoteproxy_v1beta1.json
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPRemoteProxy
+metadata:
+  name: hister
+spec:
+  remoteUrl: http://hister.tools.svc.cluster.local:4433/mcp
+  allowPrivateEndpoint: true
+  transport: streamable-http
+  proxyPort: 8080
+  headerForward:
+    addHeadersFromSecret:
+      - headerName: Authorization
+        valueSecretRef:
+          name: hister-mcp-credentials
+          key: AUTHORIZATION
+  resources:
+    requests:
+      cpu: 10m
+      memory: 128Mi
+    limits:
+      memory: 256Mi

@@ -1,0 +1,69 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: hister-database
+spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
+    - name: cnpg-cluster
+      namespace: database
+  components:
+    - ../../../../components/database
+  interval: 1h
+  path: ./kubernetes/apps/tools/hister/db
+  postBuild:
+    substitute:
+      APP: hister
+      DATABASE_EXTENSIONS: "[{name: vector}]"
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: tools
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app hister
+spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
+    - name: hister-database
+    - name: pocket-id
+      namespace: security
+    - name: litellm
+      namespace: ai
+    - name: kopiur-repository
+      namespace: kopiur-system
+  components:
+    - ../../../../components/oidc
+    - ../../../../components/kopiur
+  interval: 1h
+  path: ./kubernetes/apps/tools/hister/app
+  postBuild:
+    substitute:
+      APP: *app
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/hister.svg"
+      OIDC_APP_NAME: Hister
+      OIDC_CALLBACK_PATH: /api/oauth/callback?provider=oidc
+      KOPIUR_CAPACITY: 10Gi
+      KOPIUR_UID: "65532"
+      KOPIUR_GID: "65532"
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: tools
+  wait: false

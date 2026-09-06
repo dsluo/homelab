@@ -7,3 +7,4 @@ components:
 resources:
   - ./namespace.yaml
   - ./atuin/ks.yaml
+  - ./hister/ks.yaml
