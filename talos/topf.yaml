@@ -2,19 +2,13 @@
 clusterName: homelab
 clusterEndpoint: https://10.0.42.3:6443
 
-# Keep the bundle under its .sops.yaml-matching name: the creation rule keys on
-# talos/.*\.sops\.ya?ml, and renovate's ignorePaths on **/*.sops.*. Renaming it
-# to topf's default secrets.yaml would silently drop it out of both.
 secretsPath: talsecret.sops.yaml
+patchesDir: patches
 
 talosVersion: v1.13.9
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 kubernetesVersion: v1.36.4
 
-# Both nodes boot with UEFI Secure Boot enforcing. Dropping this emits the
-# plain metal-installer image instead of metal-installer-secureboot, and Talos
-# refuses to cross between the two on upgrade — the node drops to BIOS on next
-# boot and has to be recovered from the previous sd-boot entry.
 secureboot: true
 
 nodes:

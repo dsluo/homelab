@@ -3,9 +3,6 @@ customization:
   systemExtensions:
     officialExtensions:
       - siderolabs/amd-ucode
-      # gVisor (runsc) container runtime — sandboxes the hermes agent
-      # pod (RuntimeClass "gvisor") so untrusted/injected agent code is
-      # confined to a userspace kernel instead of the host kernel.
       - siderolabs/gvisor
       - siderolabs/nvidia-container-toolkit-production
       - siderolabs/nvidia-open-gpu-kernel-modules-production

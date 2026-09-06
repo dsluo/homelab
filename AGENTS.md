@@ -49,9 +49,9 @@ kubernetes/apps/<ns>/<app>/
 `ks.yaml` is Flux's wrapper — edit it for dependencies, shared `components/`, and `postBuild.substitute` values. The `app/` dir holds the real manifests — edit it to change the workload itself.
 
 **Talos config is layered patches, not one file.** `talos/topf.yaml` declares only
-cluster identity, versions and the two nodes; everything else is a patch file merged
-in order `all/` → `<role>/` → `node/<host>/`, lexicographically within each. Extensions
-live in `talos/schematics/<node>.yaml` and topf computes the Image Factory schematic ID
+cluster identity, versions and the two nodes; everything else is a patch file under
+`talos/patches/`, merged in order `all/` → `<role>/` → `node/<host>/`, lexicographically
+within each. Extensions live in `talos/schematics/<node>.yaml` and topf computes the Image Factory schematic ID
 from them. `cd talos && just diff` shows what would change on the live nodes (exit 2 if
 anything would); `just apply` pushes it. Node upgrades are tuppr's job, not topf's.
 
