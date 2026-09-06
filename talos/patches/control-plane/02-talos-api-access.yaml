@@ -1,9 +1,8 @@
 ---
-machine:
-  features:
-    kubernetesTalosAPIAccess:
-      allowedKubernetesNamespaces:
-        - system-upgrade
-      allowedRoles:
-        - os:admin
-      enabled: true
+# Presence of the document enables the feature; there is no `enabled` field.
+apiVersion: v1alpha1
+kind: KubeTalosAPIAccessConfig
+allowedRoles:
+  - os:admin
+allowedKubernetesNamespaces:
+  - system-upgrade

@@ -1,6 +1,7 @@
 ---
-machine:
-  install:
-    diskSelector:
-      size: "960197124096"
-      model: "SAMSUNG*"
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+provisioning:
+  diskSelector:
+    match: disk.pretty_size == "960 GB" && disk.model.startsWith("SAMSUNG")
+  wipe: false

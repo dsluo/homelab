@@ -1,6 +1,7 @@
 ---
-machine:
-  install:
-    diskSelector:
-      size: ">= 1TB"
-      model: "Samsung*"
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+provisioning:
+  diskSelector:
+    match: disk.pretty_size >= "1 TB" && disk.model.startsWith("Samsung")
+  wipe: false
