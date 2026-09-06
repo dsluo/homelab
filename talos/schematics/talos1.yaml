@@ -1,0 +1,11 @@
+---
+customization:
+  systemExtensions:
+    officialExtensions:
+      - siderolabs/amd-ucode
+      - siderolabs/gvisor
+      - siderolabs/nvidia-container-toolkit-production
+      - siderolabs/nvidia-open-gpu-kernel-modules-production
+      - siderolabs/util-linux-tools
+      - siderolabs/zfs
+  bootloader: sd-boot

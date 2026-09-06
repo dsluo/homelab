@@ -1,0 +1,14 @@
+---
+apiVersion: v1alpha1
+kind: RawVolumeConfig
+name: openebs-zpool
+provisioning:
+  diskSelector:
+    match: disk.pretty_size == "960 GB" && disk.model.startsWith("SAMSUNG")
+  minSize: "500GB"
+  grow: true
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: local-hostpath
+volumeType: directory

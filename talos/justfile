@@ -1,29 +1,39 @@
 _:
     @just --list
 
-# Generate Talos machine config from talconfig.yaml
-genconfig:
-    talhelper genconfig
+# Render machine configs locally without touching the cluster (writes ./output).
+render:
+    topf render
 
-# Bootstrap a fresh cluster: generate config, apply insecurely, bootstrap etcd, fetch kubeconfig
-bootstrap:
-    talhelper genconfig
-    talhelper gencommand apply --extra-flags="--insecure" | sh
-    until talhelper gencommand bootstrap | sh; do sleep 10; done
-    until talhelper gencommand kubeconfig --extra-flags="--force" | sh; do sleep 10; done
+# Show what would change on each node; exits 2 if there is a diff.
+diff:
+    topf apply --dry-run
 
-# Apply Talos machine config to running nodes
+# Apply Talos machine config to running nodes.
 apply:
-    talhelper gencommand apply | sh
+    topf apply
 
-# Upgrade Talos OS on all nodes
+# Bootstrap a fresh cluster: apply config, bootstrap etcd, fetch kubeconfig.
+bootstrap:
+    topf apply --auto-bootstrap
+    topf kubeconfig
+
+# topf writes it to stdout; TALOSCONFIG points at talos/talosconfig.
+# Write a talosconfig for talosctl from the secrets bundle.
+talosconfig:
+    topf talosconfig > talosconfig
+
+# tuppr normally drives this from the TalosUpgrade CR; out-of-band use only.
+# Upgrade Talos OS on all nodes.
 upgrade-talos:
-    talhelper gencommand upgrade | sh
+    topf upgrade
 
-# Upgrade Kubernetes version on all nodes
-upgrade-k8s:
-    talhelper gencommand upgrade-k8s | sh
+# tuppr normally drives this from the KubernetesUpgrade CR; out-of-band use only.
+# Upgrade Kubernetes on all nodes.
+upgrade-k8s version:
+    talosctl upgrade-k8s --to {{ version }}
 
-# Reset nodes and reboot; pass force=true to wipe all disks (default preserves STATE/EPHEMERAL)
+# topf's own --full default is true, so this recipe pins it to preserve.
+# Reset nodes and reboot; pass force=true to wipe the whole disk.
 reset force="false":
-    talhelper gencommand reset --extra-flags="--reboot {{ if force == "false" { '--system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL' } else { '' } }} --graceful=false --wait=false" | sh
+    topf reset --full={{ if force == "false" { "false" } else { "true" } }} --graceful=false

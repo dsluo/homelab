@@ -1,0 +1,19 @@
+---
+apiVersion: v1alpha1
+kind: BondConfig
+name: bond0
+links:
+  - enp2s0f0
+  - enp2s0f1
+bondMode: active-backup
+mtu: 1500
+---
+apiVersion: v1alpha1
+kind: VLANConfig
+name: bond0.42
+vlanID: 42
+parent: bond0
+addresses:
+  - address: 10.0.42.4/24
+routes:
+  - gateway: 10.0.42.1

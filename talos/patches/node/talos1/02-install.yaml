@@ -1,0 +1,6 @@
+---
+machine:
+  install:
+    diskSelector:
+      size: ">= 1TB"
+      model: "Samsung*"
