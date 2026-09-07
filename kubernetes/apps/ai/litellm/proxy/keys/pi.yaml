@@ -1,0 +1,36 @@
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: pi
+spec:
+  proxyRef: litellm
+  keyAlias: pi
+  secretName: pi-litellm-key
+  secretKey: OPENAI_API_KEY
+  models:
+    - "llmkube/*"
+---
+apiVersion: external-secrets.io/v1alpha1
+kind: PushSecret
+metadata:
+  name: pi-litellm-key
+spec:
+  # Delete/None only — Retain is ExternalSecret vocabulary and fails admission.
+  deletionPolicy: None
+  refreshInterval: 1h
+  secretStoreRefs:
+    - name: onepassword
+      kind: ClusterSecretStore
+  selector:
+    secret:
+      name: pi-litellm-key
+  data:
+    - match:
+        remoteRef:
+          remoteKey: k8s-ai-pi-litellm-key
+      metadata:
+        apiVersion: kubernetes.external-secrets.io/v1alpha1
+        kind: PushSecretMetadata
+        spec:
+          fieldType: concealed
