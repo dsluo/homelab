@@ -1,0 +1,41 @@
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: home-assistant
+spec:
+  proxyRef: litellm
+  keyAlias: home-assistant
+  secretName: home-assistant-litellm-key
+  secretKey: OPENAI_API_KEY
+  # The client-facing modelName from ../models/llmkube.yaml, not params.model —
+  # a name that matches nothing does not fail open, it leaves the key able to
+  # call nothing.
+  models:
+    - llmkube/google/gemma-4-12B-it-qat
+---
+# Home Assistant runs outside the cluster (homeassistant.lan), so the key is
+# delivered by hand out of 1Password rather than reflected into a namespace.
+apiVersion: external-secrets.io/v1alpha1
+kind: PushSecret
+metadata:
+  name: home-assistant-litellm-key
+spec:
+  # Delete/None only — Retain is ExternalSecret vocabulary and fails admission.
+  deletionPolicy: None
+  refreshInterval: 1h
+  secretStoreRefs:
+    - name: onepassword
+      kind: ClusterSecretStore
+  selector:
+    secret:
+      name: home-assistant-litellm-key
+  data:
+    - match:
+        remoteRef:
+          remoteKey: k8s-ai-home-assistant-litellm-key
+      metadata:
+        apiVersion: kubernetes.external-secrets.io/v1alpha1
+        kind: PushSecretMetadata
+        spec:
+          fieldType: concealed

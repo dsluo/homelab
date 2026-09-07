@@ -1,0 +1,37 @@
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: opencode
+spec:
+  proxyRef: litellm
+  keyAlias: opencode
+  secretName: opencode-litellm-key
+  secretKey: OPENAI_API_KEY
+  models:
+    - "llmkube/*"
+---
+apiVersion: external-secrets.io/v1alpha1
+kind: PushSecret
+metadata:
+  name: opencode-litellm-key
+spec:
+  # Governs the copy in 1Password, not the k8s Secret. Retain is ExternalSecret
+  # vocabulary (target.deletionPolicy); PushSecret only accepts Delete/None.
+  deletionPolicy: None
+  refreshInterval: 1h
+  secretStoreRefs:
+    - name: onepassword
+      kind: ClusterSecretStore
+  selector:
+    secret:
+      name: opencode-litellm-key
+  data:
+    - match:
+        remoteRef:
+          remoteKey: k8s-ai-opencode-litellm-key
+      metadata:
+        apiVersion: kubernetes.external-secrets.io/v1alpha1
+        kind: PushSecretMetadata
+        spec:
+          fieldType: concealed
