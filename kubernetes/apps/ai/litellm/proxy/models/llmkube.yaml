@@ -107,8 +107,8 @@ spec:
     apiBase: http://gemma-4-12b-qat.ai.svc.cluster.local:8080/v1
     apiKey: sk-llmkube-noauth
   info:
-    # ../../../llmkube/models/gemma-4-12b-qat.yaml contextSize, well under the
-    # model's native 262144 — raise both together, and re-check the B50's VRAM.
-    maxInputTokens: 65536
+    # ../../../llmkube/models/gemma-4-12b-qat.yaml contextSize, now the model's
+    # native maximum — raise both together, and re-check the B50's VRAM.
+    maxInputTokens: 262144
     supportsVision: true
     supportsFunctionCalling: true
