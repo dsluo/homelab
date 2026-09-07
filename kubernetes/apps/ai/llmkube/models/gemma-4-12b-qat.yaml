@@ -68,13 +68,15 @@ spec:
   # runs on talos0's B50, which DRA places it on.
 
   # --- typed preset fields ---
-  # 65536 of the model's native 262144. Gemma 4 12B's 8 global-attention layers
-  # use head_dim 512, costing ~64 KiB/token at q8_0; the 40 sliding layers are
-  # capped by the 1024-token window. That puts the cache near 4.4 GiB, which on
-  # top of 6.7 GiB of weights (model + mmproj + drafter) leaves the 16 GiB card
-  # headroom for a concurrent Jellyfin transcode. Raising this trades that
-  # headroom roughly 1:1.
-  contextSize: 65536
+  # The model's native maximum. Cheap here because only the 8 global-attention
+  # layers scale with context, and they carry ONE kv head each (the GGUF's
+  # head_count_kv is a per-layer array — config.json's num_key_value_heads: 8
+  # describes the 40 sliding layers, which the 1024-token window caps anyway).
+  # That is ~8.5 KiB/token at q8_0, so the cache is ~2.1 GiB here against 6.7
+  # GiB of weights (model + mmproj + drafter). Measured 8.85 GiB total at 65536
+  # before this bump, so expect ~10.5 of the card's 16 GiB, leaving room for a
+  # concurrent Jellyfin transcode.
+  contextSize: 262144
   cacheTypeK: q8_0
   cacheTypeV: q8_0
   # Load-bearing for the two lines above: quantized KV needs flash attention,
