@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./priorityclass.yaml
+  - ./gemma-4-12b-qat.yaml
   - ./qwen3-8-27b-mtp.yaml
   - ./qwen3-8-flash-next.yaml
   - ./qwen3-embedding-0-6b.yaml

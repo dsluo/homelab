@@ -1,0 +1,131 @@
+---
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: gemma-4-12b-qat
+spec:
+  spec:
+    devices:
+      requests:
+        - name: gpu
+          exactly:
+            deviceClassName: gpu.intel.com
+            # adminAccess so the B50 stays shareable: jellyfin and orcaslicer
+            # hold their own claims on the same single device, and a reserving
+            # claim would lock them out. Requires the ai namespace's
+            # resource.kubernetes.io/admin-access label (../../namespace.yaml).
+            adminAccess: true
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: Model
+metadata:
+  name: gemma-4-12b-qat
+spec:
+  # Repo prefix, not a single object: multi-artifact staging needs spec.files to
+  # select from it, and files[0] is what the runtime gets as --model.
+  source: https://huggingface.co/unsloth/gemma-4-12B-it-qat-GGUF
+  files:
+    - gemma-4-12B-it-qat-UD-Q4_K_XL.gguf
+    # MTP drafter, staged as a companion so the InferenceService's
+    # speculativeDecoding.draftModel can resolve it. Unlike Qwen3.8, which folds
+    # its nextn layer into the base GGUF, Gemma ships the head as its own file —
+    # the repo-root one, a near-lossless smart Q4_0. llama.cpp auto-discovers it
+    # from -hf, which does not apply here: llmkube stages from a repo prefix, so
+    # the path has to be wired explicitly.
+    - mtp-gemma-4-12B-it.gguf
+  # Gemma 4 12B is encoder-free — the projector is a thin linear layer, not a
+  # SigLIP tower, hence 0.18 GB rather than the ~1 GB the E4B mmproj costs.
+  mmproj: mmproj-BF16.gguf
+  sourceSecretRef:
+    name: llmkube-hf-secret
+  format: gguf
+  quantization: UD-Q4_K_XL
+  hardware:
+    accelerator: intel
+    gpu:
+      enabled: true
+      vendor: intel
+      layers: 999 # ngl=999 (full offload)
+      # DRA, not the gpu.intel.com/i915 device plugin, which this cluster does
+      # not run. count is deliberately unset: any value >0 would also make the
+      # operator add an extended-resource limit no node advertises.
+      resourceClaims:
+        - name: gpu
+          resourceClaimTemplateName: gemma-4-12b-qat
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: InferenceService
+metadata:
+  name: gemma-4-12b-qat
+spec:
+  modelRef: gemma-4-12b-qat
+  runtime: llamacpp
+  # SYCL/oneAPI build. The operator has no default image for Intel (only CUDA,
+  # Vulkan and ROCm), so this is required, not an override.
+  image: ghcr.io/ggml-org/llama.cpp:server-intel-b10820@sha256:35037559d99a90963d479b6e6e79764b138c76dc657341292aac6ad41d627c9f
+  replicas: 1
+  # Not a ModelPool member: the pool arbitrates talos1's NVIDIA pair, and this
+  # runs on talos0's B50, which DRA places it on.
+
+  # --- typed preset fields ---
+  # 65536 of the model's native 262144. Gemma 4 12B's 8 global-attention layers
+  # use head_dim 512, costing ~64 KiB/token at q8_0; the 40 sliding layers are
+  # capped by the 1024-token window. That puts the cache near 4.4 GiB, which on
+  # top of 6.7 GiB of weights (model + mmproj + drafter) leaves the 16 GiB card
+  # headroom for a concurrent Jellyfin transcode. Raising this trades that
+  # headroom roughly 1:1.
+  contextSize: 65536
+  cacheTypeK: q8_0
+  cacheTypeV: q8_0
+  # Load-bearing for the two lines above: quantized KV needs flash attention,
+  # and on SYCL the kernel is only picked when it is forced on. Battlemage is
+  # in ggml-sycl's supported envelope for both head_dim 512 and q8_0 K/V.
+  flashAttention: true
+  jinja: true # native function calling
+
+  speculativeDecoding:
+    # draft-mtp, not the "mtp" alias: the CRD's CEL rules gate draftModel on the
+    # literal spelling, so the alias would be rejected alongside draft weights
+    # even though the operator resolves the two identically.
+    type: draft-mtp
+    draftModel: mtp-gemma-4-12B-it.gguf
+    # The drafter shares the target's KV cache, so this costs VRAM only for its
+    # own weights, and --spec-draft-ngl defaults to auto (no need to force it as
+    # ../qwen3-8-27b-mtp.yaml does for its two-GPU split). 4 is what the model
+    # card recommends; the optimum is per-topology and worth re-measuring on the
+    # B50 — llama.cpp's own default is 3.
+    nDraftMax: 4
+
+  extraArgs:
+    - --alias
+    - google/gemma-4-12B-it-qat
+    # Google's published sampling settings for Gemma 4.
+    - --temp
+    - "1.0"
+    - --top-p
+    - "0.95"
+    - --top-k
+    - "64"
+
+  resources:
+    cpu: "1"
+    memory: 8Gi
+
+  endpoint:
+    port: 8080
+    type: ClusterIP
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: gemma-4-12b-qat
+spec:
+  hostnames:
+    - "gemma.${DOMAIN}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+  rules:
+    - backendRefs:
+        - name: gemma-4-12b-qat
+          port: 8080
