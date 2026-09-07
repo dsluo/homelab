@@ -1,0 +1,7 @@
+---
+# Without this file Flux generates one by walking the tree, which would make the
+# mcp-servers Kustomization co-own everything under ./hister alongside hister-mcp.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./searxng

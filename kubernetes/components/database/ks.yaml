@@ -17,6 +17,8 @@ spec:
       # DB_APP overrides the database/role/secret name when it differs from the
       # app name (e.g. pocket-id -> pocketid).
       DB_APP: ${DB_APP:=${APP}}
+      DB_EXTENSIONS: |
+        ${DB_EXTENSIONS:=[]}
   prune: true
   sourceRef:
     kind: GitRepository

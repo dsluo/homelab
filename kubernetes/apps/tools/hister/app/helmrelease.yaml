@@ -1,0 +1,147 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app hister
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    controllers:
+      *app :
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            fsGroup: 65532
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile:
+              type: RuntimeDefault
+        containers:
+          *app :
+            image:
+              repository: ghcr.io/asciimoo/hister
+              tag: v0.19.0@sha256:dae5ae63f292bf6075c7c60cfef031e15d809a19b09db34d9e54306aab490e9b
+            env:
+              HISTER__SERVER__ADDRESS: 0.0.0.0:4433
+              HISTER__SERVER__BASE_URL: "https://hister.${DOMAIN}"
+              HISTER__APP__DIRECTORY: /hister/data
+              HISTER__APP__USER_HANDLING: "true"
+              HISTER__APP__PUBLIC: "false"
+              HISTER__SERVER__OAUTH_ONLY: "true"
+
+              HISTER__SERVER__OAUTH__OIDC__CLIENT_ID:
+                valueFrom:
+                  secretKeyRef:
+                    name: &oidcSecret hister-oidc-credentials
+                    key: OIDC_CLIENT_ID
+              HISTER__SERVER__OAUTH__OIDC__CLIENT_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: *oidcSecret
+                    key: OIDC_CLIENT_SECRET
+              HISTER__SERVER__OAUTH__OIDC__CONFIGURATION_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: *oidcSecret
+                    key: OIDC_DISCOVERY_URL
+
+              HISTER_DB_USERNAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: hister-postgres-secret
+                    key: username
+              HISTER_DB_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: hister-postgres-secret
+                    key: password
+              HISTER__SERVER__DATABASE:
+                dependsOn: [HISTER_DB_USERNAME, HISTER_DB_PASSWORD]
+                value: >-
+                  host=postgres-rw.database.svc.cluster.local user=$(HISTER_DB_USERNAME)
+                  password=$(HISTER_DB_PASSWORD) dbname=hister port=5432 sslmode=disable
+                  TimeZone=America/Detroit
+
+              HISTER__SEMANTIC_SEARCH__ENABLE: "true"
+              HISTER__SEMANTIC_SEARCH__EMBEDDING_ENDPOINT: http://litellm.ai.svc.cluster.local:4000/v1/embeddings
+              HISTER__SEMANTIC_SEARCH__EMBEDDING_MODEL: llmkube/Qwen/Qwen3-Embedding-0.6B
+              HISTER__SEMANTIC_SEARCH__DIMENSIONS: "1024"
+              HISTER__SEMANTIC_SEARCH__QUERY_PREFIX: "Instruct: Given a web search query, retrieve relevant passages that answer the query\\nQuery: "
+              HISTER__SEMANTIC_SEARCH__DOCUMENT_PREFIX: ""
+              HISTER__SEMANTIC_SEARCH__MAX_EMBEDDING_CONCURRENCY: "2"
+              HISTER__SEMANTIC_SEARCH__API_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: hister-litellm-key
+                    key: OPENAI_API_KEY
+            probes:
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: &port 4433
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 30
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: [ALL]
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: "2"
+                memory: 2Gi
+    service:
+      *app :
+        controller: *app
+        primary: true
+        ports:
+          http:
+            port: *port
+    route:
+      internal:
+        hostnames:
+          - "hister.${DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: *app
+                port: http
+    persistence:
+      data:
+        existingClaim: *app
+        globalMounts:
+          - path: /hister/data
+      tmp:
+        type: emptyDir
+        sizeLimit: 64Mi
+        globalMounts:
+          - path: /tmp
