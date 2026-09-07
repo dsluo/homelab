@@ -93,3 +93,22 @@ spec:
     apiKey: sk-llmkube-noauth
   info:
     mode: rerank
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: llmkube-gemma-4-12b-qat
+spec:
+  modelName: llmkube/google/gemma-4-12B-it-qat
+  params:
+    # The Service directly, not the router-proxy: this runs on talos0's Arc
+    # B50 and is not a ModelPool member, so nothing has to be swapped in first.
+    model: openai/gemma-4-12b-qat
+    apiBase: http://gemma-4-12b-qat.ai.svc.cluster.local:8080/v1
+    apiKey: sk-llmkube-noauth
+  info:
+    # ../../../llmkube/models/gemma-4-12b-qat.yaml contextSize, well under the
+    # model's native 262144 — raise both together, and re-check the B50's VRAM.
+    maxInputTokens: 65536
+    supportsVision: true
+    supportsFunctionCalling: true

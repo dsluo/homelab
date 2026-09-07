@@ -6,7 +6,6 @@ components:
   - ../../components/cluster-global-config
 resources:
   - ./namespace.yaml
-  # - ./llama-cpp/ks.yaml
   - ./litellm/ks.yaml
   - ./llmkube/ks.yaml
   - ./memini/ks.yaml
