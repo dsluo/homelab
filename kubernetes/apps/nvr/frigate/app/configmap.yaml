@@ -131,12 +131,13 @@ data:
           - rtsp://{FRIGATE_OFFICE_COUCH_USER}:{FRIGATE_OFFICE_COUCH_PASSWORD}@office-couch.lan:554/ch0
         office-couch_sub:
           - rtsp://{FRIGATE_OFFICE_COUCH_USER}:{FRIGATE_OFFICE_COUCH_PASSWORD}@office-couch.lan:554/ch1
-        # http-flv, not RTSP: Frigate documents it as the reliable path for
-        # Reolink at 5MP and under, and this doorbell is 2560x1920.
+        # RTSP, despite frigate documenting http-flv as the reliable path for
+        # Reolink at 5MP and under: the bcs endpoint 4xx's on this doorbell,
+        # while these two probe clean at 2560x1920 and 640x480.
         doorbell:
-          - ffmpeg:http://doorbell.lan/flv?port=1935&app=bcs&stream=channel0_main.bcs&user={FRIGATE_DOORBELL_USER}&password={FRIGATE_DOORBELL_PASSWORD}#video=copy#audio=copy#audio=opus
+          - rtsp://{FRIGATE_DOORBELL_USER}:{FRIGATE_DOORBELL_PASSWORD}@doorbell.lan:554/h264Preview_01_main
         doorbell_sub:
-          - ffmpeg:http://doorbell.lan/flv?port=1935&app=bcs&stream=channel0_ext.bcs&user={FRIGATE_DOORBELL_USER}&password={FRIGATE_DOORBELL_PASSWORD}#video=copy#audio=copy#audio=opus
+          - rtsp://{FRIGATE_DOORBELL_USER}:{FRIGATE_DOORBELL_PASSWORD}@doorbell.lan:554/h264Preview_01_sub
 
     cameras:
       basement1:
