@@ -1,0 +1,15 @@
+---
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: frigate
+spec:
+  spec:
+    devices:
+      requests:
+        - name: gpu
+          exactly:
+            deviceClassName: gpu.intel.com
+            # Shared, not reserving: a reserving claim would lock jellyfin and
+            # llmkube off the single B50.
+            adminAccess: true

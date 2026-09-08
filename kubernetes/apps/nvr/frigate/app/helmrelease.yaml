@@ -1,0 +1,126 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app frigate
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    controllers:
+      *app :
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          resourceClaims:
+            - name: gpu
+              resourceClaimTemplateName: *app
+          securityContext:
+            # Frigate's s6 init and nginx expect uid 0. Moving to a dedicated
+            # uid additionally needs S6_CATCHALL_USER, a world-writable /run and
+            # a writable HOME -- deferred until this is proven.
+            runAsNonRoot: false
+        containers:
+          *app :
+            image:
+              repository: ghcr.io/blakeblackshear/frigate
+              tag: 0.17.2
+            env:
+              TZ: America/Detroit
+            # Every key is already named for the {FRIGATE_*} placeholder it
+            # fills in config.yml, so no per-camera mapping is needed.
+            envFrom:
+              - secretRef:
+                  name: frigate-secret
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 5
+            resources:
+              requests:
+                cpu: "2"
+                memory: 2Gi
+              limits:
+                memory: 6Gi
+              claims:
+                - name: gpu
+    service:
+      *app :
+        ports:
+          http:
+            # 8971, never 5000: on 5000 roles aren't enforced and every request
+            # is treated as admin.
+            port: &port 8971
+    route:
+      *app :
+        hostnames:
+          - &host "frigate.${DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: *app
+                port: *port
+      api:
+        # Unprotected by the OIDC SecurityPolicy so Home Assistant and the
+        # mobile app can reach the API without a browser login.
+        hostnames:
+          - *host
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - matches:
+              - path: { type: PathPrefix, value: /api }
+              - path: { type: PathPrefix, value: /ws }
+            backendRefs:
+              - identifier: *app
+                port: *port
+    persistence:
+      config:
+        existingClaim: *app
+        globalMounts:
+          - path: /config
+      config-file:
+        type: configMap
+        name: frigate-config
+        globalMounts:
+          - path: /config/config.yml
+            subPath: config.yml
+            readOnly: true
+      # Snapshots land here. Bounded emptyDir until recording moves to NFS,
+      # so a runaway can't fill the node's ephemeral storage.
+      media:
+        type: emptyDir
+        sizeLimit: 2Gi
+        globalMounts:
+          - path: /media/frigate
+      # Recording target. Uncomment together with the record blocks in
+      # configmap.yaml, and drop the emptyDir above.
+      # media:
+      #   type: nfs
+      #   server: storage.lan
+      #   path: /mnt/hot
+      #   globalMounts:
+      #     - path: /media/frigate
+      cache:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp/cache
+      # ~3.4 MB per camera at 640x360; 512Mi covers all 16 with room over.
+      dshm:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 512Mi
+        globalMounts:
+          - path: /dev/shm

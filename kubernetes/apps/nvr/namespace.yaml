@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nvr
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+  labels:
+    # Frigate's s6 init runs as uid 0; the commented-out recording volume is an
+    # inline NFS mount. Baseline PSA rejects both.
+    pod-security.kubernetes.io/enforce: privileged
+    # Required for ResourceClaims that set adminAccess: true.
+    resource.kubernetes.io/admin-access: "true"
