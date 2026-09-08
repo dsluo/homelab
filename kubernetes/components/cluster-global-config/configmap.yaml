@@ -6,3 +6,5 @@ metadata:
   name: cluster-global-config
 data:
   DOMAIN: crayon.club
+  # Overwritten per namespace by the replacement in ./kustomization.yaml.
+  NAMESPACE: ""
