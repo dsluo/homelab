@@ -38,9 +38,11 @@ data:
     proxy:
       header_map:
         role: x-forwarded-groups
-      role_map:
-        admin:
-          - frigate-admins
+        # Nested under header_map, not alongside it -- docs.frigate.video shows
+        # the dev layout, where it sits at the proxy level.
+        role_map:
+          admin:
+            - frigate-admins
       # Anything without the header -- i.e. the ungated /api route, which
       # strips it -- is read-only.
       default_role: viewer
