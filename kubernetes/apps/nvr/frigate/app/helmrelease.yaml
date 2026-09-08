@@ -1,0 +1,150 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app frigate
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    controllers:
+      *app :
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          resourceClaims:
+            - name: gpu
+              resourceClaimTemplateName: *app
+          securityContext:
+            # uid 0 is what the image is built for: s6-applyuidgid calls
+            # setgroups(), so every s6-log crash-loops under any other uid
+            # unless that binary is shimmed. Running root here is deliberate --
+            # the kopiur mover is the thing kept unprivileged, via KOPIUR_UID.
+            runAsNonRoot: false
+            # Not for frigate, which is root and ignores it, but for the mover:
+            # it runs as 65534 and can only back up /config if the files frigate
+            # writes carry a group it shares.
+            fsGroup: 65534
+            fsGroupChangePolicy: OnRootMismatch
+        containers:
+          *app :
+            image:
+              repository: ghcr.io/blakeblackshear/frigate
+              tag: 0.17.2
+            env:
+              TZ: America/Detroit
+            # Every key is already named for the {FRIGATE_*} placeholder it
+            # fills in config.yml, so no per-camera mapping is needed.
+            envFrom:
+              - secretRef:
+                  name: frigate-secret
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 5
+            resources:
+              requests:
+                cpu: "2"
+                memory: 2Gi
+              limits:
+                memory: 6Gi
+              claims:
+                - name: gpu
+    service:
+      *app :
+        ports:
+          http:
+            # 8971, never 5000: on 5000 roles aren't enforced and every request
+            # is treated as admin.
+            port: &port 8971
+    route:
+      *app :
+        hostnames:
+          - &host "frigate.${DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+            # Reaching this route means pocket-id already authenticated the
+            # request, so grant the role frigate maps to admin. `set`, not
+            # `add`, so a client-supplied value is overwritten rather than
+            # appended.
+          - filters:
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  set:
+                    - name: &rolehdr x-forwarded-groups
+                      value: &adminrole frigate-admins
+            backendRefs:
+              - identifier: *app
+                port: *port
+      api:
+        # Its own hostname, not a /api path on the main one: routing is
+        # stateless, so a path split would send the UI's own /api calls down
+        # the ungated route and leave a logged-in browser stuck as viewer.
+        # Single-label, because the gateway cert is *.${DOMAIN} and a wildcard
+        # only matches one label.
+        hostnames:
+          - "frigate-api.${DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+            # Load-bearing: frigate trusts this header unconditionally, so
+            # without stripping it anyone who can reach envoy-internal could
+            # send it themselves and get admin on the ungated route.
+          - filters:
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  remove:
+                    - *rolehdr
+            backendRefs:
+              - identifier: *app
+                port: *port
+    persistence:
+      config:
+        existingClaim: *app
+        globalMounts:
+          - path: /config
+      config-file:
+        type: configMap
+        name: frigate-config
+        globalMounts:
+          - path: /config/config.yml
+            subPath: config.yml
+            readOnly: true
+      # Snapshots land here. Bounded emptyDir until recording moves to NFS,
+      # so a runaway can't fill the node's ephemeral storage.
+      media:
+        type: emptyDir
+        sizeLimit: 2Gi
+        globalMounts:
+          - path: /media/frigate
+      # Recording target. Uncomment together with the record blocks in
+      # configmap.yaml, and drop the emptyDir above.
+      # media:
+      #   type: nfs
+      #   server: storage.lan
+      #   path: /mnt/hot
+      #   globalMounts:
+      #     - path: /media/frigate
+      cache:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp/cache
+      # ~3.4 MB per camera at 640x360; 512Mi covers all 16 with room over.
+      dshm:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 512Mi
+        globalMounts:
+          - path: /dev/shm

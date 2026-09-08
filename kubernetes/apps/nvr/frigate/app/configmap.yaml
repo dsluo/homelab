@@ -1,0 +1,362 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frigate-config
+data:
+  config.yml: |
+    ---
+    mqtt:
+      enabled: false # no broker in-cluster; the HA integration works over the API
+
+    detectors:
+      ov:
+        type: openvino
+        device: GPU # the B50, claimed via DRA
+
+    # Bundled with the image, so nothing is downloaded at runtime.
+    model:
+      path: /openvino-model/ssdlite_mobilenet_v2.xml
+      labelmap_path: /openvino-model/coco_91cl_bkgr.txt
+      width: 300
+      height: 300
+      input_tensor: nhwc
+      input_pixel_format: bgr
+
+    # Envoy's OIDC SecurityPolicy is the gate. default_role bounds the
+    # ungated /api route -- anonymous callers get read-only.
+    auth:
+      enabled: false
+    # 8971 ships a self-signed cert by default; without this the gateway would
+    # need a BackendTLSPolicy to trust it. Envoy already terminates TLS.
+    tls:
+      enabled: false
+    # The role arrives from the HTTPRoute filter on the OIDC-gated route, not
+    # from pocket-id: envoy gateway 1.9.1 can't map a claim into a header. No
+    # user mapping for the same reason -- nothing forwards an identity, so
+    # frigate shows everyone as anonymous.
+    proxy:
+      header_map:
+        role: x-forwarded-groups
+        # Nested under header_map, not alongside it -- docs.frigate.video shows
+        # the dev layout, where it sits at the proxy level.
+        role_map:
+          admin:
+            - frigate-admins
+      # Anything without the header -- i.e. the ungated /api route, which
+      # strips it -- is read-only.
+      default_role: viewer
+
+    ffmpeg:
+      # vaapi, not intel-qsv: on the B50 (Battlemage) libva loads iHD fine but
+      # QSV device creation fails with EEXIST -- "Error setting child device
+      # handle: -17". vaapi drives the same renderD128 without that layer.
+      hwaccel_args: preset-vaapi
+
+    detect:
+      enabled: true
+      fps: 5
+      # width/height omitted on purpose: Frigate probes them off the stream,
+      # and the three vendor families have three different sub resolutions.
+
+    objects:
+      track:
+        - person
+
+    snapshots:
+      enabled: true
+
+    # Protect still owns recording. To move it here: uncomment the retention
+    # below, the record input on each camera, and swap the `media` volume in
+    # helmrelease.yaml from emptyDir to NFS.
+    record:
+      enabled: false
+      # continuous:
+      #   days: 0
+      # alerts:
+      #   retain:
+      #     days: 30
+      # detections:
+      #   retain:
+      #     days: 30
+
+    go2rtc:
+      streams:
+        basement1:
+          - rtsp://{FRIGATE_BASEMENT1_USER}:{FRIGATE_BASEMENT1_PASSWORD}@basement1.lan:554/cam/realmonitor?channel=1&subtype=0
+        basement1_sub:
+          - rtsp://{FRIGATE_BASEMENT1_USER}:{FRIGATE_BASEMENT1_PASSWORD}@basement1.lan:554/cam/realmonitor?channel=1&subtype=1
+        basement2:
+          - rtsp://{FRIGATE_BASEMENT2_USER}:{FRIGATE_BASEMENT2_PASSWORD}@basement2.lan:554/cam/realmonitor?channel=1&subtype=0
+        basement2_sub:
+          - rtsp://{FRIGATE_BASEMENT2_USER}:{FRIGATE_BASEMENT2_PASSWORD}@basement2.lan:554/cam/realmonitor?channel=1&subtype=1
+        basement3:
+          - rtsp://{FRIGATE_BASEMENT3_USER}:{FRIGATE_BASEMENT3_PASSWORD}@basement3.lan:554/cam/realmonitor?channel=1&subtype=0
+        basement3_sub:
+          - rtsp://{FRIGATE_BASEMENT3_USER}:{FRIGATE_BASEMENT3_PASSWORD}@basement3.lan:554/cam/realmonitor?channel=1&subtype=1
+        basement4:
+          - rtsp://{FRIGATE_BASEMENT4_USER}:{FRIGATE_BASEMENT4_PASSWORD}@basement4.lan:554/cam/realmonitor?channel=1&subtype=0
+        basement4_sub:
+          - rtsp://{FRIGATE_BASEMENT4_USER}:{FRIGATE_BASEMENT4_PASSWORD}@basement4.lan:554/cam/realmonitor?channel=1&subtype=1
+        basement5:
+          - rtsp://{FRIGATE_BASEMENT5_USER}:{FRIGATE_BASEMENT5_PASSWORD}@basement5.lan:554/ch0
+        basement5_sub:
+          - rtsp://{FRIGATE_BASEMENT5_USER}:{FRIGATE_BASEMENT5_PASSWORD}@basement5.lan:554/ch1
+        basement6:
+          - rtsp://{FRIGATE_BASEMENT6_USER}:{FRIGATE_BASEMENT6_PASSWORD}@basement6.lan:554/ch0
+        basement6_sub:
+          - rtsp://{FRIGATE_BASEMENT6_USER}:{FRIGATE_BASEMENT6_PASSWORD}@basement6.lan:554/ch1
+        kitchen1:
+          - rtsp://{FRIGATE_KITCHEN1_USER}:{FRIGATE_KITCHEN1_PASSWORD}@kitchen1.lan:554/ch0
+        kitchen1_sub:
+          - rtsp://{FRIGATE_KITCHEN1_USER}:{FRIGATE_KITCHEN1_PASSWORD}@kitchen1.lan:554/ch1
+        kitchen2:
+          - rtsp://{FRIGATE_KITCHEN2_USER}:{FRIGATE_KITCHEN2_PASSWORD}@kitchen2.lan:554/ch0
+        kitchen2_sub:
+          - rtsp://{FRIGATE_KITCHEN2_USER}:{FRIGATE_KITCHEN2_PASSWORD}@kitchen2.lan:554/ch1
+        living2:
+          - rtsp://{FRIGATE_LIVING2_USER}:{FRIGATE_LIVING2_PASSWORD}@living2.lan:554/ch0
+        living2_sub:
+          - rtsp://{FRIGATE_LIVING2_USER}:{FRIGATE_LIVING2_PASSWORD}@living2.lan:554/ch1
+        living3:
+          - rtsp://{FRIGATE_LIVING3_USER}:{FRIGATE_LIVING3_PASSWORD}@living3.lan:554/ch0
+        living3_sub:
+          - rtsp://{FRIGATE_LIVING3_USER}:{FRIGATE_LIVING3_PASSWORD}@living3.lan:554/ch1
+        entryway:
+          - rtsp://{FRIGATE_ENTRYWAY_USER}:{FRIGATE_ENTRYWAY_PASSWORD}@entryway.lan:554/ch0
+        entryway_sub:
+          - rtsp://{FRIGATE_ENTRYWAY_USER}:{FRIGATE_ENTRYWAY_PASSWORD}@entryway.lan:554/ch1
+        laundry:
+          - rtsp://{FRIGATE_LAUNDRY_USER}:{FRIGATE_LAUNDRY_PASSWORD}@laundry.lan:554/ch0
+        laundry_sub:
+          - rtsp://{FRIGATE_LAUNDRY_USER}:{FRIGATE_LAUNDRY_PASSWORD}@laundry.lan:554/ch1
+        3dprintercam:
+          - rtsp://{FRIGATE_3DPRINTERCAM_USER}:{FRIGATE_3DPRINTERCAM_PASSWORD}@3dprintercam.lan:554/ch0
+        3dprintercam_sub:
+          - rtsp://{FRIGATE_3DPRINTERCAM_USER}:{FRIGATE_3DPRINTERCAM_PASSWORD}@3dprintercam.lan:554/ch1
+        window-south:
+          - rtsp://{FRIGATE_WINDOW_SOUTH_USER}:{FRIGATE_WINDOW_SOUTH_PASSWORD}@window-south.lan:554/ch0
+        window-south_sub:
+          - rtsp://{FRIGATE_WINDOW_SOUTH_USER}:{FRIGATE_WINDOW_SOUTH_PASSWORD}@window-south.lan:554/ch1
+        office-couch:
+          - rtsp://{FRIGATE_OFFICE_COUCH_USER}:{FRIGATE_OFFICE_COUCH_PASSWORD}@office-couch.lan:554/ch0
+        office-couch_sub:
+          - rtsp://{FRIGATE_OFFICE_COUCH_USER}:{FRIGATE_OFFICE_COUCH_PASSWORD}@office-couch.lan:554/ch1
+        # RTSP, despite frigate documenting http-flv as the reliable path for
+        # Reolink at 5MP and under: the bcs endpoint 4xx's on this doorbell,
+        # while these two probe clean at 2560x1920 and 640x480.
+        doorbell:
+          - rtsp://{FRIGATE_DOORBELL_USER}:{FRIGATE_DOORBELL_PASSWORD}@doorbell.lan:554/h264Preview_01_main
+        doorbell_sub:
+          - rtsp://{FRIGATE_DOORBELL_USER}:{FRIGATE_DOORBELL_PASSWORD}@doorbell.lan:554/h264Preview_01_sub
+
+    cameras:
+      basement1:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/basement1_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/basement1
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: basement1
+            Sub: basement1_sub
+      basement2:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/basement2_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/basement2
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: basement2
+            Sub: basement2_sub
+      basement3:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/basement3_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/basement3
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: basement3
+            Sub: basement3_sub
+      basement4:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/basement4_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/basement4
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: basement4
+            Sub: basement4_sub
+      basement5:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/basement5_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/basement5
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: basement5
+            Sub: basement5_sub
+      basement6:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/basement6_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/basement6
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: basement6
+            Sub: basement6_sub
+      kitchen1:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/kitchen1_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/kitchen1
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: kitchen1
+            Sub: kitchen1_sub
+      kitchen2:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/kitchen2_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/kitchen2
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: kitchen2
+            Sub: kitchen2_sub
+      living2:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/living2_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/living2
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: living2
+            Sub: living2_sub
+      living3:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/living3_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/living3
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: living3
+            Sub: living3_sub
+      entryway:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/entryway_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/entryway
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: entryway
+            Sub: entryway_sub
+      laundry:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/laundry_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/laundry
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: laundry
+            Sub: laundry_sub
+      3dprintercam:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/3dprintercam_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/3dprintercam
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: 3dprintercam
+            Sub: 3dprintercam_sub
+      window-south:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/window-south_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/window-south
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: window-south
+            Sub: window-south_sub
+      office-couch:
+        enabled: false # DISCONNECTED in Protect, no DHCP lease
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/office-couch_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/office-couch
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: office-couch
+            Sub: office-couch_sub
+      doorbell:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/doorbell_sub
+              input_args: preset-rtsp-restream
+              roles: [detect]
+            # - path: rtsp://127.0.0.1:8554/doorbell
+            #   input_args: preset-rtsp-restream
+            #   roles: [record]
+        live:
+          streams:
+            Main: doorbell
+            Sub: doorbell_sub

@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nvr
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+  labels:
+    # Baseline, not restricted: frigate runs as uid 0, and the commented-out
+    # recording volume is an inline NFS mount -- restricted rejects both.
+    # Baseline itself is fine with root, so privileged isn't needed.
+    pod-security.kubernetes.io/enforce: baseline
+    # Required for ResourceClaims that set adminAccess: true.
+    resource.kubernetes.io/admin-access: "true"

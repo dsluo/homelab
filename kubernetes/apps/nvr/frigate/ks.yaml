@@ -1,0 +1,40 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app frigate
+spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
+    - name: pocket-id
+      namespace: security
+    - name: kopiur-repository
+      namespace: kopiur-system
+    - name: intel-gpu-resource-driver
+      namespace: kube-system
+  components:
+    - ../../../../components/oidc/envoy
+    - ../../../../components/kopiur
+  interval: 1h
+  path: ./kubernetes/apps/nvr/frigate/app
+  postBuild:
+    substitute:
+      APP: *app
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/frigate.svg"
+      OIDC_APP_NAME: Frigate
+      # config.yml is a read-only mount, but frigate.db and model_cache/ share
+      # the volume and are what actually grow.
+      KOPIUR_CAPACITY: 10Gi
+      KOPIUR_UID: "65534"
+      KOPIUR_GID: "65534"
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: nvr
+  wait: false

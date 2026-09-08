@@ -1,0 +1,21 @@
+---
+# Without a group naming this client, `allowedUserGroups` is empty and Pocket ID
+# lets any user log in. This is the access boundary.
+#
+# One group, not the usual users/admins pair: envoy gateway 1.9.1 has no
+# claimToHeaders, so it can't map a pocket-id claim into a header frigate's
+# header_map can read. The role instead comes from an HTTPRoute filter on the
+# OIDC-gated route, which can't tell one logged-in user from another -- so
+# everyone who can log in is an admin, and the name says so.
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: frigate-admins
+spec:
+  friendlyName: Frigate Admins
+  allowedOIDCClients:
+    - name: frigate
+  users:
+    userRefs:
+      - name: david
+        namespace: security
