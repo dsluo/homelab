@@ -1,0 +1,38 @@
+---
+# Rendered inside the consuming app's Kustomization: ${APP} resolves there, and
+# targetNamespace places this Kustomization CR in the app's namespace. The key
+# and its Secret land in ai regardless — proxyRef resolves in the proxy's own
+# namespace — so reflector mirrors the Secret back out to
+# ${LITELLM_KEY_NAMESPACES}. For consumers outside the cluster there is no
+# namespace to mirror into; those keys stay hand-written next to the proxy with
+# a PushSecret to 1Password.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ${LITELLM_KEY_APP:=${APP}}-litellm-key
+spec:
+  dependsOn:
+    - name: litellm
+      namespace: ai
+  interval: 1h
+  path: ./kubernetes/components/litellm-key/resources
+  postBuild:
+    substitute:
+      # Overrides the key/alias/Secret name when it differs from the app name.
+      LITELLM_KEY_APP: ${LITELLM_KEY_APP:=${APP}}
+      # Defaults to the app's own namespace, which cluster-global-config
+      # supplies. Comma-separated, so override it to reach further.
+      LITELLM_KEY_NAMESPACES: ${LITELLM_KEY_NAMESPACES:=${NAMESPACE}}
+      LITELLM_KEY_SECRET_KEY: ${LITELLM_KEY_SECRET_KEY:=OPENAI_API_KEY}
+      # Quoted, comma-separated model names, e.g. '"llmkube/*"'. The brackets
+      # live here, not in the caller's value: a scalar that starts with one
+      # cannot round-trip through kustomize unquoted, and Flux rejects a
+      # substitute value that reparses as a list.
+      LITELLM_KEY_MODELS: '[${LITELLM_KEY_MODELS:=}]'
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: true

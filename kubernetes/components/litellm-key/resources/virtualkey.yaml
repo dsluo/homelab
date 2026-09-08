@@ -1,0 +1,15 @@
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: ${LITELLM_KEY_APP}
+spec:
+  proxyRef: litellm
+  keyAlias: ${LITELLM_KEY_APP}
+  secretName: ${LITELLM_KEY_APP}-litellm-key
+  secretKey: ${LITELLM_KEY_SECRET_KEY}
+  secretAnnotations:
+    reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+    reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: ${LITELLM_KEY_NAMESPACES}
+    reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+  models: ${LITELLM_KEY_MODELS}

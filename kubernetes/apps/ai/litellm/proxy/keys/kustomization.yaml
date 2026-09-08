@@ -1,8 +1,10 @@
 ---
+# Keys for consumers outside the cluster, delivered by hand out of 1Password.
+# In-cluster consumers declare their own via ../../../../../components/litellm-key,
+# which reflects the Secret into their namespace instead.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./atuin-ai.yaml
   - ./home-assistant.yaml
   - ./opencode.yaml
   - ./pi.yaml

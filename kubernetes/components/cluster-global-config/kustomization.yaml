@@ -3,3 +3,17 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 resources:
   - ./configmap.yaml
+# Gives every app a ${NAMESPACE} matching the namespace it is deployed into.
+# Sourced from the sibling Namespace, not the ConfigMap's own metadata: a
+# component is accumulated before the parent's `namespace:` transformer runs, so
+# metadata.namespace is still empty here.
+replacements:
+  - source:
+      kind: Namespace
+      fieldPath: metadata.name
+    targets:
+      - select:
+          kind: ConfigMap
+          name: cluster-global-config
+        fieldPaths:
+          - data.NAMESPACE
