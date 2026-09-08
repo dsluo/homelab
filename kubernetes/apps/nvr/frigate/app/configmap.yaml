@@ -37,7 +37,10 @@ data:
       default_role: viewer
 
     ffmpeg:
-      hwaccel_args: preset-intel-qsv-h264 # Arc; fall back to preset-vaapi if ffmpeg errors
+      # vaapi, not intel-qsv: on the B50 (Battlemage) libva loads iHD fine but
+      # QSV device creation fails with EEXIST -- "Error setting child device
+      # handle: -17". vaapi drives the same renderD128 without that layer.
+      hwaccel_args: preset-vaapi
 
     detect:
       enabled: true
