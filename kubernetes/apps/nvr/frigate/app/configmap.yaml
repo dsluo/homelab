@@ -31,9 +31,18 @@ data:
     # need a BackendTLSPolicy to trust it. Envoy already terminates TLS.
     tls:
       enabled: false
+    # The role arrives from the HTTPRoute filter on the OIDC-gated route, not
+    # from pocket-id: envoy gateway 1.9.1 can't map a claim into a header. No
+    # user mapping for the same reason -- nothing forwards an identity, so
+    # frigate shows everyone as anonymous.
     proxy:
       header_map:
-        user: x-forwarded-email
+        role: x-forwarded-groups
+      role_map:
+        admin:
+          - frigate-admins
+      # Anything without the header -- i.e. the ungated /api route, which
+      # strips it -- is read-only.
       default_role: viewer
 
     ffmpeg:

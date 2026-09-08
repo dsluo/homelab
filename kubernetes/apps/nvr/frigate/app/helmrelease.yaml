@@ -74,7 +74,17 @@ spec:
           - name: envoy-internal
             namespace: network
         rules:
-          - backendRefs:
+            # Reaching this route means pocket-id already authenticated the
+            # request, so grant the role frigate maps to admin. `set`, not
+            # `add`, so a client-supplied value is overwritten rather than
+            # appended.
+          - filters:
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  set:
+                    - name: &rolehdr x-forwarded-groups
+                      value: &adminrole frigate-admins
+            backendRefs:
               - identifier: *app
                 port: *port
       api:
@@ -86,7 +96,15 @@ spec:
           - name: envoy-internal
             namespace: network
         rules:
-          - matches:
+            # Load-bearing: frigate trusts this header unconditionally, so
+            # without stripping it anyone who can reach envoy-internal could
+            # send it themselves and get admin on the ungated route.
+          - filters:
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  remove:
+                    - *rolehdr
+            matches:
               - path: { type: PathPrefix, value: /api }
               - path: { type: PathPrefix, value: /ws }
             backendRefs:
