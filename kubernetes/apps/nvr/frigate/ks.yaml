@@ -26,8 +26,8 @@ spec:
       # config.yml is a read-only mount, but frigate.db and model_cache/ share
       # the volume and are what actually grow.
       KOPIUR_CAPACITY: 10Gi
-      KOPIUR_UID: "0"
-      KOPIUR_GID: "0"
+      KOPIUR_UID: "65534"
+      KOPIUR_GID: "65534"
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap

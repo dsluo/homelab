@@ -6,8 +6,9 @@ metadata:
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
   labels:
-    # Frigate's s6 init runs as uid 0; the commented-out recording volume is an
-    # inline NFS mount. Baseline PSA rejects both.
-    pod-security.kubernetes.io/enforce: privileged
+    # Baseline, not restricted: frigate runs as uid 0, and the commented-out
+    # recording volume is an inline NFS mount -- restricted rejects both.
+    # Baseline itself is fine with root, so privileged isn't needed.
+    pod-security.kubernetes.io/enforce: baseline
     # Required for ResourceClaims that set adminAccess: true.
     resource.kubernetes.io/admin-access: "true"

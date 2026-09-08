@@ -19,10 +19,16 @@ spec:
             - name: gpu
               resourceClaimTemplateName: *app
           securityContext:
-            # Frigate's s6 init and nginx expect uid 0. Moving to a dedicated
-            # uid additionally needs S6_CATCHALL_USER, a world-writable /run and
-            # a writable HOME -- deferred until this is proven.
+            # uid 0 is what the image is built for: s6-applyuidgid calls
+            # setgroups(), so every s6-log crash-loops under any other uid
+            # unless that binary is shimmed. Running root here is deliberate --
+            # the kopiur mover is the thing kept unprivileged, via KOPIUR_UID.
             runAsNonRoot: false
+            # Not for frigate, which is root and ignores it, but for the mover:
+            # it runs as 65534 and can only back up /config if the files frigate
+            # writes carry a group it shares.
+            fsGroup: 65534
+            fsGroupChangePolicy: OnRootMismatch
         containers:
           *app :
             image:
