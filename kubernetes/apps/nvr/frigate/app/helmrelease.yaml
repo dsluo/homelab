@@ -88,10 +88,13 @@ spec:
               - identifier: *app
                 port: *port
       api:
-        # Unprotected by the OIDC SecurityPolicy so Home Assistant and the
-        # mobile app can reach the API without a browser login.
+        # Its own hostname, not a /api path on the main one: routing is
+        # stateless, so a path split would send the UI's own /api calls down
+        # the ungated route and leave a logged-in browser stuck as viewer.
+        # Single-label, because the gateway cert is *.${DOMAIN} and a wildcard
+        # only matches one label.
         hostnames:
-          - *host
+          - "frigate-api.${DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network
@@ -104,9 +107,6 @@ spec:
                 requestHeaderModifier:
                   remove:
                     - *rolehdr
-            matches:
-              - path: { type: PathPrefix, value: /api }
-              - path: { type: PathPrefix, value: /ws }
             backendRefs:
               - identifier: *app
                 port: *port
