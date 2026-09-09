@@ -7,7 +7,7 @@ data:
   config.yml: |
     ---
     mqtt:
-      enabled: false # no broker in-cluster; the HA integration works over the API
+      enabled: false # no broker in-cluster
 
     detectors:
       ov:
@@ -23,8 +23,9 @@ data:
       input_tensor: nhwc
       input_pixel_format: bgr
 
-    # Envoy's OIDC SecurityPolicy is the gate. default_role bounds the
-    # ungated /api route -- anonymous callers get read-only.
+    # Envoy's OIDC SecurityPolicy is the only gate: every hostname routed here
+    # carries it. Native auth would silence header_map below -- the two modes
+    # are mutually exclusive in frigate's /auth handler.
     auth:
       enabled: false
     # 8971 ships a self-signed cert by default; without this the gateway would
@@ -43,8 +44,8 @@ data:
         role_map:
           admin:
             - frigate-admins
-      # Anything without the header -- i.e. the ungated /api route, which
-      # strips it -- is read-only.
+      # Nothing should reach frigate without the header now that the ungated
+      # api hostname is gone. Kept as the floor if the route filter regresses.
       default_role: viewer
 
     ffmpeg:
