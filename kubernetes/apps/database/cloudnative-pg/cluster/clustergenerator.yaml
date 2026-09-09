@@ -1,0 +1,14 @@
+---
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: ClusterGenerator
+metadata:
+  name: postgres-password
+spec:
+  kind: Password
+  generator:
+    passwordSpec:
+      length: 32
+      # No symbols: consumers paste this straight into a DSN, where a `@` or `/`
+      # would terminate the userinfo or path component with nowhere to encode it.
+      symbols: 0
+      allowRepeat: true
