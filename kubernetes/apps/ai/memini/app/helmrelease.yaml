@@ -88,6 +88,14 @@ spec:
     persistence:
       data:
         existingClaim: *app
+      # The container's root filesystem is read-only, and ncruces/go-sqlite3
+      # opens SQLite's spill files under $SQLITE_TMPDIR or /tmp — so any query
+      # that sorts to disk (the startup re-embed's namespace listing, `memini
+      # doctor`) dies as "disk I/O error", which is IOERR_GETTEMPPATH.
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
     route:
       ui:
         enabled: true
