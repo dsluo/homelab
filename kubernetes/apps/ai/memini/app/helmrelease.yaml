@@ -33,17 +33,46 @@ spec:
             env:
               MEMINI_BACKEND: sqlite
               MEMINI_LOG_FORMAT: json
-              MEMINI_EMBED_BASE_URL: http://qwen3-embedding-0-6b.ai.svc.cluster.local:8080/v1
-              MEMINI_EMBED_MODEL: Qwen/Qwen3-Embedding-0.6B
+              # Through the proxy rather than the llmkube Services, so this
+              # traffic carries a virtual key and lands in litellm's spend logs.
+              MEMINI_EMBED_BASE_URL: &litellm http://litellm.ai.svc.cluster.local:4000/v1
+              MEMINI_EMBED_MODEL: llmkube/Qwen/Qwen3-Embedding-0.6B
               MEMINI_EMBED_DIMS: "1024"
               MEMINI_EMBED_MAX_CONCURRENCY: "2"
-              MEMINI_RERANK: http://qwen3-reranker-0-6b.ai.svc.cluster.local:8080/v1
-              MEMINI_RERANK_MODEL: Qwen/Qwen3-Reranker-0.6B
+              MEMINI_EMBED_API_KEY: &litellmKey
+                valueFrom:
+                  secretKeyRef:
+                    name: memini-litellm-key
+                    key: OPENAI_API_KEY
+              # A base URL (not "off"/"llm") selects cross-encoder rerank;
+              # memini appends /rerank, which litellm serves.
+              MEMINI_RERANK: *litellm
+              MEMINI_RERANK_MODEL: llmkube/Qwen/Qwen3-Reranker-0.6B
+              MEMINI_RERANK_API_KEY: *litellmKey
+              # The embedding model name is recorded in the store and memini
+              # refuses to boot when it changes. Only the name moved here — the
+              # proxy fronts the same model at the same dims — so let it
+              # re-embed once instead of hand-running `memini reembed`.
+              MEMINI_REEMBED_ON_MODEL_CHANGE: "true"
               MEMINI_API_KEY:
                 valueFrom:
                   secretKeyRef:
                     name: memini-secret
                     key: MEMINI_API_KEY
+            # The chart ships liveness/readiness but no startupProbe, so its
+            # ~50s liveness budget is the whole grace period — too tight for a
+            # boot that re-embeds the store (MEMINI_REEMBED_ON_MODEL_CHANGE
+            # above blocks the listener until it finishes).
+            probes:
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: 8080
+                  periodSeconds: 10
+                  failureThreshold: 90
             resources:
               requests:
                 cpu: 25m
