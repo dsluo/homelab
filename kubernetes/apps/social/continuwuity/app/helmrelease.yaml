@@ -80,6 +80,26 @@ spec:
               CONTINUWUITY_ALLOW_PUBLIC_ROOM_DIRECTORY_OVER_FEDERATION: false
               CONTINUWUITY_LOCKDOWN_PUBLIC_ROOM_DIRECTORY: true
 
+              # --- Delegated authentication (Pocket ID) ---
+              # Setting this section forces oauth.compatibility_mode to
+              # "exclusive" in code: legacy password login stops working for
+              # every client, not just this one.
+              CONTINUWUITY_OAUTH__OIDC__DISCOVERY_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: &oidcSecret continuwuity-oidc-credentials
+                    key: OIDC_ISSUER_URL
+              CONTINUWUITY_OAUTH__OIDC__CLIENT_ID:
+                valueFrom:
+                  secretKeyRef:
+                    name: *oidcSecret
+                    key: OIDC_CLIENT_ID
+              CONTINUWUITY_OAUTH__OIDC__CLIENT_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: *oidcSecret
+                    key: OIDC_CLIENT_SECRET
+
             envFrom:
               - secretRef:
                   name: continuwuity-secret
