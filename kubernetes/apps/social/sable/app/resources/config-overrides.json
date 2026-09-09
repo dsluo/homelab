@@ -1,0 +1,10 @@
+{
+  "defaultHomeserver": 0,
+  "homeserverList": ["${DOMAIN}"],
+  "allowCustomHomeservers": false,
+  "featuredCommunities": {
+    "spaces": [],
+    "rooms": [],
+    "servers": []
+  }
+}
