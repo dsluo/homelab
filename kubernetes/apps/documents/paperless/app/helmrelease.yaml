@@ -95,6 +95,24 @@ spec:
               PAPERLESS_TASK_WORKERS: "2"
               PAPERLESS_WEBSERVER_WORKERS: "2"
 
+              # ai
+              PAPERLESS_AI_ENABLED: "true"
+              PAPERLESS_AI_LLM_BACKEND: openai-like
+              PAPERLESS_AI_LLM_ENDPOINT: &litellm http://litellm.ai.svc.cluster.local:4000/v1
+              PAPERLESS_AI_LLM_MODEL: llmkube/google/gemma-4-12B-it-qat
+              PAPERLESS_AI_LLM_API_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-litellm-key
+                    key: OPENAI_API_KEY
+              PAPERLESS_AI_LLM_CONTEXT_SIZE: "262144"
+              # Default 120s is short for local inference on a long document.
+              PAPERLESS_AI_LLM_REQUEST_TIMEOUT: "300"
+
+              PAPERLESS_AI_LLM_EMBEDDING_BACKEND: openai-like
+              PAPERLESS_AI_LLM_EMBEDDING_ENDPOINT: *litellm
+              PAPERLESS_AI_LLM_EMBEDDING_MODEL: llmkube/Qwen/Qwen3-Embedding-0.6B
+
               # directories
               PAPERLESS_CONSUMPTION_DIR: /data/nas/paperless-ingest
               PAPERLESS_EXPORT_DIR: /data/nas/paperless-export
