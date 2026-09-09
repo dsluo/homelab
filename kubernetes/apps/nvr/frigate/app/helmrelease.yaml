@@ -122,21 +122,14 @@ spec:
           - path: /config/config.yml
             subPath: config.yml
             readOnly: true
-      # Snapshots land here. Bounded emptyDir until recording moves to NFS,
-      # so a runaway can't fill the node's ephemeral storage.
+      # Recordings and snapshots. The export all_squash's to 4011, so the
+      # pod's root uid never reaches the NAS -- ownership there is fixed.
       media:
-        type: emptyDir
-        sizeLimit: 2Gi
+        type: nfs
+        server: storage.lan
+        path: /mnt/hot/nvr
         globalMounts:
           - path: /media/frigate
-      # Recording target. Uncomment together with the record blocks in
-      # configmap.yaml, and drop the emptyDir above.
-      # media:
-      #   type: nfs
-      #   server: storage.lan
-      #   path: /mnt/hot
-      #   globalMounts:
-      #     - path: /media/frigate
       cache:
         type: emptyDir
         globalMounts:
