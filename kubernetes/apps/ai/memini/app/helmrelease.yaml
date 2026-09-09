@@ -72,7 +72,11 @@ spec:
                     path: /healthz
                     port: 8080
                   periodSeconds: 10
-                  failureThreshold: 90
+                  # An hour. The re-embed is not resumable — it redoes every
+                  # namespace and only records the new model name after a
+                  # complete pass — so a probe kill mid-pass crashloops forever
+                  # rather than picking up where it left off.
+                  failureThreshold: 360
             resources:
               requests:
                 cpu: 25m
