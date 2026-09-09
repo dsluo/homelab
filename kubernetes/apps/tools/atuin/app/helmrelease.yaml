@@ -21,22 +21,16 @@ spec:
               tag: 18.21.0@sha256:38c6c323c6d3864250dc345dcf9d41b7a408ee6e33a7cc3cde44b6ffe9f64a02
             args: [start]
             env:
-              DB_USERNAME:
-                valueFrom:
-                  secretKeyRef:
-                    name: atuin-postgres-secret
-                    key: username
-              DB_PASSWORD:
-                valueFrom:
-                  secretKeyRef:
-                    name: atuin-postgres-secret
-                    key: password
               ATUIN_DB_URI:
-                dependsOn: [DB_USERNAME, DB_PASSWORD]
-                value: postgres://$(DB_USERNAME):$(DB_PASSWORD)@postgres-rw.database.svc.cluster.local:5432/atuin
+                valueFrom:
+                  secretKeyRef:
+                    name: atuin-postgres-secret
+                    key: uri
               ATUIN_READ_DB_URI:
-                dependsOn: [DB_USERNAME, DB_PASSWORD]
-                value: postgres://$(DB_USERNAME):$(DB_PASSWORD)@postgres-r.database.svc.cluster.local:5432/atuin
+                valueFrom:
+                  secretKeyRef:
+                    name: atuin-postgres-secret
+                    key: uri_r
               ATUIN_HOST: 0.0.0.0
               ATUIN_PORT: &port 8888
               ATUIN_OPEN_REGISTRATION: "true"
