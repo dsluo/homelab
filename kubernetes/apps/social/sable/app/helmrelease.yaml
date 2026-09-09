@@ -22,7 +22,7 @@ spec:
           reloader.stakater.com/auto: "true"
         containers:
           *app :
-            image:
+            image: &image
               repository: ghcr.io/sableclient/sable
               tag: 1.21.0@sha256:a032868816e77231ba866c287f2addb3dbc27f9c07261543445d810ed9d23c0d
             securityContext:
@@ -49,6 +49,25 @@ spec:
                 spec:
                   <<: *probespec
                   failureThreshold: 30
+        # Sable serves config.json verbatim — it does no merge with built-in
+        # defaults — so the image's own file is seeded and patched in place,
+        # keeping every upstream default in lockstep with the image tag.
+        initContainers:
+          seed-config:
+            image: *image
+            command: ["/bin/sh", "-c"]
+            args: ["cp /app/config.json /config/config.json"]
+          merge-config:
+            dependsOn: [seed-config]
+            image:
+              repository: docker.io/mikefarah/yq
+              tag: 4.53.6@sha256:cfc4eee658595834ef304eadb0c3ea721f3b7cb6404ad8b7cb909cc5b5145b23
+            args:
+              - --inplace
+              - --output-format=json
+              - '. *= load("/overrides/config-overrides.json")'
+              - /config/config.json
+
     service:
       *app :
         ports:
@@ -65,3 +84,25 @@ spec:
           - backendRefs:
               - identifier: *app
                 port: *port
+
+    persistence:
+      config:
+        type: emptyDir
+        advancedMounts:
+          sable:
+            seed-config:
+              - path: /config
+            merge-config:
+              - path: /config
+            sable:
+              - path: /app/config.json
+                subPath: config.json
+                readOnly: true
+      overrides:
+        type: configMap
+        name: sable-config
+        advancedMounts:
+          sable:
+            merge-config:
+              - path: /overrides
+                readOnly: true
