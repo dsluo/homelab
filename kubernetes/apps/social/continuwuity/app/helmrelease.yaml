@@ -63,7 +63,9 @@ spec:
 
               # --- Registration ---
               CONTINUWUITY_ALLOW_REGISTRATION: true
-              CONTINUWUITY_SUSPEND_ON_REGISTER: true
+              # Pocket ID group membership is the gate; suspending on top of it
+              # only strands approved users in a read-only account.
+              CONTINUWUITY_SUSPEND_ON_REGISTER: false
               CONTINUWUITY_NEW_USER_DISPLAYNAME_SUFFIX: ""
 
               # --- Federation & encryption ---
@@ -99,6 +101,8 @@ spec:
                   secretKeyRef:
                     name: *oidcSecret
                     key: OIDC_CLIENT_SECRET
+              # pocket-id only returns the display name under the profile scope.
+              CONTINUWUITY_OAUTH__OIDC__ADDITIONAL_SCOPES: '["profile"]'
 
             envFrom:
               - secretRef:
