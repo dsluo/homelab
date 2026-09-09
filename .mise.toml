@@ -25,7 +25,7 @@ TALOSCONFIG = "{{config_root}}/talos/talosconfig"
 "aqua:cilium/cilium-cli" = "0.20.0"
 "aqua:cloudflare/cloudflared" = "2026.8.3"
 "github:cloudnative-pg/cloudnative-pg" = "1.30.0"
-"github:home-operations/kopiur" = "0.10.7"
+"github:home-operations/kopiur" = "0.10.8"
 "aqua:kopia/kopia" = "0.23.1"
 "aqua:cilium/hubble" = "1.19.4"
 # flux
