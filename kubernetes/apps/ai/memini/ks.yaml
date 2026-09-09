@@ -8,18 +8,21 @@ spec:
   path: ./kubernetes/apps/ai/memini/app
   components:
     - ../../../../components/kopiur
+    - ../../../../components/litellm-key
   dependsOn:
     - name: external-secrets-config
       namespace: external-secrets
     - name: kopiur-repository
       namespace: kopiur-system
     - name: llmkube-models
+    - name: litellm
   postBuild:
     substitute:
       APP: *app
       KOPIUR_CAPACITY: 5Gi
       KOPIUR_UID: "65532"
       KOPIUR_GID: "65532"
+      LITELLM_KEY_MODELS: '"llmkube/Qwen/Qwen3-Embedding-0.6B", "llmkube/Qwen/Qwen3-Reranker-0.6B"'
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
