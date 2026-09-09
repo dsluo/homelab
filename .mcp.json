@@ -47,10 +47,6 @@
     "unifi-network": {
       "type": "stdio",
       "command": "unifi-network-mcp"
-    },
-    "unifi-protect": {
-      "type": "stdio",
-      "command": "unifi-protect-mcp"
     }
   }
 }
