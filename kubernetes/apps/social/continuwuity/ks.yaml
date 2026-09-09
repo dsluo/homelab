@@ -9,13 +9,21 @@ spec:
       namespace: external-secrets
     - name: kopiur-repository
       namespace: kopiur-system
+    - name: pocket-id
+      namespace: security
   components:
     - ../../../../components/kopiur
+    - ../../../../components/oidc
   interval: 1h
   path: ./kubernetes/apps/social/continuwuity/app
   postBuild:
     substitute:
       APP: *app
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/matrix.svg"
+      OIDC_APP_NAME: Matrix
+      SUBDOMAIN: matrix
+      # Continuwuity's own delegated-auth callback, not the component's default.
+      OIDC_CALLBACK_PATH: /_continuwuity/oidc/complete
       KOPIUR_CAPACITY: 5Gi
       KOPIUR_UID: "1001"
       KOPIUR_GID: "1001"

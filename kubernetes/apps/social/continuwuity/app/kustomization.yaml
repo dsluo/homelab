@@ -5,3 +5,15 @@ resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
   - ./externalsecret.yaml
+  - ./usergroup.yaml
+patches:
+  # SUBDOMAIN drives both callbackUrls and launchUrl, and the callback has to
+  # be matrix.${DOMAIN}. Point the Pocket ID tile at the web client instead.
+  - target:
+      group: pocketid.internal
+      version: v1alpha1
+      kind: PocketIDOIDCClient
+    patch: |
+      - op: replace
+        path: /spec/launchUrl
+        value: https://chat.${DOMAIN}

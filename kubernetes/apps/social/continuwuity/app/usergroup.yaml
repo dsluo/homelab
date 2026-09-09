@@ -1,0 +1,12 @@
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: matrix-users
+spec:
+  friendlyName: Matrix Users
+  allowedOIDCClients:
+    - name: continuwuity
+  users:
+    userRefs:
+      - name: david
+        namespace: security
