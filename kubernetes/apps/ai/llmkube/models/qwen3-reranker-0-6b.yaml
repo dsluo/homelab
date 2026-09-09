@@ -37,7 +37,9 @@ spec:
     - Qwen/Qwen3-Reranker-0.6B
   resources:
     cpu: "500m"
-    memory: 1Gi
+    # llama.cpp fits itself to host RAM (63 GiB), not the cgroup, and projects
+    # 1614 MiB here — it OOMKilled on the first rerank at 1Gi.
+    memory: 2Gi
   endpoint:
     port: 8080
     type: ClusterIP

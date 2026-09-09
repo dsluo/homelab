@@ -38,6 +38,11 @@ spec:
   uBatchSize: 4096
   parallelSlots: 2
   extraArgs:
+    # Each pooled prompt saved ~68 MiB of slot state against an 8192 MiB
+    # default ceiling — unbounded next to any limit set below, and embedding a
+    # chunk once has no prefix to reuse.
+    - --cache-ram
+    - "0"
     - --embeddings
     - --pooling
     - last
@@ -45,7 +50,9 @@ spec:
     - Qwen/Qwen3-Embedding-0.6B
   resources:
     cpu: "500m"
-    memory: 2Gi
+    # llama.cpp fits itself to host RAM (63 GiB), not the cgroup: it projects
+    # 2708 MiB here, over the 2Gi this carried before.
+    memory: 4Gi
   endpoint:
     port: 8080
     type: ClusterIP
