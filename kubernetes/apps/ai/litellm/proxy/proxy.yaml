@@ -32,6 +32,11 @@ spec:
   # because it hardcodes both the client-facing model name and an openai/
   # provider prefix the rerank path cannot route.
 
+  # Config wins over the admin UI toggle whenever the key is set here, so this
+  # cannot be flipped from the UI.
+  generalSettings:
+    store_prompts_in_spend_logs: true
+
   env:
     - name: AUTO_REDIRECT_UI_LOGIN_TO_SSO
       value: "true"
