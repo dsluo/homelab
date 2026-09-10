@@ -10,3 +10,8 @@ spec:
   type: inline
   inline:
     issuer: https://pocket-id.${DOMAIN}
+    # CoreDNS rewrites this hostname to pocket-id's ClusterIP, and ToolHive
+    # refuses to fetch OIDC endpoints that resolve to a private address — so
+    # without this it never retrieves the JWKS and rejects every token. Despite
+    # the name it covers discovery and introspection too, not just JWKS.
+    jwksAllowPrivateIP: true
