@@ -1,0 +1,19 @@
+---
+# The frontend proxies /api and /llm-api in-process, so the whole UI is one
+# backend. kguardian ships no auth, so the SecurityPolicy components/oidc/envoy
+# attaches to this route by name is what gates it; the backends behind that
+# proxy are fenced by NetworkPolicy instead, not by this route.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kguardian
+spec:
+  hostnames:
+    - "kguardian.${DOMAIN}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+  rules:
+    - backendRefs:
+        - name: kguardian-frontend
+          port: 5173

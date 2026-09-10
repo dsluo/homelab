@@ -1,0 +1,20 @@
+---
+# Audit-only: the evaluator reports which flows a default-deny ingress rule
+# *would* refuse, and enforces nothing. Without a policy to evaluate against,
+# the evaluator the chart deploys has no work to do and the frontend's Audit
+# panel stays empty.
+apiVersion: kguardian.dev/v1alpha1
+kind: AuditClusterNetworkPolicy
+metadata:
+  name: cluster-baseline-audit
+spec:
+  namespaceSelector:
+    matchExpressions:
+      # kguardian's own components would otherwise drown the signal in their
+      # internal chatter; kube-system is already outside the controller's
+      # capture, so evaluating it would only produce verdicts with no flows.
+      - key: kubernetes.io/metadata.name
+        operator: NotIn
+        values: [kguardian, kube-system]
+  podSelector: {}
+  policyTypes: [Ingress]

@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kguardian
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+  labels:
+    # The controller DaemonSet is a privileged eBPF agent (CAP_BPF, hostPath
+    # onto debugfs/tracefs/the containerd socket); Talos enforces baseline
+    # cluster-wide, which would reject it.
+    pod-security.kubernetes.io/enforce: privileged

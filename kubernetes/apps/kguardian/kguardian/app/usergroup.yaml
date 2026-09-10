@@ -1,0 +1,13 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: kguardian-users
+spec:
+  friendlyName: kguardian Users
+  allowedOIDCClients:
+    - name: kguardian
+  users:
+    userRefs:
+      - name: david
+        namespace: security
