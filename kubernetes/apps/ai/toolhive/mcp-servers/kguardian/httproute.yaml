@@ -11,7 +11,8 @@ spec:
       namespace: network
   rules:
     - backendRefs:
-        # `mcp-<cr name>-proxy`, the operator's naming for both MCPServer and
-        # MCPRemoteProxy.
-        - name: mcp-kguardian-proxy
+        # `mcp-<cr name>-remote-proxy`. An MCPServer gets `mcp-<cr name>-proxy`
+        # instead — the two kinds do not share the suffix. The CR's status.url
+        # names it, which is the only authority worth trusting here.
+        - name: mcp-kguardian-remote-proxy
           port: 8080
