@@ -29,3 +29,12 @@ newapp:
 # Run static migration checks and flate tests
 test:
     flate test all --path kubernetes/flux/cluster --allow-missing-secrets
+
+# Port-forward the kguardian MCP endpoint (/mcp) for local MCP clients.
+kguardian-mcp port="18080":
+    kubectl --namespace kguardian port-forward deploy/kguardian-llm-bridge {{port}}:8080
+
+# Print the kguardian MCP bearer token, for KGUARDIAN_MCP_TOKEN in .env.
+kguardian-mcp-token:
+    @kubectl --namespace kguardian get secret kguardian-mcp-token \
+        -o jsonpath='{.data.token}' | base64 -d
