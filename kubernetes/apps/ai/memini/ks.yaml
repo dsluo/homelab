@@ -7,21 +7,20 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/ai/memini/app
   components:
-    - ../../../../components/kopiur
+    - ../../../../components/database
     - ../../../../components/litellm-key
   dependsOn:
     - name: external-secrets-config
       namespace: external-secrets
-    - name: kopiur-repository
-      namespace: kopiur-system
     - name: llmkube-models
     - name: litellm
   postBuild:
     substitute:
       APP: *app
-      KOPIUR_CAPACITY: 5Gi
-      KOPIUR_UID: "65532"
-      KOPIUR_GID: "65532"
+      # memini's postgres backend is VectorChord, not plain pgvector, and its
+      # own CREATE EXTENSION runs as the unprivileged owner role — so CNPG has
+      # to have created both before the first boot.
+      DB_EXTENSIONS: '[{"name":"vector"},{"name":"vchord"}]'
       LITELLM_KEY_MODELS: '"llmkube/Qwen/Qwen3-Embedding-0.6B", "llmkube/Qwen/Qwen3-Reranker-0.6B"'
     substituteFrom:
       - name: cluster-global-config
