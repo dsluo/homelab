@@ -54,8 +54,8 @@ spec:
       secret: kguardian-litellm-key
 
       # Serves kguardian's tools over MCP at /mcp on llm-bridge's existing port
-      # — no extra workload, and no route: it is reached over
-      # `kubectl port-forward`, which is what the bearer token exists for.
+      # — no extra workload. Reached only through the ToolHive proxy in ai,
+      # which authenticates the user and presents this token upstream.
       mcp:
         enabled: true
         auth:
