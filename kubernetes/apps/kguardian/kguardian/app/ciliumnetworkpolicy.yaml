@@ -1,9 +1,8 @@
 ---
 # The chart's own NetworkPolicy (broker.networkPolicy) covers the broker only,
 # and llm-bridge is the pod holding the LiteLLM virtual key and, at /mcp,
-# cluster telemetry. /mcp is reached either through the ToolHive proxy below or
-# by `kubectl port-forward`, which arrives from the node and is admitted by the
-# host rule rather than by a pod rule.
+# cluster telemetry. This default-deny is what keeps /mcp reachable only through
+# the ToolHive proxy admitted below.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
