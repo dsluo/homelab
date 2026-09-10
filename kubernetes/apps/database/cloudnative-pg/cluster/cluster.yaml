@@ -67,12 +67,16 @@ spec:
           barmanObjectName: garage
           serverName: postgres
 
+  # Headroom for kguardian, whose flow ingest and the autovacuum behind it are
+  # the heaviest tenant here — upstream sizes a kguardian-only Postgres at the
+  # 1Gi this whole cluster used to have. An OOMKill takes every app's database
+  # with it, so the limit is set above observed use rather than at it.
   resources:
     requests:
       cpu: 500m
-      memory: 512Mi
-    limits:
       memory: 1Gi
+    limits:
+      memory: 2Gi
 
   monitoring:
     enablePodMonitor: true
