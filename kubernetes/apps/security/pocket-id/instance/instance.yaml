@@ -12,6 +12,14 @@ spec:
     - name: TZ
       value: America/Detroit
 
+  # Client ID Metadata Documents, which pocket-id implements instead of Dynamic
+  # Client Registration (deprecated in the MCP spec as of 2026-07-28, declined
+  # upstream in pocket-id#1517). A non-empty list is what turns the feature on.
+  # Pinned to the exact document rather than a claude.ai glob: the URL *is* the
+  # client_id, so anything matched here can authenticate as a public client.
+  cimdUrlAllowlist:
+    - "https://claude.ai/oauth/claude-code-client-metadata"
+
   analyticsDisabled: true
 
   encryptionKey:
