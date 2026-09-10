@@ -1,9 +1,9 @@
 ---
 # The chart's own NetworkPolicy (broker.networkPolicy) covers the broker only,
 # and llm-bridge is the pod holding the LiteLLM virtual key and, at /mcp,
-# cluster telemetry. Nothing in-cluster calls /mcp: it is reached by
-# `kubectl port-forward`, which arrives from the node and so is admitted by the
-# host rule below, not by a pod rule.
+# cluster telemetry. /mcp is reached either through the ToolHive proxy below or
+# by `kubectl port-forward`, which arrives from the node and is admitted by the
+# host rule rather than by a pod rule.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -25,3 +25,11 @@ spec:
         - matchLabels:
             io.kubernetes.pod.namespace: kguardian
             app.kubernetes.io/name: kguardian-frontend
+    # The ToolHive remote proxy fronting /mcp. Labels are the operator's own
+    # (`app.kubernetes.io/name` is the kind, not the CR), so the instance label
+    # is what pins this to the kguardian proxy rather than every proxy in ai.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: ai
+            app.kubernetes.io/name: mcpremoteproxy
+            app.kubernetes.io/instance: kguardian

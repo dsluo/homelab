@@ -1,0 +1,13 @@
+---
+# Registers the MCP endpoint as an OAuth resource so pocket-id will stamp its
+# URL into the token's `aud` (RFC 8707) instead of only the issuer — which
+# every pocket-id token carries, and would let any app's token in here.
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDAPI
+metadata:
+  name: kguardian-mcp
+spec:
+  resource: https://kguardian-mcp.${DOMAIN}
+  # Claude Code registers itself from a Client ID Metadata Document, so there is
+  # no PocketIDOIDCClient to hang an apiAccess grant off.
+  cimdAccess: true

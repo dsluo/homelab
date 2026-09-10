@@ -33,10 +33,7 @@
     },
     "kguardian": {
       "type": "http",
-      "url": "http://127.0.0.1:18080/mcp",
-      "headers": {
-        "Authorization": "Bearer ${KGUARDIAN_MCP_TOKEN}"
-      }
+      "url": "https://kguardian-mcp.crayon.club/mcp"
     },
     "konflate": {
       "type": "http",
