@@ -1,0 +1,26 @@
+---
+# The chart's own NetworkPolicy (broker.networkPolicy) covers the broker only,
+# and llm-bridge is the pod holding the LiteLLM virtual key. Hand-written rather
+# than upstreamed here because nothing but the frontend proxy calls it: the MCP
+# endpoint stays off, so there is no cross-namespace caller to parameterise.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: kguardian-llm-bridge
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: kguardian-llm-bridge
+  ingress:
+    # Kubelet probes, as in components/oidc/envoy.
+    - fromEntities:
+        - host
+        - remote-node
+        - kube-apiserver
+        - health
+    # The browser reaches the assistant through the frontend's /llm-api proxy,
+    # never directly, so the gateway needs no rule of its own here.
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kguardian
+            app.kubernetes.io/name: kguardian-frontend

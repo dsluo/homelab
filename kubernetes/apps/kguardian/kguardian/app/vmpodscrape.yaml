@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/operator.victoriametrics.com/vmpodscrape_v1beta1.json
+# A pod scrape, not a service scrape: /metrics shares the broker's API port and
+# all three Services in this release carry the same labels and a port named
+# `http`, so a Service selector cannot single the broker out. (The chart's own
+# broker.metrics.serviceMonitor has the same problem from the other side — it
+# selects on app.kubernetes.io/name, which the Service does not carry.)
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: kguardian-broker
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kguardian-broker
+  podMetricsEndpoints:
+    - port: http
+      path: /metrics

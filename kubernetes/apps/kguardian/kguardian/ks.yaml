@@ -1,0 +1,63 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app kguardian
+spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
+    - name: pocket-id
+      namespace: security
+    - name: litellm
+      namespace: ai
+  components:
+    - ../../../../components/database
+    - ../../../../components/oidc/envoy
+    - ../../../../components/litellm-key
+  interval: 1h
+  path: ./kubernetes/apps/kguardian/kguardian/app
+  postBuild:
+    substitute:
+      APP: *app
+      APP_ICON_URL: "https://raw.githubusercontent.com/kguardian-dev/kguardian/main/docs/logo/light.svg"
+      # The UI is what the SecurityPolicy gates, so components/oidc/envoy's
+      # default-deny has to select it. `app.kubernetes.io/name: kguardian`
+      # would select the controller DaemonSet instead.
+      NETPOL_APP: kguardian-frontend
+      # The chart injects the provider key from this Secret key (llmBridge.secrets.keyName).
+      LITELLM_KEY_SECRET_KEY: api-key
+      # The one model in the proxy that advertises tool calling, which the
+      # assistant needs to reach its own telemetry tools.
+      LITELLM_KEY_MODELS: '"llmkube/google/gemma-4-12B-it-qat"'
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: kguardian
+  wait: false
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: kguardian-audit
+spec:
+  dependsOn:
+    - name: kguardian
+  interval: 1h
+  path: ./kubernetes/apps/kguardian/kguardian/audit
+  prune: true
+  # The CRD is in the chart's crds/, installed by the HelmRelease next door,
+  # and that dependsOn is wait: false — so it orders the apply without
+  # guaranteeing the CRD is established. Retry rather than wait an hour.
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: kguardian
+  wait: false

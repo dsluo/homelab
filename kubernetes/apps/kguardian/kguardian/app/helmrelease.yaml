@@ -1,0 +1,59 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app kguardian
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    # Daily anonymous version check-in to version.kguardian.dev.
+    telemetry:
+      enabled: false
+
+    controller:
+      podAnnotations:
+        reloader.stakater.com/auto: "true"
+
+    broker:
+      podAnnotations:
+        reloader.stakater.com/auto: "true"
+      # Chart defaults are 32 and 16, sized for a dedicated database. This
+      # broker shares one 100-connection cluster with eight other apps, and the
+      # broker refuses a pool below inflightPermits + 8.
+      dbPoolMaxSize: 16
+      audit:
+        inflightPermits: 8
+      # Left off: the controller is hostNetwork, so the policy can only admit it
+      # by node CIDR, and the chart documents that ipBlock as admitting other
+      # in-cluster pods too under Cilium — it would cost the vmagent scrape a
+      # hole in the policy and buy little.
+      networkPolicy:
+        enabled: false
+
+    database:
+      # The shared CNPG cluster, provisioned by components/database in ../ks.yaml.
+      enabled: false
+      user: &db kguardian
+      databaseName: *db
+      existingSecret: kguardian-postgres-secret
+      external:
+        host: postgres-rw.database.svc.cluster.local
+
+    ai:
+      enabled: true
+      provider: openai
+      # kguardian appends the provider's request path to this verbatim, so the
+      # /v1 has to be spelled out.
+      baseUrl: http://litellm.ai.svc.cluster.local:4000/v1
+      model: llmkube/google/gemma-4-12B-it-qat
+      # Minted by components/litellm-key in ../ks.yaml and mirrored in here by
+      # reflector; nothing in this repo creates it directly.
+      secret: kguardian-litellm-key
+
+    llmBridge:
+      podAnnotations:
+        reloader.stakater.com/auto: "true"
+      replicaCount: 1
