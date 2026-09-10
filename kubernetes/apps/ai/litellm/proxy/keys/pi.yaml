@@ -9,7 +9,8 @@ spec:
   secretName: pi-litellm-key
   secretKey: OPENAI_API_KEY
   models:
-    - "llmkube/*"
+    - llmkube/Qwen/Qwen3.8-27B-MTP
+    - llmkube/Qwen/Qwen3.8-Flash-Next
 ---
 apiVersion: external-secrets.io/v1alpha1
 kind: PushSecret
