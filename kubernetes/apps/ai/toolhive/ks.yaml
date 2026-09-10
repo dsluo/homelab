@@ -63,6 +63,10 @@ spec:
     - name: external-secrets-config
       namespace: external-secrets
     - name: toolhive-crds
+    # For the reflected kguardian-mcp-token the remote proxy injects. wait is
+    # false there, so this orders the apply without gating on kguardian health.
+    - name: kguardian
+      namespace: kguardian
   prune: true
   sourceRef:
     kind: GitRepository

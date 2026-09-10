@@ -1,0 +1,12 @@
+---
+# Shared by every OIDC-gated MCP proxy in this namespace: MCPOIDCConfig is
+# namespace-scoped and can only be referenced from `ai`. Per-server values
+# (audience, resourceUrl) live on each proxy's oidcConfigRef, not here.
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPOIDCConfig
+metadata:
+  name: pocket-id
+spec:
+  type: inline
+  inline:
+    issuer: https://pocket-id.${DOMAIN}

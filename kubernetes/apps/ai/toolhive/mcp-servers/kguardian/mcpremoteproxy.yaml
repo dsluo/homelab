@@ -1,0 +1,39 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/toolhive.stacklok.dev/mcpremoteproxy_v1beta1.json
+# A remote proxy, not an MCPServer: kguardian serves MCP in-process from
+# llm-bridge on its existing port, so there is no image for ToolHive to run —
+# only an endpoint to front.
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPRemoteProxy
+metadata:
+  name: kguardian
+spec:
+  remoteUrl: http://kguardian-llm-bridge.kguardian.svc.cluster.local:8080/mcp
+  # Without this the operator refuses a remoteUrl resolving inside the cluster.
+  allowPrivateEndpoint: true
+  proxyPort: 8080
+  oidcConfigRef:
+    name: pocket-id
+    # Matches the PocketIDAPI resource next door; the chart requires this to be
+    # unique per server so a token minted for one MCP cannot be replayed at another.
+    audience: https://kguardian-mcp.${DOMAIN}
+    # The URL clients actually connect to, advertised as RFC 9728 protected
+    # resource metadata. Defaults to the internal Service URL, which no client
+    # outside the cluster can reach.
+    resourceUrl: https://kguardian-mcp.${DOMAIN}
+  headerForward:
+    addHeadersFromSecret:
+      # llm-bridge still checks its own bearer token; the proxy terminates the
+      # user's OIDC and presents this on the upstream hop. Reflected out of the
+      # kguardian namespace, and carries its own `Bearer ` prefix because
+      # ToolHive injects the value raw.
+      - headerName: Authorization
+        valueSecretRef:
+          name: kguardian-mcp-token
+          key: authorization
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      memory: 128Mi
