@@ -30,6 +30,8 @@ TALOSCONFIG = "{{config_root}}/talos/talosconfig"
 # and the CLI's asset is still named after the `advisor` binary it grew out of.
 "github:kguardian-dev/kguardian" = { version = "advisor/v1.9.0", rename_exe = "kubectl-kguardian" }
 "aqua:kopia/kopia" = "0.23.1"
+# No release assets on the repo, so this builds from source rather than aqua/ubi.
+"go:github.com/eleboucher/memini/cmd/memini" = "0.7.23"
 "aqua:cilium/hubble" = "1.19.4"
 # flux
 "aqua:FiloSottile/age" = "1.3.2"
