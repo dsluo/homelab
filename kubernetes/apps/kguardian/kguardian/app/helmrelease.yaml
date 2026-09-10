@@ -53,6 +53,14 @@ spec:
       # reflector; nothing in this repo creates it directly.
       secret: kguardian-litellm-key
 
+      # Serves kguardian's tools over MCP at /mcp on llm-bridge's existing port
+      # — no extra workload, and no route: it is reached over
+      # `kubectl port-forward`, which is what the bearer token exists for.
+      mcp:
+        enabled: true
+        auth:
+          existingSecret: kguardian-mcp-token
+
     llmBridge:
       podAnnotations:
         reloader.stakater.com/auto: "true"

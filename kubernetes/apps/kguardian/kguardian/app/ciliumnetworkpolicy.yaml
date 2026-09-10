@@ -1,8 +1,9 @@
 ---
 # The chart's own NetworkPolicy (broker.networkPolicy) covers the broker only,
-# and llm-bridge is the pod holding the LiteLLM virtual key. Hand-written rather
-# than upstreamed here because nothing but the frontend proxy calls it: the MCP
-# endpoint stays off, so there is no cross-namespace caller to parameterise.
+# and llm-bridge is the pod holding the LiteLLM virtual key and, at /mcp,
+# cluster telemetry. Nothing in-cluster calls /mcp: it is reached by
+# `kubectl port-forward`, which arrives from the node and so is admitted by the
+# host rule below, not by a pod rule.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
