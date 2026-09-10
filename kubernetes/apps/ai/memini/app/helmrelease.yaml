@@ -12,26 +12,28 @@ spec:
     fullnameOverride: *app
     controllers:
       main:
+        # The chart defaults to a StatefulSet for sqlite's PVC; on postgres the
+        # pod holds nothing.
+        type: deployment
         annotations:
           reloader.stakater.com/auto: "true"
         pod:
-          # Pin to the chart's default runtime uid/gid so KOPIUR_UID/GID=65532
-          # (ks.yaml) stays anchored to a real in-repo value and can't drift on a
-          # chart bump. fsGroup remaps restored data on mount as a fallback.
-          # NOTE: this must live under each controller's pod.securityContext, not
-          # defaultPodOptions — the chart ships per-controller securityContext and
-          # defaultPodOptionsStrategy=overwrite, so a defaultPodOptions value would
-          # be silently dropped.
-          securityContext: &podSecurityContext
+          # Per-controller, not defaultPodOptions: the chart ships a
+          # securityContext on its fsck controller with
+          # defaultPodOptionsStrategy=overwrite, so a shared default is dropped.
+          securityContext:
             runAsNonRoot: true
             runAsUser: 65532
             runAsGroup: 65532
-            fsGroup: 65532
-            fsGroupChangePolicy: OnRootMismatch
         containers:
           main:
             env:
-              MEMINI_BACKEND: sqlite
+              MEMINI_BACKEND: postgres
+              MEMINI_POSTGRES_DSN:
+                valueFrom:
+                  secretKeyRef:
+                    name: memini-postgres-secret
+                    key: uri
               MEMINI_LOG_FORMAT: json
               # Through the proxy rather than the llmkube Services, so this
               # traffic carries a virtual key and lands in litellm's spend logs.
@@ -49,11 +51,6 @@ spec:
               MEMINI_RERANK: *litellm
               MEMINI_RERANK_MODEL: llmkube/Qwen/Qwen3-Reranker-0.6B
               MEMINI_RERANK_API_KEY: *litellmKey
-              # The embedding model name is recorded in the store and memini
-              # refuses to boot when it changes. Only the name moved here — the
-              # proxy fronts the same model at the same dims — so let it
-              # re-embed once instead of hand-running `memini reembed`.
-              MEMINI_REEMBED_ON_MODEL_CHANGE: "true"
               MEMINI_API_KEY:
                 valueFrom:
                   secretKeyRef:
@@ -61,8 +58,8 @@ spec:
                     key: MEMINI_API_KEY
             # The chart ships liveness/readiness but no startupProbe, so its
             # ~50s liveness budget is the whole grace period — too tight for a
-            # boot that re-embeds the store (MEMINI_REEMBED_ON_MODEL_CHANGE
-            # above blocks the listener until it finishes).
+            # first boot that has to run the schema migration, which builds the
+            # vchordrq index.
             probes:
               startup:
                 enabled: true
@@ -72,26 +69,17 @@ spec:
                     path: /healthz
                     port: 8080
                   periodSeconds: 10
-                  failureThreshold: 90
+                  failureThreshold: 30
             resources:
               requests:
                 cpu: 25m
                 memory: 128Mi
               limits:
                 memory: 512Mi
-      # The chart's fsck cronjob is disabled by default (not rendered today).
-      # Pre-pin it to the same uid/gid so that if it's ever enabled — it can
-      # touch the RWO PVC — it can't drift from the main pod or restore mover.
-      fsck:
-        pod:
-          securityContext: *podSecurityContext
     persistence:
       data:
-        existingClaim: *app
-      # The container's root filesystem is read-only, and ncruces/go-sqlite3
-      # opens SQLite's spill files under $SQLITE_TMPDIR or /tmp — so any query
-      # that sorts to disk (the startup re-embed's namespace listing, `memini
-      # doctor`) dies as "disk I/O error", which is IOERR_GETTEMPPATH.
+        enabled: false
+      # The chart's container runs with a read-only root filesystem.
       tmp:
         type: emptyDir
         globalMounts:
