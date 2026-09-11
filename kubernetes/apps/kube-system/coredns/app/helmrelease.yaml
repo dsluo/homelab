@@ -44,13 +44,23 @@ spec:
           # dials fine there.
           # - name: autopath
           #   parameters: "@kubernetes"
-          # Split-horizon for the IdP. Without this, in-cluster OIDC clients
-          # resolve pocket-id via k8s-gateway to the envoy-cloudflare VIP, so
-          # every one of them needs an egress rule allowing those gateway pods
-          # — which transitively grants it every route behind that gateway.
-          # Sending the name straight at the Service makes `toServices` on
-          # pocket-id the whole allowance. External resolution is unaffected:
-          # it never passes through here.
+
+          # Split-horizon for the IdP. Every other in-cluster client just puts
+          # the Service name in its config; the issuer cannot, because OIDC
+          # requires one byte-identical URL across the discovery document, the
+          # token's iss claim and the browser redirect — and the redirect has to
+          # be the public name. DNS is the only layer left to intervene at.
+          #
+          # Without this, in-cluster OIDC clients resolve pocket-id via
+          # k8s-gateway to the envoy-cloudflare VIP, so every one of them needs
+          # an egress rule allowing those gateway pods — which transitively
+          # grants it every route behind that gateway. Sending the name straight
+          # at the Service makes `toServices` on pocket-id the whole allowance.
+          # External resolution is unaffected: it never passes through here.
+          #
+          # A rewrite swaps the name, not the port, so this only works because
+          # pocket-id itself answers TLS for this name on 443 — instance.yaml's
+          # tls.secretRef plus the serviceTemplate port. Both must stay.
           #
           # Placement is cosmetic — CoreDNS orders plugins by its own build,
           # and rewrite always runs before kubernetes/forward.
