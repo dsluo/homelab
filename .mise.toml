@@ -23,7 +23,7 @@ TALOSCONFIG = "{{config_root}}/talos/talosconfig"
 "aqua:kubecolor/kubecolor" = "0.7.1"
 # app clis
 "aqua:cilium/cilium-cli" = "0.20.0"
-"aqua:cloudflare/cloudflared" = "2026.9.0"
+"aqua:cloudflare/cloudflared" = "2026.9.1"
 "github:cloudnative-pg/cloudnative-pg" = "1.30.0"
 "github:home-operations/kopiur" = "0.10.8"
 # One repo publishes every kguardian component, each under its own tag prefix,
