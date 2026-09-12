@@ -18,7 +18,7 @@ spec:
           *app :
             image:
               repository: ghcr.io/searxng/searxng
-              tag: 2026.9.10-931fd9787@sha256:2fb0fa85096fe6df5c3ab98ecb4d6e0ee2ef66b8fb96ce6fce0f75b51c4bd90a
+              tag: 2026.9.12-d4f00d15d@sha256:1f3720f59a0361592dc942e4be50e0ebb63c112d915883fcb78a011995fffb47
             env:
               SEARXNG_PORT: &port 8080
               SEARXNG_BASE_URL: https://search.${DOMAIN}
