@@ -9,5 +9,5 @@ spec:
       recordType: CNAME
       targets: ["edge-na.towonel.dev"]
       providerSpecific:
-        - name: external-dns.alpha.kubernetes.io/cloudflare-proxied
+        - name: external-dns.kubernetes.io/cloudflare-proxied
           value: "false"

@@ -46,12 +46,12 @@ kind: Gateway
 metadata:
   name: envoy-cloudflare
   annotations:
-    external-dns.alpha.kubernetes.io/target: cloudflare.${DOMAIN}
+    external-dns.kubernetes.io/target: cloudflare.${DOMAIN}
 spec:
   gatewayClassName: envoy
   infrastructure:
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: cloudflare.${DOMAIN}
+      external-dns.kubernetes.io/hostname: cloudflare.${DOMAIN}
       lbipam.cilium.io/ips: "10.0.42.130"
   listeners:
     - name: http
@@ -76,12 +76,12 @@ kind: Gateway
 metadata:
   name: envoy-internal
   annotations:
-    external-dns.alpha.kubernetes.io/target: internal.${DOMAIN}
+    external-dns.kubernetes.io/target: internal.${DOMAIN}
 spec:
   gatewayClassName: envoy
   infrastructure:
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: internal.${DOMAIN}
+      external-dns.kubernetes.io/hostname: internal.${DOMAIN}
       lbipam.cilium.io/ips: "10.0.42.129"
   listeners:
     - name: http
@@ -109,7 +109,7 @@ metadata:
     # DNS for routes on this gateway is managed by the cloudflare-dns-unproxied
     # external-dns instance (--gateway-name=envoy-towonel), which defaults to
     # DNS-only (no --cloudflare-proxied) so traffic reaches the VPS relay direct.
-    external-dns.alpha.kubernetes.io/target: towonel.${DOMAIN}
+    external-dns.kubernetes.io/target: towonel.${DOMAIN}
 spec:
   gatewayClassName: envoy
   infrastructure:
@@ -193,7 +193,7 @@ kind: HTTPRoute
 metadata:
   name: https-redirect
   annotations:
-    external-dns.alpha.kubernetes.io/controller: none
+    external-dns.kubernetes.io/controller: none
 spec:
   parentRefs:
     - name: envoy-cloudflare
