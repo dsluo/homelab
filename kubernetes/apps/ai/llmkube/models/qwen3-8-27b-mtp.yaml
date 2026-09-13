@@ -106,7 +106,7 @@ spec:
 
   resources:
     cpu: "1"
-    memory: 8Gi
+    memory: 16Gi
     # Request BOTH physical GPUs on talos1 (no time-slicing -- the node
     # advertises exactly nvidia.com/gpu: 2). Holding both is what makes the
     # gpu-preemptible PriorityClass work: a games-on-whales session also needs 2
