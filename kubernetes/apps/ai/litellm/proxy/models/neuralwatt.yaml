@@ -30,6 +30,8 @@ spec:
       name: neuralwatt-api
       key: API_KEY
     additional:
+      allowed_openai_params:
+        - reasoning_effort
       reasoning_effort: high
   info:
     maxInputTokens: 1048576
