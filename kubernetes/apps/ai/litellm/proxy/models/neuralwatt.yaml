@@ -37,3 +37,16 @@ spec:
     maxInputTokens: 1048576
     supportsFunctionCalling: true
     supportsVision: true
+    supportsPromptCaching: true
+    # The provider accepts the full reasoning_effort scale (minimal/medium
+    # collapse to low/high upstream), so pi can offer every thinking level.
+    # No typed CRD field exists for these — info.extra passes them through.
+    extra:
+      supports_reasoning: true
+      supports_none_reasoning_effort: true
+      supports_minimal_reasoning_effort: true
+      supports_low_reasoning_effort: true
+      supports_medium_reasoning_effort: true
+      supports_high_reasoning_effort: true
+      supports_xhigh_reasoning_effort: true
+      supports_max_reasoning_effort: true
