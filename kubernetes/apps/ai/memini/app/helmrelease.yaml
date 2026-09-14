@@ -18,9 +18,6 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         pod:
-          # Per-controller, not defaultPodOptions: the chart ships a
-          # securityContext on its fsck controller with
-          # defaultPodOptionsStrategy=overwrite, so a shared default is dropped.
           securityContext:
             runAsNonRoot: true
             runAsUser: 65532
