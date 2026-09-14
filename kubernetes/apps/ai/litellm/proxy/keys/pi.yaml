@@ -11,6 +11,7 @@ spec:
   models:
     - llmkube/Qwen/Qwen3.8-27B-MTP
     - llmkube/Qwen/Qwen3.8-Flash-Next
+    - neuralwatt/deepseek-v4.1-flash
 ---
 apiVersion: external-secrets.io/v1alpha1
 kind: PushSecret

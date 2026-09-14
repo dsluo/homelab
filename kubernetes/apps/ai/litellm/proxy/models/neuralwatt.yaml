@@ -1,0 +1,37 @@
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: neuralwatt-api
+spec:
+  refreshInterval: 1h
+  refreshPolicy: Periodic
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: onepassword
+  target:
+    name: neuralwatt-api
+    creationPolicy: Owner
+    deletionPolicy: Retain
+  dataFrom:
+    - extract:
+        key: neuralwatt-api
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: neuralwatt-deepseek-v4-1-flash
+spec:
+  modelName: neuralwatt/deepseek-v4.1-flash
+  params:
+    model: openai/deepseek-v4.1-flash
+    apiBase: https://api.neuralwatt.com/v1
+    apiKeyRef:
+      name: neuralwatt-api
+      key: API_KEY
+    additional:
+      reasoning_effort: high
+  info:
+    maxInputTokens: 1048576
+    supportsFunctionCalling: true
+    supportsVision: true
