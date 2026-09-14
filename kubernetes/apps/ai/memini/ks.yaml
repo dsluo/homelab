@@ -7,21 +7,20 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/ai/memini/app
   components:
-    - ../../../../components/kopiur
+    - ../../../../components/database
     - ../../../../components/litellm-key
   dependsOn:
     - name: external-secrets-config
       namespace: external-secrets
-    - name: kopiur-repository
-      namespace: kopiur-system
     - name: llmkube-models
     - name: litellm
   postBuild:
     substitute:
       APP: *app
-      KOPIUR_CAPACITY: 5Gi
-      KOPIUR_UID: "65532"
-      KOPIUR_GID: "65532"
+      # memini's own migration runs CREATE EXTENSION vchord as the unprivileged
+      # owner role, so it only succeeds once CNPG has created it here. Nothing
+      # orders the two — first boot crash-loops until CNPG wins.
+      DB_EXTENSIONS: '[{"name":"vector"},{"name":"vchord"}]'
       LITELLM_KEY_MODELS: '"llmkube/Qwen/Qwen3-Embedding-0.6B", "llmkube/Qwen/Qwen3-Reranker-0.6B"'
     substituteFrom:
       - name: cluster-global-config
