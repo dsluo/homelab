@@ -78,5 +78,21 @@ spec:
     limits:
       memory: 2Gi
 
+  postgresql:
+    # VectorChord (memini's vector store) is an index AM: it has to be preloaded
+    # to be creatable at all, so this is cluster-wide even though one tenant uses
+    # it. The extension image ships only the .so and control file — pgvector,
+    # which vchord builds on, comes from the base image.
+    shared_preload_libraries:
+      - vchord
+    extensions:
+      - name: vchord
+        image:
+          reference: ghcr.io/tensorchord/vchord-scratch:pg18-v1.1.1@sha256:bdea43bed2a414e21bbf71767bf6f0739747ac480b267b51772dc214ac28dcb3
+        dynamic_library_path:
+          - /usr/lib/postgresql/18/lib/
+        extension_control_path:
+          - /usr/share/postgresql/18/
+
   monitoring:
     enablePodMonitor: true
