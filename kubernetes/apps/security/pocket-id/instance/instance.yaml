@@ -19,6 +19,7 @@ spec:
   # client_id, so anything matched here can authenticate as a public client.
   cimdUrlAllowlist:
     - "https://claude.ai/oauth/claude-code-client-metadata"
+    - "https://gist.githack.com/dsluo/688435a31421742fad1220894fc82805/raw/oauth-metadata.json"
 
   analyticsDisabled: true
 

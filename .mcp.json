@@ -33,7 +33,10 @@
     },
     "kguardian": {
       "type": "http",
-      "url": "https://kguardian-mcp.crayon.club/mcp"
+      "url": "https://kguardian-mcp.crayon.club/mcp",
+      "oauth": {
+        "clientMetadataUrl": "https://gist.githack.com/dsluo/688435a31421742fad1220894fc82805/raw/oauth-metadata.json"
+      }
     },
     "konflate": {
       "type": "http",
