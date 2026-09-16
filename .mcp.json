@@ -51,6 +51,15 @@
         "GRAFANA_SERVICE_ACCOUNT_TOKEN": "${GRAFANA_SERVICE_ACCOUNT_TOKEN}"
       }
     },
+    "mikrotik": {
+      "type": "stdio",
+      "command": "mcp-server-mikrotik",
+      "env": {
+        "MIKROTIK_HOST": "${MIKROTIK_HOST}",
+        "MIKROTIK_USERNAME": "${MIKROTIK_USERNAME}",
+        "MIKROTIK_PASSWORD": "${MIKROTIK_PASSWORD}"
+      }
+    },
     "unifi-network": {
       "type": "stdio",
       "command": "unifi-network-mcp"
