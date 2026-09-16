@@ -28,6 +28,7 @@ locals {
     "trunk-native20" = {
       comment = "infra"
       interfaces = [
+        "sfp-sfpplus11", # u7 pro xg
         "sfp-sfpplus21", # sw-util downstream
         "sfp-sfpplus23", # sw-access downstream
         "sfp-sfpplus24", # udm pro upstream
@@ -64,6 +65,7 @@ locals {
     "sfp-sfpplus4"  = "talos0"
     "sfp-sfpplus5"  = "talos1"
     "sfp-sfpplus6"  = "talos1"
+    "sfp-sfpplus11" = "u7 pro xg"
     "sfp-sfpplus20" = "emily-desktop"
     "sfp-sfpplus21" = "sw-util downstream"
     "sfp-sfpplus23" = "sw-access downstream"
