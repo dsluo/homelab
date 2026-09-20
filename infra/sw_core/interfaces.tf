@@ -1,10 +1,22 @@
-# disable auto-negotiation on downstream because
+# disable auto-negotiation on the unifi downstreams because
 # mikrotik <-> unifi switches don't do that properly apparently
+locals {
+  # sfp-sfpplus21 must be 10G: its RJ45 transceiver only drives the SerDes at
+  # 10G, and offering 2.5G links anyway but corrupts ~40% of the frames sw-util
+  # receives. The copper side still negotiates 2.5G to sw-util.
+  downstream_speeds = {
+    "sfp-sfpplus23" = "1G-baseT-full"
+    "sfp-sfpplus21" = "10G-baseSR-LR"
+  }
+}
+
 resource "routeros_interface_ethernet" "downstream" {
-  factory_name     = "sfp-sfpplus23"
-  name             = "sfp-sfpplus23"
+  for_each = local.downstream_speeds
+
+  factory_name     = each.key
+  name             = each.key
   auto_negotiation = false
-  speed            = "1G-baseT-full"
+  speed            = each.value
 }
 
 locals {
