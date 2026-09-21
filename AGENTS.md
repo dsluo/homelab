@@ -11,7 +11,7 @@ The non-obvious, load-bearing choices that shape how changes get made:
 - **CNI**: Cilium, which also replaces kube-proxy
 - **Kubernetes secrets**: External Secrets Operator with the 1Password SDK provider
 - **Bootstrap / IaC secrets**: SOPS + Age for Talos, OpenTofu, and encrypted recovery documents
-- **Infra-as-code**: OpenTofu under `infra/` (MikroTik switch in `infra/sw_core/`, Backblaze B2 in `infra/backblaze/`)
+- **Infra-as-code**: OpenTofu under `infra/` (MikroTik switch in `infra/sw_core/`, Backblaze B2 in `infra/backblaze/`, TrueNAS in `infra/truenas/`)
 - **Dependency updates**: Renovate (auto-merges patch/minor for GitHub Actions and mise tools)
 
 Other tooling is discoverable from the repo: mise (`.mise.toml`), Just (the justfile), and the apps under `kubernetes/apps/` (Envoy Gateway, OpenEBS, kopiur, cert-manager, CloudNative-PG, Victoria Metrics + Grafana, tuppr, etc.).
