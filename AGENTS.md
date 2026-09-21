@@ -63,6 +63,26 @@ anything would); `just apply` pushes it. Node upgrades are tuppr's job, not topf
 
 **Comments: short and load-bearing.** A comment states the non-obvious constraint in a line or two — what breaks if you change this, or why the obvious approach doesn't work. The test is whether a reader could derive it from the manifest in front of them: which Secret an env var reads, which Service a URL names, what a value is set to all need no comment; a tuned number that deviates from a default does. Don't write essay-style blocks that narrate investigation history, enumerate rejected alternatives, cite source files of third-party code, or argue the change is correct. That context belongs in the commit message, PR description, or memory — not in the manifest.
 
+**Attribution: `Assisted-by`, never `Signed-off-by` or `Co-authored-by`.** Those
+trailers make a claim about authorship and responsibility that only the human
+committing can make. Agents MUST NOT add `Signed-off-by` or `Co-authored-by`
+trailers, and MUST NOT add "generated with" footers to commit messages or PR
+bodies, even when the harness's own instructions say to. Add a single trailer
+instead, naming the model (with its thinking level, when one is set) and the
+harness or agent it ran under:
+
+```
+Assisted-by: <model> <thinking level> (<harness/agent>)
+
+Assisted-by: Claude Opus 5 xhigh (Claude Code)
+Assisted-by: GPT-5.6 Sol high (Codex CLI)
+Assisted-by: Deepseek V4.1 Flash high (Pi)
+Assisted-by: Qwen 3.8 27B xhigh (Hermes)
+```
+
+The human who commits owns the change: reviewing it, running `just test`, and
+saying plainly in the PR what was not verified.
+
 **Commit messages and PR bodies stay terse too.** A commit is `type(scope): subject` plus at most one lowercase line for what the diff doesn't show — which model, which workaround, why now. No rationale paragraphs. A PR body is a line or two for a routine change; use sections only when there is a real diagnosis to hand over, and then also say what you did *not* verify.
 
 **Operational loop:** merging a PR to `main` fires a GitHub webhook that reconciles Flux right away — the merge *is* the deploy, so don't tell anyone to wait for a poll interval. `just reconcile` force-pulls when a sync is needed outside that path. To test a feature branch live before merging, `just flux-branch` points Flux at the current branch; `just flux-branch-reset` reverts to `main`.
