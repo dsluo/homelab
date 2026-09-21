@@ -8,8 +8,10 @@
 
 resource "truenas_dataset" "scans" {
   name = "${truenas_pool.flash.name}/scans"
-  # The only dataset here not inheriting the pool default.
-  acltype = "NFSV4"
+  # The only dataset here not inheriting the pool default. Lowercase: the
+  # provider reads acltype back lowercased, and a case mismatch forces
+  # replacement rather than an in-place update.
+  acltype = "nfsv4"
 
   lifecycle {
     prevent_destroy = true

@@ -36,7 +36,9 @@ resource "truenas_pool" "hot" {
   autotrim = false
 
   topology = {
-    data = [{ type = "DISK", disks = ["sdg"] }]
+    # STRIPE, not DISK: pool.query reports a single-disk vdev as DISK, but the
+    # provider reads it back as STRIPE, and topology changes force replacement.
+    data = [{ type = "STRIPE", disks = ["sdg"] }]
   }
 
   lifecycle {
