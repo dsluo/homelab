@@ -1,21 +1,6 @@
-# Adoption of the existing box. Pools and datasets import by name/path, shares
-# and tasks by the numeric id the middleware assigned. Delete this file once the
-# first apply has seeded state.
-
-import {
-  to = truenas_pool.flash
-  id = "flash"
-}
-
-import {
-  to = truenas_pool.warm
-  id = "warm"
-}
-
-import {
-  to = truenas_pool.hot
-  id = "hot"
-}
+# Adoption of the existing box. Datasets import by path, shares and tasks by the
+# numeric id the middleware assigned. Pools are not here: they are read-only data
+# sources, see pools.tf. Delete this file once the first apply has seeded state.
 
 import {
   to = truenas_dataset.scans

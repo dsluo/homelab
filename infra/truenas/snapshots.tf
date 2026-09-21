@@ -5,7 +5,7 @@
 # The provider's schedule attribute has no equivalent, so that stays on the box.
 
 resource "truenas_periodic_snapshot_task" "warm" {
-  dataset        = truenas_pool.warm.name
+  dataset        = data.truenas_pool.warm.name
   recursive      = true
   enabled        = true
   allow_empty    = true
@@ -23,7 +23,7 @@ resource "truenas_periodic_snapshot_task" "warm" {
 }
 
 resource "truenas_periodic_snapshot_task" "flash" {
-  dataset        = truenas_pool.flash.name
+  dataset        = data.truenas_pool.flash.name
   recursive      = true
   enabled        = true
   allow_empty    = true
