@@ -3,7 +3,7 @@
 # "00" on the other two); normalising them would show as a diff.
 
 resource "truenas_scrub_task" "flash" {
-  pool      = data.truenas_pool.flash.id
+  pool      = truenas_pool.flash.id
   enabled   = true
   threshold = 35
 
@@ -17,7 +17,7 @@ resource "truenas_scrub_task" "flash" {
 }
 
 resource "truenas_scrub_task" "warm" {
-  pool      = data.truenas_pool.warm.id
+  pool      = truenas_pool.warm.id
   enabled   = true
   threshold = 35
 
@@ -31,7 +31,7 @@ resource "truenas_scrub_task" "warm" {
 }
 
 resource "truenas_scrub_task" "hot" {
-  pool      = data.truenas_pool.hot.id
+  pool      = truenas_pool.hot.id
   enabled   = true
   threshold = 35
 
