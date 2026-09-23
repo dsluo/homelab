@@ -2,7 +2,7 @@ terraform {
   required_providers {
     truenas = {
       source  = "truenas/truenas"
-      version = "1.0.11"
+      version = "1.1.0"
     }
   }
 }
