@@ -1,0 +1,22 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: esphome-builder
+spec:
+  dependsOn:
+    - name: kopiur-repository
+      namespace: kopiur-system
+  interval: 1h
+  path: ./kubernetes/apps/esphome-builder/esphome-builder/app
+  postBuild:
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: esphome-builder
+  wait: false

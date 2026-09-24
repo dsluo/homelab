@@ -1,0 +1,122 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app esphome-builder
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    controllers:
+      *app :
+        type: statefulset
+        # One per esphome-builder=true node; add a receiver-N Service when raising.
+        replicas: 2
+        statefulset:
+          # An unpaired receiver exits and restarts every 15m; OrderedReady would
+          # hold the other ordinal back through each restart.
+          podManagementPolicy: Parallel
+          volumeClaimTemplates:
+            - name: state
+              labels:
+                backup: *app
+              accessMode: ReadWriteOnce
+              size: 1Gi
+              storageClass: openebs-zfspv
+              dataSourceRef:
+                apiGroup: kopiur.home-operations.com
+                kind: Restore
+                name: *app
+              globalMounts:
+                - path: /config
+        pod:
+          nodeSelector:
+            esphome-builder: "true"
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: *app
+                  topologyKey: kubernetes.io/hostname
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+        containers:
+          *app :
+            image:
+              repository: ghcr.io/esphome/esphome
+              tag: 2026.9.0@sha256:f6509fcf917a732fd80058567b237d5b9286b9dc6c8dde1b655fbb69ebd600ad
+            # The image entrypoint hands `dashboard` args to esphome-device-builder.
+            args: ["dashboard", "--remote-build-only", "/config"]
+            env:
+              TZ: America/Detroit
+              # The image's HOME (/root) and its baked-in `pio settings` are root-only.
+              HOME: /config/.esphome/home
+              PLATFORMIO_SETTING_ENABLE_TELEMETRY: "No"
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: &port 6055
+                  periodSeconds: 30
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: "2"
+                memory: 2Gi
+                ephemeral-storage: 50Gi
+              limits:
+                # ESP-IDF builds run one compiler per host core (32 on talos1).
+                memory: 16Gi
+
+    service:
+      receiver-0: &receiver
+        controller: *app
+        type: LoadBalancer
+        externalTrafficPolicy: Cluster
+        annotations: &annotations
+          # Keeps HA's source IP, which the receiver stores for connect-back.
+          # Only takes effect at Service creation.
+          service.cilium.io/forwarding-mode: dsr
+          lbipam.cilium.io/ips: 10.0.42.140
+          coredns.io/hostname: "esphome-builder-0.${DOMAIN}"
+        extraSelectorLabels:
+          statefulset.kubernetes.io/pod-name: esphome-builder-0
+        ports:
+          peer-link:
+            port: *port
+      receiver-1:
+        <<: *receiver
+        annotations:
+          <<: *annotations
+          lbipam.cilium.io/ips: 10.0.42.141
+          coredns.io/hostname: "esphome-builder-1.${DOMAIN}"
+        extraSelectorLabels:
+          statefulset.kubernetes.io/pod-name: esphome-builder-1
+
+    persistence:
+      # Builds, per-version ESPHome venvs and toolchains; disposable.
+      cache:
+        type: emptyDir
+        sizeLimit: 50Gi
+        globalMounts:
+          - path: /config/.esphome
+      tmp:
+        type: emptyDir
+        sizeLimit: 5Gi
+        globalMounts:
+          - path: /tmp
