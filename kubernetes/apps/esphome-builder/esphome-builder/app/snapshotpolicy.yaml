@@ -29,5 +29,4 @@ spec:
         labelSelector:
           matchLabels:
             backup: esphome-builder
-      sourcePathStrategy: PvcName
   volumeSnapshotClassName: openebs-zfs-snapshot
