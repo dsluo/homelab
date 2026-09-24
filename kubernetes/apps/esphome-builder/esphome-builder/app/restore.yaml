@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/restore_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: Restore
+metadata:
+  name: esphome-builder
+spec:
+  credentialProjection:
+    enabled: true
+  mover:
+    podSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+  policy:
+    onMissingSnapshot: Continue
+  source:
+    fromPolicy:
+      name: esphome-builder
+      offset: 0
+  target:
+    populator: {}

@@ -1,0 +1,6 @@
+---
+# Selects nodes for the ESPHome remote-build receivers (kubernetes/apps/esphome-builder).
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+labels:
+  esphome-builder: "true"
