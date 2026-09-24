@@ -185,3 +185,24 @@ spec:
           - path: *db
       tmp:
         type: emptyDir
+
+    externalSecrets:
+      *app :
+        refreshInterval: 1h
+        refreshPolicy: Periodic
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        target:
+          name: continuwuity-secret
+          creationPolicy: Owner
+          deletionPolicy: Retain
+          template:
+            type: Opaque
+            mergePolicy: Replace
+            data:
+              CONTINUWUITY_REGISTRATION_TOKEN: '{{ index . "CONTINUWUITY_REGISTRATION_TOKEN" }}'
+              CONTINUWUITY_TURN_SECRET: '{{ index . "CONTINUWUITY_TURN_SECRET" }}'
+        dataFrom:
+          - extract:
+              key: k8s-social-continuwuity-secret

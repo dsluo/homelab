@@ -128,3 +128,24 @@ spec:
             subPath: logs
           - path: /scripts
             subPath: scripts
+
+    externalSecrets:
+      *app :
+        refreshInterval: 1h
+        refreshPolicy: Periodic
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        target:
+          name: sabnzbd-secret
+          creationPolicy: Owner
+          deletionPolicy: Retain
+          template:
+            type: Opaque
+            mergePolicy: Replace
+            data:
+              api_key: '{{ index . "api_key" }}'
+              nzb_key: '{{ index . "nzb_key" }}'
+        dataFrom:
+          - extract:
+              key: k8s-media-sabnzbd-secret
