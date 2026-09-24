@@ -4,8 +4,8 @@
 # from `midclt call disk.query '[]' '{"select": ["name", "serial"]}'`.
 #
 # Mirror members are listed in the order pool.query returns them. prevent_destroy
-# is belt-and-braces: 1.0.11 already refuses to plan a pool replacement, but it
-# does not stop an explicit destroy or -replace.
+# is belt-and-braces: the provider already refuses to plan a pool replacement, but
+# that does not stop an explicit destroy or -replace.
 
 resource "truenas_pool" "flash" {
   name     = "flash"
@@ -42,8 +42,8 @@ resource "truenas_pool" "hot" {
   name     = "hot"
   autotrim = false
 
-  # Single-disk vdev. pool.query spells this "DISK"; 1.0.9 accepts it as an alias
-  # for "STRIPE", so either reads back clean.
+  # Single-disk vdev. pool.query spells this "DISK"; the provider accepts it as
+  # an alias for "STRIPE", so either reads back clean.
   topology = {
     data = [
       { type = "STRIPE", disks = ["5PGW3H7E"] },
