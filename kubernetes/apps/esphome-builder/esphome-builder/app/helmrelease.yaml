@@ -86,7 +86,10 @@ spec:
         controller: *app
         type: LoadBalancer
         externalTrafficPolicy: Cluster
-        annotations:
+        annotations: &annotations
+          # Keeps HA's source IP, which the receiver stores for connect-back.
+          # Only takes effect at Service creation.
+          service.cilium.io/forwarding-mode: dsr
           lbipam.cilium.io/ips: 10.0.42.140
           coredns.io/hostname: "esphome-builder-0.${DOMAIN}"
         extraSelectorLabels:
@@ -97,6 +100,7 @@ spec:
       receiver-1:
         <<: *receiver
         annotations:
+          <<: *annotations
           lbipam.cilium.io/ips: 10.0.42.141
           coredns.io/hostname: "esphome-builder-1.${DOMAIN}"
         extraSelectorLabels:

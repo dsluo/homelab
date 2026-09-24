@@ -46,7 +46,9 @@ uses manual entry.
   `nslookup esphome-builder-0.<domain>` from the HA host.
 - Optional: a receiver that hasn't heard from HA for 5 minutes tries to dial
   back to HA's last-known IP. This only helps when HA's IP changes, and it can
-  stay blocked.
+  stay blocked. The Services use Cilium DSR so the receiver sees HA's real
+  IP. `forwarding-mode` only applies at Service creation, so after changing it,
+  delete the Service and let Flux recreate it.
 
 ## Pairing
 
