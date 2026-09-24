@@ -46,4 +46,4 @@ TALOSCONFIG = "{{config_root}}/talos/talosconfig"
 # ai/mcp
 "github:grafana/mcp-grafana" = "1.5.1"
 "pipx:unifi-network-mcp" = "0.32.10"
-"pipx:mcp-server-mikrotik" = "0.22.0.0"
+"pipx:mcp-server-mikrotik" = "0.23.0.0"
