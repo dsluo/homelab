@@ -2,8 +2,8 @@
 # mikrotik <-> unifi switches don't do that properly apparently
 locals {
   # sfp-sfpplus21 must be 10G: its RJ45 transceiver only drives the SerDes at
-  # 10G, and offering 2.5G links anyway but corrupts ~40% of the frames sw-util
-  # receives. The copper side still negotiates 2.5G to sw-util.
+  # 10G, and offering 2.5G links anyway but corrupts ~40% of received frames.
+  # The copper side still negotiates 2.5G to the device.
   downstream_speeds = {
     "sfp-sfpplus23" = "1G-baseT-full"
     "sfp-sfpplus21" = "10G-baseSR-LR"
@@ -33,6 +33,7 @@ locals {
       comment = "clients"
       interfaces = [
         "sfp-sfpplus20", # emily-desktop
+        "sfp-sfpplus21", # david-macbook
       ]
       vlan  = 10
       trunk = false
@@ -41,7 +42,6 @@ locals {
       comment = "infra"
       interfaces = [
         "sfp-sfpplus11", # u7 pro xg
-        "sfp-sfpplus21", # sw-util downstream
         "sfp-sfpplus23", # sw-access downstream
         "sfp-sfpplus24", # udm pro upstream
       ]
@@ -79,7 +79,7 @@ locals {
     "sfp-sfpplus6"  = "talos1"
     "sfp-sfpplus11" = "u7 pro xg"
     "sfp-sfpplus20" = "emily-desktop"
-    "sfp-sfpplus21" = "sw-util downstream"
+    "sfp-sfpplus21" = "david-macbook"
     "sfp-sfpplus23" = "sw-access downstream"
     "sfp-sfpplus24" = "udm pro upstream"
   }
