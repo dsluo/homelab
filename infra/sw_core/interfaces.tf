@@ -29,7 +29,6 @@ locals {
       comment = "clients"
       interfaces = [
         "sfp-sfpplus20", # emily-desktop
-        "sfp-sfpplus21", # david-macbook
       ]
       vlan  = 10
       trunk = false
@@ -75,7 +74,6 @@ locals {
     "sfp-sfpplus6"  = "talos1"
     "sfp-sfpplus11" = "u7 pro xg"
     "sfp-sfpplus20" = "emily-desktop"
-    "sfp-sfpplus21" = "david-macbook"
     "sfp-sfpplus23" = "sw-access downstream"
     "sfp-sfpplus24" = "udm pro upstream"
   }
