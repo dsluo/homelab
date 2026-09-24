@@ -16,8 +16,8 @@ spec:
         # One per esphome-builder=true node; add a receiver-N Service when raising.
         replicas: 2
         statefulset:
-          # An unpaired receiver exits after its 15m pairing window; OrderedReady
-          # would hold the other ordinal back until it is paired.
+          # An unpaired receiver exits and restarts every 15m; OrderedReady would
+          # hold the other ordinal back through each restart.
           podManagementPolicy: Parallel
           volumeClaimTemplates:
             - name: state
