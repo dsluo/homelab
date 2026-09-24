@@ -79,7 +79,8 @@ spec:
                 cpu: "2"
                 memory: 2Gi
               limits:
-                memory: 6Gi
+                # ESP-IDF builds run one compiler per host core (32 on talos1).
+                memory: 16Gi
 
     service:
       receiver-0: &receiver
