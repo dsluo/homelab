@@ -14,7 +14,7 @@ spec:
       # Sandbox the whole pod with gVisor: untrusted/injected agent code runs
       # against a userspace kernel, not the host kernel. Requires the
       # siderolabs/gvisor extension + user.max_user_namespaces>0 on talos1
-      # (see talos/talconfig.yaml).
+      # (talos/schematics/talos1.yaml, talos/patches/node/talos1/04-sysctls.yaml).
       runtimeClassName: gvisor
       # The agent has no business talking to the kube-API.
       automountServiceAccountToken: false

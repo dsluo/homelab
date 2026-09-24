@@ -138,7 +138,8 @@ Unlike openclaw, there is **no separate ephemeral cache mount** — see
 
 ## Node prerequisites
 
-Unchanged from openclaw — `talos/talconfig.yaml` already carries both, so if
+Unchanged from openclaw — `talos/schematics/talos1.yaml` and
+`talos/patches/node/talos1/04-sysctls.yaml` already carry both, so if
 openclaw ever ran on this cluster there is nothing to do. On a cluster rebuild,
 talos1 needs:
 
