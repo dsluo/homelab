@@ -121,3 +121,23 @@ spec:
             subPath: tmp
           - path: /config/logs
             subPath: logs
+
+    externalSecrets:
+      *app :
+        refreshInterval: 1h
+        refreshPolicy: Periodic
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        target:
+          name: radarr-secret
+          creationPolicy: Owner
+          deletionPolicy: Retain
+          template:
+            type: Opaque
+            mergePolicy: Replace
+            data:
+              api_key: '{{ index . "api_key" }}'
+        dataFrom:
+          - extract:
+              key: k8s-media-radarr-secret

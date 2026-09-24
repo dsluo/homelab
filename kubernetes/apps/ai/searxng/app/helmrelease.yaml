@@ -107,3 +107,23 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /tmp
+
+    externalSecrets:
+      *app :
+        refreshInterval: 1h
+        refreshPolicy: Periodic
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        target:
+          name: searxng-secret
+          creationPolicy: Owner
+          deletionPolicy: Retain
+          template:
+            type: Opaque
+            mergePolicy: Replace
+            data:
+              SEARXNG_SECRET: '{{ index . "SEARXNG_SECRET" }}'
+        dataFrom:
+          - extract:
+              key: k8s-ai-searxng-secret

@@ -98,3 +98,23 @@ spec:
             subPath: cache
           - path: /config/log
             subPath: log
+
+    externalSecrets:
+      *app :
+        refreshInterval: 1h
+        refreshPolicy: Periodic
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        target:
+          name: bazarr-secret
+          creationPolicy: Owner
+          deletionPolicy: Retain
+          template:
+            type: Opaque
+            mergePolicy: Replace
+            data:
+              password: '{{ index . "password" }}'
+        dataFrom:
+          - extract:
+              key: k8s-media-bazarr-secret

@@ -90,3 +90,23 @@ spec:
         globalMounts:
           - path: /etc/cloudflared/config.yaml
             subPath: config.yaml
+
+    externalSecrets:
+      cloudflare-tunnel:
+        refreshInterval: 1h
+        refreshPolicy: Periodic
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        target:
+          name: cloudflare-tunnel-secret
+          creationPolicy: Owner
+          deletionPolicy: Retain
+          template:
+            type: Opaque
+            mergePolicy: Replace
+            data:
+              TUNNEL_TOKEN: '{{ index . "TUNNEL_TOKEN" }}'
+        dataFrom:
+          - extract:
+              key: k8s-network-cloudflare-tunnel-secret

@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
-  - ./externalsecret.yaml
   - ./usergroup.yaml
 patches:
   # SUBDOMAIN drives both callbackUrls and launchUrl, and the callback has to

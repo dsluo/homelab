@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
-  - ./externalsecret.yaml
 configMapGenerator:
   - name: atuin-ai-config
     files:
