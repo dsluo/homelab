@@ -1,12 +1,8 @@
 # disable auto-negotiation on the unifi downstreams because
 # mikrotik <-> unifi switches don't do that properly apparently
 locals {
-  # sfp-sfpplus21 must be 10G: its RJ45 transceiver only drives the SerDes at
-  # 10G, and offering 2.5G links anyway but corrupts ~40% of received frames.
-  # The copper side still negotiates 2.5G to the device.
   downstream_speeds = {
     "sfp-sfpplus23" = "1G-baseT-full"
-    "sfp-sfpplus21" = "10G-baseSR-LR"
   }
 }
 
