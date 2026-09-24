@@ -78,6 +78,7 @@ spec:
               requests:
                 cpu: "2"
                 memory: 2Gi
+                ephemeral-storage: 50Gi
               limits:
                 # ESP-IDF builds run one compiler per host core (32 on talos1).
                 memory: 16Gi
@@ -111,10 +112,11 @@ spec:
       # Builds, per-version ESPHome venvs and toolchains; disposable.
       cache:
         type: emptyDir
-        sizeLimit: 20Gi
+        sizeLimit: 50Gi
         globalMounts:
           - path: /config/.esphome
       tmp:
         type: emptyDir
+        sizeLimit: 5Gi
         globalMounts:
           - path: /tmp
