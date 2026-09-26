@@ -18,7 +18,10 @@ spec:
     # flow instead of two. See README.md "Authentication".
     - ../../../../components/oidc
     - ../../../../components/kopiur
+    - ../../../../components/litellm-key
   dependsOn:
+    - name: litellm
+      namespace: ai
     - name: external-secrets-config
       namespace: external-secrets
     - name: pocket-id
@@ -49,6 +52,7 @@ spec:
       # restored data volume is unreadable to the gateway.
       KOPIUR_UID: "10000"
       KOPIUR_GID: "10000"
+      LITELLM_KEY_MODELS: '"llmkube/Qwen/Qwen3.8-27B-MTP", "llmkube/Qwen/Qwen3.8-Flash-Next", "neuralwatt/deepseek-v4.1-flash"'
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap

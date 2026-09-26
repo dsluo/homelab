@@ -93,6 +93,13 @@ spec:
                   secretKeyRef:
                     name: hermes-oidc-credentials
                     key: OIDC_CLIENT_SECRET
+              # Not OPENAI_API_KEY: Hermes' TTS/STT/mem0 plugins would send that
+              # to api.openai.com. resources/config.yaml names this via key_env.
+              LITELLM_API_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: hermes-litellm-key
+                    key: OPENAI_API_KEY
               # Tells s6's preinit that / is read-only, so it accepts the
               # pre-mounted /run emptyDir as-is instead of trying to create a
               # tmpfs there (which needs CAP_SYS_ADMIN we don't have).
@@ -187,6 +194,12 @@ spec:
         existingClaim: *app
         globalMounts:
           - path: /opt/data
+      managed-config:
+        type: configMap
+        name: hermes-managed-config
+        globalMounts:
+          - path: /etc/hermes
+            readOnly: true
       # s6-overlay stages its supervision tree (/run/service, /run/s6) here;
       # with a read-only rootfs it has nowhere else to go. Tiny (service dirs,
       # pidfiles, a few sockets), so cap it — an unbounded memory emptyDir is
