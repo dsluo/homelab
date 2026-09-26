@@ -37,13 +37,14 @@ for what actually changed.
   See [Authentication](#authentication).
 - **Pinned to `talos1`** (worker, has the gVisor extension); never the
   control-plane / GPU host `talos0`.
-- **Egress is default-deny** (`app/networkpolicy.yaml`): cluster DNS, two named
-  in-cluster services via Cilium `toServices` (`svc/litellm` in `ai`, and
-  `svc/pocket-id` in `security` for the dashboard's own OIDC — see below), and
+- **Egress is default-deny** (`app/networkpolicy.yaml`): cluster DNS, three named
+  in-cluster services via Cilium `toServices` (`svc/litellm` and `svc/searxng`
+  in `ai`, and `svc/pocket-id` in `security` for the dashboard's own OIDC —
+  see below), and
   the *public* internet (private / link-local CIDRs excluded). kube-apiserver,
   the rest of the LAN, and every other namespace/service are unreachable — the
-  models, memini, and the MCP servers included. Anything in-cluster the agent
-  gets, it gets through the LiteLLM proxy.
+  models, memini, and the MCP servers included. Models the agent
+  gets, it gets through the LiteLLM proxy; web search goes through SearXNG.
 
   Note the IdP is reached at its *Service*, not through the gateway that fronts
   it. That depends on the cluster-wide CoreDNS rewrite of

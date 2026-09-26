@@ -1,7 +1,7 @@
 ---
 # Default-deny egress for hermes. The pod runs untrusted / prompt-injected
 # agent code (gVisor-sandboxed), so this is the control that contains a
-# breakout: the pod may reach DNS, Pocket-ID, the LiteLLM proxy, and the
+# breakout: the pod may reach DNS, Pocket-ID, the LiteLLM proxy, SearXNG, and the
 # public internet, but NOT the Kubernetes API, the rest of the LAN, or other
 # in-cluster services.
 #
@@ -66,6 +66,10 @@ spec:
         - k8sService:
             serviceName: pocket-id
             namespace: security
+        # SearXNG, for Hermes' web_search backend (SEARXNG_URL).
+        - k8sService:
+            serviceName: searxng
+            namespace: ai
     # Public internet only. NOTE: Cilium's `world` entity also covers RFC1918
     # LAN hosts (the MikroTik at 10.0.42.1, other homelab devices), so we use a
     # CIDR allow that explicitly excludes private + link-local ranges. This
