@@ -41,6 +41,8 @@ spec:
     - /bin/sh
     - -c
     # cuda0 is the 3090 Ti (CUDA orders fastest first); the 3070 sits idle.
+    # --lora-model-dir defaults to ".", i.e. /, and scanning /proc 500s every
+    # /sdcpp/v1/capabilities call; point it at a path that does not exist.
     - |
       while [ "$#" -gt 0 ] && [ "$1" != --model ]; do shift; done
       d=$(dirname "$(dirname "$2")")
@@ -48,6 +50,7 @@ spec:
         --diffusion-model "$d/diffusion_models/qwen_image_2.1_int8_convrot.safetensors" \
         --llm "$d/text_encoders/qwen3vl_8b_bf16.safetensors" \
         --vae "$d/vae/qwen_image_2.1_vae_bf16.safetensors" \
+        --lora-model-dir /models/loras \
         --backend cuda0 --offload-to-cpu --diffusion-fa -v
     - sd-server
   probeOverrides:
