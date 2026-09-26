@@ -34,7 +34,7 @@ spec:
       skip_org_role_sync: "false"
       role_attribute_path: "contains(groups[*], 'grafana-admins') && 'Admin' || contains(groups[*], 'grafana-editors') && 'Editor' || 'Viewer'"
     date_formats:
-      default_timezone: America/Detroit
+      default_timezone: "${TIMEZONE}"
     log:
       mode: console
     metrics:

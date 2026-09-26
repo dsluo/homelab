@@ -35,7 +35,7 @@ spec:
               repository: ghcr.io/blakeblackshear/frigate
               tag: 0.18.0
             env:
-              TZ: America/Detroit
+              TZ: "${TIMEZONE}"
             # Every key is already named for the {FRIGATE_*} placeholder it
             # fills in config.yml, so no per-camera mapping is needed.
             envFrom:

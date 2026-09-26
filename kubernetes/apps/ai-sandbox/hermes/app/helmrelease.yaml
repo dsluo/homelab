@@ -67,7 +67,7 @@ spec:
               - gateway
               - run
             env:
-              TZ: "${CONFIG_TZ:=Etc/UTC}"
+              TZ: "${TIMEZONE}"
               # The web dashboard is the Control-UI analogue and the only surface
               # we expose. It runs as a supervised s6 service alongside the
               # gateway; without this the service is registered but stays down.

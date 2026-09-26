@@ -35,4 +35,4 @@ spec:
     # local time instead of the implicit controller default (UTC). Snapshot
     # crons are hourly (`H * * * *`), so this shifts nothing there; keep
     # daily crons' intended wall-clock time in mind when editing them.
-    timezone: America/New_York
+    timezone: "${TIMEZONE}"
