@@ -7,6 +7,7 @@ resources:
   - ./gemma-4-12b-qat.yaml
   - ./qwen3-8-27b-mtp.yaml
   - ./qwen3-8-flash-next.yaml
+  - ./qwen-image-2-1.yaml
   - ./qwen3-embedding-0-6b.yaml
   - ./qwen3-reranker-0-6b.yaml
   - ./modelpool.yaml

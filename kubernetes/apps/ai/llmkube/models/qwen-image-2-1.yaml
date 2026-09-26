@@ -1,0 +1,82 @@
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: Model
+metadata:
+  name: qwen-image-2-1
+spec:
+  source: https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/main
+  sourceSecretRef:
+    name: llmkube-hf-secret
+  files:
+    - diffusion_models/qwen_image_2.1_int8_convrot.safetensors
+    # Carries the Qwen3-VL vision tower, so edits need no separate mmproj.
+    - text_encoders/qwen3vl_8b_int8_convrot.safetensors
+    - vae/qwen_image_2.1_vae_bf16.safetensors
+  format: safetensors
+  quantization: int8_convrot
+  hardware:
+    accelerator: cuda
+    gpu:
+      enabled: true
+      count: 2
+      vendor: nvidia
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: InferenceService
+metadata:
+  name: qwen-image-2-1
+spec:
+  modelRef: qwen-image-2-1
+  runtime: generic
+  image: ghcr.io/leejet/stable-diffusion.cpp:master-cuda@sha256:4fbe41d95d1727c2dc77d9cdbff82f5492977c93c017b300e4bbdaffb4ef6418
+  runtimeClassName: nvidia
+  # Pool member: the ModelPool owns replicas. The router only proxies chat,
+  # embeddings and rerank, so swap this in with a chat request naming it.
+  priorityClassName: gpu-preemptible
+  command:
+    - /sd-server
+  containerPort: 8080
+  # generic passes no model paths; the cache dir is sha256(spec.source)[:16].
+  args:
+    - --listen-ip
+    - 0.0.0.0
+    - --listen-port
+    - "8080"
+    - --diffusion-model
+    - /models/79aa8c84871f88b3/diffusion_models/qwen_image_2.1_int8_convrot.safetensors
+    - --llm
+    - /models/79aa8c84871f88b3/text_encoders/qwen3vl_8b_int8_convrot.safetensors
+    - --vae
+    - /models/79aa8c84871f88b3/vae/qwen_image_2.1_vae_bf16.safetensors
+    # cuda0 is the 3090 Ti (CUDA orders fastest first); the 3070 sits idle.
+    - --backend
+    - cuda0
+    - --offload-to-cpu
+    - --diffusion-fa
+    - -v
+  probeOverrides:
+    startup:
+      httpGet:
+        path: /v1/models
+        port: 8080
+      periodSeconds: 10
+      failureThreshold: 60
+    readiness:
+      httpGet:
+        path: /v1/models
+        port: 8080
+      periodSeconds: 10
+    liveness:
+      httpGet:
+        path: /v1/models
+        port: 8080
+      periodSeconds: 15
+  resources:
+    cpu: "1"
+    # --offload-to-cpu parks all ~16 GiB of weights in RAM between stages.
+    memory: 24Gi
+    # Both GPUs, like the LLM members: requesting one could land on the 3070.
+    gpu: 2
+  endpoint:
+    port: 8080
+    type: ClusterIP
