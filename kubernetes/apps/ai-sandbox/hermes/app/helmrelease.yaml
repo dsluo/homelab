@@ -100,6 +100,8 @@ spec:
                   secretKeyRef:
                     name: hermes-litellm-key
                     key: OPENAI_API_KEY
+              # Fully qualified for the same ndots:1 reason as the LiteLLM base_url.
+              SEARXNG_URL: http://searxng.ai.svc.cluster.local:8080
               # Tells s6's preinit that / is read-only, so it accepts the
               # pre-mounted /run emptyDir as-is instead of trying to create a
               # tmpfs there (which needs CAP_SYS_ADMIN we don't have).
