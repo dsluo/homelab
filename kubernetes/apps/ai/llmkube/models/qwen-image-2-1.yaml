@@ -27,33 +27,28 @@ metadata:
   name: qwen-image-2-1
 spec:
   modelRef: qwen-image-2-1
-  runtime: generic
+  # llamacpp, not generic: only llamacpp/vllm/sglang stage weights into
+  # /models. The shell drops the llama-server args llmkube appends, using only
+  # --model (files[0]) to find the staged directory.
+  runtime: llamacpp
   image: ghcr.io/leejet/stable-diffusion.cpp:master-cuda@sha256:4fbe41d95d1727c2dc77d9cdbff82f5492977c93c017b300e4bbdaffb4ef6418
   runtimeClassName: nvidia
   # Pool member: the ModelPool owns replicas. The router only proxies chat,
   # embeddings and rerank, so swap this in with a chat request naming it.
   priorityClassName: gpu-preemptible
   command:
-    - /sd-server
-  containerPort: 8080
-  # generic passes no model paths; the cache dir is sha256(spec.source)[:16].
-  args:
-    - --listen-ip
-    - 0.0.0.0
-    - --listen-port
-    - "8080"
-    - --diffusion-model
-    - /models/79aa8c84871f88b3/diffusion_models/qwen_image_2.1_int8_convrot.safetensors
-    - --llm
-    - /models/79aa8c84871f88b3/text_encoders/qwen3vl_8b_int8_convrot.safetensors
-    - --vae
-    - /models/79aa8c84871f88b3/vae/qwen_image_2.1_vae_bf16.safetensors
+    - /bin/sh
+    - -c
     # cuda0 is the 3090 Ti (CUDA orders fastest first); the 3070 sits idle.
-    - --backend
-    - cuda0
-    - --offload-to-cpu
-    - --diffusion-fa
-    - -v
+    - |
+      while [ "$#" -gt 0 ] && [ "$1" != --model ]; do shift; done
+      d=$(dirname "$(dirname "$2")")
+      exec /sd-server --listen-ip 0.0.0.0 --listen-port 8080 \
+        --diffusion-model "$d/diffusion_models/qwen_image_2.1_int8_convrot.safetensors" \
+        --llm "$d/text_encoders/qwen3vl_8b_int8_convrot.safetensors" \
+        --vae "$d/vae/qwen_image_2.1_vae_bf16.safetensors" \
+        --backend cuda0 --offload-to-cpu --diffusion-fa -v
+    - sd-server
   probeOverrides:
     startup:
       httpGet:
