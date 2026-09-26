@@ -1,10 +1,8 @@
 # Hermes managed scope (/etc/hermes): deep-merged over the user's config.yaml
-# on every load and stripped on save, so these leaves are pinned while
-# model.default and everything else stay editable from the dashboard.
-model:
-  provider: custom
-  # Fully qualified: the pod runs ndots:1 and `litellm.ai` is a public domain.
-  base_url: http://litellm.ai.svc.cluster.local:4000/v1
-  key_env: LITELLM_API_KEY
-  # model.api_key outranks key_env, so blank any key hand-set before this existed.
-  api_key: ""
+# on every load and stripped on save. Only the named provider is pinned, so
+# model.provider stays free to pick litellm or any other provider per model.
+providers:
+  litellm:
+    # Fully qualified: the pod runs ndots:1 and `litellm.ai` is a public domain.
+    base_url: http://litellm.ai.svc.cluster.local:4000/v1
+    key_env: LITELLM_API_KEY
