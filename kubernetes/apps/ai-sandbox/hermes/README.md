@@ -173,31 +173,24 @@ kubectl -n ai-sandbox exec -it deploy/hermes -- hermes setup
 ```
 
 The dashboard is at `https://hermes.${DOMAIN}/`, behind a Pocket-ID
-login. To point the agent at an in-cluster model instead of an external
-provider, go through LiteLLM — the model services themselves are not reachable
-from the sandbox:
+login.
+
+The model endpoint is wired up declaratively: the `litellm-key` component
+mints a `hermes` virtual key (models listed in `ks.yaml`), reflector mirrors it
+in as `hermes-litellm-key`, and `app/resources/config.yaml` is mounted at
+`/etc/hermes`, Hermes' *managed scope*. That layer is deep-merged over the
+PVC's `config.yaml` on every load and stripped on save, so `model.provider`,
+`base_url`, `key_env` and `api_key` are pinned there while `model.default`
+stays user-selectable. Pick the model once from the dashboard or:
 
 ```sh
-kubectl -n ai-sandbox exec -it deploy/hermes -- sh -c '
-  hermes config set model.provider custom
-  hermes config set model.default qwen3-8-27b-mtp
-  hermes config set model.base_url http://litellm.ai.svc.cluster.local:4000/v1
-  hermes config set model.api_key sk-...
-  hermes config set model.context_length 262144
-'
+kubectl -n ai-sandbox exec -it deploy/hermes -- hermes config set model.default llmkube/Qwen/Qwen3.8-27B-MTP
 ```
 
-Use the **fully qualified** name. `http://litellm.ai:4000/v1` — the short form
-used elsewhere in this repo — is a trap here: the pod runs `ndots: 1`, so a
-name containing a dot resolves as absolute first, and `litellm.ai` is a real
-public domain. The egress policy drops it (public egress is 443/80 only), so it
-fails rather than leaks, but confusingly.
-
-Unlike llama.cpp, LiteLLM validates `api_key`, so it needs a real virtual key.
-Note this is a one-shot exec against the PVC rather than openclaw's every-boot
-config-patch script: Hermes persists config properly and doesn't rewrite it out
-from under us, so the self-healing patch loop openclaw needed isn't warranted
-here.
+The base URL is **fully qualified** on purpose. `http://litellm.ai:4000/v1`,
+the short form used elsewhere in this repo, is a trap here: the pod runs
+`ndots: 1`, so a name containing a dot resolves as absolute first, and
+`litellm.ai` is a real public domain.
 
 > **Unattended gateways should enable tool-loop hard stops.**
 > `tool_loop_guardrails.hard_stop_enabled` defaults to `false`, which only makes
@@ -293,7 +286,7 @@ Can't be verified from manifests:
       `kubectl -n network get pods -l gateway.envoyproxy.io/owning-gateway-name=envoy-cloudflare`
       should be non-empty.
 - [ ] **NetworkPolicy selects the pod** (`app.kubernetes.io/name: hermes`).
-- [ ] Agent can reach the in-cluster LLM (`ai` :8080) and the public internet.
+- [ ] Agent can reach LiteLLM (`ai` :4000) with the minted key, and the public internet.
 - [ ] Negative check: from inside the pod, kube-apiserver and a LAN host
       (e.g. 10.0.42.1) are **unreachable**; DNS still resolves; and
       `pocket-id.${DOMAIN}` IS reachable.

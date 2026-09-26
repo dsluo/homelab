@@ -6,3 +6,9 @@ resources:
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
   - ./runtimeclass.yaml
+configMapGenerator:
+  - name: hermes-managed-config
+    files:
+      - ./resources/config.yaml
+generatorOptions:
+  disableNameSuffixHash: true
