@@ -40,7 +40,7 @@ spec:
                 drop: ["ALL"]
             env:
               # --- Runtime ---
-              TZ: "America/Detroit"
+              TZ: "${TIMEZONE}"
               CONTINUWUITY_CONFIG_RELOAD_SIGNAL: true
               CONTINUWUITY_ALLOW_ANNOUNCEMENTS_CHECK: true
               CONTINUWUITY_ADDRESS:

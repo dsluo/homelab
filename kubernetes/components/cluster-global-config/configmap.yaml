@@ -6,5 +6,6 @@ metadata:
   name: cluster-global-config
 data:
   DOMAIN: crayon.club
+  TIMEZONE: America/Detroit
   # Overwritten per namespace by the replacement in ./kustomization.yaml.
   NAMESPACE: ""

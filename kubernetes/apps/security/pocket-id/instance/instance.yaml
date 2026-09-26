@@ -10,7 +10,7 @@ spec:
   versionCheckDisabled: true
   env:
     - name: TZ
-      value: America/Detroit
+      value: "${TIMEZONE}"
 
   # Client ID Metadata Documents, which pocket-id implements instead of Dynamic
   # Client Registration (deprecated in the MCP spec as of 2026-07-28, declined

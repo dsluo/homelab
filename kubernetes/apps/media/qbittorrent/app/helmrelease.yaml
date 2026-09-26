@@ -89,7 +89,7 @@ spec:
               tag: 5.2.3@sha256:4fcf15b7f265c2c8d7bc2a7e13240a07e0593c326f3cf3b5b9bb69eec5b79299
             env:
               QBT_WEBUI_PORT: &port 8080
-              TZ: America/Detroit
+              TZ: "${TIMEZONE}"
             securityContext: &ctx
               runAsNonRoot: true
               runAsUser: 4005

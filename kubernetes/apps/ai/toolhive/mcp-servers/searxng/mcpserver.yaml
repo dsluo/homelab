@@ -10,7 +10,7 @@ spec:
   proxyPort: 8080
   env:
     - name: TZ
-      value: America/Detroit
+      value: "${TIMEZONE}"
     - name: SEARXNG_URL
       value: http://searxng.ai.svc.cluster.local:8080
     - name: MCP_HTTP_PORT
