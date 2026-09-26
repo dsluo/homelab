@@ -175,16 +175,20 @@ kubectl -n ai-sandbox exec -it deploy/hermes -- hermes setup
 The dashboard is at `https://hermes.${DOMAIN}/`, behind a Pocket-ID
 login.
 
-The model endpoint is wired up declaratively: the `litellm-key` component
-mints a `hermes` virtual key (models listed in `ks.yaml`), reflector mirrors it
-in as `hermes-litellm-key`, and `app/resources/config.yaml` is mounted at
+LiteLLM is wired up declaratively: the `litellm-key` component mints a
+`hermes` virtual key (models listed in `ks.yaml`), reflector mirrors it in as
+`hermes-litellm-key`, and `app/resources/config.yaml` is mounted at
 `/etc/hermes`, Hermes' *managed scope*. That layer is deep-merged over the
-PVC's `config.yaml` on every load and stripped on save, so `model.provider`,
-`base_url`, `key_env` and `api_key` are pinned there while `model.default`
-stays user-selectable. Pick the model once from the dashboard or:
+PVC's `config.yaml` on every load and stripped on save. It pins only a named
+`providers.litellm` entry, so the main model's provider stays user-selectable:
+use `litellm` for the in-cluster models and any other provider (keys via
+`hermes setup`, stored in the PVC's `.env`) for the rest.
 
 ```sh
-kubectl -n ai-sandbox exec -it deploy/hermes -- hermes config set model.default llmkube/Qwen/Qwen3.8-27B-MTP
+kubectl -n ai-sandbox exec -it deploy/hermes -- sh -c '
+  hermes config set model.provider litellm
+  hermes config set model.default llmkube/Qwen/Qwen3.8-27B-MTP
+'
 ```
 
 The base URL is **fully qualified** on purpose. `http://litellm.ai:4000/v1`,
