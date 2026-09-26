@@ -1,8 +1,12 @@
 # Hermes managed scope (/etc/hermes): deep-merged over the user's config.yaml
-# on every load and stripped on save. Only the named provider is pinned, so
-# model.provider stays free to pick litellm or any other provider per model.
+# on every load and stripped on save. model.* is left alone, so model.provider
+# stays free to pick litellm or any other provider per model.
 providers:
   litellm:
     # Fully qualified: the pod runs ndots:1 and `litellm.ai` is a public domain.
     base_url: http://litellm.ai.svc.cluster.local:4000/v1
     key_env: LITELLM_API_KEY
+web:
+  # SearXNG is search-only; left to autodetect, it also wins web_extract and fails it.
+  search_backend: searxng
+  extract_backend: firecrawl
