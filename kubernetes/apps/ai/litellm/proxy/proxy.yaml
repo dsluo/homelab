@@ -36,6 +36,9 @@ spec:
   # cannot be flipped from the UI.
   generalSettings:
     store_prompts_in_spend_logs: true
+    # Admin is SSO via PROXY_ADMIN_ID; with UI_PASSWORD unset the master key
+    # would otherwise also work as a /ui admin password.
+    disable_env_credential_login: true
 
   env:
     - name: AUTO_REDIRECT_UI_LOGIN_TO_SSO
