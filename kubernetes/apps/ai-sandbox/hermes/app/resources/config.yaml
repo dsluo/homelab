@@ -10,3 +10,9 @@ web:
   # SearXNG is search-only; left to autodetect, it also wins web_extract and fails it.
   search_backend: searxng
   extract_backend: firecrawl
+dashboard:
+  # Pod CIDR (Envoy's IP is dynamic), so X-Forwarded-Proto is honoured. Else it sees
+  # http, sets the PKCE cookie SameSite=Lax, and the browser drops it on the
+  # OIDC redirect chain ("Missing PKCE state cookie").
+  trusted_proxies:
+    - 10.244.0.0/16
