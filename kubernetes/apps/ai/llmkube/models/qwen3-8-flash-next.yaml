@@ -235,10 +235,11 @@ spec:
     # are mmap'd page cache and the container's real anonymous footprint is
     # ~2.4 GiB. This request exists to soft-reserve page cache -- it is the only
     # thing stopping the scheduler from packing talos1 with pods that would
-    # evict the model and push it back to cold-load speeds. 50Gi is near the
-    # most that still schedules (62893Mi allocatable, ~8 GB requested by
-    # everything else).
-    memory: 50Gi
+    # evict the model and push it back to cold-load speeds. Sized to the ~30 GB
+    # of densely-read CPU-side experts; the n-gram table is sparse and can page.
+    # Everything else on talos1 requests ~21Gi of 62893Mi, so 50Gi no longer
+    # schedules.
+    memory: 36Gi
     gpu: 2
 
   endpoint:
