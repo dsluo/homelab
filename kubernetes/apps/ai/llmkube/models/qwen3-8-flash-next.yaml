@@ -183,6 +183,9 @@ spec:
     # Auto-fit mis-sizes this architecture and fails to allocate.
     - -fit
     - "off"
+    # Drafts from n-grams already in context: no draft model, no VRAM.
+    - --spec-type
+    - ngram-mod
     # Unsloth's thinking-mode preset for this model, unmodified.
     - --temp
     - "1.0"
