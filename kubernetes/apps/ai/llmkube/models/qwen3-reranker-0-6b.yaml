@@ -25,6 +25,9 @@ spec:
   runtime: llamacpp
   image: ghcr.io/ggml-org/llama.cpp:server-b9628@sha256:d0b7bce18e8f1bd9cfa8a455ea184cedae513ddfacded7fa41182fa31d9c4aa9
   replicas: 1
+  # CPU-only; kept off talos1 so its RAM goes to flash-next's CPU-side experts.
+  nodeSelector:
+    kubernetes.io/hostname: talos0
   contextSize: 8192
   parallelSlots: 4
   # --reranking + --pooling rank exposes the Cohere-style /v1/rerank endpoint
