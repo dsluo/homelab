@@ -240,6 +240,10 @@ spec:
     # Everything else on talos1 requests ~21Gi of 62893Mi, so 50Gi no longer
     # schedules.
     memory: 36Gi
+    # mmap'd weights are charged to this cgroup, so a limit at the request
+    # evicts the model's own experts and halves throughput. Page cache over
+    # the request is reclaimable, not an OOM risk.
+    memoryLimit: 56Gi
     gpu: 2
 
   endpoint:
