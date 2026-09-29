@@ -7,15 +7,47 @@ spec:
   # Sharded GGUF: source is a repo PREFIX and files[] selects the shards, with
   # files[0] handed to llama.cpp (it discovers the siblings itself). The prefix
   # ends at resolve/main so prefix + "/" + entry is a valid HF download URL.
-  source: https://huggingface.co/unsloth/Qwen3.8-Flash-Next-GGUF/resolve/main
+  source: https://huggingface.co/AtomicChat/Qwen3.8-Flash-Next-GGUF/resolve/main
   sourceSecretRef:
     name: llmkube-hf-secret
+  # Shard 00002 holds only the 38.4 GB n-gram table (per_layer_token_embd).
+  # It is read ~3 MB/s at random and must stay mmap'd, never resident.
   files:
-    - UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
-    - UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
-    - UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00001-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00002-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00003-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00004-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00005-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00006-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00007-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00008-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00009-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00010-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00011-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00012-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00013-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00014-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00015-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00016-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00017-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00018-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00019-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00020-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00021-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00022-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00023-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00024-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00025-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00026-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00027-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00028-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00029-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00030-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00031-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00032-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00033-of-00033.gguf
   format: gguf
-  quantization: UD-IQ4_XS
+  quantization: AD-4.27bpw-Q4_K_M
   hardware:
     accelerator: cuda
     gpu:
@@ -106,7 +138,8 @@ spec:
   moeCPULayers: 32
   # NOT the "ple_ngram_embd" name upstream discussion uses — this GGUF calls the
   # 51B per-layer embedding table per_layer_token_embd, and a regex that misses
-  # it puts 28.8 GB back on the GPU.
+  # it put 28.8 GB back on the GPU under unsloth's build. Atomic's README says
+  # the table lands on host unaided; kept explicit until that is confirmed here.
   tensorOverrides:
     - per_layer_token_embd=CPU
 
@@ -147,6 +180,9 @@ spec:
   extraArgs:
     - --alias
     - Qwen/Qwen3.8-Flash-Next
+    # Auto-fit mis-sizes this architecture and fails to allocate.
+    - -fit
+    - "off"
     # Unsloth's thinking-mode preset for this model, unmodified.
     - --temp
     - "1.0"
