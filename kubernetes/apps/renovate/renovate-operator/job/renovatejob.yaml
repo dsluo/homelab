@@ -5,7 +5,7 @@ metadata:
   name: renovate
 spec:
   schedule: "0 * * * *"
-  image: ghcr.io/renovatebot/renovate:44.116.1@sha256:5df12b8646d3fae87c5a0f1db5f580f24542fe1b7309425762eefcd89e259882
+  image: ghcr.io/renovatebot/renovate:44.117.2@sha256:5e9ea3e65b3e8e7c0caf813214ed0705827433b7ea19e65f697083cca3a9c0e7
   parallelism: 2
   provider:
     name: github
