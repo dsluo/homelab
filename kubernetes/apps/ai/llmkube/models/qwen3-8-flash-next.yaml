@@ -7,15 +7,47 @@ spec:
   # Sharded GGUF: source is a repo PREFIX and files[] selects the shards, with
   # files[0] handed to llama.cpp (it discovers the siblings itself). The prefix
   # ends at resolve/main so prefix + "/" + entry is a valid HF download URL.
-  source: https://huggingface.co/unsloth/Qwen3.8-Flash-Next-GGUF/resolve/main
+  source: https://huggingface.co/AtomicChat/Qwen3.8-Flash-Next-GGUF/resolve/main
   sourceSecretRef:
     name: llmkube-hf-secret
+  # Shard 00002 holds only the 38.4 GB n-gram table (per_layer_token_embd).
+  # It is read ~3 MB/s at random and must stay mmap'd, never resident.
   files:
-    - UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
-    - UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
-    - UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00001-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00002-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00003-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00004-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00005-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00006-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00007-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00008-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00009-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00010-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00011-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00012-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00013-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00014-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00015-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00016-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00017-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00018-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00019-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00020-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00021-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00022-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00023-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00024-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00025-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00026-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00027-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00028-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00029-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00030-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00031-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00032-of-00033.gguf
+    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00033-of-00033.gguf
   format: gguf
-  quantization: UD-IQ4_XS
+  quantization: AD-4.27bpw-Q4_K_M
   hardware:
     accelerator: cuda
     gpu:
@@ -23,40 +55,14 @@ spec:
       count: 2 # 3090 Ti + 3070 on talos1
       vendor: nvidia
       layers: 999 # ngl=999; expert tensors come back off the GPU via moeCPULayers
-      # Emit a single --tensor-split 8,1. Only the ratio matters, not the range
-      # sizes.
-      #
-      # This ratio splits LAYERS, and moeCPULayers below makes the low-numbered
-      # ones nearly free on the GPU — so the byte split is far more lopsided
-      # than the ratio reads. Every layer moeCPULayers claims comes off GPU0's
-      # low end, so raising it unloads GPU0 and leaves GPU1 carrying relatively
-      # more.
-      #
-      # Raising moeCPULayers unloads GPU0 only, but KV and compute buffers grow
-      # on BOTH cards. Only this ratio can relieve GPU1; more CPU offload
-      # cannot.
-      #
-      # Free VRAM per card, measured under UD-IQ3_XXS at contextSize 131072 /
-      # moeCPULayers 30:
-      #
-      #   7:1  3614 / 820    works, 3070 on the edge
-      #   8:1  2232 / 2236   works, even
-      #   9:1  crashloops -- GPU0 cannot allocate its 2112 MiB KV block
-      #
-      # Each ratio step moves ~1.4 GB from GPU1 to GPU0. Free VRAM on GPU0 is
-      # not spendable down to zero: a ratio that leaves it under the single
-      # contiguous 2112 MiB block the KV cache wants will not load.
-      #
-      # Under UD-IQ4_XS at moeCPULayers 32 the same 8:1 measures 666 MiB free
-      # on GPU0 and 682 MiB on GPU1 -- still balanced, so this is the right
-      # ratio, but thinner than anything above and below the 820 MiB that 7:1
-      # showed. There is no headroom left for a context, batch, or quant
-      # increase: the next one has to buy VRAM back somewhere first.
+      # Emits --tensor-split 9,1; only the ratio matters. It splits layers, and
+      # the 3070 only sheds a whole layer at certain steps (9:1 through 11:1 all
+      # leave it the same layers). moeCPULayers unloads the 3090 Ti only.
       sharding:
         strategy: layer
         layerSplit:
-          - "0-7" # 3090 Ti — 8 parts
-          - "8-8" # 3070 — 1 part
+          - "0-8" # 3090 Ti
+          - "9-9" # 3070
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
@@ -65,89 +71,50 @@ metadata:
 spec:
   modelRef: qwen3-8-flash-next
   runtime: llamacpp
-  # b10666 already carries qwen4exp (merged upstream 2026-08-27, six commits
-  # before this build). Do NOT roll this tag back below b10666 — older builds
-  # cannot load the architecture at all.
+  # qwen4exp needs b10666 or newer; older builds cannot load the architecture.
   image: ghcr.io/ggml-org/llama.cpp:server-cuda-b11223@sha256:5d0812fe45cb5dcb4ac5c588148a601aca63b6b224601f8d1f6f01fdfb07a111
   runtimeClassName: nvidia
   # No spec.replicas -- the ModelPool owns a pooled member's replica count.
   priorityClassName: gpu-preemptible
 
-  # 93.7 GB of weights against ~34 GB of VRAM, so most of the model lives
-  # off-GPU. Two placements do the work, and the split is what makes it fit:
-  #
-  #   per_layer_token_embd  28.8 GB  -> CPU (tensorOverrides below)
-  #   MoE experts           59.5 GB  -> 1.240 GB/layer x 48 layers, split here
-  #   attn / norms / output   5.4 GB  -> GPU
-  #
-  # per_layer_token_embd is IQ4_NL at every quant level, so it is 28.8 GB under
-  # UD-IQ3_XXS too -- the whole 11.7 GB step up to UD-IQ4_XS is expert weights,
-  # which is exactly what this field splits.
-  #
-  # 32 holds GPU-side weights at what UD-IQ3_XXS/30 already fit. It is close to
-  # a floor rather than a choice: the GPUs cannot take more than ~25 GB of
-  # weights once KV and compute buffers are paid for at contextSize 131072, so
-  # every UD-IQ4_XS config leaves ~68 GB on the CPU side. Lowering this trades
-  # host memory for VRAM there is none of; raising it costs throughput below.
-  #
-  # llama.cpp mmaps the GGUF, so CPU-side weights are page cache, not anonymous
-  # memory -- measured 41 GiB cache against 2.4 GiB RSS -- and eviction is
-  # cheap. Under UD-IQ3_XXS that made 60.5 GB against 62 GiB of RAM a non-issue:
-  # it nearly fit, and what streamed was the sparse per_layer_token_embd
-  # lookups, which stream well.
-  #
-  # UD-IQ4_XS raises that to 28.8 + 39.7 = 68.5 GB, and the shortfall now comes
-  # out of expert weights, which every token reads densely rather than sparsely.
-  # It costs ~12% of generation throughput, not a cliff -- ZFS ARC on talos1 is
-  # uncapped (c_max 60.9 GiB) and gave 20.8 GiB back down to 13.0 GiB under the
-  # extra pressure, so resident weights went 19.7 -> 24.3 GiB. Capping
-  # zfs_arc_max is the lever that would buy real speed back here; the quant is
-  # not what is starving this node.
-  moeCPULayers: 32
-  # NOT the "ple_ngram_embd" name upstream discussion uses — this GGUF calls the
-  # 51B per-layer embedding table per_layer_token_embd, and a regex that misses
-  # it puts 28.8 GB back on the GPU.
+  # Trades VRAM against talos1 RAM at ~1.03 GB of experts per layer. Every
+  # CPU-side expert is read per token and must stay in page cache: 36 churned
+  # (GBs of refaults, throughput falling run over run), 34 holds. Lowering it
+  # buys little (30 vs 32: ~3% prefill, generation flat).
+  moeCPULayers: 34
+  # This GGUF names the n-gram table per_layer_token_embd, not ple_ngram_embd.
+  # Atomic's README says it lands on host unaided; kept explicit until
+  # confirmed.
   tensorOverrides:
     - per_layer_token_embd=CPU
 
   # --- typed preset fields ---
-  # Hybrid attention (SSM layers + full attention every 4th) means KV is cheap:
-  # only 12 of 48 layers cache, at 2 KV heads, so it costs roughly 12 MiB per
-  # 1k tokens at f16.
+  # Qwen Sparse Attention's top_k allocates from the CUDA pool at runtime, not
+  # at load: ~400-450 MB per card by 90k tokens. A config that loads can still
+  # OOM mid-prompt, so validate any context/ubatch/split change with a
+  # near-max-context request. Measured at 189k: 1.15 / 0.73 GB still free.
   #
-  # KV is not the only thing that grows with this. The prompt-processing
-  # compute buffer scales with batchSize x context for the full-attention
-  # layers, and it -- not the KV -- is what actually ran GPU0 out of memory at
-  # 131072 on moeCPULayers 26. Budget for both, and note batchSize is the other
-  # lever if VRAM ever gets tight (at the cost of prompt-eval throughput).
-  #
-  # Everything here is preallocated at load, so overshooting crashloops the pod
-  # at startup rather than failing a request -- and because this is a ModelPool
-  # member, a crashlooping load strands the pool in Swapping and takes the 27B
-  # down with it. Do not deploy a context bump without watching the load.
-  #
-  # Depth costs time, not memory: prompt eval falls from 369 tok/s at 9k to 229
-  # at 68k, so a 68k prompt is ~5 minutes to first token and a full 131k window
-  # roughly 10. That is what responseHeaderTimeout on the ModelRouter has to
-  # cover -- at the old 600s a 68k request would have failed. Verified end to
-  # end: a needle planted mid-prompt at 68013 tokens came back exact.
-  #
-  # Keep the litellm entry's maxInputTokens in step:
-  # ../../litellm/proxy/models/llmkube.yaml
-  contextSize: 131072
-  parallelSlots: 1 # slots divide contextSize, and CPU-side experts do not
-  # parallelise well — one slot gets the whole window
+  # A crashlooping load strands the ModelPool in Swapping and takes the 27B down
+  # with it. Keep ../../litellm/proxy/models/llmkube.yaml maxInputTokens in step.
+  contextSize: 196608
+  parallelSlots: 1 # CPU-side experts do not parallelise; one slot gets the window
   batchSize: 1024
-  uBatchSize: 256 # same 3070 compute-buffer ceiling the 27B landed on
+  uBatchSize: 768 # prefill ~+60% over 256; the compute buffer grows on both cards
   jinja: true # required for the chat-template-kwargs below
 
-  # KV left at f16 deliberately: q8_0 would save only a few hundred MB here and
-  # quantized KV is unproven against the SSM layers of a brand-new architecture.
+  # KV left at f16: q8_0 saves ~0.75 GB but loses QSA's sparse decode kernel
+  # past ~32k and is untested for quality on qwen4exp.
 
   extraArgs:
     - --alias
     - Qwen/Qwen3.8-Flash-Next
-    # Unsloth's thinking-mode preset for this model, unmodified.
+    # Auto-fit mis-sizes this architecture and fails to allocate.
+    - -fit
+    - "off"
+    # Drafts from n-grams already in context: no draft model, no VRAM.
+    - --spec-type
+    - ngram-mod
+    # Qwen's thinking-mode preset for this model, unmodified.
     - --temp
     - "1.0"
     - --top-p
@@ -160,49 +127,25 @@ spec:
     - "0.0"
     - --repeat-penalty
     - "1.0"
-    # xhigh is the model default and the best-quality setting; it spends
-    # minutes of thinking per reply at this generation rate, which is why the
-    # ModelRouter's responseHeaderTimeout had to go up with it. Drop to
-    # "medium" here if latency matters more than answer quality.
+    # xhigh spends minutes thinking per reply; the ModelRouter's
+    # responseHeaderTimeout is sized for it. Drop to "medium" for latency.
     - --chat-template-kwargs
     - '{"reasoning_effort":"xhigh"}'
 
-  # Measured on talos1 with randomized prompts and cache_prompt off, so these
-  # are worst-case: random tokens scatter MoE expert routing. Generation is the
-  # stable metric here; prompt eval swings with page-cache state.
-  #
-  #                     UD-IQ3_XXS/30    UD-IQ4_XS/32
-  #     6k prompt        28.0 tok/s       24.7 tok/s
-  #    24k prompt        24.9 tok/s       21.6 tok/s
-  #
-  # Natural text is much faster than this -- 371 tok/s prompt eval was measured
-  # on 9.2k of it under UD-IQ3_XXS. Compare like with like before concluding a
-  # regression.
-  #
-  # The first request after a load or a pool swap still pays the fault-in and
-  # reads roughly half these numbers; warm it before benchmarking.
-  #
-  # Give it time to warm. The same prompt read 308 tok/s twenty minutes after
-  # load and 371 once settled -- benchmark a fresh pod and you will understate
-  # it. Randomize the prompt too, or llama.cpp's prefix cache returns
-  # cached_tokens and reports a meaningless five-figure tok/s.
-  #
-  # The cold path is the only place this quant is worse. The first request
-  # after a load or a pool swap pays the fault-in: 72k major faults/s, and a
-  # small prompt measured 4 tok/s prompt eval (14.5s to first token). Budget
-  # for that on the first request, not the steady state.
+  # Measured 2026-09-29, code rewrite (1.7k prompt, ~2.3k out), warm: prefill
+  # 273-304 tok/s, generation 45-46 tok/s, ngram drafts ~85% accepted. 189k
+  # needle: 120 tok/s prefill (26 min), 16.5 tok/s generation, PASS. The first
+  # request after a load pays the fault-in at roughly a third of that.
   resources:
-    # Experts run on CPU here, so this is real compute, not the 1 core the
-    # fully-offloaded 27B needs.
+    # Experts run on CPU here, so this is real compute.
     cpu: "8"
-    # NOT sized to the 56.7 GB of CPU-side weights, and deliberately so: those
-    # are mmap'd page cache and the container's real anonymous footprint is
-    # ~2.4 GiB. This request exists to soft-reserve page cache -- it is the only
-    # thing stopping the scheduler from packing talos1 with pods that would
-    # evict the model and push it back to cold-load speeds. 50Gi is near the
-    # most that still schedules (62893Mi allocatable, ~8 GB requested by
-    # everything else).
-    memory: 50Gi
+    # Soft-reserves page cache for the CPU-side experts so the scheduler does
+    # not pack talos1 with pods that would evict them.
+    memory: 36Gi
+    # mmap'd weights are charged to this cgroup, so a limit at the request
+    # evicts the model's own experts and halves throughput. Page cache over
+    # the request is reclaimable, not an OOM risk.
+    memoryLimit: 56Gi
     gpu: 2
 
   endpoint:

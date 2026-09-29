@@ -21,7 +21,7 @@ spec:
     # chunk lands early), but litellm dispatches both. Raised to 1800s when
     # flash-next went to reasoning_effort xhigh: at ~31 tok/s a long think plus
     # its answer can run well past ten minutes on a non-streaming call.
-    responseHeaderTimeout: 1800s
+    responseHeaderTimeout: 3600s # a 189k prompt spends 26 min in prefill before any reasoning
     resources:
       requests:
         cpu: 10m

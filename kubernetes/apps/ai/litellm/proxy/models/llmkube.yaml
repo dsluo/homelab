@@ -61,7 +61,7 @@ spec:
   info:
     # ../../../llmkube/models/qwen3-8-flash-next.yaml contextSize. Still under
     # the model's native 262144 — raise both together.
-    maxInputTokens: 131072
+    maxInputTokens: 196608
 ---
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
