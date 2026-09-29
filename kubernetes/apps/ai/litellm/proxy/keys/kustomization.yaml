@@ -5,6 +5,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  - ./github-actions.yaml
   - ./home-assistant.yaml
   - ./opencode.yaml
   - ./pi.yaml

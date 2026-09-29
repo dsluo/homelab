@@ -1,0 +1,63 @@
+---
+# Public entry for GitHub Actions. The UI and admin API stay on envoy-internal
+# (proxy.yaml); only the inference API under /v1 is routed here.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: litellm-github-actions
+spec:
+  hostnames:
+    - "litellm-ci.${DOMAIN}"
+  parentRefs:
+    - name: envoy-towonel
+      namespace: network
+      sectionName: https
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /v1
+      # Envoy Gateway forwards validated JWTs; LiteLLM has no use for it.
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            remove: ["X-GitHub-OIDC"]
+      backendRefs:
+        - name: litellm
+          port: 4000
+---
+# Requires a GitHub Actions OIDC token in X-GitHub-OIDC on top of the LiteLLM
+# key, which stays in Authorization.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: litellm-github-actions
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: litellm-github-actions
+  jwt:
+    providers:
+      - name: github-actions
+        issuer: https://token.actions.githubusercontent.com
+        audiences:
+          - "https://litellm-ci.${DOMAIN}"
+        remoteJWKS:
+          uri: https://token.actions.githubusercontent.com/.well-known/jwks
+        extractFrom:
+          headers:
+            - name: X-GitHub-OIDC
+  authorization:
+    defaultAction: Deny
+    rules:
+      - name: homelab-repo
+        action: Allow
+        principal:
+          jwt:
+            provider: github-actions
+            claims:
+              # dsluo/homelab. The id survives renames, so a re-registered
+              # name can't mint matching tokens.
+              - name: repository_id
+                values: ["922003721"]
