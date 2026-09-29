@@ -171,7 +171,7 @@ spec:
   parallelSlots: 1 # slots divide contextSize, and CPU-side experts do not
   # parallelise well — one slot gets the whole window
   batchSize: 1024
-  uBatchSize: 256 # same 3070 compute-buffer ceiling the 27B landed on
+  uBatchSize: 512
   jinja: true # required for the chat-template-kwargs below
 
   # KV left at f16 deliberately: q8_0 would save only a few hundred MB here and
