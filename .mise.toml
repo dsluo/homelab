@@ -28,7 +28,7 @@ TALOSCONFIG = "{{config_root}}/talos/talosconfig"
 "github:home-operations/kopiur" = "0.10.11"
 # One repo publishes every kguardian component, each under its own tag prefix,
 # and the CLI's asset is still named after the `advisor` binary it grew out of.
-"github:kguardian-dev/kguardian" = { version = "advisor/v1.11.3", rename_exe = "kubectl-kguardian" }
+"github:kguardian-dev/kguardian" = { version = "advisor/v1.11.4", rename_exe = "kubectl-kguardian" }
 "aqua:kopia/kopia" = "0.23.1"
 "go:github.com/eleboucher/memini/cmd/memini" = "0.7.32"
 "aqua:cilium/hubble" = "1.19.4"
