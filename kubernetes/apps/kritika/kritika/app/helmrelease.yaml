@@ -43,8 +43,7 @@ spec:
       embedding:
         model: litellm/llmkube/Qwen/Qwen3-Embedding-0.6B
         dims: 1024
-        # Bytes, sized so the embedder's 4096-token slots fit even SOPS and
-        # SNMP-OID text, which tokenize near 2 bytes/token.
+        # Bytes; keeps dense text within the embedder's 4096-token slots.
         maxItemChars: 8000
       defaults:
         models:
@@ -52,6 +51,8 @@ spec:
           # kritika's non-streaming calls from it.
           review: litellm/neuralwatt/deepseek-v4.1-flash
         settle: 30s
+        # Ciphertext tokenizes under 2 bytes/token, past any input cap.
+        ignore: ["**/*.sops.*"]
     env:
       LITELLM_API_KEY:
         valueFrom:
