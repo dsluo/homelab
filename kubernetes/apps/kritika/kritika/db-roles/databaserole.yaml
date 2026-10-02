@@ -1,0 +1,26 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: DatabaseRole
+metadata:
+  name: kritika-app
+spec:
+  name: kritika_app
+  cluster:
+    name: postgres
+  login: true
+  passwordSecret:
+    name: kritika-postgres-app
+  databaseRoleReclaimPolicy: retain
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: DatabaseRole
+metadata:
+  name: kritika-runner
+spec:
+  name: kritika_runner
+  cluster:
+    name: postgres
+  login: true
+  passwordSecret:
+    name: kritika-postgres-runner
+  databaseRoleReclaimPolicy: retain

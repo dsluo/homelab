@@ -1,0 +1,88 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app kritika
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    fullnameOverride: *app
+    deploymentAnnotations:
+      reloader.stakater.com/auto: "true"
+    config:
+      webUrl: https://kritika.${DOMAIN}
+      # Runners parse untrusted repository content; gvisor pins them to talos1.
+      runnerRuntimeClass: gvisor
+      authOidcName: Pocket ID
+      authOidcIssuer: https://pocket-id.${DOMAIN}
+      authOidcClientId: *app
+      authOidcClientSecret:
+        valueFrom:
+          secretKeyRef:
+            name: kritika-oidc-credentials
+            key: OIDC_CLIENT_SECRET
+      authOidcScopes: openid,email,profile,groups
+      authOidcRolesClaim: groups
+      authOidcRoleMappingExpr: '"kritika-admins" in roles ? "admin" : ""'
+    configFile:
+      apps:
+        github:
+          accounts: [dsluo]
+          clientId: { env: GITHUB_APP_CLIENT_ID }
+          privateKey: { env: GITHUB_APP_PRIVATE_KEY }
+          webhookSecret: { env: GITHUB_APP_WEBHOOK_SECRET }
+      providers:
+        litellm:
+          type: openai
+          baseUrl: http://litellm.ai.svc.cluster.local:4000/v1
+          apiKey: { env: LITELLM_API_KEY }
+          retries: 2
+      embedding:
+        model: litellm/llmkube/Qwen/Qwen3-Embedding-0.6B
+        dims: 1024
+      defaults:
+        models:
+          review: litellm/chatgpt/gpt-5.6-sol
+        settle: 30s
+    env:
+      LITELLM_API_KEY:
+        valueFrom:
+          secretKeyRef:
+            name: kritika-litellm-key
+            key: OPENAI_API_KEY
+    envFrom:
+      - secretRef:
+          name: kritika-secret
+    database:
+      owner:
+        existingSecret: kritika-postgres-secret
+      app:
+        existingSecret: kritika-postgres-app
+      runner:
+        existingSecret: kritika-postgres-runner
+    runner:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 128Mi
+        limits:
+          memory: 1Gi
+    networkPolicy:
+      enabled: true
+      type: cilium
+      # 4000 is litellm.
+      egressPorts: [443, 4000]
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: envoy-cloudflare
+          namespace: network
+          sectionName: https
+      hostnames:
+        - kritika.${DOMAIN}
+    monitoring:
+      serviceMonitor:
+        enabled: true
