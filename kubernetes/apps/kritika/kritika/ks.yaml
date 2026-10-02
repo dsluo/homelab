@@ -1,0 +1,64 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: kritika-db-roles
+spec:
+  dependsOn:
+    - name: cnpg-cluster
+      namespace: database
+  interval: 1h
+  path: ./kubernetes/apps/kritika/kritika/db-roles
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  # DatabaseRoles resolve their cluster in their own namespace.
+  targetNamespace: database
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app kritika
+spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
+    - name: gvisor
+      namespace: kube-system
+    - name: kritika-db-roles
+    - name: litellm
+      namespace: ai
+    - name: llmkube-models
+      namespace: ai
+    - name: pocket-id
+      namespace: security
+  interval: 1h
+  path: ./kubernetes/apps/kritika/kritika/app
+  components:
+    - ../../../../components/database
+    - ../../../../components/litellm-key
+    - ../../../../components/oidc
+  postBuild:
+    substitute:
+      APP: *app
+      APP_ICON_URL: "https://github.com/home-operations.png"
+      # kritika's migrations need these before its first start, but nothing
+      # orders the HelmRelease after kritika-db: first boot crash-loops until
+      # CNPG has created them.
+      DB_EXTENSIONS: '[{"name":"vector"},{"name":"vchord"}]'
+      LITELLM_KEY_MODELS: '"neuralwatt/deepseek-v4.1-flash", "llmkube/Qwen/Qwen3-Embedding-0.6B"'
+      OIDC_CALLBACK_PATH: /auth/callback/oidc
+      OIDC_PKCE_ENABLED: "true"
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: kritika
+  wait: false

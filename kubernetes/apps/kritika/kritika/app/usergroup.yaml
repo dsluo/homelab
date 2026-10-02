@@ -1,0 +1,13 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: kritika-admins
+spec:
+  friendlyName: kritika Admins
+  allowedOIDCClients:
+    - name: kritika
+  users:
+    userRefs:
+      - name: david
+        namespace: security
