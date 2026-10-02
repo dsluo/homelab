@@ -17,7 +17,8 @@ for what actually changed.
   `terminal.backend` must stay `local` (the default) — pointing it at the
   `docker` backend would want a Docker socket and defeat the whole arrangement.
 - **gVisor is scoped to hermes only** — not forced namespace-wide. The hermes
-  pod opts in via `runtimeClassName: gvisor` (`app/runtimeclass.yaml`); kopiur
+  pod opts in via `runtimeClassName: gvisor` (the RuntimeClass lives in
+  `kube-system/gvisor`, shared with kritika's runners); kopiur
   movers and any other infra in the namespace run on the normal runtime. The
   untrusted workload is sandboxed; trusted backup infra is left alone.
 - **Pod hardening (restricted-compliant)**: `runAsNonRoot`,

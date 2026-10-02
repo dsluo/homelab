@@ -20,6 +20,8 @@ spec:
     - ../../../../components/kopiur
     - ../../../../components/litellm-key
   dependsOn:
+    - name: gvisor
+      namespace: kube-system
     - name: litellm
       namespace: ai
     - name: external-secrets-config

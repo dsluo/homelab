@@ -5,7 +5,6 @@ resources:
   - ./helmrelease.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
-  - ./runtimeclass.yaml
 configMapGenerator:
   - name: hermes-managed-config
     files:
