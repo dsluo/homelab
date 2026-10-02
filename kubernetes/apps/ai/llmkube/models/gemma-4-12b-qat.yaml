@@ -62,7 +62,7 @@ spec:
   runtime: llamacpp
   # SYCL/oneAPI build. The operator has no default image for Intel (only CUDA,
   # Vulkan and ROCm), so this is required, not an override.
-  image: ghcr.io/ggml-org/llama.cpp:server-intel-b11223@sha256:028e2ac8d482d471769386414886a228b562401b05ff16deafb7a2aaac71fbd5
+  image: ghcr.io/ggml-org/llama.cpp:server-intel-b11347@sha256:2f4940610095fe48aabff3db7f87feb4f553081302b1a5a8744a589eb123b451
   replicas: 1
   # Not a ModelPool member: the pool arbitrates talos1's NVIDIA pair, and this
   # runs on talos0's B50, which DRA places it on.
