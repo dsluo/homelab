@@ -1,4 +1,19 @@
 ---
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: qwen3-embedding-0-6b
+spec:
+  spec:
+    devices:
+      requests:
+        - name: gpu
+          exactly:
+            deviceClassName: gpu.intel.com
+            # Shares the B50 with gemma, jellyfin, frigate and orcaslicer; see
+            # ./gemma-4-12b-qat.yaml.
+            adminAccess: true
+---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: Model
 metadata:
@@ -10,9 +25,15 @@ spec:
   format: gguf
   quantization: Q8_0
   hardware:
-    accelerator: cpu
+    accelerator: intel
     gpu:
-      enabled: false
+      enabled: true
+      vendor: intel
+      layers: 999
+      # count unset for the same reason as ./gemma-4-12b-qat.yaml.
+      resourceClaims:
+        - name: gpu
+          resourceClaimTemplateName: qwen3-embedding-0-6b
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
@@ -21,11 +42,9 @@ metadata:
 spec:
   modelRef: qwen3-embedding-0-6b
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-b9628@sha256:d0b7bce18e8f1bd9cfa8a455ea184cedae513ddfacded7fa41182fa31d9c4aa9
+  # SYCL build, required for Intel; same image as ./gemma-4-12b-qat.yaml.
+  image: ghcr.io/ggml-org/llama.cpp:server-intel-b11223@sha256:028e2ac8d482d471769386414886a228b562401b05ff16deafb7a2aaac71fbd5
   replicas: 1
-  # CPU-only; kept off talos1 so its RAM goes to flash-next's CPU-side experts.
-  nodeSelector:
-    kubernetes.io/hostname: talos0
   # llama.cpp splits contextSize across parallelSlots, so per-slot ctx =
   # contextSize / parallelSlots = 8192 / 2 = 4096 tokens/slot. memini v0.5.0
   # dropped its MEMINI_EMBED_MAX_ITEM_CHARS guard and embeds item content
