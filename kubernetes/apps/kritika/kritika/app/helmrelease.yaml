@@ -43,6 +43,9 @@ spec:
       embedding:
         model: litellm/llmkube/Qwen/Qwen3-Embedding-0.6B
         dims: 1024
+        # The embedder's slots hold 4096 tokens; the 16000 default overflows
+        # them on dense files (YAML, lockfiles) at under 4 chars/token.
+        maxItemChars: 12000
       defaults:
         models:
           # Not chatgpt/*: that backend only streams, and litellm can't serve
