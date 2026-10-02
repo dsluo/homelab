@@ -73,8 +73,9 @@ spec:
     networkPolicy:
       enabled: true
       type: cilium
-      # 4000 is litellm.
-      egressPorts: [443, 4000]
+      # Cilium matches the port after Service DNAT, and CoreDNS rewrites
+      # pocket-id's hostname to its Service, whose 443 lands on pod port 1411.
+      egressPorts: [443, 1411, 4000]
     httpRoute:
       enabled: true
       parentRefs:

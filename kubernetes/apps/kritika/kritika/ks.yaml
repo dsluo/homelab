@@ -26,8 +26,12 @@ spec:
   dependsOn:
     - name: external-secrets-config
       namespace: external-secrets
+    - name: gvisor
+      namespace: kube-system
     - name: kritika-db-roles
     - name: litellm
+      namespace: ai
+    - name: litellm-chatgpt-models
       namespace: ai
     - name: llmkube-models
       namespace: ai
@@ -43,6 +47,9 @@ spec:
     substitute:
       APP: *app
       APP_ICON_URL: "https://github.com/home-operations.png"
+      # kritika's migrations need these before its first start, but nothing
+      # orders the HelmRelease after kritika-db: first boot crash-loops until
+      # CNPG has created them.
       DB_EXTENSIONS: '[{"name":"vector"},{"name":"vchord"}]'
       LITELLM_KEY_MODELS: '"chatgpt/gpt-5.6-sol", "llmkube/Qwen/Qwen3-Embedding-0.6B"'
       OIDC_CALLBACK_PATH: /auth/callback/oidc
