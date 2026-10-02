@@ -45,7 +45,9 @@ spec:
         dims: 1024
       defaults:
         models:
-          review: litellm/chatgpt/gpt-5.6-sol
+          # Not chatgpt/*: that backend only streams, and litellm can't serve
+          # kritika's non-streaming calls from it.
+          review: litellm/neuralwatt/deepseek-v4.1-flash
         settle: 30s
     env:
       LITELLM_API_KEY:
