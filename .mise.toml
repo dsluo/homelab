@@ -31,7 +31,7 @@ TALOSCONFIG = "{{config_root}}/talos/talosconfig"
 "github:kguardian-dev/kguardian" = { version = "advisor/v1.11.4", rename_exe = "kubectl-kguardian" }
 "aqua:kopia/kopia" = "0.23.1"
 "go:github.com/eleboucher/memini/cmd/memini" = "0.7.32"
-"aqua:cilium/hubble" = "1.19.4"
+"aqua:cilium/hubble" = "1.20.2"
 # flux
 "aqua:FiloSottile/age" = "1.3.2"
 "aqua:fluxcd/flux2" = "2.9.6"
