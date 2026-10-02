@@ -53,6 +53,7 @@ spec:
       DB_EXTENSIONS: '[{"name":"vector"},{"name":"vchord"}]'
       LITELLM_KEY_MODELS: '"chatgpt/gpt-5.6-sol", "llmkube/Qwen/Qwen3-Embedding-0.6B"'
       OIDC_CALLBACK_PATH: /auth/callback/oidc
+      OIDC_PKCE_ENABLED: "true"
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
