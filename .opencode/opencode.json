@@ -130,7 +130,8 @@
       ],
       "environment": {
         "GRAFANA_URL": "{env:GRAFANA_URL}",
-        "GRAFANA_SERVICE_ACCOUNT_TOKEN": "{env:GRAFANA_SERVICE_ACCOUNT_TOKEN}"
+        "GRAFANA_SERVICE_ACCOUNT_TOKEN": "{env:GRAFANA_SERVICE_ACCOUNT_TOKEN}",
+        "GRAFANA_USAGE_STATS": "disabled"
       },
     },
     "searxng": {
