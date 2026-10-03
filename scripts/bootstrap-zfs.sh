@@ -24,6 +24,7 @@ function create_zpool() {
         zpool create \
         -m legacy \
         -o ashift=12 \
+        -o autotrim=on \
         -O compression=on \
         -O atime=off \
         $POOL_NAME \
