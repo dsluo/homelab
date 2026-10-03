@@ -85,7 +85,7 @@ saying plainly in the PR what was not verified.
 
 **Commit messages and PR bodies stay terse too.** A commit is `type(scope): subject` plus at most one lowercase line for what the diff doesn't show — which model, which workaround, why now. No rationale paragraphs. A PR body is a line or two for a routine change; use sections only when there is a real diagnosis to hand over, and then also say what you did *not* verify.
 
-**Operational loop:** merging a PR to `main` fires a GitHub webhook that reconciles Flux right away — the merge *is* the deploy, so don't tell anyone to wait for a poll interval. `just reconcile` force-pulls when a sync is needed outside that path. To test a feature branch live before merging, `just flux-branch` points Flux at the current branch; `just flux-branch-reset` reverts to `main`.
+**Operational loop:** a merge to `main` that touches `kubernetes/` starts the `flux-reconcile` Action, which waits 60s (restarting on each new merge, so bursts batch) and then hits the Flux Receiver. The merge *is* the deploy, about a minute later; Git polling at 10m is only a fallback. `just reconcile` force-pulls when a sync is needed outside that path. To test a feature branch live before merging, `just flux-branch` points Flux at the current branch; `just flux-branch-reset` reverts to `main`.
 
 ## Memory
 
