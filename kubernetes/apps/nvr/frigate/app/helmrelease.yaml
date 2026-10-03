@@ -56,7 +56,8 @@ spec:
                 cpu: "2"
                 memory: 2Gi
               limits:
-                # +1Gi over frigate's own ~5Gi for the tmpfs cache below.
+                # Frigate itself peaks ~5.1Gi; the cache and dshm tmpfs mounts
+                # below are charged here too.
                 memory: 7Gi
               claims:
                 - name: gpu
@@ -108,8 +109,8 @@ spec:
         path: /mnt/hot/nvr
         globalMounts:
           - path: /media/frigate
-      # Every segment of every camera lands here before moving to /media; on
-      # disk that was ~200 GB/day of talos0 NVMe writes. Holds ~100 MB.
+      # tmpfs, so charged to the memory limit above. Segments wait here before
+      # moving to /media; ~100 MB steady state.
       cache:
         type: emptyDir
         medium: Memory
