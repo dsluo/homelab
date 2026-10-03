@@ -72,7 +72,7 @@ spec:
   modelRef: qwen3-8-flash-next
   runtime: llamacpp
   # qwen4exp needs b10666 or newer; older builds cannot load the architecture.
-  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b11347@sha256:d87b02aafa74797a2d599b281c50468704bd0bcdc57bfcf31b570d593f1d285b
+  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b11371@sha256:f90b9de8baf5244c2c43f9594d7522424470f0d472323fe10405eceae714405b
   runtimeClassName: nvidia
   # No spec.replicas -- the ModelPool owns a pooled member's replica count.
   priorityClassName: gpu-preemptible
