@@ -21,6 +21,8 @@ spec:
         - helm-controller
         - notification-controller
       sync:
+        # Fallback only; the debounced webhook in flux-reconcile.yaml is the fast path
+        interval: 10m
         kind: GitRepository
         url: "https://github.com/dsluo/homelab.git"
         ref: "refs/heads/main"

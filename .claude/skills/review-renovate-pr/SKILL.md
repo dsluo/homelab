@@ -143,7 +143,7 @@ When reviewing more than one PR — or when the user follows a review with "merg
 ## Repo-specific notes
 
 - Renovate auto-merges patch/minor for `github-actions` (3d release age) and `mise` tools (1d release age) — if the user asks to review one of these, mention it will auto-merge and focus on whether to intervene before that happens.
-- Flux reconciles continuously from `kubernetes/` — a bad merge to `main` starts deploying immediately. Weight "do not merge" accordingly.
+- Flux reconciles continuously from `kubernetes/` — a bad merge to `main` starts deploying about a minute later. Weight "do not merge" accordingly.
 - Kubernetes Secrets are ESO-managed — inspect `ExternalSecret` names and key mappings, never secret values. Remaining `*.sops.*` files belong to Talos, OpenTofu, or recovery docs and must not be decrypted during a Renovate review.
 - **A `!` in the PR title carries no signal on pre-1.0 packages.** `.renovaterc.json5` stamps `!:` on `matchUpdateTypes: ["major"]`, and Renovate classifies **every 0.x minor as major** — so `!` + `type/minor` labels on a 0.x package is mechanical, not config drift and not evidence of breakage. Do not report it as an anomaly and do not treat its absence as safety; verify breaking changes from the changelog regardless.
 - The cluster is single-node. Storage migrations, CSI changes, and anything touching OpenEBS ZFS or VolSync need extra scrutiny since there's no HA fallback.

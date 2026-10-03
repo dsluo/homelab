@@ -4,8 +4,7 @@ kind: Receiver
 metadata:
   name: github-webhook
 spec:
-  type: github
-  events: ["ping", "push"]
+  type: generic-hmac
   secretRef:
     name: github-webhook-token-secret
   resources:
