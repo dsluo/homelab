@@ -34,7 +34,8 @@ spec:
             image:
               repository: ghcr.io/blakeblackshear/frigate
               # Frigate's config migrator can't write the read-only configmap
-              # mount, so a release's config migration must be applied by hand.
+              # mount: after a tag bump that changes the config schema, port the
+              # migration into configmap.yaml by hand.
               tag: 0.18.0
             env:
               TZ: "${TIMEZONE}"
