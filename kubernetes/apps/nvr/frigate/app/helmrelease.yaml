@@ -56,7 +56,9 @@ spec:
                 cpu: "2"
                 memory: 2Gi
               limits:
-                memory: 6Gi
+                # Frigate itself peaks ~5.1Gi; the cache and dshm tmpfs mounts
+                # below are charged here too.
+                memory: 7Gi
               claims:
                 - name: gpu
     service:
@@ -107,8 +109,12 @@ spec:
         path: /mnt/hot/nvr
         globalMounts:
           - path: /media/frigate
+      # tmpfs, so charged to the memory limit above. Segments wait here before
+      # moving to /media; ~100 MB steady state.
       cache:
         type: emptyDir
+        medium: Memory
+        sizeLimit: 1Gi
         globalMounts:
           - path: /tmp/cache
       # ~3.4 MB per camera at 640x360; 512Mi covers all 16 with room over.
