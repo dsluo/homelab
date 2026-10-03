@@ -6,11 +6,6 @@ metadata:
 data:
   config.yml: |
     ---
-    # Without this frigate assumes 0.13 and tries to migrate on every boot,
-    # which fails on the read-only mount. Bump it when an upgrade's migrator
-    # changes something this file uses.
-    version: 0.18-0
-
     mqtt:
       enabled: false # no broker in-cluster
 
