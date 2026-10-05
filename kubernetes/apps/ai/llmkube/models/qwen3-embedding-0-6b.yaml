@@ -10,8 +10,8 @@ spec:
         - name: gpu
           exactly:
             deviceClassName: gpu.intel.com
-            # Shared, not reserving: gemma, jellyfin, frigate and orcaslicer hold
-            # their own claims on the single iGPU. Requires the ai namespace's
+            # Shared, not reserving: jellyfin, frigate and orcaslicer hold their
+            # own claims on the single iGPU. Requires the ai namespace's
             # resource.kubernetes.io/admin-access label.
             adminAccess: true
 ---

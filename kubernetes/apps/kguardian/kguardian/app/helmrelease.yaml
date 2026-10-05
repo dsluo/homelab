@@ -48,7 +48,7 @@ spec:
       # kguardian appends the provider's request path to this verbatim, so the
       # /v1 has to be spelled out.
       baseUrl: http://litellm.ai.svc.cluster.local:4000/v1
-      model: llmkube/google/gemma-4-12B-it-qat
+      model: llmkube/Qwen/Qwen3.8-27B-MTP
       # Minted by components/litellm-key in ../ks.yaml and mirrored in here by
       # reflector; nothing in this repo creates it directly.
       secret: kguardian-litellm-key
