@@ -49,7 +49,10 @@ data:
       default_role: viewer
 
     ffmpeg:
-      hwaccel_args: preset-vaapi
+      # qsv, not vaapi: on the UHD 770, vaapi fails to sync surfaces ~44s into
+      # the basement Dahua substreams (full-range yuvj420p). Every substream is
+      # h264, which is all this preset decodes.
+      hwaccel_args: preset-intel-qsv-h264
 
     detect:
       enabled: true
