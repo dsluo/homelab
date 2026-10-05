@@ -106,8 +106,9 @@ spec:
                     name: paperless-litellm-key
                     key: OPENAI_API_KEY
               PAPERLESS_AI_LLM_CONTEXT_SIZE: "262144"
-              # Default 120s is short for local inference on a long document.
-              PAPERLESS_AI_LLM_REQUEST_TIMEOUT: "300"
+              # Past the ModelPool's 900s swapBudget, so a request can wait out a
+              # swap from flash-next and still have time to generate.
+              PAPERLESS_AI_LLM_REQUEST_TIMEOUT: "1200"
 
               PAPERLESS_AI_LLM_EMBEDDING_BACKEND: openai-like
               PAPERLESS_AI_LLM_EMBEDDING_ENDPOINT: *litellm
