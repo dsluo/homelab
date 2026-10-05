@@ -12,7 +12,7 @@ data:
     detectors:
       ov:
         type: openvino
-        device: GPU # the B50, claimed via DRA
+        device: GPU # the UHD 770 iGPU, claimed via DRA
 
     # Bundled with the image, so nothing is downloaded at runtime.
     model:
@@ -49,9 +49,6 @@ data:
       default_role: viewer
 
     ffmpeg:
-      # vaapi, not intel-qsv: on the B50 (Battlemage) libva loads iHD fine but
-      # QSV device creation fails with EEXIST -- "Error setting child device
-      # handle: -17". vaapi drives the same renderD128 without that layer.
       hwaccel_args: preset-vaapi
 
     detect:

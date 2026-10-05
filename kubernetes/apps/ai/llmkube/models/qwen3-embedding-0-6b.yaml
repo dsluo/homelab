@@ -10,8 +10,9 @@ spec:
         - name: gpu
           exactly:
             deviceClassName: gpu.intel.com
-            # Shares the B50 with gemma, jellyfin, frigate and orcaslicer; see
-            # ./gemma-4-12b-qat.yaml.
+            # Shared, not reserving: gemma, jellyfin, frigate and orcaslicer hold
+            # their own claims on the single iGPU. Requires the ai namespace's
+            # resource.kubernetes.io/admin-access label.
             adminAccess: true
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
@@ -30,7 +31,8 @@ spec:
       enabled: true
       vendor: intel
       layers: 999
-      # count unset for the same reason as ./gemma-4-12b-qat.yaml.
+      # count unset: any value >0 also adds an extended-resource limit that no
+      # node advertises.
       resourceClaims:
         - name: gpu
           resourceClaimTemplateName: qwen3-embedding-0-6b
@@ -42,7 +44,7 @@ metadata:
 spec:
   modelRef: qwen3-embedding-0-6b
   runtime: llamacpp
-  # SYCL build, required for Intel; same image as ./gemma-4-12b-qat.yaml.
+  # SYCL build. The operator has no default Intel image, so this is required.
   image: ghcr.io/ggml-org/llama.cpp:server-intel-b11347@sha256:2f4940610095fe48aabff3db7f87feb4f553081302b1a5a8744a589eb123b451
   replicas: 1
   # llama.cpp splits contextSize across parallelSlots, so per-slot ctx =
