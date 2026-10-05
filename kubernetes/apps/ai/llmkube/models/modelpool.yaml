@@ -8,7 +8,12 @@ spec:
   # deliberately unset: the operator never reads it, and members land on talos1
   # anyway because it is the only node advertising nvidia.com/gpu: 2.
   gpu: 2
-  swapPolicy: sticky
+  # Hands the slot back to the default once flash-next goes idle, so
+  # paperless, kguardian and home-assistant find the 27B resident.
+  swapPolicy: reclaim
+  # Longer than a pause in a flash-next session: reloading it cold-reads
+  # 74.5 GB, so reclaiming mid-session costs far more than holding the slot.
+  reclaimAfter: 30m
   # Caps how long the router holds a request while the incumbent drains and the
   # target cold-loads — and therefore also how long a request hangs while a Wolf
   # session holds the GPUs, before 503 + Retry-After.

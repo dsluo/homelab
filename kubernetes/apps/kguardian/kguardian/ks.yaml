@@ -27,9 +27,9 @@ spec:
       NETPOL_APP: kguardian-frontend
       # The chart injects the provider key from this Secret key (llmBridge.secrets.keyName).
       LITELLM_KEY_SECRET_KEY: api-key
-      # The one model in the proxy that advertises tool calling, which the
-      # assistant needs to reach its own telemetry tools.
-      LITELLM_KEY_MODELS: '"llmkube/google/gemma-4-12B-it-qat"'
+      # Must advertise tool calling: the assistant uses it to reach its own
+      # telemetry tools.
+      LITELLM_KEY_MODELS: '"llmkube/Qwen/Qwen3.8-27B-MTP"'
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
