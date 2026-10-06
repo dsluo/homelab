@@ -75,9 +75,9 @@ spec:
   resources:
     cpu: "500m"
     # The UHD 770 draws device allocations from system RAM, so they are charged
-    # to this cgroup, not a separate VRAM budget: ~3.4Gi steady, and 4Gi
-    # OOMKilled under memini's concurrent embeds.
-    memory: 6Gi
+    # to this cgroup, not a separate VRAM budget: ~5Gi under load, peaking at
+    # 5.3Gi on memini's backlog, and 4Gi OOMKilled.
+    memory: 8Gi
   endpoint:
     port: 8080
     type: ClusterIP
