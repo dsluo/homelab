@@ -1,20 +1,4 @@
 ---
-apiVersion: resource.k8s.io/v1
-kind: ResourceClaimTemplate
-metadata:
-  name: qwen3-embedding-0-6b
-spec:
-  spec:
-    devices:
-      requests:
-        - name: gpu
-          exactly:
-            deviceClassName: gpu.intel.com
-            # Shared, not reserving: jellyfin, frigate and orcaslicer hold their
-            # own claims on the single iGPU. Requires the ai namespace's
-            # resource.kubernetes.io/admin-access label.
-            adminAccess: true
----
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: Model
 metadata:
@@ -69,10 +53,8 @@ spec:
     - Qwen/Qwen3-Embedding-0.6B
   resources:
     cpu: "500m"
-    # The UHD 770 draws device allocations from system RAM, so they are charged
-    # to this cgroup, not a separate VRAM budget: ~5Gi under load, peaking at
-    # 5.3Gi on memini's backlog, and 4Gi OOMKilled.
-    memory: 8Gi
+    # ~1.6Gi under load; llama.cpp sizes itself to host RAM, not this limit.
+    memory: 3Gi
   endpoint:
     port: 8080
     type: ClusterIP
