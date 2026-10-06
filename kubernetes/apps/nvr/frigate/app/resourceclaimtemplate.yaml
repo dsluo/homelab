@@ -11,5 +11,5 @@ spec:
           exactly:
             deviceClassName: gpu.intel.com
             # Shared, not reserving: a reserving claim would lock jellyfin and
-            # llmkube off the single iGPU.
+            # orcaslicer off the single iGPU.
             adminAccess: true
