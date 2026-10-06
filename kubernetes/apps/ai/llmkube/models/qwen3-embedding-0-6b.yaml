@@ -51,10 +51,6 @@ spec:
     - last
     - --alias
     - Qwen/Qwen3-Embedding-0.6B
-    # llmkube sets no CPU limit, so this is the only cap: a memini backlog
-    # otherwise takes ~5 of talos0's cores next to etcd.
-    - --threads
-    - "4"
   resources:
     cpu: "2"
     # ~1.6Gi under load on memini's backlog; 3Gi is the cap on llama.cpp's
