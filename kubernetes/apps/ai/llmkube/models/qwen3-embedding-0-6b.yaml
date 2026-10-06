@@ -45,7 +45,7 @@ spec:
   modelRef: qwen3-embedding-0-6b
   runtime: llamacpp
   # SYCL build. The operator has no default Intel image, so this is required.
-  image: ghcr.io/ggml-org/llama.cpp:server-intel-b11347@sha256:2f4940610095fe48aabff3db7f87feb4f553081302b1a5a8744a589eb123b451
+  image: ghcr.io/ggml-org/llama.cpp:server-intel-b11429@sha256:3353d968ed8987612b7859828d14d205413567baafed00a90d71d0c23e63d7ba
   replicas: 1
   # llama.cpp splits contextSize across parallelSlots, so per-slot ctx =
   # contextSize / parallelSlots = 8192 / 2 = 4096 tokens/slot. memini v0.5.0
