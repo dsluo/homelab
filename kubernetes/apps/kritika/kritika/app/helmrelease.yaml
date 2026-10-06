@@ -55,8 +55,11 @@ spec:
         exclude:
           - { name: forks, expr: pr.fork }
       agent:
-        # deepseek takes ~12s a step, so the 20m default ends large reviews
-        # before the 60th step forces a submission.
+        # Tuned for deepseek-v4.1-flash, which keeps exploring long after it
+        # has the evidence; the last step forces a submission. Revisit on a
+        # model change.
+        steps: 20
+        # deepseek steps run up to ~75s late in a review, past the 20m default.
         timeout: 30m
       # Ciphertext tokenizes under 2 bytes/token, past any input cap.
       ignore: ["**/*.sops.*"]
