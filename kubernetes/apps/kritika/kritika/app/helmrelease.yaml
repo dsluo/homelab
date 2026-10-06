@@ -100,3 +100,10 @@ spec:
     monitoring:
       serviceMonitor:
         enabled: true
+      dashboards:
+        enabled: true
+        grafanaOperator:
+          enabled: true
+          allowCrossNamespaceImport: true
+          matchLabels:
+            dashboards: grafana
