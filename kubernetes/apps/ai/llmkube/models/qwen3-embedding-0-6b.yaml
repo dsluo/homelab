@@ -74,9 +74,10 @@ spec:
     - Qwen/Qwen3-Embedding-0.6B
   resources:
     cpu: "500m"
-    # llama.cpp fits itself to host RAM (63 GiB), not the cgroup: it projects
-    # 2708 MiB here, over the 2Gi this carried before.
-    memory: 4Gi
+    # The UHD 770 draws device allocations from system RAM, so they are charged
+    # to this cgroup, not a separate VRAM budget: ~3.4Gi steady, and 4Gi
+    # OOMKilled under memini's concurrent embeds.
+    memory: 6Gi
   endpoint:
     port: 8080
     type: ClusterIP
