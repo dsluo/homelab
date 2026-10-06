@@ -74,9 +74,10 @@ spec:
     - Qwen/Qwen3-Embedding-0.6B
   resources:
     cpu: "500m"
-    # llama.cpp fits itself to host RAM (63 GiB), not the cgroup: it projects
-    # 2708 MiB here, over the 2Gi this carried before.
-    memory: 4Gi
+    # The iGPU has no VRAM, so device allocations are charged to this cgroup:
+    # ~3.4Gi steady on the UHD 770 against 1.4Gi on the Arc, and 4Gi OOMKills
+    # under memini's concurrent embeds.
+    memory: 6Gi
   endpoint:
     port: 8080
     type: ClusterIP
