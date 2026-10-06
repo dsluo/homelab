@@ -1,20 +1,4 @@
 ---
-apiVersion: resource.k8s.io/v1
-kind: ResourceClaimTemplate
-metadata:
-  name: qwen3-embedding-0-6b
-spec:
-  spec:
-    devices:
-      requests:
-        - name: gpu
-          exactly:
-            deviceClassName: gpu.intel.com
-            # Shared, not reserving: jellyfin, frigate and orcaslicer hold their
-            # own claims on the single iGPU. Requires the ai namespace's
-            # resource.kubernetes.io/admin-access label.
-            adminAccess: true
----
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: Model
 metadata:
@@ -26,16 +10,9 @@ spec:
   format: gguf
   quantization: Q8_0
   hardware:
-    accelerator: intel
+    accelerator: cpu
     gpu:
-      enabled: true
-      vendor: intel
-      layers: 999
-      # count unset: any value >0 also adds an extended-resource limit that no
-      # node advertises.
-      resourceClaims:
-        - name: gpu
-          resourceClaimTemplateName: qwen3-embedding-0-6b
+      enabled: false
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
@@ -44,9 +21,11 @@ metadata:
 spec:
   modelRef: qwen3-embedding-0-6b
   runtime: llamacpp
-  # SYCL build. The operator has no default Intel image, so this is required.
-  image: ghcr.io/ggml-org/llama.cpp:server-intel-b11429@sha256:3353d968ed8987612b7859828d14d205413567baafed00a90d71d0c23e63d7ba
+  image: ghcr.io/ggml-org/llama.cpp:server-b11429@sha256:2f8ebc2dde83c4bd7e5c6d61efa57965e0d5a79d29802c246c4593740d9c04c1
   replicas: 1
+  # CPU-only; kept off talos1 so its RAM goes to flash-next's CPU-side experts.
+  nodeSelector:
+    kubernetes.io/hostname: talos0
   # llama.cpp splits contextSize across parallelSlots, so per-slot ctx =
   # contextSize / parallelSlots = 8192 / 2 = 4096 tokens/slot. memini v0.5.0
   # dropped its MEMINI_EMBED_MAX_ITEM_CHARS guard and embeds item content
@@ -73,11 +52,10 @@ spec:
     - --alias
     - Qwen/Qwen3-Embedding-0.6B
   resources:
-    cpu: "500m"
-    # The UHD 770 draws device allocations from system RAM, so they are charged
-    # to this cgroup, not a separate VRAM budget: ~5Gi under load, peaking at
-    # 5.3Gi on memini's backlog, and 4Gi OOMKilled.
-    memory: 8Gi
+    cpu: "2"
+    # ~1.6Gi under load on memini's backlog; 3Gi is the cap on llama.cpp's
+    # host-RAM-sized buffers (the reranker OOMKilled at 1Gi).
+    memory: 3Gi
   endpoint:
     port: 8080
     type: ClusterIP
