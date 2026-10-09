@@ -8,5 +8,5 @@ resources:
   - ./qwen3-8-flash-next.yaml
   - ./qwen3-embedding-0-6b.yaml
   - ./qwen3-reranker-0-6b.yaml
-  - ./modelpool.yaml
+  # - ./modelpool.yaml # off while talos1 drops to one GPU
   - ./modelrouter.yaml
