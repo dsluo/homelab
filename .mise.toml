@@ -45,5 +45,5 @@ TALOSCONFIG = "{{config_root}}/talos/talosconfig"
 "aqua:opentofu/tofu-ls" = "0.5.3"
 # ai/mcp
 "github:grafana/mcp-grafana" = "2.0.2"
-"pipx:unifi-network-mcp" = "0.36.4"
+"pipx:unifi-network-mcp" = "0.36.5"
 "pipx:mcp-server-mikrotik" = "0.24.0.0"
