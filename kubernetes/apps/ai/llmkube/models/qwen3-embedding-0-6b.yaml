@@ -51,11 +51,15 @@ spec:
     - last
     - --alias
     - Qwen/Qwen3-Embedding-0.6B
+    # llama.cpp sizes threads to host cores (8), oversubscribing the 2-CPU
+    # limit and pushing embeds past memini's timeout.
+    - --threads
+    - "2"
   resources:
     cpu: "2"
-    # ~1.6Gi under load on memini's backlog; 3Gi is the cap on llama.cpp's
-    # host-RAM-sized buffers (the reranker OOMKilled at 1Gi).
-    memory: 3Gi
+    # Climbs to 3Gi+ on memini's backlog and OOMKilled at 3Gi; iGPU runs
+    # peaked near 5.4Gi.
+    memory: 6Gi
   endpoint:
     port: 8080
     type: ClusterIP
