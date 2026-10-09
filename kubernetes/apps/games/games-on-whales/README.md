@@ -15,6 +15,10 @@ scope (see the fork's `examples/steam.yaml` to add later).
 
 ## Layout
 
+> **Off:** `app/user.yaml` and `app/apps.yaml` are commented out in
+> `app/kustomization.yaml` while talos1 is down to one GPU, so no User or App CR
+> exists and the pairing/launch steps below do not work until both are restored.
+
 - `ks.yaml` — `GitRepository` (fork, pinned commit) + `fenrir-crds` Flux
   Kustomization (applies `./crds`) + the `games-on-whales` app Kustomization
   (`dependsOn: fenrir-crds`).

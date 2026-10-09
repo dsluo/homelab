@@ -9,4 +9,6 @@ resources:
   - ./qwen3-embedding-0-6b.yaml
   - ./qwen3-reranker-0-6b.yaml
   # - ./modelpool.yaml # off while talos1 drops to one GPU
+  # Kept up so LiteLLM's apiBase resolves; with both backends at 0 replicas,
+  # requests for those models fail until they are scaled back.
   - ./modelrouter.yaml
