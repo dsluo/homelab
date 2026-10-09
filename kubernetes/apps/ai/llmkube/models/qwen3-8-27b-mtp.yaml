@@ -44,8 +44,11 @@ spec:
   runtime: llamacpp
   image: ghcr.io/ggml-org/llama.cpp:server-cuda-b11434@sha256:c6fd6053d3b6a1a54849ab5468971cf3ae03fbf3d72fdfb25a1f862e320cace3
   runtimeClassName: nvidia
-  # No spec.replicas -- the ModelPool in ./modelpool.yaml owns a pooled member's
-  # replica count, and a value here would make Flux fight the controller on a swap.
+  # Off while talos1 drops to one GPU; the ModelPool is out of ./kustomization.yaml,
+  # so this is the only replica count in play. Scaled, not deleted: the ISVC owns
+  # the model-cache PVC. On re-enable, drop this along with restoring the pool,
+  # which owns a member's replicas (a value here makes Flux fight it on a swap).
+  replicas: 0
 
   # Negative priority (value -100) so games-on-whales Wolf streaming sessions
   # (default priority 0) preempt this pod and free a GPU on talos1. See
