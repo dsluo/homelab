@@ -42,7 +42,7 @@ metadata:
 spec:
   modelRef: qwen3-8-27b-mtp
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b11434@sha256:c6fd6053d3b6a1a54849ab5468971cf3ae03fbf3d72fdfb25a1f862e320cace3
+  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b11541@sha256:f88fa8d94d872312a4ad117acd490fa997bef81f03f161f0cfe0d74272e5b5bb
   runtimeClassName: nvidia
   # Off while talos1 drops to one GPU; the ModelPool is out of ./kustomization.yaml,
   # so this is the only replica count in play. Scaled, not deleted: the ISVC owns
