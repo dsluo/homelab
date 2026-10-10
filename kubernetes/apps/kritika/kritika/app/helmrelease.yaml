@@ -49,6 +49,9 @@ spec:
         # Not chatgpt/*: that backend only streams, and litellm can't serve
         # kritika's non-streaming calls from it.
         model: litellm/neuralwatt/deepseek-v4.1-flash
+      limits:
+        # Neuralwatt allows three concurrent requests.
+        concurrency: 3
       trigger:
         settle: 30s
         # Public repo: kritika reviews fork PRs by default since 0.0.27.
