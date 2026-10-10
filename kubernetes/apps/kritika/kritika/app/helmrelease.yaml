@@ -57,6 +57,7 @@ spec:
         # Public repo: kritika reviews fork PRs by default since 0.0.27.
         exclude:
           - { name: forks, expr: pr.fork }
+          - { name: release-please, expr: 'pr.headRef.startsWith("release-please--")' }
       agent:
         # Tuned for deepseek-v4.1-flash, which keeps exploring long after it
         # has the evidence; the last step forces a submission. Revisit on a
