@@ -36,7 +36,7 @@ spec:
         - name: login
           # Must track ../proxy/proxy.yaml — this runs litellm's own
           # Authenticator, so it needs the same litellm. Renovate bumps both.
-          image: ghcr.io/berriai/litellm-non_root:v1.104.0@sha256:37066242e6b8327fdd627682a66a9ae2a599553b4d5a84c905c6d8b9eb35c01e
+          image: ghcr.io/berriai/litellm-non_root:v1.105.1@sha256:8e010d43ed744d5f6d188dfe087ea5a7b94de1e8c297b9f7c7ba57729eff22a2
           # litellm has no login CLI: the device flow only ever runs as a side
           # effect of resolving a chatgpt model. Calling the Authenticator
           # directly is what lets it happen here instead of inside the proxy.
