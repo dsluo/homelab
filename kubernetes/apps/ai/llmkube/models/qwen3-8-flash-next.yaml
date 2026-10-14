@@ -72,7 +72,7 @@ spec:
   modelRef: qwen3-8-flash-next
   runtime: llamacpp
   # qwen4exp needs b10666 or newer; older builds cannot load the architecture.
-  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b11434@sha256:c6fd6053d3b6a1a54849ab5468971cf3ae03fbf3d72fdfb25a1f862e320cace3
+  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b11610@sha256:b0baccbe2e00b5d74e63f85f9f023c93d61d0f329475269e1e7002e87eb875ea
   runtimeClassName: nvidia
   # Off while talos1 drops to one GPU; see qwen3-8-27b-mtp.yaml. Drop this when
   # the ModelPool is restored.
