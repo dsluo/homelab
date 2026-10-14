@@ -3,8 +3,8 @@ apiVersion: v1alpha1
 kind: BondConfig
 name: bond0
 links:
-  - enp2s0f0
-  - enp2s0f1
+  - enp17s0f0
+  - enp17s0f1
 bondMode: active-backup
 mtu: 1500
 ---
