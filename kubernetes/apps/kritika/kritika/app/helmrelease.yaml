@@ -62,6 +62,9 @@ spec:
         timeout: 30m
       # Ciphertext tokenizes under 2 bytes/token, past any input cap.
       ignore: ["**/*.sops.*"]
+      # Not loaded automatically since 0.0.61.
+      context:
+        - { path: CLAUDE.md, description: "Repo layout, conventions and commit rules" }
     env:
       LITELLM_API_KEY:
         valueFrom:
