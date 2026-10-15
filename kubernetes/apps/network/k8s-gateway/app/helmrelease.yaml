@@ -16,8 +16,14 @@ spec:
       externalTrafficPolicy: Cluster
     securityContext:
       runAsUser: 1000
-    # null, not {}: {} merges with the chart's 100m CPU limit instead of clearing it.
-    resources: null
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        # null clears the chart's default 100m CPU limit, which would otherwise merge in.
+        cpu: null
+        memory: 256Mi
     readinessProbe:
       initialDelaySeconds: 10
       failureThreshold: 5
