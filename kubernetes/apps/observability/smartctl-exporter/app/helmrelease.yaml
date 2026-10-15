@@ -31,7 +31,19 @@ spec:
             description: Device {{ $labels.device }} on instance {{ $labels.instance }} has used {{ $value }}% of its rated endurance
           labels:
             severity: warning
+        # SATA SSDs have no percentage_used; wear is a vendor-specific normalized attribute (100 = new)
+        smartCTLDeviceSataWearHigh:
+          enabled: true
+          alert: SmartCTLDeviceSataWearHigh
+          expr: smartctl_device_attribute{attribute_value_type="value", attribute_name=~"SSD_Life_Left|Wear_Leveling_Count|Media_Wearout_Indicator|Percent_Lifetime_Remain"} < 20
+          for: 1h
+          annotations:
+            summary: Device is nearing its rated endurance
+            description: Device {{ $labels.device }} on instance {{ $labels.instance }} has {{ $value }}% of its rated endurance left ({{ $labels.attribute_name }})
+          labels:
+            severity: warning
 
+    # chart only binds a PodSecurityPolicy ClusterRole, which no longer exists; PSA on the namespace allows privileged
     rbac:
       create: false
 
