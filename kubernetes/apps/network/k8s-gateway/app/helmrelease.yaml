@@ -27,6 +27,10 @@ spec:
     readinessProbe:
       initialDelaySeconds: 10
       failureThreshold: 5
+    # Single replica: the chart's maxUnavailable 1 stops the old pod before the
+    # new one is Ready, leaving the DNS VIP with no endpoint during rollouts.
+    rollingUpdate:
+      maxUnavailable: 0
     servers:
       - zones:
           - zone: .
