@@ -8,5 +8,6 @@ resources:
   - ./namespace.yaml
   - ./grafana/ks.yaml
   - ./prometheus-operator-crds/ks.yaml
+  - ./smartctl-exporter/ks.yaml
   - ./snmp-exporter/ks.yaml
   - ./victoria/ks.yaml
