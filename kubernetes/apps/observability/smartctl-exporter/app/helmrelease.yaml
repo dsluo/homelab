@@ -21,25 +21,15 @@ spec:
     prometheusRules:
       enabled: true
       rules:
+        # NVMe reports percent used; SATA SSDs only expose a vendor-specific normalized attribute (100 = new)
         smartCTLDeviceWearHigh:
           enabled: true
           alert: SmartCTLDeviceWearHigh
-          expr: smartctl_device_percentage_used > 80
+          expr: ((100 - smartctl_device_percentage_used) or smartctl_device_attribute{attribute_value_type="value", attribute_name=~"SSD_Life_Left|Wear_Leveling_Count|Media_Wearout_Indicator|Percent_Lifetime_Remain"}) < 20
           for: 1h
           annotations:
             summary: Device is nearing its rated endurance
-            description: Device {{ $labels.device }} on instance {{ $labels.instance }} has used {{ $value }}% of its rated endurance
-          labels:
-            severity: warning
-        # SATA SSDs have no percentage_used; wear is a vendor-specific normalized attribute (100 = new)
-        smartCTLDeviceSataWearHigh:
-          enabled: true
-          alert: SmartCTLDeviceSataWearHigh
-          expr: smartctl_device_attribute{attribute_value_type="value", attribute_name=~"SSD_Life_Left|Wear_Leveling_Count|Media_Wearout_Indicator|Percent_Lifetime_Remain"} < 20
-          for: 1h
-          annotations:
-            summary: Device is nearing its rated endurance
-            description: Device {{ $labels.device }} on instance {{ $labels.instance }} has {{ $value }}% of its rated endurance left ({{ $labels.attribute_name }})
+            description: Device {{ $labels.device }} on instance {{ $labels.instance }} has {{ $value }}% of its rated endurance left
           labels:
             severity: warning
 
