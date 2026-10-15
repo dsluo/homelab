@@ -1,0 +1,63 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app generic-device-plugin
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    controllers:
+      *app :
+        type: daemonset
+        containers:
+          *app :
+            image:
+              repository: ghcr.io/squat/generic-device-plugin
+              tag: 2cc50b0@sha256:dc192e164c69b03f156765793a1be62ca437709ae477b27ca7d8f3dcf5021576
+            # devic.es/dri-render is the resource llmkube requests for
+            # vendor: amd. Pinned by PCI path because talos1 also has a Raphael
+            # iGPU and the 3090 Ti, so renderD/card numbering is not stable;
+            # remapped so the container sees the R9700 as its only GPU.
+            args:
+              - --device
+              - |
+                name: dri-render
+                groups:
+                  - count: 1
+                    paths:
+                      - path: /dev/dri/by-path/pci-0000:18:00.0-render
+                        mountPath: /dev/dri/renderD128
+                      - path: /dev/dri/by-path/pci-0000:18:00.0-card
+                        mountPath: /dev/dri/card0
+                      - path: /dev/kfd
+            ports:
+              - name: http
+                containerPort: &port 8080
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 64Mi
+            securityContext:
+              privileged: true
+    service:
+      *app :
+        ports:
+          http:
+            port: *port
+    serviceMonitor:
+      *app :
+        endpoints:
+          - port: http
+    persistence:
+      dev:
+        type: hostPath
+        hostPath: /dev
+      device-plugins:
+        type: hostPath
+        hostPath: /var/lib/kubelet/device-plugins
