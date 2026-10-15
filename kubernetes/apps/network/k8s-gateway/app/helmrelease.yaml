@@ -18,8 +18,6 @@ spec:
       runAsUser: 1000
     # null, not {}: {} merges with the chart's 100m CPU limit instead of clearing it.
     resources: null
-    deployment:
-      dnsPolicy: ClusterFirst
     readinessProbe:
       initialDelaySeconds: 10
       failureThreshold: 5
