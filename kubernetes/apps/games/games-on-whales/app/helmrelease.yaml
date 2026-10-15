@@ -25,8 +25,7 @@ spec:
           operator:
             image:
               repository: docker.io/shrinedogg/direwolf-operator
-              tag: v0.1.0
-              digest: sha256:398681deb415a4220fd3c68c6c500dbd2f5251f458be716e8663dd5152516df6
+              tag: v0.1.0@sha256:398681deb415a4220fd3c68c6c500dbd2f5251f458be716e8663dd5152516df6
             # The operator's --lb-sharing-key defaults to POD_NAMESPACE
             # ("games"), but the chart annotates the moonlight-proxy Service
             # with sharing-key "direwolf". Mismatched keys make Cilium LB-IPAM
@@ -43,8 +42,7 @@ spec:
           proxy:
             image:
               repository: docker.io/shrinedogg/moonlight-proxy
-              tag: v0.1.2
-              digest: sha256:e8b7cf17ea1bab75c1cec1889a1166ebb3da4c5f0972ae8a7d7cc8dc2571fef0
+              tag: v0.1.6@sha256:42e84d9f8945a8a1d264439b897116bfefdb33834c7116c5d1fdc88d6d04e910
     service:
       app:
         annotations:
