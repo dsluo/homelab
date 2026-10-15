@@ -1,10 +1,23 @@
 ---
+# Bond members pinned by MAC; PCI-derived names shift when the board changes.
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: sfp0
+selector:
+  match: mac(link.permanent_addr) == "90:e2:ba:af:33:e8"
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: sfp1
+selector:
+  match: mac(link.permanent_addr) == "90:e2:ba:af:33:e9"
+---
 apiVersion: v1alpha1
 kind: BondConfig
 name: bond0
 links:
-  - enp17s0f0
-  - enp17s0f1
+  - sfp0
+  - sfp1
 bondMode: active-backup
 mtu: 1500
 ---
