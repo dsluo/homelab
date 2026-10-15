@@ -1,0 +1,45 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: smartctl-exporter
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: smartctl-exporter
+  interval: 1h
+  values:
+    serviceMonitor:
+      enabled: true
+      # matches the exporter's 120s smartctl cache; faster scrapes just repeat samples
+      interval: 120s
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_node_name]
+          targetLabel: instance
+
+    prometheusRules:
+      enabled: true
+      rules:
+        # NVMe reports percent used; SATA SSDs only expose a vendor-specific normalized attribute (100 = new)
+        smartCTLDeviceWearHigh:
+          enabled: true
+          alert: SmartCTLDeviceWearHigh
+          expr: ((100 - smartctl_device_percentage_used) or smartctl_device_attribute{attribute_value_type="value", attribute_name=~"SSD_Life_Left|Wear_Leveling_Count|Media_Wearout_Indicator|Percent_Lifetime_Remain"}) < 20
+          for: 1h
+          annotations:
+            summary: Device is nearing its rated endurance
+            description: Device {{ $labels.device }} on instance {{ $labels.instance }} has {{ $value }}% of its rated endurance left
+          labels:
+            severity: warning
+
+    # chart only binds a PodSecurityPolicy ClusterRole, which no longer exists; PSA on the namespace allows privileged
+    rbac:
+      create: false
+
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        memory: 128Mi
