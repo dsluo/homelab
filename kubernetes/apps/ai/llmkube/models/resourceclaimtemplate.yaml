@@ -1,6 +1,6 @@
 ---
-# Selected by PCI address so the Raphael iGPU, which the driver also
-# advertises, is never allocated.
+# Pins the R9700 (1002:7551); the Raphael iGPU (1002:164e), which the
+# driver also advertises, is never allocated.
 apiVersion: resource.k8s.io/v1
 kind: ResourceClaimTemplate
 metadata:
@@ -14,4 +14,4 @@ spec:
             deviceClassName: gpu.amd.com
             selectors:
               - cel:
-                  expression: device.attributes["resource.kubernetes.io"].pciBusID == "0000:18:00.0"
+                  expression: device.attributes["gpu.amd.com"].deviceID == "0x7551"
