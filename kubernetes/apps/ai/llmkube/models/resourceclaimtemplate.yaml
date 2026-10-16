@@ -1,0 +1,17 @@
+---
+# Pins the R9700 (1002:7551); the Raphael iGPU (1002:164e), which the
+# driver also advertises, is never allocated.
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: r9700
+spec:
+  spec:
+    devices:
+      requests:
+        - name: gpu
+          exactly:
+            deviceClassName: gpu.amd.com
+            selectors:
+              - cel:
+                  expression: device.attributes["gpu.amd.com"].deviceID == "0x7551"

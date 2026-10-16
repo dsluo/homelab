@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: amd-gpu-dra-driver
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: amd-gpu-dra-driver
+  interval: 1h
+  values:
+    kubeletPlugin:
+      # The init container blocks until amdgpu is loaded, so keep the
+      # DaemonSet off nodes without the Talos amdgpu extension.
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: extensions.talos.dev/amdgpu
+                    operator: Exists
+    cdi:
+      dynamicPath: /var/cdi/dynamic
