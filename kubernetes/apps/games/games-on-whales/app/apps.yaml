@@ -22,7 +22,7 @@ spec:
   wolfConfig:
     runtimeVariables:
       # Placeholder the CRD requires; the wolf entrypoint overrides it with the
-      # detected NVIDIA render node (see wolf-entrypoint.yaml).
+      # detected RTX 3090 Ti render node (see wolf-entrypoint.yaml).
       renderNode: /dev/dri/renderD128
   template:
     spec:

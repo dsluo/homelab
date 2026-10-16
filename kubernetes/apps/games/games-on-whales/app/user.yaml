@@ -54,7 +54,7 @@ spec:
       # virtual-input/controller hotplug needs /dev/uinput on the node (uinput
       # kernel module + device access) -- a follow-up, see README.
       #
-      # Single GPU: the entrypoint wrapper detects whichever NVIDIA render node
+      # Single GPU: the entrypoint wrapper detects the RTX 3090 Ti render node
       # CDI injected (see wolf-entrypoint.yaml), and time-slicing leaves slices
       # for the App's own GPU container to co-schedule.
       resources:

@@ -79,7 +79,7 @@ takes time to reload afterward.
 ## Open items / cluster-specific verification
 
 - **Render node**: talos1's DRM numbering depends on driver load order, so the
-  wolf entrypoint picks the injected NVIDIA node (vendor `0x10de`) at startup;
+  wolf entrypoint picks the RTX 3090 Ti node (PCI ID `10DE:2203`) at startup;
   the App `renderNode` is only a placeholder. Wrong node → silent software x264
   fallback.
 - **CDI runtime**: session pods can't set `runtimeClassName: nvidia` (CRD limit);

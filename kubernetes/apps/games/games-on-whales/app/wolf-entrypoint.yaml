@@ -35,18 +35,22 @@ data:
     # CDI injects only the allocated GPU's render node, at its host number,
     # which shifts with driver load order on talos1 (amdgpu registers first).
     # WOLF_RENDER_NODE comes from the App's placeholder renderNode, so detect
-    # the NVIDIA node (vendor 0x10de) instead; a wrong node means silent x264.
+    # the node by PCI ID instead; a wrong node means silent x264.
+    gpu_pci_id="10DE:2203" # NVIDIA GeForce RTX 3090 Ti
     found=
     for node in /dev/dri/renderD*; do
       [ -e "${node}" ] || continue
-      if [ "$(cat "/sys/class/drm/${node##*/}/device/vendor" 2>/dev/null)" = "0x10de" ]; then
-        export WOLF_RENDER_NODE="${node}" found=1
-        gow_log "Detected NVIDIA render node ${WOLF_RENDER_NODE}; overriding WOLF_RENDER_NODE"
+      dev="/sys/class/drm/${node##*/}/device"
+      if grep -qx "PCI_ID=${gpu_pci_id}" "${dev}/uevent" 2>/dev/null; then
+        export WOLF_RENDER_NODE="${node}"
+        found=1
+        model="$(sed -n 's/^Model:[[:space:]]*//p' "/proc/driver/nvidia/gpus/$(basename "$(readlink -f "${dev}")")/information" 2>/dev/null)"
+        gow_log "Detected ${model:-${gpu_pci_id}} at ${WOLF_RENDER_NODE}; overriding WOLF_RENDER_NODE"
         break
       fi
     done
     if [ -z "${found}" ]; then
-      gow_log "WARNING: no NVIDIA /dev/dri/renderD* present; leaving WOLF_RENDER_NODE=${WOLF_RENDER_NODE:-unset}"
+      gow_log "WARNING: no render node for PCI ID ${gpu_pci_id}; leaving WOLF_RENDER_NODE=${WOLF_RENDER_NODE:-unset}"
     fi
 
     gow_log "Launching the container's startup script as root"
