@@ -78,10 +78,10 @@ takes time to reload afterward.
 
 ## Open items / cluster-specific verification
 
-- **Render node**: `wolfConfig.runtimeVariables.renderNode` is set to
-  `/dev/dri/renderD129` (shrinedogg's CDI-injected dGPU node). Verify on talos1:
-  `talosctl -n <talos1-ip> ls /dev/dri` and check what the CDI-injected node is
-  inside the wolf container. Wrong node → silent software x264 fallback.
+- **Render node**: talos1's DRM numbering depends on driver load order, so the
+  wolf entrypoint picks the injected NVIDIA node (vendor `0x10de`) at startup;
+  the App `renderNode` is only a placeholder. Wrong node → silent software x264
+  fallback.
 - **CDI runtime**: session pods can't set `runtimeClassName: nvidia` (CRD limit);
   GPU injection relies on the gpu-operator running with `cdi.default: true` (it
   does). Confirm the wolf container actually sees the GPU.
