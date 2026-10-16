@@ -4,16 +4,15 @@ kind: Kustomization
 namespace: kube-system
 components:
   - ../../components/cluster-global-config
-
-
 resources:
   - ./namespace.yaml
+  - ./amd-gpu-dra-driver/ks.yaml
   - ./cilium/ks.yaml
   - ./coredns/ks.yaml
   - ./gvisor/ks.yaml
-  - ./metrics-server/ks.yaml
-  - ./reloader/ks.yaml
-  - ./reflector/ks.yaml
-  - ./snapshot-controller/ks.yaml
   - ./intel-gpu-resource-driver/ks.yaml
+  - ./metrics-server/ks.yaml
   - ./nvidia-gpu/ks.yaml
+  - ./reflector/ks.yaml
+  - ./reloader/ks.yaml
+  - ./snapshot-controller/ks.yaml

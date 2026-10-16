@@ -1,0 +1,17 @@
+---
+# Selected by PCI address so the Raphael iGPU, which the driver also
+# advertises, is never allocated.
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: r9700
+spec:
+  spec:
+    devices:
+      requests:
+        - name: gpu
+          exactly:
+            deviceClassName: gpu.amd.com
+            selectors:
+              - cel:
+                  expression: device.attributes["resource.kubernetes.io"].pciBusID == "0000:18:00.0"
