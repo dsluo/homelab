@@ -10,6 +10,12 @@ spec:
     name: amd-gpu-dra-driver
   interval: 1h
   values:
+    # v1.0.1 + ROCm/k8s-gpu-dra-driver#117 (amdgpu-only driverVersion); the
+    # NVIDIA module on talos1 breaks slice publishing without it. Drop on the
+    # next upstream release.
+    image:
+      repository: ghcr.io/dsluo/k8s-gpu-dra-driver
+      tag: v1.0.1-pr117@sha256:69ecc3641fab308ece56bdf129b25c5c46af3f9b57ca4e07fb2c9a565396c847
     kubeletPlugin:
       # The init container blocks until amdgpu is loaded, so keep the
       # DaemonSet off nodes without the Talos amdgpu extension.
