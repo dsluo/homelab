@@ -36,7 +36,7 @@ spec:
               # Frigate's config migrator can't write the read-only configmap
               # mount: after a tag bump that changes the config schema, port the
               # migration into configmap.yaml by hand.
-              tag: 0.18.1
+              tag: 0.18.2
             env:
               TZ: "${TIMEZONE}"
             # Every key is already named for the {FRIGATE_*} placeholder it
