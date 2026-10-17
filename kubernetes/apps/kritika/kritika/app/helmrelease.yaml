@@ -48,7 +48,6 @@ spec:
         # Neuralwatt allows three concurrent requests.
         concurrency: 3
       trigger:
-        settle: 30s
         # Public repo: kritika reviews fork PRs by default since 0.0.27.
         exclude:
           - { name: forks, expr: pr.fork }
