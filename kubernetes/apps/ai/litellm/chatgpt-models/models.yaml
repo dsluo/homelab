@@ -27,6 +27,21 @@ spec:
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
+  name: chatgpt-gpt-6-1-sol
+spec:
+  modelName: chatgpt/gpt-6.1-sol
+  params:
+    model: chatgpt/gpt-6.1-sol
+  info:
+    mode: responses
+    maxInputTokens: 872000
+    maxOutputTokens: 128000
+    supportsFunctionCalling: true
+    supportsVision: true
+---
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
   name: chatgpt-gpt-5-6-luna
 spec:
   modelName: chatgpt/gpt-5.6-luna

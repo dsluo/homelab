@@ -41,11 +41,8 @@ spec:
         # Bytes; keeps dense text within the embedder's 4096-token slots.
         maxItemChars: 8000
       review:
-        # Not chatgpt/*: that backend only streams, and litellm can't serve
-        # kritika's non-streaming calls from it.
-        model: litellm/neuralwatt/deepseek-v4.1-flash
+        model: litellm/chatgpt/gpt-6.1-sol
       limits:
-        # Neuralwatt allows three concurrent requests.
         concurrency: 3
       trigger:
         # Public repo: kritika reviews fork PRs by default since 0.0.27.
@@ -53,10 +50,6 @@ spec:
           - { name: forks, expr: pr.fork }
           - { name: release-please, expr: 'pr.headRef.startsWith("release-please--")' }
       agent:
-        # Tuned for deepseek-v4.1-flash, which keeps exploring long after it
-        # has the evidence; the last step forces a submission. Revisit on a
-        # model change.
-        steps: 20
         # deepseek steps run up to ~75s late in a review, past the 20m default.
         timeout: 30m
       # Ciphertext tokenizes under 2 bytes/token, past any input cap.
