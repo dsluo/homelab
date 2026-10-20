@@ -42,16 +42,11 @@ spec:
         maxItemChars: 8000
       review:
         model: litellm/chatgpt/gpt-6.1-sol
-      limits:
-        concurrency: 3
       trigger:
         # Public repo: kritika reviews fork PRs by default since 0.0.27.
         exclude:
           - { name: forks, expr: pr.fork }
           - { name: release-please, expr: 'pr.headRef.startsWith("release-please--")' }
-      agent:
-        # deepseek steps run up to ~75s late in a review, past the 20m default.
-        timeout: 30m
       # Ciphertext tokenizes under 2 bytes/token, past any input cap.
       ignore: ["**/*.sops.*"]
       # Not loaded automatically since 0.0.61.
