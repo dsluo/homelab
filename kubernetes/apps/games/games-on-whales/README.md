@@ -44,6 +44,11 @@ scope (see the fork's `examples/steam.yaml` to add later).
 
 ## GPU sharing with llmkube (PriorityClass preemption)
 
+> **Status:** `qwen3-8-27b-mtp` now runs on talos1's R9700 through the `r9700`
+> ResourceClaimTemplate and no longer requests `nvidia.com/gpu`, so sessions do not
+> contend with it. `qwen3-8-flash-next` is the only `gpu-preemptible` NVIDIA consumer
+> left, and it is scaled to 0. The mechanism below still applies to it.
+
 talos1's GPUs (3090 Ti + 3070) are normally held by **llmkube** (`qwen3-8-27b-mtp`,
 `nvidia.com/gpu: 2`). The Fenrir operator cannot set a `priorityClassName` on the
 session pods it generates (the User CRD only exposes resources/volumes/sidecar

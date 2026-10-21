@@ -1,7 +1,7 @@
 ---
 # Negative priority so GPU-holding LLM inference yields to default-priority
 # (0) pods such as the games-on-whales Wolf streaming sessions. When a game
-# session pod requests nvidia.com/gpu and both GPUs are held by llmkube, the
+# session pod requests nvidia.com/gpu and the GPUs are held by llmkube, the
 # scheduler preempts this lower-priority pod to free a GPU; llmkube reschedules
 # (and reloads the model) once the session ends. The Fenrir operator cannot set
 # a priorityClassName on the session pods it generates (the User CRD only
