@@ -40,6 +40,11 @@ spec:
         dims: 1024
         # Bytes; keeps dense text within the embedder's 4096-token slots.
         maxItemChars: 8000
+      # .kritika.yaml tools install from GitHub release assets and pull from
+      # arbitrary registries; private ranges stay refused.
+      egress:
+        allow: ["*"]
+        deny: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, "*.internal"]
       review:
         model: litellm/chatgpt/gpt-6.1-sol
       trigger:
