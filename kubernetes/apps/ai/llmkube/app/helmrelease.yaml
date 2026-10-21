@@ -16,8 +16,10 @@ spec:
       keep: true
     controllerManager:
       replicaCount: 1
+      # Needed even at one replica: the chart only renders the lease RoleBinding
+      # with leader election, and the watch canary stalls every reconcile without it.
       leaderElection:
-        enabled: false
+        enabled: true
       resources:
         requests:
           cpu: 10m
