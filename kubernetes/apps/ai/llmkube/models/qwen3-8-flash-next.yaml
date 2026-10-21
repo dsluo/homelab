@@ -72,7 +72,7 @@ spec:
   modelRef: qwen3-8-flash-next
   runtime: llamacpp
   # qwen4exp needs b10666 or newer; older builds cannot load the architecture.
-  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b11749@sha256:31b39eacce2bab5fde9286ec3980ed5548a3987644e94da0d0c2092f93313538
+  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b11783@sha256:1bacc872b168d2d10bfd8c220336f5a2cd464c07605936ec146ee5198832ffce
   runtimeClassName: nvidia
   # Off while talos1 drops to one NVIDIA GPU. Scaled, not deleted: the ISVC owns
   # the model-cache PVC. Drop this when ./modelpool.yaml is restored, since the
