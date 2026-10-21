@@ -184,6 +184,10 @@
       schedule: [
         "* 0-6 * * 6"
       ],
+      // schedule only gates branch creation; existing branches still merge any time without this.
+      automergeSchedule: [
+        "* 0-6 * * 6"
+      ],
       minimumReleaseAge: "3 days",
       ignoreTests: true,
     },
