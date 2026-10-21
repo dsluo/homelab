@@ -34,7 +34,7 @@ spec:
   modelRef: qwen3-8-27b-mtp
   runtime: llamacpp
   # gfx1201 is in the upstream ROCm image's build targets.
-  image: ghcr.io/ggml-org/llama.cpp:server-rocm-b11681@sha256:b720bf1544bc7f5775b9a482cc7c9e52eb236d4475a487dc883bf30fe3cf862b
+  image: ghcr.io/ggml-org/llama.cpp:server-rocm-b11783@sha256:5483fc98ed13b66ed73a325c5820217928b37dc0fc86bd9e12d145d1f5a37203
   replicas: 1
 
   # --- typed preset fields ---
