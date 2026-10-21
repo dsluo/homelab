@@ -168,6 +168,26 @@
       changelogUrl: "https://github.com/searxng/searxng/blob/master/CHANGELOG.rst",
     },
     {
+      description: "Auto-merge Renovate itself weekly; it releases several times a day",
+      matchDatasources: [
+        "docker"
+      ],
+      matchPackageNames: [
+        "ghcr.io/renovatebot/renovate"
+      ],
+      automerge: true,
+      automergeType: "branch",
+      matchUpdateTypes: [
+        "minor",
+        "patch"
+      ],
+      schedule: [
+        "* 0-6 * * 6"
+      ],
+      minimumReleaseAge: "3 days",
+      ignoreTests: true,
+    },
+    {
       description: "Auto-merge GitHub Actions",
       matchManagers: [
         "github-actions"
