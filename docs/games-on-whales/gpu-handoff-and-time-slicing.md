@@ -1,5 +1,10 @@
 # GPU handoff: LLM ↔ game sessions (and why time-slicing breaks it)
 
+> **Status:** historical. `qwen3-8-27b-mtp` has moved to the R9700 (DRA, no
+> `nvidia.com/gpu` request), so it no longer takes part in this handoff. The
+> analysis still holds for any `gpu-preemptible` NVIDIA consumer such as
+> `qwen3-8-flash-next`.
+
 `talos1`'s two GPUs (3090 Ti + 3070) are normally held by **llmkube**
 (`qwen3-8-27b-mtp`, `nvidia.com/gpu: 2`). A game session pod needs both (the Wolf
 sidecar's compositor+NVENC, plus the app container's rendering), so the LLM must

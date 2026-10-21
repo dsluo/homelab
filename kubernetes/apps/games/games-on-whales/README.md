@@ -44,26 +44,29 @@ scope (see the fork's `examples/steam.yaml` to add later).
 
 ## GPU sharing with llmkube (PriorityClass preemption)
 
-talos1's GPUs (3090 Ti + 3070) are normally held by **llmkube** (`qwen3-8-27b-mtp`,
-`nvidia.com/gpu: 2`). The Fenrir operator cannot set a `priorityClassName` on the
-session pods it generates (the User CRD only exposes resources/volumes/sidecar
-policies), so instead **llmkube's GPU model is pinned to a negative PriorityClass**
+llmkube's main model, `qwen3-8-27b-mtp`, runs on talos1's R9700 through the `r9700`
+ResourceClaimTemplate and requests no `nvidia.com/gpu`, so it never contends with
+sessions. Any llmkube model that does run on talos1's NVIDIA GPUs (today only
+`qwen3-8-flash-next`, scaled to 0) is pinned to a negative PriorityClass
 `gpu-preemptible` (value `-100`, defined in
-`kubernetes/apps/ai/llmkube/models/priorityclass.yaml`).
+`kubernetes/apps/ai/llmkube/models/priorityclass.yaml`). The Fenrir operator cannot
+set a `priorityClassName` on the session pods it generates (the User CRD only exposes
+resources/volumes/sidecar policies), so the lever lives on the llmkube side.
 
 A game session pod runs at the default priority (0). When it requests
-`nvidia.com/gpu` and both GPUs are held by llmkube, the scheduler **preempts** the
-negative-priority llmkube pod to free a GPU; llmkube reschedules and reloads its
-model once the session ends. No custom controller, no fork patch.
+`nvidia.com/gpu` and llmkube holds the GPUs, the scheduler **preempts** the
+negative-priority llmkube pod; llmkube reschedules and reloads its model once the
+session ends. No custom controller, no fork patch.
 
-Trade-offs: preemption evicts llmkube's whole pod (both GPUs — a Test Ball session
-needs 1, a Firefox session needs 2: wolf + app); the LLM is offline during play and
-takes time to reload afterward.
+Trade-offs: preemption evicts llmkube's whole pod (a Test Ball session needs 1 GPU,
+a Firefox session needs 2: wolf + app); that model is offline during play and takes
+time to reload afterward.
 
 > ⚠️ **Do not enable GPU time-slicing on the gpu-operator.** Preemption relies on
-> the node advertising exactly `nvidia.com/gpu: 2`; time-slicing inflates that (e.g.
-> 8 slices) so a session schedules *alongside* qwen without preempting it, and they
-> contend for VRAM. See issue #1109.
+> the node advertising its real GPU count; time-slicing inflates it (e.g. 8 slices)
+> so a session schedules *alongside* the model without preempting it, and they
+> contend for VRAM. See issue #1109 and
+> `docs/games-on-whales/gpu-handoff-and-time-slicing.md`.
 
 ## Pairing / using it
 
