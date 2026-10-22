@@ -26,6 +26,10 @@ flux-branch-reset:
 newapp:
     copier copy templates . --trust
 
+# Benchmark an OpenAI-compatible LLM server (see scripts/llm-bench/README.md).
+llm-bench *args:
+    scripts/llm-bench/llmbench.py {{args}}
+
 # Run static migration checks and flate tests
 test:
     flate test all --path kubernetes/flux/cluster --allow-missing-secrets

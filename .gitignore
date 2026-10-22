@@ -30,5 +30,8 @@ wiki
 # Generated completions
 .completions/
 
+# llm-bench output
+scripts/llm-bench/results/
+
 # Claude
 .claude/*.local.*

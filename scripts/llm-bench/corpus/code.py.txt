@@ -1,0 +1,200 @@
+import json, os, time, csv
+from datetime import datetime
+
+DB = {}
+LOG = []
+CONFIG = {"tax": 0.08, "currency": "USD", "max_qty": 500, "warehouses": ["east", "west", "central"]}
+
+
+def log(msg):
+    LOG.append(str(datetime.now()) + " " + msg)
+    if len(LOG) > 1000:
+        LOG.pop(0)
+
+
+def load(path):
+    global DB
+    if not os.path.exists(path):
+        log("missing " + path)
+        return False
+    f = open(path)
+    try:
+        DB = json.load(f)
+    except:
+        log("bad json")
+        DB = {}
+        return False
+    f.close()
+    if "items" not in DB:
+        DB["items"] = {}
+    if "orders" not in DB:
+        DB["orders"] = []
+    return True
+
+
+def save(path):
+    f = open(path + ".tmp", "w")
+    json.dump(DB, f)
+    f.close()
+    os.replace(path + ".tmp", path)
+
+
+def add_item(sku, name, price, qty, wh):
+    if sku in DB["items"]:
+        return "exists"
+    if price < 0:
+        return "bad price"
+    if qty < 0 or qty > CONFIG["max_qty"]:
+        return "bad qty"
+    if wh not in CONFIG["warehouses"]:
+        return "bad warehouse"
+    DB["items"][sku] = {"name": name, "price": price, "stock": {w: 0 for w in CONFIG["warehouses"]}}
+    DB["items"][sku]["stock"][wh] = qty
+    log("added " + sku)
+    return "ok"
+
+
+def restock(sku, wh, qty):
+    item = DB["items"].get(sku)
+    if item == None:
+        return "no item"
+    if wh not in item["stock"]:
+        return "bad warehouse"
+    if item["stock"][wh] + qty > CONFIG["max_qty"]:
+        qty = CONFIG["max_qty"] - item["stock"][wh]
+        log("clamped restock for " + sku)
+    item["stock"][wh] += qty
+    return "ok"
+
+
+def total_stock(sku):
+    item = DB["items"].get(sku)
+    if not item:
+        return -1
+    t = 0
+    for w in item["stock"]:
+        t = t + item["stock"][w]
+    return t
+
+
+def find_warehouse(sku, qty):
+    item = DB["items"].get(sku)
+    if not item:
+        return None
+    best = None
+    for w in CONFIG["warehouses"]:
+        if item["stock"][w] >= qty:
+            if best == None or item["stock"][w] > item["stock"][best]:
+                best = w
+    return best
+
+
+def place_order(customer, lines, coupon=None):
+    # lines is a list of (sku, qty)
+    if not customer:
+        return {"status": "error", "msg": "no customer"}
+    if len(lines) == 0:
+        return {"status": "error", "msg": "empty"}
+    picks = []
+    subtotal = 0
+    for l in lines:
+        sku, qty = l[0], l[1]
+        if qty <= 0:
+            return {"status": "error", "msg": "bad qty for " + sku}
+        wh = find_warehouse(sku, qty)
+        if wh == None:
+            return {"status": "error", "msg": "out of stock " + sku}
+        picks.append((sku, qty, wh))
+        subtotal = subtotal + DB["items"][sku]["price"] * qty
+    discount = 0
+    if coupon != None:
+        if coupon.startswith("PCT"):
+            try:
+                pct = int(coupon[3:])
+                if pct > 50:
+                    pct = 50
+                discount = subtotal * pct / 100
+            except:
+                log("bad coupon " + coupon)
+        elif coupon.startswith("FLAT"):
+            try:
+                discount = min(float(coupon[4:]), subtotal)
+            except:
+                log("bad coupon " + coupon)
+        else:
+            log("unknown coupon " + coupon)
+    for p in picks:
+        DB["items"][p[0]]["stock"][p[2]] -= p[1]
+    tax = (subtotal - discount) * CONFIG["tax"]
+    order = {
+        "id": len(DB["orders"]) + 1,
+        "customer": customer,
+        "lines": [[p[0], p[1], p[2]] for p in picks],
+        "subtotal": round(subtotal, 2),
+        "discount": round(discount, 2),
+        "tax": round(tax, 2),
+        "total": round(subtotal - discount + tax, 2),
+        "time": time.time(),
+        "status": "placed",
+    }
+    DB["orders"].append(order)
+    log("order " + str(order["id"]) + " for " + customer)
+    return {"status": "ok", "order": order}
+
+
+def cancel_order(oid):
+    for o in DB["orders"]:
+        if o["id"] == oid:
+            if o["status"] != "placed":
+                return "cannot cancel " + o["status"]
+            for l in o["lines"]:
+                DB["items"][l[0]]["stock"][l[2]] += l[1]
+            o["status"] = "cancelled"
+            log("cancelled " + str(oid))
+            return "ok"
+    return "not found"
+
+
+def customer_report(customer):
+    orders = [o for o in DB["orders"] if o["customer"] == customer]
+    spent = 0
+    count = 0
+    for o in orders:
+        if o["status"] == "placed":
+            spent += o["total"]
+            count += 1
+    avg = 0
+    if count > 0:
+        avg = spent / count
+    return {"customer": customer, "orders": count, "spent": round(spent, 2), "avg": round(avg, 2)}
+
+
+def export_csv(path):
+    f = open(path, "w")
+    w = csv.writer(f)
+    w.writerow(["id", "customer", "total", "status", "time"])
+    for o in DB["orders"]:
+        w.writerow([o["id"], o["customer"], o["total"], o["status"], datetime.fromtimestamp(o["time"]).isoformat()])
+    f.close()
+
+
+def low_stock(threshold=10):
+    out = []
+    for sku in DB["items"]:
+        t = total_stock(sku)
+        if t < threshold:
+            out.append((sku, DB["items"][sku]["name"], t))
+    out.sort(key=lambda x: x[2])
+    return out
+
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) < 2:
+        print("usage: inv.py db.json")
+        sys.exit(1)
+    if not load(sys.argv[1]):
+        print("could not load")
+    for r in low_stock():
+        print(r[0], r[1], r[2])
+    save(sys.argv[1])
