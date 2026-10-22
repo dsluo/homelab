@@ -109,7 +109,7 @@ spec:
     - "off"
     # Drafts from n-grams already in context: no draft model, no VRAM.
     - --spec-type
-    - ngram-mod
+    - none
     # Qwen's thinking-mode preset for this model, unmodified.
     - --temp
     - "1.0"
