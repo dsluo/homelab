@@ -132,6 +132,18 @@ spec:
   # 273-304 tok/s, generation 45-46 tok/s, ngram drafts ~85% accepted. 189k
   # needle: 120 tok/s prefill (26 min), 16.5 tok/s generation, PASS. The first
   # request after a load pays the fault-in at roughly a third of that.
+  command:
+    - sh
+    - -c
+    - 'mkdir -p /tmp/apt/lists/partial /tmp/apt/cache/archives/partial /tmp/deb && A="-o APT::Sandbox::User=root -o Dir::State::Lists=/tmp/apt/lists -o Dir::Cache=/tmp/apt/cache" && apt-get $A update -qq && cd /tmp/deb && apt-get $A download libdw1t64 libelf1t64 && for d in /tmp/deb/*.deb; do dpkg-deb -x $d /; done && cd /app && exec /opt/rocm/bin/rocprofv3 --kernel-trace --stats --collection-period 200:20:1 -d /prof -o run -- /app/llama-server "$@"'
+    - llama-server
+  extraVolumes:
+    - name: prof
+      emptyDir: {}
+  extraVolumeMounts:
+    - name: prof
+      mountPath: /prof
+
   resources:
     # Experts run on CPU here, so this is real compute.
     cpu: "8"
