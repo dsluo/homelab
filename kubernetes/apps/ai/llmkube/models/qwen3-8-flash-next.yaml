@@ -77,7 +77,7 @@ spec:
   # (GBs of refaults, throughput falling run over run), 34 holds. Carried over
   # from the 3090 Ti + 3070 (also 32 GB); the R9700 has no split overhead, so
   # it may fit lower.
-  moeCPULayers: 30
+  moeCPULayers: 34
   # This GGUF names the n-gram table per_layer_token_embd, not ple_ngram_embd.
   # Atomic's README says it lands on host unaided; kept explicit until
   # confirmed.
@@ -132,6 +132,10 @@ spec:
   # 273-304 tok/s, generation 45-46 tok/s, ngram drafts ~85% accepted. 189k
   # needle: 120 tok/s prefill (26 min), 16.5 tok/s generation, PASS. The first
   # request after a load pays the fault-in at roughly a third of that.
+  env:
+    - name: HIP_FORCE_DEV_KERNARG
+      value: "1"
+
   resources:
     # Experts run on CPU here, so this is real compute.
     cpu: "8"
