@@ -8,8 +8,11 @@ just llm-bench run --service ai/qwen3-8-flash-next --label rocm-b11783-ncmoe34 -
 just llm-bench compare scripts/llm-bench/results/*.json
 ```
 
-`--service` port-forwards to the Service directly. Do not point it at the
-router-proxy or LiteLLM: a ModelPool swap would land inside the measurement.
+`--service` port-forwards to the Service directly. For a ModelPool member,
+go through the router-proxy instead (`--base-url` plus `--model <isvc>`) once
+the member is resident: the pool counts idleness from router traffic, so a run
+that bypasses it gets reclaimed after `reclaimAfter`. Never go through LiteLLM,
+and never start a run on a non-resident member, or the swap lands in the numbers.
 Results land in `results/` (gitignored), one JSON per run with the
 InferenceService spec, llama.cpp build and every request.
 

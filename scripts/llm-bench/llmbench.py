@@ -379,8 +379,10 @@ def collect_meta(client: Client, args: argparse.Namespace) -> dict:
         }
     except (urllib.error.URLError, OSError, ValueError):
         pass
-    if args.service:
-        ns, _, svc = args.service.rpartition("/")
+    # Through the router-proxy, the model id is the InferenceService name.
+    target = args.service or (f"ai/{args.model}" if args.model else None)
+    if target:
+        ns, _, svc = target.rpartition("/")
         try:
             isvc = subprocess.check_output(
                 ["kubectl", "-n", ns or "ai", "get", "inferenceservice", svc, "-o", "json"],
