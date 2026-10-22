@@ -68,7 +68,7 @@ spec:
   modelRef: qwen3-8-flash-next
   runtime: llamacpp
   # qwen4exp needs b10666 or newer; older builds cannot load the architecture.
-  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b11783@sha256:57350ca6eb16ea4470e784499290e703e5ca92219d63b14232ddd0e1556b0856
+  image: ghcr.io/ggml-org/llama.cpp:server-rocm-b11783@sha256:5483fc98ed13b66ed73a325c5820217928b37dc0fc86bd9e12d145d1f5a37203
   # No spec.replicas: the ModelPool in ./modelpool.yaml owns a member's replica
   # count, and a value here makes Flux fight it on a swap.
 
@@ -110,6 +110,8 @@ spec:
     # Drafts from n-grams already in context: no draft model, no VRAM.
     - --spec-type
     - ngram-mod
+    - --threads
+    - "8"
     # Qwen's thinking-mode preset for this model, unmodified.
     - --temp
     - "1.0"
