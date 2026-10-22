@@ -132,10 +132,6 @@ spec:
   # 273-304 tok/s, generation 45-46 tok/s, ngram drafts ~85% accepted. 189k
   # needle: 120 tok/s prefill (26 min), 16.5 tok/s generation, PASS. The first
   # request after a load pays the fault-in at roughly a third of that.
-  env:
-    - name: GGML_CUDA_DISABLE_GRAPHS
-      value: "1"
-
   resources:
     # Experts run on CPU here, so this is real compute.
     cpu: "8"
