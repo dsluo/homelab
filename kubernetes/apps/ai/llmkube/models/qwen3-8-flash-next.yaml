@@ -94,8 +94,8 @@ spec:
   # with it. Keep ../../litellm/proxy/models/llmkube.yaml maxInputTokens in step.
   contextSize: 196608
   parallelSlots: 1 # CPU-side experts do not parallelise; one slot gets the window
-  batchSize: 1024
-  uBatchSize: 768 # prefill ~+60% over 256 on CUDA; the compute buffer grows with it
+  batchSize: 1536
+  uBatchSize: 1536 # prefill ~+60% over 256 on CUDA; the compute buffer grows with it
   jinja: true # required for the chat-template-kwargs below
 
   # KV left at f16: q8_0 saves ~0.75 GB but loses QSA's sparse decode kernel
@@ -110,8 +110,6 @@ spec:
     # Drafts from n-grams already in context: no draft model, no VRAM.
     - --spec-type
     - ngram-mod
-    - --threads
-    - "8"
     # Qwen's thinking-mode preset for this model, unmodified.
     - --temp
     - "1.0"
