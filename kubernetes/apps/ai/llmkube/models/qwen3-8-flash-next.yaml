@@ -135,7 +135,7 @@ spec:
   command:
     - sh
     - -c
-    - 'mkdir -p /tmp/apt/lists/partial /tmp/apt/cache/archives/partial /tmp/deb && A="-o APT::Sandbox::User=root -o Dir::State::Lists=/tmp/apt/lists -o Dir::Cache=/tmp/apt/cache" && apt-get $A update -qq && cd /tmp/deb && apt-get $A download libdw1t64 libelf1t64 && for d in /tmp/deb/*.deb; do dpkg-deb -x $d /; done && cd /app && exec /opt/rocm/bin/rocprofv3 --kernel-trace --stats --collection-period 200:20:1 -d /prof -o run -- /app/llama-server "$@"'
+    - 'mkdir -p /tmp/apt/lists/partial /tmp/apt/cache/archives/partial /tmp/deb && A="-o APT::Sandbox::User=root -o Dir::State::Lists=/tmp/apt/lists -o Dir::Cache=/tmp/apt/cache" && apt-get $A update -qq && cd /tmp/deb && apt-get $A download libdw1t64 libelf1t64 && for d in /tmp/deb/*.deb; do dpkg-deb -x $d /; done && cd /app && exec /opt/rocm/bin/rocprofv3 --kernel-trace --memory-copy-trace --hip-runtime-trace --stats --collection-period 200:10:1 -d /prof -o run -- /app/llama-server "$@"'
     - llama-server
   extraVolumes:
     - name: prof
