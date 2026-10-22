@@ -77,7 +77,7 @@ spec:
   # (GBs of refaults, throughput falling run over run), 34 holds. Carried over
   # from the 3090 Ti + 3070 (also 32 GB); the R9700 has no split overhead, so
   # it may fit lower.
-  moeCPULayers: 34
+  moeCPULayers: 30
   # This GGUF names the n-gram table per_layer_token_embd, not ple_ngram_embd.
   # Atomic's README says it lands on host unaided; kept explicit until
   # confirmed.
@@ -109,7 +109,7 @@ spec:
     - "off"
     # Drafts from n-grams already in context: no draft model, no VRAM.
     - --spec-type
-    - none
+    - ngram-mod
     # Qwen's thinking-mode preset for this model, unmodified.
     - --temp
     - "1.0"
