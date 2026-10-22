@@ -110,8 +110,6 @@ spec:
     # Drafts from n-grams already in context: no draft model, no VRAM.
     - --spec-type
     - ngram-mod
-    - --threads
-    - "8"
     # Qwen's thinking-mode preset for this model, unmodified.
     - --temp
     - "1.0"
@@ -134,6 +132,25 @@ spec:
   # 273-304 tok/s, generation 45-46 tok/s, ngram drafts ~85% accepted. 189k
   # needle: 120 tok/s prefill (26 min), 16.5 tok/s generation, PASS. The first
   # request after a load pays the fault-in at roughly a third of that.
+  command:
+    - /opt/rocm/bin/rocprofv3
+    - --kernel-trace
+    - --stats
+    - --collection-period
+    - "180:20:1"
+    - -d
+    - /prof
+    - -o
+    - run
+    - --
+    - /app/llama-server
+  extraVolumes:
+    - name: prof
+      emptyDir: {}
+  extraVolumeMounts:
+    - name: prof
+      mountPath: /prof
+
   resources:
     # Experts run on CPU here, so this is real compute.
     cpu: "8"
