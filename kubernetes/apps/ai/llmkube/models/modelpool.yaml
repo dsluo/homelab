@@ -4,10 +4,10 @@ kind: ModelPool
 metadata:
   name: talos1-gpu
 spec:
-  # Informational — members declare their own resource requests. nodeSelector is
-  # deliberately unset: the operator never reads it, and members land on talos1
-  # anyway because it is the only node advertising nvidia.com/gpu: 2.
-  gpu: 2
+  # Informational; members declare their own resource requests. nodeSelector is
+  # deliberately unset: the operator never reads it, and both members claim the
+  # R9700 through the r9700 ResourceClaimTemplate, which pins them to talos1.
+  gpu: 1
   # Hands the slot back to the default once flash-next goes idle, so
   # paperless, kguardian and home-assistant find the 27B resident.
   swapPolicy: reclaim

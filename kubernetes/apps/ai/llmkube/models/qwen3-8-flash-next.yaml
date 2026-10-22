@@ -49,20 +49,16 @@ spec:
   format: gguf
   quantization: AD-4.27bpw-Q4_K_M
   hardware:
-    accelerator: cuda
+    accelerator: rocm
     gpu:
       enabled: true
-      count: 2 # 3090 Ti + 3070 on talos1
-      vendor: nvidia
+      count: 1
+      vendor: amd
+      runtime: rocm
       layers: 999 # ngl=999; expert tensors come back off the GPU via moeCPULayers
-      # Emits --tensor-split 9,1; only the ratio matters. It splits layers, and
-      # the 3070 only sheds a whole layer at certain steps (9:1 through 11:1 all
-      # leave it the same layers). moeCPULayers unloads the 3090 Ti only.
-      sharding:
-        strategy: layer
-        layerSplit:
-          - "0-8" # 3090 Ti
-          - "9-9" # 3070
+      resourceClaims:
+        - name: gpu
+          resourceClaimTemplateName: r9700
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
@@ -72,18 +68,15 @@ spec:
   modelRef: qwen3-8-flash-next
   runtime: llamacpp
   # qwen4exp needs b10666 or newer; older builds cannot load the architecture.
-  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b11783@sha256:1bacc872b168d2d10bfd8c220336f5a2cd464c07605936ec146ee5198832ffce
-  runtimeClassName: nvidia
-  # Off while talos1 drops to one NVIDIA GPU. Scaled, not deleted: the ISVC owns
-  # the model-cache PVC. Drop this when ./modelpool.yaml is restored, since the
-  # pool owns a member's replicas and a value here makes Flux fight it on a swap.
-  replicas: 0
-  priorityClassName: gpu-preemptible
+  image: ghcr.io/ggml-org/llama.cpp:server-rocm-b11783@sha256:5483fc98ed13b66ed73a325c5820217928b37dc0fc86bd9e12d145d1f5a37203
+  # No spec.replicas: the ModelPool in ./modelpool.yaml owns a member's replica
+  # count, and a value here makes Flux fight it on a swap.
 
   # Trades VRAM against talos1 RAM at ~1.03 GB of experts per layer. Every
   # CPU-side expert is read per token and must stay in page cache: 36 churned
-  # (GBs of refaults, throughput falling run over run), 34 holds. Lowering it
-  # buys little (30 vs 32: ~3% prefill, generation flat).
+  # (GBs of refaults, throughput falling run over run), 34 holds. Carried over
+  # from the 3090 Ti + 3070 (also 32 GB); the R9700 has no split overhead, so
+  # it may fit lower.
   moeCPULayers: 34
   # This GGUF names the n-gram table per_layer_token_embd, not ple_ngram_embd.
   # Atomic's README says it lands on host unaided; kept explicit until
@@ -92,17 +85,17 @@ spec:
     - per_layer_token_embd=CPU
 
   # --- typed preset fields ---
-  # Qwen Sparse Attention's top_k allocates from the CUDA pool at runtime, not
-  # at load: ~400-450 MB per card by 90k tokens. A config that loads can still
-  # OOM mid-prompt, so validate any context/ubatch/split change with a
-  # near-max-context request. Measured at 189k: 1.15 / 0.73 GB still free.
+  # Qwen Sparse Attention's top_k allocates from the GPU pool at runtime, not
+  # at load: ~400-450 MB per card by 90k tokens on CUDA. A config that loads
+  # can still OOM mid-prompt, so validate any context/ubatch/layer change with
+  # a near-max-context request.
   #
   # A crashlooping load strands the ModelPool in Swapping and takes the 27B down
   # with it. Keep ../../litellm/proxy/models/llmkube.yaml maxInputTokens in step.
   contextSize: 196608
   parallelSlots: 1 # CPU-side experts do not parallelise; one slot gets the window
   batchSize: 1024
-  uBatchSize: 768 # prefill ~+60% over 256; the compute buffer grows on both cards
+  uBatchSize: 768 # prefill ~+60% over 256 on CUDA; the compute buffer grows with it
   jinja: true # required for the chat-template-kwargs below
 
   # KV left at f16: q8_0 saves ~0.75 GB but loses QSA's sparse decode kernel
@@ -135,7 +128,7 @@ spec:
     - --chat-template-kwargs
     - '{"reasoning_effort":"xhigh"}'
 
-  # Measured 2026-09-29, code rewrite (1.7k prompt, ~2.3k out), warm: prefill
+  # Measured 2026-09-29 on the 3090 Ti + 3070, code rewrite (1.7k prompt, ~2.3k out), warm: prefill
   # 273-304 tok/s, generation 45-46 tok/s, ngram drafts ~85% accepted. 189k
   # needle: 120 tok/s prefill (26 min), 16.5 tok/s generation, PASS. The first
   # request after a load pays the fault-in at roughly a third of that.
@@ -149,7 +142,6 @@ spec:
     # evicts the model's own experts and halves throughput. Page cache over
     # the request is reclaimable, not an OOM risk.
     memoryLimit: 56Gi
-    gpu: 2
 
   endpoint:
     port: 8080

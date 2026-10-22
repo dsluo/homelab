@@ -35,7 +35,8 @@ spec:
   runtime: llamacpp
   # gfx1201 is in the upstream ROCm image's build targets.
   image: ghcr.io/ggml-org/llama.cpp:server-rocm-b11783@sha256:5483fc98ed13b66ed73a325c5820217928b37dc0fc86bd9e12d145d1f5a37203
-  replicas: 1
+  # No spec.replicas: the ModelPool in ./modelpool.yaml owns a member's replica
+  # count, and a value here makes Flux fight it on a swap.
 
   # --- typed preset fields ---
   contextSize: 262144 # ctx-size
