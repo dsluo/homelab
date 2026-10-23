@@ -15,7 +15,7 @@ TALOSCONFIG = "{{config_root}}/talos/talosconfig"
 "aqua:siderolabs/talos" = "1.14.4"
 # k8s
 "aqua:derailed/k9s" = "0.51.0"
-"aqua:nklmilojevic/sofka" = "0.31.14"
+"aqua:nklmilojevic/sofka" = "0.32.0"
 "aqua:helm/helm" = "4.3.1"
 "aqua:helmfile/helmfile" = "1.8.2"
 "aqua:kubernetes-sigs/kustomize" = "5.8.0"
