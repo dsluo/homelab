@@ -6,4 +6,6 @@ components:
   - ../../components/cluster-global-config
 resources:
   - ./namespace.yaml
-  - ./games-on-whales/ks.yaml
+  # games-on-whales is NVIDIA-only (NVENC, gpu-operator CDI); off until ported
+  # to the R9700.
+  # - ./games-on-whales/ks.yaml
