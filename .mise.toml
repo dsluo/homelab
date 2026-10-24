@@ -40,7 +40,7 @@ TALOSCONFIG = "{{config_root}}/talos/talosconfig"
 # authoring tools
 "pipx:copier" = { version = "9.19.1", uvx_args = "--with copier-template-extensions" }
 # iac
-"aqua:gruntwork-io/terragrunt" = "1.2.0"
+"aqua:gruntwork-io/terragrunt" = "1.2.1"
 "aqua:opentofu" = "1.13.2"
 "aqua:opentofu/tofu-ls" = "0.5.3"
 # ai/mcp
