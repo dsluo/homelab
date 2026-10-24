@@ -43,6 +43,8 @@ repo, and update this file.
   stating blast radius.
 - **CloudNative-PG databases**: `instances: 1` plus `primaryUpdateMethod: restart` means every
   image/operator bump that restarts the primary is a short DB outage for that app — no HA
-  fallback on this cluster. One-way schema migrations: take/verify a CNPG backup first, and
-  check the CRD actually exposes a version-pin/rollback field before claiming rollback is
-  possible.
+  fallback on this cluster. One-way schema migrations: WAL streaming gives PITR, so check
+  `ContinuousArchiving=True` plus at least one completed B2 (`backblaze`) base backup, not
+  base-backup age; `garage` backups carry no WAL. PITR rolls back every app on the
+  shared cluster, so a per-app rollback needs a `pg_dump` taken first. Check the CRD actually
+  exposes a version-pin/rollback field before claiming rollback is possible.
