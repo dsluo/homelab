@@ -88,6 +88,14 @@ spec:
     seccompProfile:
       type: Localhost
       localhostProfile: profiles/radiance.json
+  # io_uring rings count against RLIMIT_MEMLOCK (8 MiB) per UID, and root's
+  # share is already spent by other root processes on talos1. A UID of its own
+  # gets a fresh 8 MiB. Container-level so the cache-prep init still runs as root.
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    allowPrivilegeEscalation: false
 
   resources:
     cpu: "8"
