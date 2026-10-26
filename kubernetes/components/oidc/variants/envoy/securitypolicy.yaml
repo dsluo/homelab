@@ -11,8 +11,10 @@ spec:
   oidc:
     provider:
       issuer: "https://pocket-id.${DOMAIN}"
-      # Setting both endpoints skips EG's discovery fetch on every translation;
-      # one failed fetch 500s every OIDC route and crashes envoy-internal.
+      # Setting authorization + token endpoints skips EG's discovery fetch on
+      # every translation; one failed fetch 500s every OIDC route and crashes
+      # envoy-internal. EG then reads endSessionEndpoint only from here, so
+      # dropping it leaves /logout unable to end the pocket-id session.
       authorizationEndpoint: "https://pocket-id.${DOMAIN}/authorize"
       tokenEndpoint: "https://pocket-id.${DOMAIN}/api/oidc/token"
       endSessionEndpoint: "https://pocket-id.${DOMAIN}/api/oidc/end-session"
