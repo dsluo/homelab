@@ -113,3 +113,32 @@ spec:
     transformations:
       - field: model
         expression: '"gpt-5.6-luna"'
+---
+# Any other model the proxy knows. /v1/models lists this as the literal
+# chatgpt/*: agentgateway expands wildcards only from its cost catalog.
+apiVersion: agentgateway.dev/v1alpha1
+kind: AgentgatewayModel
+metadata:
+  name: chatgpt-wildcard
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: llm-gateway
+      sectionName: http
+  match:
+    model: chatgpt/*
+  provider: Custom
+  baseURL: http://cliproxyapi.ai.svc.cluster.local:8317/v1
+  custom:
+    formats:
+      - type: Completions
+      - type: Responses
+      - type: Messages
+  policies:
+    auth:
+      secretRef:
+        name: cliproxyapi-key
+    transformations:
+      - field: model
+        expression: 'llmRequest.model.stripPrefix("chatgpt/")'
