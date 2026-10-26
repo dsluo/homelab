@@ -9,12 +9,12 @@ spec:
       namespace: external-secrets
     - name: pocket-id
       namespace: security
-    - name: litellm
+    - name: llm-gateway
       namespace: ai
   components:
     - ../../../../components/database
     - ../../../../components/oidc/envoy
-    - ../../../../components/litellm-key
+    - ../../../../components/llm-key
   interval: 1h
   path: ./kubernetes/apps/kguardian/kguardian/app
   postBuild:
@@ -26,10 +26,10 @@ spec:
       # would select the controller DaemonSet instead.
       NETPOL_APP: kguardian-frontend
       # The chart injects the provider key from this Secret key (llmBridge.secrets.keyName).
-      LITELLM_KEY_SECRET_KEY: api-key
+      LLM_KEY_SECRET_KEY: api-key
       # Must advertise tool calling: the assistant uses it to reach its own
       # telemetry tools.
-      LITELLM_KEY_MODELS: '"llmkube/Qwen/Qwen3.8-27B-MTP"'
+      LLM_KEY_MODELS: '"llmkube/Qwen/Qwen3.8-27B-MTP"'
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap

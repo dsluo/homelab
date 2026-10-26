@@ -1,6 +1,6 @@
 ---
 # The chart's own NetworkPolicy (broker.networkPolicy) covers the broker only,
-# and llm-bridge is the pod holding the LiteLLM virtual key and, at /mcp,
+# and llm-bridge is the pod holding the LLM gateway key and, at /mcp,
 # cluster telemetry. This default-deny is what keeps /mcp reachable only through
 # the ToolHive proxy admitted below.
 apiVersion: cilium.io/v2
