@@ -33,16 +33,16 @@ spec:
   dependsOn:
     - name: external-secrets-config
       namespace: external-secrets
-    # For the LiteLLMVirtualKey the component below declares, whose Secret
-    # reflector mirrors in here — the pod cannot start without OPENAI_API_KEY.
-    # Ordering only: reflector copies asynchronously, so a first deploy still
-    # waits on the mirror.
-    - name: litellm
+    # For the key the component below declares, whose Secret reflector
+    # mirrors in here; the pod cannot start without OPENAI_API_KEY. Ordering
+    # only: reflector copies asynchronously, so a first deploy still waits on
+    # the mirror.
+    - name: llm-gateway
       namespace: ai
   interval: 1h
   path: ./kubernetes/apps/tools/atuin/ai
   components:
-    - ../../../../components/litellm-key
+    - ../../../../components/llm-key
   postBuild:
     substitute:
       APP: *app
