@@ -1,0 +1,15 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: agentgateway
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  allowCrossNamespaceImport: true
+  # The chart's dashboard ConfigMap; its grafana_dashboard label is for the
+  # sidecar loader, which this Grafana does not run.
+  configMapRef:
+    name: agentgateway-dashboard
+    key: agentgateway.json

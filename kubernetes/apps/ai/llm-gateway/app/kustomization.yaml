@@ -1,0 +1,13 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./agentgatewayparameters.yaml
+  - ./ciliumnetworkpolicy.yaml
+  - ./gateway.yaml
+  - ./httproute.yaml
+  - ./keystore.yaml
+  - ./models
+  - ./policy.yaml
+  - ./service.yaml
+  - ./usergroup.yaml

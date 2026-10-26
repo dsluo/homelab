@@ -1,0 +1,13 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: llm-gateway-users
+spec:
+  friendlyName: LLM Gateway Users
+  allowedOIDCClients:
+    - name: llm-gateway
+  users:
+    userRefs:
+      - name: david
+        namespace: security

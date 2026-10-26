@@ -1,0 +1,27 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app agentgateway
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    # Only grants RBAC on Istio's ServiceEntry/WorkloadEntry, which do not
+    # exist here; the controller's watches on them would never sync.
+    istio:
+      enabled: false
+    monitoring:
+      enabled: true
+      proxy:
+        # Proxies run in the Gateway's own namespace (ai), not this one.
+        namespaceSelector:
+          any: true
+    resources:
+      requests:
+        cpu: 10m
+        memory: 128Mi
+      limits:
+        memory: 512Mi

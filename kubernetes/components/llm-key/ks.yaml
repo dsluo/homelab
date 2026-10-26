@@ -1,0 +1,36 @@
+---
+# Rendered inside the consuming app's Kustomization: ${APP} resolves there, and
+# targetNamespace places this Kustomization CR in the app's namespace. The key
+# Secrets land in ai regardless, next to the gateway that selects them, so
+# reflector mirrors the raw key back out to ${LLM_KEY_NAMESPACES}. Keys for
+# consumers outside the cluster live in ../../apps/ai/llm-gateway instead.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ${LLM_KEY_APP:=${APP}}-llm-key
+spec:
+  dependsOn:
+    - name: llm-gateway
+      namespace: ai
+  interval: 1h
+  path: ./kubernetes/components/llm-key/resources
+  postBuild:
+    substitute:
+      # Overrides the key name and user_id when it differs from the app name.
+      LLM_KEY_APP: ${LLM_KEY_APP:=${APP}}
+      # Defaults to the app's own namespace, which cluster-global-config
+      # supplies. Comma-separated, so override it to reach further.
+      LLM_KEY_NAMESPACES: ${LLM_KEY_NAMESPACES:=${NAMESPACE}}
+      LLM_KEY_SECRET_KEY: ${LLM_KEY_SECRET_KEY:=OPENAI_API_KEY}
+      # Quoted, comma-separated model names. Empty allows every model. The
+      # brackets live here, not in the caller's value: a scalar that starts
+      # with one cannot round-trip through kustomize unquoted, and Flux rejects
+      # a substitute value that reparses as a list.
+      LLM_KEY_MODELS: '[${LLM_KEY_MODELS:=}]'
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: true

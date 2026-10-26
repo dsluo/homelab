@@ -1,0 +1,20 @@
+---
+# Additive to components/oidc/envoy's envoy-only policy: in-cluster consumers
+# call the LLM listener directly. The admin port (15000) stays envoy-only, since
+# it also serves the full config dump.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: llm-gateway
+spec:
+  endpointSelector:
+    matchLabels:
+      gateway.networking.k8s.io/gateway-name: llm-gateway
+  ingress:
+    - fromEntities:
+        - cluster
+      toPorts:
+        - ports:
+            - port: "80"
+            - port: "15020"
+            - port: "15021"

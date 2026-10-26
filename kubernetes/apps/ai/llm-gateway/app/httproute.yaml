@@ -1,0 +1,53 @@
+---
+# The inference API. Envoy picks the longest matching prefix across routes on
+# a host, so /v1 lands here, outside the OIDC SecurityPolicy on the route
+# below; the gateway's own API-key policy is the gate.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: llm-gateway
+spec:
+  hostnames:
+    - "llm.${DOMAIN}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+      sectionName: https
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /v1
+      backendRefs:
+        - name: llm-gateway
+          port: 80
+---
+# Everything else on the host is the UI, which has no auth of its own; the
+# SecurityPolicy from components/oidc/envoy attaches to this route by name and
+# is the only gate. It also owns /oauth2/callback and /logout.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: llm-gateway-ui
+spec:
+  hostnames:
+    - "llm.${DOMAIN}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+      sectionName: https
+  rules:
+    - matches:
+        - path:
+            type: Exact
+            value: /
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            path:
+              type: ReplaceFullPath
+              replaceFullPath: /ui/
+            statusCode: 302
+    - backendRefs:
+        - name: llm-gateway-ui
+          port: 15000
