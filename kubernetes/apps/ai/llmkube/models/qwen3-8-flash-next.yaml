@@ -82,11 +82,12 @@ spec:
     - --mm-max-patches
     - "0"
 
-  # io_uring (the n-gram reads) and ROCm's NUMA calls are refused by the
-  # default seccomp profile; without this the model cannot serve.
+  # RuntimeDefault refuses io_uring (the n-gram reads) and ROCm's NUMA calls.
+  # The profile is a talos1 machine-config file (talos/patches/node/talos1/).
   podSecurityContext:
     seccompProfile:
-      type: Unconfined
+      type: Localhost
+      localhostProfile: profiles/radiance.json
 
   resources:
     cpu: "8"
