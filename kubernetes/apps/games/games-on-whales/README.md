@@ -44,10 +44,10 @@ scope (see the fork's `examples/steam.yaml` to add later).
 
 ## GPU sharing with llmkube (PriorityClass preemption)
 
-llmkube's main model, `qwen3-8-27b-mtp`, runs on talos1's R9700 through the `r9700`
-ResourceClaimTemplate and requests no `nvidia.com/gpu`, so it never contends with
-sessions. Any llmkube model that does run on talos1's NVIDIA GPUs (today only
-`qwen3-8-flash-next`, scaled to 0) is pinned to a negative PriorityClass
+llmkube's models (`qwen3-8-flash-next` and `qwen3-8-27b-mtp`) run on talos1's R9700s
+through DRA ResourceClaimTemplates and request no `nvidia.com/gpu`, so they never
+contend with sessions. Any llmkube model that runs on talos1's NVIDIA GPUs (today
+none) should be pinned to a negative PriorityClass
 `gpu-preemptible` (value `-100`, defined in
 `kubernetes/apps/ai/llmkube/models/priorityclass.yaml`). The Fenrir operator cannot
 set a `priorityClassName` on the session pods it generates (the User CRD only exposes

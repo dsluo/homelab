@@ -7,7 +7,8 @@ spec:
   # Routes an unmatched request to the backend whose name equals the request's
   # "model" field, so a new pool member costs one backend entry and no rules.
   defaultRouteStrategy: BackendNameMatch
-  defaultRoute: qwen3-8-27b-mtp
+  # Matches the ModelPool default, so an unknown model name does not force a swap.
+  defaultRoute: qwen3-8-flash-next
   backends:
     - name: qwen3-8-27b-mtp
       inferenceServiceRef:
@@ -17,11 +18,9 @@ spec:
         name: qwen3-8-flash-next
   proxy:
     # The 120s default is a max-generation cap on non-streaming completions,
-    # which a thinking 27B blows past. Streaming never reaches it (the first SSE
-    # chunk lands early), but litellm dispatches both. Raised to 1800s when
-    # flash-next went to reasoning_effort xhigh: at ~31 tok/s a long think plus
-    # its answer can run well past ten minutes on a non-streaming call.
-    responseHeaderTimeout: 3600s # a 189k prompt spends 26 min in prefill before any reasoning
+    # which a long think blows past. Streaming never reaches it (the first SSE
+    # chunk lands early), but litellm dispatches both.
+    responseHeaderTimeout: 3600s
     resources:
       requests:
         cpu: 10m

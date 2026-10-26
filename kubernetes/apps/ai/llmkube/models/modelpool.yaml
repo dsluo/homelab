@@ -4,26 +4,21 @@ kind: ModelPool
 metadata:
   name: talos1-gpu
 spec:
-  # Informational — members declare their own resource requests. nodeSelector is
-  # deliberately unset: the operator never reads it, and members land on talos1
-  # anyway because it is the only node advertising nvidia.com/gpu: 2.
+  # Informational: members declare their own resource claims. Flash-next takes
+  # both R9700s, so it and the 27B cannot be resident at once.
   gpu: 2
-  # Hands the slot back to the default once flash-next goes idle, so
-  # paperless, kguardian and home-assistant find the 27B resident.
+  # Hands the cards back to flash-next once the 27B goes idle.
   swapPolicy: reclaim
-  # Longer than a pause in a flash-next session: reloading it cold-reads
-  # 74.5 GB, so reclaiming mid-session costs far more than holding the slot.
+  # Long enough to cover a pause in a 27B session; each reclaim cold-reads
+  # 114 GiB to bring flash-next back.
   reclaimAfter: 30m
   # Caps how long the router holds a request while the incumbent drains and the
-  # target cold-loads — and therefore also how long a request hangs while a Wolf
-  # session holds the GPUs, before 503 + Retry-After.
-  #
-  # 900s, not 300s: swapping in flash-next cold-reads 74.5 GB off the cache PVC,
-  # which does not finish inside the budget the 16 GB 27B needed.
+  # target cold-loads; past it the client gets 503 + Retry-After. Flash-next's
+  # 114 GiB load is the long direction.
   swapBudget: 900s
-  default: qwen3-8-27b-mtp
+  default: qwen3-8-flash-next
   members:
     - inferenceServiceRef:
-        name: qwen3-8-27b-mtp
-    - inferenceServiceRef:
         name: qwen3-8-flash-next
+    - inferenceServiceRef:
+        name: qwen3-8-27b-mtp
