@@ -22,8 +22,12 @@ spec:
       policy:
         matchExpressions:
           # An empty models list allows everything, matching the litellm
-          # virtual keys this replaces.
-          - 'request.method != "POST" || size(apiKey.models) == 0 || json(request.body).model in apiKey.models'
+          # virtual keys this replaces. A trailing * matches by prefix.
+          - >-
+            request.method != "POST" || size(apiKey.models) == 0 ||
+            apiKey.models.exists(m, m.endsWith("*")
+              ? json(request.body).model.startsWith(m.stripSuffix("*"))
+              : json(request.body).model == m)
   frontend:
     metrics:
       attributes:

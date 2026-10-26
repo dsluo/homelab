@@ -30,6 +30,7 @@ spec:
       KOPIUR_CAPACITY: 10Gi
       KOPIUR_UID: "4001"
       KOPIUR_GID: "4001"
+      LLM_KEY_MODELS: '"llmkube/*"'
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap

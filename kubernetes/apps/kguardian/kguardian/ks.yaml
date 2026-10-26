@@ -27,9 +27,7 @@ spec:
       NETPOL_APP: kguardian-frontend
       # The chart injects the provider key from this Secret key (llmBridge.secrets.keyName).
       LLM_KEY_SECRET_KEY: api-key
-      # Must support tool calling: the assistant uses it to reach its own
-      # telemetry tools.
-      LLM_KEY_MODELS: '"llmkube/Qwen/Qwen3.8-27B-MTP"'
+      LLM_KEY_MODELS: '"llmkube/*"'
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
