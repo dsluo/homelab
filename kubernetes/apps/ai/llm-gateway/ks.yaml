@@ -76,7 +76,7 @@ spec:
       LLM_KEY_APP: opencode
       LLM_KEY_NAMESPACES: ai
       LLM_KEY_SECRET_KEY: OPENAI_API_KEY
-      LLM_KEY_MODELS: '["llmkube/Qwen/Qwen3.8-27B-MTP", "llmkube/Qwen/Qwen3.8-Flash-Next", "neuralwatt/deepseek-v4.1-flash"]'
+      LLM_KEY_MODELS: '["llmkube/*", "neuralwatt/deepseek-v4.1-flash"]'
   prune: true
   sourceRef:
     kind: GitRepository
@@ -99,7 +99,7 @@ spec:
       LLM_KEY_APP: pi
       LLM_KEY_NAMESPACES: ai
       LLM_KEY_SECRET_KEY: OPENAI_API_KEY
-      LLM_KEY_MODELS: '["llmkube/Qwen/Qwen3.8-27B-MTP", "llmkube/Qwen/Qwen3.8-Flash-Next", "neuralwatt/deepseek-v4.1-flash"]'
+      LLM_KEY_MODELS: '["llmkube/*", "neuralwatt/deepseek-v4.1-flash"]'
   prune: true
   sourceRef:
     kind: GitRepository
