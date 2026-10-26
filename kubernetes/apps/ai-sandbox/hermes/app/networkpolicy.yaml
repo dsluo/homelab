@@ -1,7 +1,7 @@
 ---
 # Default-deny egress for hermes. The pod runs untrusted / prompt-injected
 # agent code (gVisor-sandboxed), so this is the control that contains a
-# breakout: the pod may reach DNS, Pocket-ID, the LiteLLM proxy, SearXNG, and the
+# breakout: the pod may reach DNS, Pocket-ID, the LLM gateway, SearXNG, and the
 # public internet, but NOT the Kubernetes API, the rest of the LAN, or other
 # in-cluster services.
 #
@@ -47,14 +47,14 @@ spec:
     # identity, so a `toFQDNs` or `toCIDR` rule on that VIP never matches.
     #
     # NOTE: `toServices` can't be paired with `toPorts`, so this allows every
-    # port the backends expose — svc/litellm is 4000-only, but pocket-id also
+    # port the backends expose — svc/llm-gateway is 80-only, but pocket-id also
     # carries :9464 (metrics). Acceptable for a sandbox allowlist. (Verify with
     # `hubble observe --namespace ai-sandbox --verdict DROPPED`.)
     - toServices:
-        # LiteLLM proxy. Everything the agent calls goes through it, so LiteLLM
-        # is the enforcement point for which models it gets, not this policy.
+        # LLM gateway. Everything the agent calls goes through it, so its key
+        # policy is the enforcement point for which models it gets, not this one.
         - k8sService:
-            serviceName: litellm
+            serviceName: llm-gateway
             namespace: ai
         # Pocket-ID. Hermes authenticates its own dashboard, so the POD reaches
         # the issuer server-side for OIDC discovery, the token exchange, and

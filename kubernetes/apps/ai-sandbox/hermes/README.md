@@ -39,13 +39,13 @@ for what actually changed.
 - **Pinned to `talos1`** (worker, has the gVisor extension); never the
   control-plane / GPU host `talos0`.
 - **Egress is default-deny** (`app/networkpolicy.yaml`): cluster DNS, three named
-  in-cluster services via Cilium `toServices` (`svc/litellm` and `svc/searxng`
+  in-cluster services via Cilium `toServices` (`svc/llm-gateway` and `svc/searxng`
   in `ai`, and `svc/pocket-id` in `security` for the dashboard's own OIDC —
   see below), and
   the *public* internet (private / link-local CIDRs excluded). kube-apiserver,
   the rest of the LAN, and every other namespace/service are unreachable — the
   models, memini, and the MCP servers included. Models the agent
-  gets, it gets through the LiteLLM proxy; web search goes through SearXNG.
+  gets, it gets through the LLM gateway; web search goes through SearXNG.
 
   Note the IdP is reached at its *Service*, not through the gateway that fronts
   it. That depends on the cluster-wide CoreDNS rewrite of
@@ -177,26 +177,25 @@ kubectl -n ai-sandbox exec -it deploy/hermes -- hermes setup
 The dashboard is at `https://hermes.${DOMAIN}/`, behind a Pocket-ID
 login.
 
-LiteLLM is wired up declaratively: the `litellm-key` component mints a
-`hermes` virtual key (models listed in `ks.yaml`), reflector mirrors it in as
-`hermes-litellm-key`, and `app/resources/config.yaml` is mounted at
+The LLM gateway is wired up declaratively: the `llm-key` component mints a
+`hermes` key (models listed in `ks.yaml`), reflector mirrors it in as
+`hermes-llm-key`, and `app/resources/config.yaml` is mounted at
 `/etc/hermes`, Hermes' *managed scope*. That layer is deep-merged over the
 PVC's `config.yaml` on every load and stripped on save. It pins only a named
-`providers.litellm` entry, so the main model's provider stays user-selectable:
-use `litellm` for the in-cluster models and any other provider (keys via
+`providers.llm-gateway` entry, so the main model's provider stays user-selectable:
+use `llm-gateway` for the in-cluster models and any other provider (keys via
 `hermes setup`, stored in the PVC's `.env`) for the rest.
 
 ```sh
 kubectl -n ai-sandbox exec -it deploy/hermes -- sh -c '
-  hermes config set model.provider litellm
+  hermes config set model.provider llm-gateway
   hermes config set model.default llmkube/Qwen/Qwen3.8-27B-MTP
 '
 ```
 
-The base URL is **fully qualified** on purpose. `http://litellm.ai:4000/v1`,
-the short form used elsewhere in this repo, is a trap here: the pod runs
-`ndots: 1`, so a name containing a dot resolves as absolute first, and
-`litellm.ai` is a real public domain.
+The base URL is **fully qualified** on purpose. A short form such as
+`http://llm-gateway.ai/v1` is a trap here: the pod runs `ndots: 1`, so a name
+containing a dot resolves as absolute first, against public DNS.
 
 > **Unattended gateways should enable tool-loop hard stops.**
 > `tool_loop_guardrails.hard_stop_enabled` defaults to `false`, which only makes
@@ -292,7 +291,7 @@ Can't be verified from manifests:
       `kubectl -n network get pods -l gateway.envoyproxy.io/owning-gateway-name=envoy-cloudflare`
       should be non-empty.
 - [ ] **NetworkPolicy selects the pod** (`app.kubernetes.io/name: hermes`).
-- [ ] Agent can reach LiteLLM (`ai` :4000) with the minted key, and the public internet.
+- [ ] Agent can reach the LLM gateway (`ai` :80) with the minted key, and the public internet.
 - [ ] Negative check: from inside the pod, kube-apiserver and a LAN host
       (e.g. 10.0.42.1) are **unreachable**; DNS still resolves; and
       `pocket-id.${DOMAIN}` IS reachable.
