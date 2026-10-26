@@ -1,0 +1,18 @@
+---
+# The proxy spends the ChatGPT subscription for anyone holding its one key, so
+# only the gateway, which enforces per-consumer keys, may reach it.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cliproxyapi
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: cliproxyapi
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            gateway.networking.k8s.io/gateway-name: llm-gateway
+      toPorts:
+        - ports:
+            - port: "8317"

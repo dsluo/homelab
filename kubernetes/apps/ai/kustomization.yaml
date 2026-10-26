@@ -6,6 +6,7 @@ components:
   - ../../components/cluster-global-config
 resources:
   - ./namespace.yaml
+  - ./cliproxyapi/ks.yaml
   - ./litellm/ks.yaml
   - ./llm-gateway/ks.yaml
   - ./llmkube/ks.yaml

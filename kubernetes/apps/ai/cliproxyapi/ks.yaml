@@ -1,0 +1,35 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app cliproxyapi
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/ai/cliproxyapi/app
+  components:
+    - ../../../../components/kopiur
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
+    - name: kopiur-repository
+      namespace: kopiur-system
+    # For the llm-keys SecretStore and the Gateway the models attach to.
+    - name: llm-gateway
+  postBuild:
+    substitute:
+      APP: *app
+      # Holds only the Codex credential JSON, backed up because recreating it
+      # needs two interactive logins (README.md).
+      KOPIUR_CAPACITY: 1Gi
+      KOPIUR_UID: "65534"
+      KOPIUR_GID: "65534"
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: false
