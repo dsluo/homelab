@@ -15,7 +15,7 @@ spec:
     vmsingle:
       enabled: true
       spec:
-        retentionPeriod: "100y"
+        retentionPeriod: "180d"
         storageDataPath: /victoria-metrics-data
         useStrictSecurity: true
         # Keep the workload identity tied to the kopiur mover identity. The
