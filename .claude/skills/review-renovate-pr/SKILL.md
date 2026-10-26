@@ -13,15 +13,15 @@ Accept any of:
 - PR number (e.g. `693`) → `owner/repo` is this repo
 - Full PR URL
 - "latest" → `gh pr list --state open --search "head:renovate/"`, pick the newest, confirm with the user
-- **No PR specified, or "all open" / "the open renovate PRs" / multiple PR numbers → batch mode (the default)**: review every open Renovate PR, one subagent per PR in parallel — read `references/batch.md` and follow it. Do not review PRs serially in the main context when there is more than one, and do not stop to ask which PRs to review.
+- **No PR specified, or "all open" / "the open renovate PRs" / multiple PR numbers → batch mode (the default)**: review every open Renovate PR — read `references/batch.md` and follow it. Use one subagent per PR in parallel when delegation is available, within the environment's concurrency limit; otherwise review serially. Do not stop to ask which PRs to review.
 
 ## Tool rules
 
 **Use `gh` for all GitHub data** — PRs, issues, releases, file contents via `gh api`. Never `curl https://api.github.com/...` and never pipe JSON into `python3 -c` to parse it; `gh`'s `--jq` and `-R` flags already cover every case this skill needs. `curl` **is** fine for downloading release assets where `gh release download` doesn't fit (e.g. chart tarballs for local inspection); it's forbidden specifically for things you'd have to parse yourself.
 
-**Never scrape doc sites** (`docs.victoriametrics.com`, `kubernetes.io`, chart project homepages, etc.) — they return HTML you'd have to parse. If a release note links to docs for a migration detail, either stay with the release note or `WebFetch` the **raw GitHub URL** for the relevant markdown file, not the rendered doc page.
+**Never scrape doc sites** (`docs.victoriametrics.com`, `kubernetes.io`, chart project homepages, etc.) — they return HTML you'd have to parse. If a release note links to docs for a migration detail, either stay with the release note or fetch the relevant markdown source with `gh api`, not the rendered doc page.
 
-**Prefer combined calls and parallel tool calls.** `gh pr view && gh pr diff` in one Bash call saves a round-trip. Independent greps/reads should go in a single message.
+**Prefer combined calls and parallel tool calls.** `gh pr view && gh pr diff` in one shell call saves a round-trip. Run independent searches and reads concurrently using the available tools.
 
 ## Procedure
 
@@ -42,7 +42,7 @@ The PR body that Renovate generates usually includes a **Release Notes** collaps
 Only go upstream if the PR body's release notes are missing, truncated, or ambiguous.
 
 - **Container / github-releases**: resolve the source repo (for `ghcr.io/owner/repo`, it's `owner/repo`; otherwise check the image's `org.opencontainers.image.source` label via `docker manifest inspect` or the registry's package page). Then `gh release list -R <owner>/<repo>` and `gh release view <tag> -R <owner>/<repo>` for each tag between `currentValue` and `newValue` (inclusive of the new, exclusive of the current).
-- **Helm charts**: the chart repo is in the manifest (`HelmRepository` or `sourceRef`). Most charts link to a GitHub repo in `Chart.yaml`; fetch the chart's `CHANGELOG.md` via `gh api repos/<owner>/<repo>/contents/<path> --jq .content | base64 -d` (or just `gh browse`/WebFetch the raw URL), or the corresponding GitHub releases. For `app-template` and other common charts, the chart version ≠ app version — **read the chart changelog first, then also skim the app changelog when the appVersion bumped**. The binary changes can matter independently (perf regressions, schema migrations, bugfixes relevant to this single-node setup).
+- **Helm charts**: the chart repo is in the manifest (`HelmRepository` or `sourceRef`). Most charts link to a GitHub repo in `Chart.yaml`; fetch the chart's `CHANGELOG.md` via `gh api repos/<owner>/<repo>/contents/<path> --jq .content | base64 -d`, or read the corresponding GitHub releases. For `app-template` and other common charts, the chart version ≠ app version — **read the chart changelog first, then also skim the app changelog when the appVersion bumped**. The binary changes can matter independently (perf regressions, schema migrations, bugfixes relevant to this single-node setup).
 - **Mise tools / GitHub Actions**: `gh release list -R <owner>/<repo>` on the source repo.
 - **Digest-only bumps**: no version change — check if the new digest corresponds to a rebuild of the same tag (common for `:latest`-style pins or security rebuilds). If the tag is immutable and only the digest moved, the upstream likely republished; `gh api repos/<owner>/<repo>/commits/<sha>` on the image's source-commit label can confirm.
 
@@ -128,7 +128,7 @@ decision-relevant line. "None — config-only, no workload restart" is a valid e
 - <only if noticed in passing: stale comments, deprecated apiVersions, dead values — omit the section if empty>
 ```
 
-**Citation rule:** every `Impact here:` entry must either be a concrete `path/to/file.yaml:NN` reference (line number required — find it with Grep's `-n` output) or the literal string `no impact — not used`. Prose claims like "our helmrelease doesn't reference it" are not acceptable — if it's truly absent, show the grep came up empty; if it's present, cite the line.
+**Citation rule:** every `Impact here:` entry must either be a concrete `path/to/file.yaml:NN` reference (line number required — find it with `rg -n` or an equivalent search tool) or the literal string `no impact — not used`. Prose claims like "our helmrelease doesn't reference it" are not acceptable — if it's truly absent, show the search came up empty; if it's present, cite the line.
 
 **Recommended-actions rule:** every concrete edit in `Recommended actions` (renames, value changes, field swaps) must be backed by template evidence per §4's verify-before-prescribing step. If you only have the release-note text, phrase the action as verification, not a prescribed edit — e.g. `after merge, confirm that the rendered VMAgent Service name still matches httproute.yaml:14; if not, update the backendRef`. Better to ask the user to verify than to prescribe a wrong rename.
 

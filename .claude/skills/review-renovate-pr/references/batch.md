@@ -1,6 +1,8 @@
 # Batch mode: reviewing multiple Renovate PRs
 
-Reviewing all open Renovate PRs in parallel subagents is the normal way this skill runs. Serial review in the main context wastes the user's time and your context — fan out.
+Review all open Renovate PRs with one subagent per PR when delegation is available. Respect the environment's concurrency limit and dispatch remaining PRs as slots become available. If delegation is unavailable, review serially and still perform the cross-PR check and batch summary below.
+
+When reviewing serially, finish and emit each PR's review block before starting the next. Carry forward only compact findings needed for the cross-PR check and summary, not raw changelogs.
 
 ## 1. Enumerate
 
@@ -8,17 +10,17 @@ Reviewing all open Renovate PRs in parallel subagents is the normal way this ski
 gh pr list --state open --search "head:renovate/" --json number,title,labels,createdAt
 ```
 
-## 2. Dispatch — one subagent per PR, all in one message
+## 2. Dispatch — one subagent per PR
 
-Launch one `general-purpose` agent per PR, **all Agent calls in a single message** so they run in parallel. Use this dispatch prompt (it is the proven template from past runs — keep the constraints verbatim, fill in the placeholders):
+Use the environment's delegation tools to launch independent reviewers concurrently. Give each reviewer the repository working directory and network access for `gh` and upstream downloads; prohibit writes to repository files. Keep this dispatch prompt's constraints verbatim, filling in only the placeholders (`<repo-root>` is the actual repository root):
 
 ```
-You are reviewing a single Renovate PR in the homelab repo at /Users/dsluo/Projects/homelab.
+You are reviewing a single Renovate PR in the homelab repo at <repo-root>.
 
 FIRST: read and follow the skill instructions verbatim at
-/Users/dsluo/Projects/homelab/.claude/skills/review-renovate-pr/SKILL.md (cat it). That file
+<repo-root>/.agents/skills/review-renovate-pr/SKILL.md. That file
 defines your entire procedure, tool rules, and output format. Also read
-/Users/dsluo/Projects/homelab/CLAUDE.md for repo context. You are a leaf reviewer — skip the
+<repo-root>/AGENTS.md for repo context. You are a leaf reviewer — skip the
 skill's "Batch mode" section; do not fan out further.
 
 Your assigned PR: **#<num>** — `<title>` (labels: <labels>).
@@ -71,6 +73,6 @@ Order by blast radius, not PR number: config-only first; workload restarts secon
 Only on explicit user request. Mechanics that matter:
 
 - **Pre-flight each PR** before merging: `gh pr view <n> --json mergeable,mergeStateStatus,statusCheckRollup` — a ✅ review verdict says nothing about branch state or CI.
-- **One `gh pr merge <n> --squash` per Bash call.** Do not batch merges into a shell loop — a past run's 14-PR loop was blocked by the permission classifier and fell back to individual calls anyway. Individual calls also give per-PR failure isolation.
+- **One `gh pr merge <n> --squash` per shell call.** Check each result before proceeding so a failure does not silently carry the batch forward.
 - **Respect the staged order** from the batch summary. Between the high-blast-radius merges, verify Flux converged before the next one (`just reconcile`, then `flux get ks -A` / `flux get hr -A` for anything not Ready).
 - ⚠ PRs are not merged in this phase unless the user upgraded them explicitly; restate what was left unmerged and why at the end.
