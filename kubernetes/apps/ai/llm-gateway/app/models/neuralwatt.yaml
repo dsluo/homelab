@@ -35,8 +35,14 @@ spec:
       sectionName: http
   match:
     model: neuralwatt/deepseek-v4.1-flash
-  provider: OpenAI
+  # Custom with Completions only, as in ./llmkube.yaml: Responses/Messages
+  # clients get translated rather than passed through to an API neuralwatt may
+  # not serve, and reasoning_effort below stays a chat-completions field.
+  provider: Custom
   baseURL: https://api.neuralwatt.com/v1
+  custom:
+    formats:
+      - type: Completions
   policies:
     auth:
       secretRef:
