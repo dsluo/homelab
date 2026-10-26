@@ -1,0 +1,106 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app llm-gateway
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/ai/llm-gateway/app
+  dependsOn:
+    - name: agentgateway
+      namespace: network
+    - name: external-secrets-config
+      namespace: external-secrets
+    # Orders the backing Services ahead of the models that point at them.
+    - name: llmkube
+    - name: pocket-id
+      namespace: security
+  postBuild:
+    substitute:
+      APP: *app
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/agentgateway.svg"
+      HTTPROUTE_NAME: llm-gateway-ui
+      OIDC_APP_NAME: LLM Gateway
+      SUBDOMAIN: llm-ui
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: false
+---
+# Keys for consumers outside the cluster, delivered by hand out of 1Password.
+# In-cluster consumers declare their own via ../../../components/llm-key,
+# which reflects the Secret into their namespace instead.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: home-assistant-llm-key
+spec:
+  dependsOn:
+    - name: llm-gateway
+  interval: 1h
+  path: ./kubernetes/apps/ai/llm-gateway/external-key
+  postBuild:
+    substitute:
+      LLM_KEY_APP: home-assistant
+      LLM_KEY_NAMESPACES: ai
+      LLM_KEY_SECRET_KEY: OPENAI_API_KEY
+      LLM_KEY_MODELS: '["llmkube/Qwen/Qwen3.8-27B-MTP"]'
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: opencode-llm-key
+spec:
+  dependsOn:
+    - name: llm-gateway
+  interval: 1h
+  path: ./kubernetes/apps/ai/llm-gateway/external-key
+  postBuild:
+    substitute:
+      LLM_KEY_APP: opencode
+      LLM_KEY_NAMESPACES: ai
+      LLM_KEY_SECRET_KEY: OPENAI_API_KEY
+      LLM_KEY_MODELS: '["llmkube/Qwen/Qwen3.8-27B-MTP", "llmkube/Qwen/Qwen3.8-Flash-Next", "neuralwatt/deepseek-v4.1-flash"]'
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: pi-llm-key
+spec:
+  dependsOn:
+    - name: llm-gateway
+  interval: 1h
+  path: ./kubernetes/apps/ai/llm-gateway/external-key
+  postBuild:
+    substitute:
+      LLM_KEY_APP: pi
+      LLM_KEY_NAMESPACES: ai
+      LLM_KEY_SECRET_KEY: OPENAI_API_KEY
+      LLM_KEY_MODELS: '["llmkube/Qwen/Qwen3.8-27B-MTP", "llmkube/Qwen/Qwen3.8-Flash-Next", "neuralwatt/deepseek-v4.1-flash"]'
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: true

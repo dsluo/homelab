@@ -1,0 +1,21 @@
+---
+apiVersion: agentgateway.dev/v1alpha1
+kind: AgentgatewayParameters
+metadata:
+  name: llm-gateway
+spec:
+  rawConfig:
+    config:
+      # Defaults to localhost, which ./service.yaml cannot reach.
+      adminAddr: 0.0.0.0:15000
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+  service:
+    spec:
+      # The controller defaults to LoadBalancer; clients come in through
+      # envoy-internal or the in-cluster Service.
+      type: ClusterIP

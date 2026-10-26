@@ -1,0 +1,40 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: agentgateway-crds
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/network/agentgateway/crds
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: network
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app agentgateway
+spec:
+  dependsOn:
+    - name: agentgateway-crds
+  interval: 1h
+  path: ./kubernetes/apps/network/agentgateway/app
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: network
+  # Ready, not merely applied: llm-gateway's Gateway needs the GatewayClass
+  # this controller registers.
+  wait: true

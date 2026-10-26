@@ -1,0 +1,49 @@
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: neuralwatt-llm-gateway
+spec:
+  refreshInterval: 1h
+  refreshPolicy: Periodic
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: onepassword
+  target:
+    name: neuralwatt-llm-gateway
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      type: Opaque
+      mergePolicy: Replace
+      data:
+        # The key name agentgateway's auth.secretRef reads.
+        Authorization: '{{ index . "API_KEY" }}'
+  dataFrom:
+    - extract:
+        key: neuralwatt-api
+---
+apiVersion: agentgateway.dev/v1alpha1
+kind: AgentgatewayModel
+metadata:
+  name: neuralwatt-deepseek-v4-1-flash
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: llm-gateway
+      sectionName: http
+  match:
+    model: neuralwatt/deepseek-v4.1-flash
+  provider: OpenAI
+  baseURL: https://api.neuralwatt.com/v1
+  policies:
+    auth:
+      secretRef:
+        name: neuralwatt-llm-gateway
+    transformations:
+      - field: model
+        expression: '"deepseek-v4.1-flash"'
+      # Default to high when the client does not pick a level.
+      - field: reasoning_effort
+        expression: 'default(llmRequest.reasoning_effort, "high")'

@@ -1,0 +1,13 @@
+---
+# The admin UI port, which the controller's generated Service does not expose.
+apiVersion: v1
+kind: Service
+metadata:
+  name: llm-gateway-ui
+spec:
+  selector:
+    gateway.networking.k8s.io/gateway-name: llm-gateway
+  ports:
+    - name: http
+      port: 15000
+      targetPort: 15000

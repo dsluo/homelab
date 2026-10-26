@@ -7,6 +7,7 @@ components:
 resources:
   - ./namespace.yaml
   - ./litellm/ks.yaml
+  - ./llm-gateway/ks.yaml
   - ./llmkube/ks.yaml
   - ./memini/ks.yaml
   - ./searxng/ks.yaml
