@@ -32,22 +32,22 @@ spec:
                     name: memini-postgres-secret
                     key: uri
               MEMINI_LOG_FORMAT: json
-              # Through the proxy rather than the llmkube Services, so this
-              # traffic carries a virtual key and lands in litellm's spend logs.
-              MEMINI_EMBED_BASE_URL: &litellm http://litellm.ai.svc.cluster.local:4000/v1
+              # Through the gateway rather than the llmkube Services, so this
+              # traffic carries a key and is attributed per user_id in its metrics.
+              MEMINI_EMBED_BASE_URL: &llmGateway http://llm-gateway.ai.svc.cluster.local/v1
               MEMINI_EMBED_MODEL: llmkube/Qwen/Qwen3-Embedding-0.6B
               MEMINI_EMBED_DIMS: "1024"
               MEMINI_EMBED_MAX_CONCURRENCY: "2"
-              MEMINI_EMBED_API_KEY: &litellmKey
+              MEMINI_EMBED_API_KEY: &llmKey
                 valueFrom:
                   secretKeyRef:
-                    name: memini-litellm-key
+                    name: memini-llm-key
                     key: OPENAI_API_KEY
               # A base URL (not "off"/"llm") selects cross-encoder rerank;
-              # memini appends /rerank, which litellm serves.
-              MEMINI_RERANK: *litellm
+              # memini appends /rerank, which the gateway serves.
+              MEMINI_RERANK: *llmGateway
               MEMINI_RERANK_MODEL: llmkube/Qwen/Qwen3-Reranker-0.6B
-              MEMINI_RERANK_API_KEY: *litellmKey
+              MEMINI_RERANK_API_KEY: *llmKey
               MEMINI_API_KEY:
                 valueFrom:
                   secretKeyRef:

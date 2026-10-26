@@ -8,12 +8,12 @@ spec:
   path: ./kubernetes/apps/ai/memini/app
   components:
     - ../../../../components/database
-    - ../../../../components/litellm-key
+    - ../../../../components/llm-key
   dependsOn:
     - name: external-secrets-config
       namespace: external-secrets
     - name: llmkube-models
-    - name: litellm
+    - name: llm-gateway
   postBuild:
     substitute:
       APP: *app
@@ -21,7 +21,7 @@ spec:
       # owner role, so it only succeeds once CNPG has created it here. Nothing
       # orders the two — first boot crash-loops until CNPG wins.
       DB_EXTENSIONS: '[{"name":"vector"},{"name":"vchord"}]'
-      LITELLM_KEY_MODELS: '"llmkube/Qwen/Qwen3-Embedding-0.6B", "llmkube/Qwen/Qwen3-Reranker-0.6B"'
+      LLM_KEY_MODELS: '"llmkube/Qwen/Qwen3-Embedding-0.6B", "llmkube/Qwen/Qwen3-Reranker-0.6B"'
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
