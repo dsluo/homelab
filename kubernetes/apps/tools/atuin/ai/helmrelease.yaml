@@ -21,12 +21,12 @@ spec:
               # TODO: atuin-ai-server does not have semver yet
               tag: main@sha256:3d11028588ebfddb0685169e35cbc7121d3577b6eee3831e845fbe5c28e48d92
             env:
-              # Minted by the litellm-key component in ../ks.yaml and mirrored here by
+              # Minted by the llm-key component in ../ks.yaml and mirrored here by
               # reflector; nothing in this repo creates it until the key is minted.
               OPENAI_API_KEY:
                 valueFrom:
                   secretKeyRef:
-                    name: atuin-ai-litellm-key
+                    name: atuin-ai-llm-key
                     key: OPENAI_API_KEY
               AUTH_TOKEN:
                 valueFrom:

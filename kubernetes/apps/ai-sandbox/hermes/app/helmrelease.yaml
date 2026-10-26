@@ -95,12 +95,12 @@ spec:
                     key: OIDC_CLIENT_SECRET
               # Not OPENAI_API_KEY: Hermes' TTS/STT/mem0 plugins would send that
               # to api.openai.com. resources/config.yaml names this via key_env.
-              LITELLM_API_KEY:
+              LLM_API_KEY:
                 valueFrom:
                   secretKeyRef:
-                    name: hermes-litellm-key
+                    name: hermes-llm-key
                     key: OPENAI_API_KEY
-              # Fully qualified for the same ndots:1 reason as the LiteLLM base_url.
+              # Fully qualified for the same ndots:1 reason as the llm-gateway base_url.
               SEARXNG_URL: http://searxng.ai.svc.cluster.local:8080
               # Tells s6's preinit that / is read-only, so it accepts the
               # pre-mounted /run emptyDir as-is instead of trying to create a

@@ -98,12 +98,12 @@ spec:
               # ai
               PAPERLESS_AI_ENABLED: "true"
               PAPERLESS_AI_LLM_BACKEND: openai-like
-              PAPERLESS_AI_LLM_ENDPOINT: &litellm http://litellm.ai.svc.cluster.local:4000/v1
+              PAPERLESS_AI_LLM_ENDPOINT: &llmGateway http://llm-gateway.ai.svc.cluster.local/v1
               PAPERLESS_AI_LLM_MODEL: llmkube/Qwen/Qwen3.8-27B-MTP
               PAPERLESS_AI_LLM_API_KEY:
                 valueFrom:
                   secretKeyRef:
-                    name: paperless-litellm-key
+                    name: paperless-llm-key
                     key: OPENAI_API_KEY
               PAPERLESS_AI_LLM_CONTEXT_SIZE: "262144"
               # Past the ModelPool's 900s swapBudget, so a request can wait out a
@@ -111,7 +111,7 @@ spec:
               PAPERLESS_AI_LLM_REQUEST_TIMEOUT: "1200"
 
               PAPERLESS_AI_LLM_EMBEDDING_BACKEND: openai-like
-              PAPERLESS_AI_LLM_EMBEDDING_ENDPOINT: *litellm
+              PAPERLESS_AI_LLM_EMBEDDING_ENDPOINT: *llmGateway
               PAPERLESS_AI_LLM_EMBEDDING_MODEL: llmkube/Qwen/Qwen3-Embedding-0.6B
 
               # directories

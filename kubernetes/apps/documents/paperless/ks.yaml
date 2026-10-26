@@ -11,7 +11,7 @@ spec:
       namespace: security
     - name: kopiur-repository
       namespace: kopiur-system
-    - name: litellm
+    - name: llm-gateway
       namespace: ai
   interval: 1h
   path: ./kubernetes/apps/documents/paperless/app
@@ -19,7 +19,7 @@ spec:
     - ../../../../components/database
     - ../../../../components/oidc
     - ../../../../components/kopiur
-    - ../../../../components/litellm-key
+    - ../../../../components/llm-key
   postBuild:
     substitute:
       APP: *app
