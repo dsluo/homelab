@@ -60,9 +60,8 @@ spec:
     apiBase: http://inference-router-proxy.ai.svc.cluster.local:8080/v1
     apiKey: sk-llmkube-noauth
   info:
-    # ../../../llmkube/models/qwen3-8-flash-next.yaml contextSize. Still under
-    # the model's native 262144 — raise both together.
-    maxInputTokens: 196608
+    # ../../../llmkube/models/qwen3-8-flash-next.yaml --max-model-len.
+    maxInputTokens: 262144
 ---
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel

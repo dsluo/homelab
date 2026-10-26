@@ -4,65 +4,23 @@ kind: Model
 metadata:
   name: qwen3-8-flash-next
 spec:
-  # Sharded GGUF: source is a repo PREFIX and files[] selects the shards, with
-  # files[0] handed to llama.cpp (it discovers the siblings itself). The prefix
-  # ends at resolve/main so prefix + "/" + entry is a valid HF download URL.
-  source: https://huggingface.co/AtomicChat/Qwen3.8-Flash-Next-GGUF/resolve/main
+  # Radiance's own container (int8 trunk, 4-bit experts, MTP), 114 GiB. Pinned
+  # to an HF commit so a re-upload cannot drift from the image version.
+  source: https://huggingface.co/StillDeadcode/qwen3.8-next-flash-fp8-iq4r-moe/resolve/8267a67384583f6be309981baf878b09ff900a9a/qwen3.8-next-flash-fp8-iq4r-moe.rad
   sourceSecretRef:
     name: llmkube-hf-secret
-  # Shard 00002 holds only the 38.4 GB n-gram table (per_layer_token_embd).
-  # It is read ~3 MB/s at random and must stay mmap'd, never resident.
-  files:
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00001-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00002-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00003-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00004-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00005-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00006-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00007-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00008-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00009-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00010-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00011-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00012-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00013-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00014-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00015-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00016-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00017-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00018-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00019-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00020-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00021-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00022-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00023-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00024-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00025-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00026-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00027-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00028-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00029-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00030-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00031-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00032-of-00033.gguf
-    - Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64/Qwen3.8-Flash-Next-AD-4.27bpw-Q4_K_M-M64-00033-of-00033.gguf
-  format: gguf
-  quantization: AD-4.27bpw-Q4_K_M
+  format: custom
+  quantization: IQ4R
   hardware:
-    accelerator: cuda
+    accelerator: rocm
     gpu:
       enabled: true
-      count: 2 # 3090 Ti + 3070 on talos1
-      vendor: nvidia
-      layers: 999 # ngl=999; expert tensors come back off the GPU via moeCPULayers
-      # Emits --tensor-split 9,1; only the ratio matters. It splits layers, and
-      # the 3070 only sheds a whole layer at certain steps (9:1 through 11:1 all
-      # leave it the same layers). moeCPULayers unloads the 3090 Ti only.
-      sharding:
-        strategy: layer
-        layerSplit:
-          - "0-8" # 3090 Ti
-          - "9-9" # 3070
+      count: 2
+      vendor: amd
+      runtime: rocm
+      resourceClaims:
+        - name: gpu
+          resourceClaimTemplateName: r9700-x2
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
@@ -70,87 +28,88 @@ metadata:
   name: qwen3-8-flash-next
 spec:
   modelRef: qwen3-8-flash-next
-  runtime: llamacpp
-  # qwen4exp needs b10666 or newer; older builds cannot load the architecture.
-  image: ghcr.io/ggml-org/llama.cpp:server-cuda-b11804@sha256:490d8cd8000203a3ab8fdfce14ef931e2aa85affd4dd4447bcc75f299f00fd9a
-  runtimeClassName: nvidia
-  # Off while talos1 drops to one NVIDIA GPU. Scaled, not deleted: the ISVC owns
-  # the model-cache PVC. Drop this when ./modelpool.yaml is restored, since the
-  # pool owns a member's replicas and a value here makes Flux fight it on a swap.
-  replicas: 0
+  runtime: generic
+  stageModel: true
+  image: docker.io/stilldeadcode/radiance:1.12.0@sha256:e82764045e46ebae07e33961f17dedba981c0d07336dfcddd67e4b3b042b8600
   priorityClassName: gpu-preemptible
 
-  # Trades VRAM against talos1 RAM at ~1.03 GB of experts per layer. Every
-  # CPU-side expert is read per token and must stay in page cache: 36 churned
-  # (GBs of refaults, throughput falling run over run), 34 holds. Lowering it
-  # buys little (30 vs 32: ~3% prefill, generation flat).
-  moeCPULayers: 34
-  # This GGUF names the n-gram table per_layer_token_embd, not ple_ngram_embd.
-  # Atomic's README says it lands on host unaided; kept explicit until
-  # confirmed.
-  tensorOverrides:
-    - per_layer_token_embd=CPU
+  command:
+    - /opt/radiance/bin/radiance
+  args:
+    - --model
+    - $(LLMKUBE_MODEL_PATH)
+    # Must equal the ModelRouter backend name litellm forwards.
+    - --served-model-name
+    - qwen3-8-flash-next
+    - --host
+    - "::"
+    - --port
+    - "8080"
+    - --tp
+    - "2"
+    - --tp-wire
+    - exact
+    - --max-num-seqs
+    - "8"
+    - --max-model-len
+    - "262144"
+    - --placement
+    - expert_tiered
+    # Pinned per card, so 2x this is locked RAM the kernel cannot reclaim.
+    # talos1 has 62 GiB; Radiance's recipe uses 12288 on bigger hosts.
+    - --host-pool-mib
+    - "8192"
+    - --gpu-headroom-mib
+    - "160"
+    # The 47.7 GiB n-gram table is read from the container through a row
+    # cache; "ram" would pin a copy talos1 cannot spare.
+    - --ngram-placement
+    - disk
+    - --embedding-placement
+    - ram
+    - --kv-cache-dtype
+    - fp8
+    - --num-speculative-tokens
+    - "3"
+    - --draft-window
+    - fixed
+    - --max-num-batched-tokens
+    - "4096"
+    - --prefill-span
+    - "2"
+    - --prefix-cache-mib
+    - "8192"
+    - --mm-max-patches
+    - "0"
 
-  # --- typed preset fields ---
-  # Qwen Sparse Attention's top_k allocates from the CUDA pool at runtime, not
-  # at load: ~400-450 MB per card by 90k tokens. A config that loads can still
-  # OOM mid-prompt, so validate any context/ubatch/split change with a
-  # near-max-context request. Measured at 189k: 1.15 / 0.73 GB still free.
-  #
-  # A crashlooping load strands the ModelPool in Swapping and takes the 27B down
-  # with it. Keep ../../litellm/proxy/models/llmkube.yaml maxInputTokens in step.
-  contextSize: 196608
-  parallelSlots: 1 # CPU-side experts do not parallelise; one slot gets the window
-  batchSize: 1024
-  uBatchSize: 768 # prefill ~+60% over 256; the compute buffer grows on both cards
-  jinja: true # required for the chat-template-kwargs below
+  # io_uring (the n-gram reads) and ROCm's NUMA calls are refused by the
+  # default seccomp profile; without this the model cannot serve.
+  podSecurityContext:
+    seccompProfile:
+      type: Unconfined
 
-  # KV left at f16: q8_0 saves ~0.75 GB but loses QSA's sparse decode kernel
-  # past ~32k and is untested for quality on qwen4exp.
-
-  extraArgs:
-    - --alias
-    - Qwen/Qwen3.8-Flash-Next
-    # Auto-fit mis-sizes this architecture and fails to allocate.
-    - -fit
-    - "off"
-    # Drafts from n-grams already in context: no draft model, no VRAM.
-    - --spec-type
-    - ngram-mod
-    # Qwen's thinking-mode preset for this model, unmodified.
-    - --temp
-    - "1.0"
-    - --top-p
-    - "0.95"
-    - --top-k
-    - "20"
-    - --min-p
-    - "0.0"
-    - --presence-penalty
-    - "0.0"
-    - --repeat-penalty
-    - "1.0"
-    # xhigh spends minutes thinking per reply; the ModelRouter's
-    # responseHeaderTimeout is sized for it. Drop to "medium" for latency.
-    - --chat-template-kwargs
-    - '{"reasoning_effort":"xhigh"}'
-
-  # Measured 2026-09-29, code rewrite (1.7k prompt, ~2.3k out), warm: prefill
-  # 273-304 tok/s, generation 45-46 tok/s, ngram drafts ~85% accepted. 189k
-  # needle: 120 tok/s prefill (26 min), 16.5 tok/s generation, PASS. The first
-  # request after a load pays the fault-in at roughly a third of that.
   resources:
-    # Experts run on CPU here, so this is real compute.
     cpu: "8"
-    # Soft-reserves page cache for the CPU-side experts so the scheduler does
-    # not pack talos1 with pods that would evict them.
-    memory: 36Gi
-    # mmap'd weights are charged to this cgroup, so a limit at the request
-    # evicts the model's own experts and halves throughput. Page cache over
-    # the request is reclaimable, not an OOM risk.
+    memory: 48Gi
+    # n-gram page cache is charged to this cgroup but reclaimable.
     memoryLimit: 56Gi
     gpu: 2
 
+  probeOverrides:
+    # A cold start reads 114 GiB off the cache PVC.
+    startup:
+      httpGet:
+        path: /health
+        port: 8080
+      periodSeconds: 10
+      failureThreshold: 180
+    readiness:
+      httpGet:
+        path: /health
+        port: 8080
+      periodSeconds: 10
+
   endpoint:
     port: 8080
+    path: /v1/chat/completions
     type: ClusterIP
