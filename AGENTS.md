@@ -34,6 +34,11 @@ Apps are organized by namespace under `kubernetes/apps/<namespace>/` — list th
 
 ## Working in this repo
 
+**Keep MCP configurations in sync.** Claude Code uses `.mcp.json` plus enabled
+plugins; Codex uses `.codex/config.toml`. When adding, removing, or changing an MCP
+server, update both configurations, including URLs, commands, and environment
+variable references. Keep credentials in the mise environment, never in either file.
+
 **App layout (the two-file split).** Each app is:
 
 ```
