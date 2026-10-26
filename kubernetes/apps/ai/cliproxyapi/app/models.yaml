@@ -1,0 +1,115 @@
+---
+# ChatGPT subscription models, served through the Codex credential's Sign in
+# with ChatGPT partition (README.md). These live here rather than in
+# ../../llm-gateway/app/models so that app does not depend on this one.
+#
+# Custom so the formats CLIProxyAPI serves pass through untranslated: it bridges
+# each to the Responses-only upstream itself. The model transformation strips
+# the chatgpt/ prefix.
+apiVersion: agentgateway.dev/v1alpha1
+kind: AgentgatewayModel
+metadata:
+  name: chatgpt-gpt-6-1-sol
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: llm-gateway
+      sectionName: http
+  match:
+    model: chatgpt/gpt-6.1-sol
+  provider: Custom
+  baseURL: http://cliproxyapi.ai.svc.cluster.local:8317/v1
+  custom:
+    formats:
+      - type: Completions
+      - type: Responses
+      - type: Messages
+  policies:
+    auth:
+      secretRef:
+        name: cliproxyapi-key
+    transformations:
+      - field: model
+        expression: '"gpt-6.1-sol"'
+---
+apiVersion: agentgateway.dev/v1alpha1
+kind: AgentgatewayModel
+metadata:
+  name: chatgpt-gpt-5-6-sol
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: llm-gateway
+      sectionName: http
+  match:
+    model: chatgpt/gpt-5.6-sol
+  provider: Custom
+  baseURL: http://cliproxyapi.ai.svc.cluster.local:8317/v1
+  custom:
+    formats:
+      - type: Completions
+      - type: Responses
+      - type: Messages
+  policies:
+    auth:
+      secretRef:
+        name: cliproxyapi-key
+    transformations:
+      - field: model
+        expression: '"gpt-5.6-sol"'
+---
+apiVersion: agentgateway.dev/v1alpha1
+kind: AgentgatewayModel
+metadata:
+  name: chatgpt-gpt-5-6-terra
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: llm-gateway
+      sectionName: http
+  match:
+    model: chatgpt/gpt-5.6-terra
+  provider: Custom
+  baseURL: http://cliproxyapi.ai.svc.cluster.local:8317/v1
+  custom:
+    formats:
+      - type: Completions
+      - type: Responses
+      - type: Messages
+  policies:
+    auth:
+      secretRef:
+        name: cliproxyapi-key
+    transformations:
+      - field: model
+        expression: '"gpt-5.6-terra"'
+---
+apiVersion: agentgateway.dev/v1alpha1
+kind: AgentgatewayModel
+metadata:
+  name: chatgpt-gpt-5-6-luna
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: llm-gateway
+      sectionName: http
+  match:
+    model: chatgpt/gpt-5.6-luna
+  provider: Custom
+  baseURL: http://cliproxyapi.ai.svc.cluster.local:8317/v1
+  custom:
+    formats:
+      - type: Completions
+      - type: Responses
+      - type: Messages
+  policies:
+    auth:
+      secretRef:
+        name: cliproxyapi-key
+    transformations:
+      - field: model
+        expression: '"gpt-5.6-luna"'
