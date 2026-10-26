@@ -21,7 +21,7 @@ spec:
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/agentgateway.svg"
       HTTPROUTE_NAME: llm-gateway-ui
       OIDC_APP_NAME: LLM Gateway
-      SUBDOMAIN: llm-ui
+      SUBDOMAIN: llm
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
