@@ -84,7 +84,10 @@ spec:
 
   # RuntimeDefault refuses io_uring (the n-gram reads) and ROCm's NUMA calls.
   # The profile is a talos1 machine-config file (talos/patches/node/talos1/).
+  # An explicit podSecurityContext replaces the operator's, so restate its cache group.
   podSecurityContext:
+    fsGroup: 102
+    fsGroupChangePolicy: OnRootMismatch
     seccompProfile:
       type: Localhost
       localhostProfile: profiles/radiance.json

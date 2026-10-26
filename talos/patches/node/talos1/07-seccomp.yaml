@@ -1,9 +1,7 @@
 ---
-# Radiance (llmkube qwen3-8-flash-next): moby's default profile at
-# moby/profiles@4b8214fc plus the last rule, io_uring for the n-gram reads and
-# the NUMA calls ROCm makes pinning host memory. Pods reference it as
-# localhostProfile: profiles/radiance.json; PodSecurity baseline refuses
-# Unconfined.
+# Radiance (llmkube qwen3-8-flash-next): the default profile plus the last rule,
+# io_uring for the n-gram reads and the NUMA calls ROCm makes pinning host
+# memory. PodSecurity baseline refuses Unconfined.
 {
   "machine": {
     "seccompProfiles": [
