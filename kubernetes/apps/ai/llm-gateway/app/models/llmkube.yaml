@@ -1,7 +1,7 @@
 ---
 # Client-facing names are namespaced by backend (provider name + llama.cpp
 # --alias), matching what litellm published. The model transformation is the
-# string forwarded upstream. For the router-proxy entries it is load-bearing:
+# string forwarded upstream. For the router-proxy entries it matters:
 # BackendNameMatch picks the backend by it, so it must equal the ModelRouter
 # backend name (../../../llmkube/models/modelrouter.yaml).
 #
