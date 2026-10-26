@@ -30,13 +30,13 @@ spec:
           privateKey: { env: GITHUB_APP_PRIVATE_KEY }
           webhookSecret: { env: GITHUB_APP_WEBHOOK_SECRET }
       providers:
-        litellm:
+        llm-gateway:
           type: openai
-          baseUrl: http://litellm.ai.svc.cluster.local:4000/v1
-          apiKey: { env: LITELLM_API_KEY }
+          baseUrl: http://llm-gateway.ai.svc.cluster.local/v1
+          apiKey: { env: LLM_API_KEY }
           retries: 2
       embedding:
-        model: litellm/llmkube/Qwen/Qwen3-Embedding-0.6B
+        model: llm-gateway/llmkube/Qwen/Qwen3-Embedding-0.6B
         dims: 1024
         # Bytes; keeps dense text within the embedder's 4096-token slots.
         maxItemChars: 8000
@@ -46,7 +46,7 @@ spec:
         allow: ["*"]
         deny: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, "*.internal"]
       review:
-        model: litellm/chatgpt/gpt-6.1-sol
+        model: llm-gateway/chatgpt/gpt-6.1-sol
       trigger:
         # Public repo: kritika reviews fork PRs by default since 0.0.27.
         exclude:
@@ -58,10 +58,10 @@ spec:
       context:
         - { path: CLAUDE.md, description: "Repo layout, conventions and commit rules" }
     env:
-      LITELLM_API_KEY:
+      LLM_API_KEY:
         valueFrom:
           secretKeyRef:
-            name: kritika-litellm-key
+            name: kritika-llm-key
             key: OPENAI_API_KEY
       OIDC_CLIENT_SECRET:
         valueFrom:

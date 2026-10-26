@@ -29,9 +29,10 @@ spec:
     - name: gvisor
       namespace: kube-system
     - name: kritika-db-roles
-    - name: litellm
+    # cliproxyapi for the chatgpt models.
+    - name: cliproxyapi
       namespace: ai
-    - name: litellm-chatgpt-models
+    - name: llm-gateway
       namespace: ai
     - name: llmkube-models
       namespace: ai
@@ -41,7 +42,7 @@ spec:
   path: ./kubernetes/apps/kritika/kritika/app
   components:
     - ../../../../components/database
-    - ../../../../components/litellm-key
+    - ../../../../components/llm-key
     - ../../../../components/oidc
   postBuild:
     substitute:
@@ -51,7 +52,7 @@ spec:
       # orders the HelmRelease after kritika-db: first boot crash-loops until
       # CNPG has created them.
       DB_EXTENSIONS: '[{"name":"vector"},{"name":"vchord"}]'
-      LITELLM_KEY_MODELS: '"chatgpt/gpt-6.1-sol", "llmkube/Qwen/Qwen3-Embedding-0.6B"'
+      LLM_KEY_MODELS: '"chatgpt/gpt-6.1-sol", "llmkube/Qwen/Qwen3-Embedding-0.6B"'
       OIDC_CALLBACK_PATH: /auth/callback/oidc
       OIDC_PKCE_ENABLED: "true"
     substituteFrom:
