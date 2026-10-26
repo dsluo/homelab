@@ -1,0 +1,25 @@
+---
+# Keeps each pod's DNS on its own node's CoreDNS, so a node going dark can't
+# stall lookups elsewhere until it's marked NotReady. With no local replica,
+# Cilium falls back to the regular kube-dns backends.
+apiVersion: cilium.io/v2
+kind: CiliumLocalRedirectPolicy
+metadata:
+  name: coredns-node-local
+spec:
+  redirectFrontend:
+    serviceMatcher:
+      serviceName: kube-dns
+      namespace: kube-system
+  redirectBackend:
+    localEndpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: coredns
+    toPorts:
+      # Names must match the kube-dns Service port names.
+      - port: "53"
+        name: udp-53
+        protocol: UDP
+      - port: "53"
+        name: tcp-53
+        protocol: TCP

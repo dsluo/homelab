@@ -106,7 +106,8 @@ spec:
       # nodes are L2-adjacent through an L2 switch that forwards by MAC and does
       # not strip IPv4 options, so opt is safe on this LAN.)
       dsrDispatch: opt
-    localRedirectPolicy: true
+    localRedirectPolicies:
+      enabled: true
     operator:
       dashboards:
         enabled: true
