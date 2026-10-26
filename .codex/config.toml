@@ -1,0 +1,27 @@
+[mcp_servers.github]
+url = "https://api.githubcopilot.com/mcp/"
+bearer_token_env_var = "GITHUB_TOKEN"
+
+[mcp_servers.kguardian]
+url = "https://kguardian-mcp.crayon.club/mcp"
+
+[mcp_servers.konflate]
+url = "https://konflate.crayon.club/mcp"
+
+[mcp_servers.grafana]
+command = "mcp-grafana"
+env_vars = ["GRAFANA_URL", "GRAFANA_SERVICE_ACCOUNT_TOKEN"]
+env = { GRAFANA_USAGE_STATS = "disabled" }
+
+[mcp_servers.mikrotik]
+command = "mcp-server-mikrotik"
+env_vars = ["MIKROTIK_HOST", "MIKROTIK_USERNAME", "MIKROTIK_PASSWORD"]
+
+[mcp_servers.unifi-network]
+command = "unifi-network-mcp"
+env_vars = ["UNIFI_NETWORK_HOST", "UNIFI_NETWORK_USERNAME", "UNIFI_NETWORK_PASSWORD", "UNIFI_NETWORK_API_KEY"]
+
+[mcp_servers.memini]
+url = "https://memini.crayon.club/mcp"
+bearer_token_env_var = "MEMINI_API_KEY"
+env_http_headers = { "X-Memini-Namespace" = "MEMINI_NAMESPACE" }
