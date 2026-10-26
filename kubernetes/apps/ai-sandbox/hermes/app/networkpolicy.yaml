@@ -47,7 +47,8 @@ spec:
     # identity, so a `toFQDNs` or `toCIDR` rule on that VIP never matches.
     #
     # NOTE: `toServices` can't be paired with `toPorts`, so this allows every
-    # port the backends expose — svc/llm-gateway is 80-only, but pocket-id also
+    # port the backend pods expose — svc/llm-gateway serves only 80, but its pods also
+    # answer on 15020 (metrics) and 15021 (readiness); pocket-id also
     # carries :9464 (metrics). Acceptable for a sandbox allowlist. (Verify with
     # `hubble observe --namespace ai-sandbox --verdict DROPPED`.)
     - toServices:
