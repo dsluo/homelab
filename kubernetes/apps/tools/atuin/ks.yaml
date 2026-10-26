@@ -46,6 +46,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      LLM_KEY_MODELS: '"*"'
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
