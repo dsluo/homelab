@@ -1,7 +1,7 @@
 ---
-# The admin port also serves the full config dump, so only envoy-internal (and
-# through it, the OIDC-gated UI route) may reach it. Everything in-cluster may
-# still reach the LLM listener, as with litellm before.
+# Additive to components/oidc/envoy's envoy-only policy: in-cluster consumers
+# call the LLM listener directly. The admin port (15000) stays envoy-only, since
+# it also serves the full config dump.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -18,11 +18,3 @@ spec:
             - port: "80"
             - port: "15020"
             - port: "15021"
-    - fromEndpoints:
-        - matchLabels:
-            io.kubernetes.pod.namespace: network
-            gateway.envoyproxy.io/owning-gateway-namespace: network
-            gateway.envoyproxy.io/owning-gateway-name: envoy-internal
-      toPorts:
-        - ports:
-            - port: "15000"

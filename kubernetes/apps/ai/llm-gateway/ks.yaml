@@ -6,6 +6,8 @@ metadata:
 spec:
   interval: 1h
   path: ./kubernetes/apps/ai/llm-gateway/app
+  components:
+    - ../../../../components/oidc/envoy
   dependsOn:
     - name: agentgateway
       namespace: network
