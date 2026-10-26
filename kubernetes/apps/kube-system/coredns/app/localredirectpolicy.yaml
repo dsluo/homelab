@@ -2,7 +2,6 @@
 # Keeps each pod's DNS on its own node's CoreDNS, so a node going dark can't
 # stall lookups elsewhere until it's marked NotReady. With no local replica,
 # Cilium falls back to the regular kube-dns backends.
-# Cilium ignores in-place spec updates: delete and recreate to change this.
 apiVersion: cilium.io/v2
 kind: CiliumLocalRedirectPolicy
 metadata:
