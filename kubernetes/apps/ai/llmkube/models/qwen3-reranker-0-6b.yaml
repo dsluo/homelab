@@ -29,10 +29,17 @@ spec:
   nodeSelector:
     kubernetes.io/hostname: talos0
   contextSize: 8192
+  # A rank pass needs the whole query+document in one ubatch, so keep this >=
+  # per-slot ctx (8192 / 4); the 512 default 500s on longer documents.
+  uBatchSize: 2048
   parallelSlots: 4
   # --reranking + --pooling rank exposes the Cohere-style /v1/rerank endpoint
   # memini calls.
   extraArgs:
+    # The prompt cache saves 15-25 MiB per rerank against an 8192 MiB default
+    # ceiling and OOMKilled the pod; distinct documents share no prefix.
+    - --cache-ram
+    - "0"
     - --reranking
     - --pooling
     - rank
