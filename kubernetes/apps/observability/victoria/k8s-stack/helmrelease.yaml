@@ -103,6 +103,26 @@ spec:
               replacement: kubelet
     kubeApiServer:
       enabled: true
+      vmScrape:
+        spec:
+          # endpoints replaces the chart's list wholesale; re-diff against the chart on upgrade
+          endpoints:
+            - port: https
+              scheme: https
+              bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+              tlsConfig:
+                caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+                serverName: kubernetes
+              # /metrics is ~20MB, over vmagent's 16MiB default -promscrape.maxScrapeSize
+              max_scrape_size: 64MiB
+              # bucket trims from kube-prometheus(-stack); remaining le values still cover the alert thresholds
+              metricRelabelConfigs:
+                - action: drop
+                  sourceLabels: [__name__, le]
+                  regex: '(etcd_request|apiserver_request_slo|apiserver_request_sli|apiserver_request)_duration_seconds_bucket;(0\.15|0\.2|0\.3|0\.35|0\.4|0\.45|0\.6|0\.7|0\.8|0\.9|1\.25|1\.5|1\.75|2|3|3\.5|4|4\.5|6|7|8|9|15|20|40|45|50)(\.0)?'
+                - action: drop
+                  sourceLabels: [__name__, le]
+                  regex: 'apiserver_request_body_size_bytes_bucket;(150000|350000|550000|650000|850000|950000|(1\.15|1\.35|1\.55|1\.65|1\.85|1\.95|2\.15|2\.35|2\.55|2\.65|2\.85|2\.95)e\+06)'
     kubeControllerManager:
       enabled: true
       vmScrape:
