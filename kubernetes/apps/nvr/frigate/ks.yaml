@@ -23,6 +23,7 @@ spec:
       APP: *app
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/frigate.svg"
       OIDC_APP_NAME: Frigate
+      OIDC_PKCE_ENABLED: "true"
       # config.yml is a read-only mount, but frigate.db and model_cache/ share
       # the volume and are what actually grow.
       KOPIUR_CAPACITY: 10Gi

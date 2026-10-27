@@ -19,6 +19,7 @@ spec:
       APP: *app
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/actual-budget.svg"
       OIDC_APP_NAME: Actual
+      OIDC_PKCE_ENABLED: "true"
       OIDC_CALLBACK_PATH: /openid/callback
       KOPIUR_CAPACITY: 1Gi
       KOPIUR_UID: "1000"
