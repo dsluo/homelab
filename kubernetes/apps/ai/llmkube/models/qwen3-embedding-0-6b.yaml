@@ -23,9 +23,10 @@ spec:
   runtime: llamacpp
   image: ghcr.io/ggml-org/llama.cpp:server-b11889@sha256:5741ab30aae42af23ca57d9b98a6d4544cb09c21f372f92c5ee55312fa8b8b0c
   replicas: 1
-  # CPU-only; kept off talos1 so its RAM goes to flash-next's CPU-side experts.
+  # CPU-only. The 7950X3D's AVX-512 runs it ~3x faster than talos0's 12700K,
+  # with no measurable effect on flash-next's decode.
   nodeSelector:
-    kubernetes.io/hostname: talos0
+    kubernetes.io/hostname: talos1
   # llama.cpp splits contextSize across parallelSlots, so per-slot ctx =
   # contextSize / parallelSlots = 8192 / 2 = 4096 tokens/slot. memini v0.5.0
   # dropped its MEMINI_EMBED_MAX_ITEM_CHARS guard and embeds item content
@@ -46,12 +47,12 @@ spec:
     # chunk once has no prefix to reuse.
     - --cache-ram
     - "0"
-    # One thread per P-core (even CPUs 0-14 on the 12700K); unpinned, threads
-    # share HT siblings or land on E-cores and pp drops 25-30%.
+    # One thread per core on the non-V-cache CCD (cores 8-15), leaving the
+    # other CCD to flash-next.
     - --threads
     - "8"
     - --cpu-mask
-    - "0x5555"
+    - "0xFF00"
     - --cpu-strict
     - "1"
     - --embeddings
@@ -62,9 +63,10 @@ spec:
   resources:
     # Matches --threads so CFS weight backs all 8 under contention.
     cpu: "8"
-    # Climbs to 3Gi+ on memini's backlog and OOMKilled at 3Gi; iGPU runs
-    # peaked near 5.4Gi.
-    memory: 6Gi
+    # Idles near 1Gi but climbs past 3Gi on a backlog; the request is what
+    # talos1 has left beside flash-next's 48Gi.
+    memory: 4Gi
+    memoryLimit: 6Gi
   endpoint:
     port: 8080
     type: ClusterIP
