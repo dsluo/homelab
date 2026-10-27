@@ -26,6 +26,10 @@ apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
 metadata:
   name: qwen3-8-flash-next
+  annotations:
+    # Radiance has no /slots; without this the generic runtime has no idle
+    # probe and the ModelPool never swaps away from it.
+    inference.llmkube.dev/idle-metric: vllm:num_requests_running
 spec:
   modelRef: qwen3-8-flash-next
   runtime: generic
