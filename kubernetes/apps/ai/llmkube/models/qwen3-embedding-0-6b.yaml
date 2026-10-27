@@ -63,9 +63,9 @@ spec:
   resources:
     # Matches --threads so CFS weight backs all 8 under contention.
     cpu: "8"
-    # Idles near 1Gi but climbs past 3Gi on a backlog; the request is what
-    # talos1 has left beside flash-next's 48Gi.
-    memory: 4Gi
+    # Peaks near 1.7Gi. talos1 requests sit at ~99%, and anything that
+    # doesn't fit (kritika runners) preempts flash-next instead.
+    memory: 2Gi
     memoryLimit: 6Gi
   endpoint:
     port: 8080
