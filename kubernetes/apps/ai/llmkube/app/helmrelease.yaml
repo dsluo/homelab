@@ -83,9 +83,7 @@ spec:
         # kube-prometheus-stack selector labels in place.
         additionalLabels: null
         rules:
-          # DCGM alerts, and their thresholds are wrong for this node: the
-          # 3090 Ti alone draws past the 250 W powerLimitThreshold under load,
-          # and gpu-preemptible inference is *meant* to sit at 100% util.
+          # DCGM alerts, which read NVIDIA's exporter; talos1's GPUs are AMD.
           gpu:
             enabled: false
           # Gates the recording-rule group as well as the alerts.
