@@ -38,7 +38,7 @@ spec:
   args:
     - --model
     - $(LLMKUBE_MODEL_PATH)
-    # Must equal the ModelRouter backend name litellm forwards.
+    # Must equal the ModelRouter backend name llm-gateway forwards.
     - --served-model-name
     - qwen3-8-flash-next
     - --host

@@ -21,8 +21,8 @@ spec:
       action: Require
       policy:
         matchExpressions:
-          # An empty models list allows everything, matching the litellm
-          # virtual keys this replaces. A trailing * matches by prefix.
+          # An empty models list allows everything. A trailing * matches by
+          # prefix.
           - >-
             request.method != "POST" || size(apiKey.models) == 0 ||
             apiKey.models.exists(m, m.endsWith("*")
