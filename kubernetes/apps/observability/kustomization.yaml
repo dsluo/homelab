@@ -6,6 +6,7 @@ components:
   - ../../components/cluster-global-config
 resources:
   - ./namespace.yaml
+  - ./amd-device-metrics-exporter/ks.yaml
   - ./grafana/ks.yaml
   - ./prometheus-operator-crds/ks.yaml
   - ./smartctl-exporter/ks.yaml

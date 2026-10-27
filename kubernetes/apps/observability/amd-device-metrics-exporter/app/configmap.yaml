@@ -1,0 +1,15 @@
+---
+# The upstream Grafana dashboards filter every query on cluster_name.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: amd-device-metrics-exporter-config
+data:
+  config.json: |
+    {
+      "GPUConfig": {
+        "CustomLabels": {
+          "CLUSTER_NAME": "homelab"
+        }
+      }
+    }
