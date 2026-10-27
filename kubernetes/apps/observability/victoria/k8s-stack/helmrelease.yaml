@@ -46,6 +46,40 @@ spec:
       enabled: false
     alertmanager:
       enabled: true
+      spec:
+        # mounted at /etc/vm/secrets/<name>/
+        secrets:
+          - alertmanager-pushover
+      config:
+        route:
+          receiver: blackhole
+          group_by: [alertname, namespace, severity]
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 12h
+          routes:
+            - receiver: blackhole
+              matchers: ['alertname=~"Watchdog|InfoInhibitor"']
+            - receiver: pushover
+              matchers: ['severity=~"critical|warning"']
+        inhibit_rules:
+          - source_matchers: ['severity="critical"']
+            target_matchers: ['severity=~"warning|info"']
+            equal: [alertname, namespace]
+          - source_matchers: ['severity="warning"']
+            target_matchers: ['severity="info"']
+            equal: [alertname, namespace]
+          - source_matchers: ['alertname="InfoInhibitor"']
+            target_matchers: ['severity="info"']
+            equal: [namespace]
+        receivers:
+          - name: blackhole
+          - name: pushover
+            pushover_configs:
+              - user_key_file: /etc/vm/secrets/alertmanager-pushover/user_key
+                token_file: /etc/vm/secrets/alertmanager-pushover/token
+                # warnings arrive silently; criticals make noise
+                priority: '{{ if eq .CommonLabels.severity "critical" }}0{{ else }}-1{{ end }}'
     vmalert:
       enabled: true
     vmauth:
