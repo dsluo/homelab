@@ -1,0 +1,18 @@
+---
+# Additive to the chart's own policies, whose extraEgress takes only
+# NetworkPolicy syntax. toServices follows the Service's selector rather than
+# the label agentgateway puts on its proxy pods.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: kritika-llm-gateway
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/instance: kritika
+      app.kubernetes.io/name: kritika
+  egress:
+    - toServices:
+        - k8sService:
+            serviceName: llm-gateway
+            namespace: ai

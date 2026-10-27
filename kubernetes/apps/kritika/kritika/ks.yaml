@@ -29,7 +29,7 @@ spec:
     - name: gvisor
       namespace: kube-system
     - name: kritika-db-roles
-    # cliproxyapi for the chatgpt models.
+    # Serves chatgpt/* behind llm-gateway; kritika never calls it directly.
     - name: cliproxyapi
       namespace: ai
     - name: llm-gateway
