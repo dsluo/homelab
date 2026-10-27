@@ -123,6 +123,10 @@ spec:
                 - action: drop
                   sourceLabels: [__name__, le]
                   regex: 'apiserver_request_body_size_bytes_bucket;(150000|350000|550000|650000|850000|950000|(1\.15|1\.35|1\.55|1\.65|1\.85|1\.95|2\.15|2\.35|2\.55|2\.65|2\.85|2\.95)e\+06)'
+                # per-resource-type watch/storage internals (~38k series); nothing here reads them
+                - action: drop
+                  sourceLabels: [__name__]
+                  regex: 'apiserver_(watch_events_dispatch_duration_seconds|watch_list_duration_seconds|storage_list_duration_seconds|watch_cache_read_wait_seconds|watch_cache_initialization_duration_seconds)_.*'
     kubeControllerManager:
       enabled: true
       vmScrape:
