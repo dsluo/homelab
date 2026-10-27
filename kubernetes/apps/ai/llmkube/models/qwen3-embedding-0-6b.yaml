@@ -21,7 +21,7 @@ metadata:
 spec:
   modelRef: qwen3-embedding-0-6b
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-b11889@sha256:5741ab30aae42af23ca57d9b98a6d4544cb09c21f372f92c5ee55312fa8b8b0c
+  image: ghcr.io/ggml-org/llama.cpp:server-b11913@sha256:8ee4ec7ce58a921313d07390c6699af13aa5ec083f3cdf67e5f4155767047373
   replicas: 1
   # CPU-only. The 7950X3D's AVX-512 runs it ~3x faster than talos0's 12700K,
   # with no measurable effect on flash-next's decode.
