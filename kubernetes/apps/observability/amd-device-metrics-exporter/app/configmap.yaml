@@ -1,5 +1,6 @@
 ---
-# The upstream Grafana dashboards filter every query on cluster_name.
+# The upstream Grafana dashboards filter on cluster_name and key per-GPU
+# panels on gpu_uuid; both are off unless set here.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -8,6 +9,7 @@ data:
   config.json: |
     {
       "GPUConfig": {
+        "Labels": ["GPU_UUID", "DRIVER_VERSION", "VBIOS_VERSION", "CARD_VENDOR", "CARD_SERIES"],
         "CustomLabels": {
           "CLUSTER_NAME": "homelab"
         }
