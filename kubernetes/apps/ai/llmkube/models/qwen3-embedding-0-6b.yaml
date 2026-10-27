@@ -21,7 +21,7 @@ metadata:
 spec:
   modelRef: qwen3-embedding-0-6b
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-b11429@sha256:2f8ebc2dde83c4bd7e5c6d61efa57965e0d5a79d29802c246c4593740d9c04c1
+  image: ghcr.io/ggml-org/llama.cpp:server-b11889@sha256:5741ab30aae42af23ca57d9b98a6d4544cb09c21f372f92c5ee55312fa8b8b0c
   replicas: 1
   # CPU-only; kept off talos1 so its RAM goes to flash-next's CPU-side experts.
   nodeSelector:
