@@ -40,6 +40,9 @@ spec:
         dims: 1024
         # Bytes; keeps dense text within the embedder's 4096-token slots.
         maxItemChars: 8000
+        # llama-server queues a request's inputs FIFO, so a 64-input batch
+        # stalls memini's 2s embeds for its whole run; 4 keeps each under ~2s.
+        maxBatch: 4
       # .kritika.yaml tools install from GitHub release assets and pull from
       # arbitrary registries; private ranges stay refused.
       egress:
