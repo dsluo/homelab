@@ -106,9 +106,11 @@ spec:
 
   resources:
     cpu: "8"
-    memory: 48Gi
-    # n-gram page cache is charged to this cgroup but reclaimable.
-    memoryLimit: 56Gi
+    # ~33 GiB is pinned at startup at fixed sizes and usage sits near 35 GiB.
+    # --embedding-placement ram refuses to start unless the limit leaves
+    # 4 GiB free after those pins.
+    memory: 40Gi
+    memoryLimit: 44Gi
     gpu: 2
 
   probeOverrides:
