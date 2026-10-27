@@ -46,13 +46,22 @@ spec:
     # chunk once has no prefix to reuse.
     - --cache-ram
     - "0"
+    # One thread per P-core (even CPUs 0-14 on the 12700K); unpinned, threads
+    # share HT siblings or land on E-cores and pp drops 25-30%.
+    - --threads
+    - "8"
+    - --cpu-mask
+    - "0x5555"
+    - --cpu-strict
+    - "1"
     - --embeddings
     - --pooling
     - last
     - --alias
     - Qwen/Qwen3-Embedding-0.6B
   resources:
-    cpu: "2"
+    # Matches --threads so CFS weight backs all 8 under contention.
+    cpu: "8"
     # Climbs to 3Gi+ on memini's backlog and OOMKilled at 3Gi; iGPU runs
     # peaked near 5.4Gi.
     memory: 6Gi
