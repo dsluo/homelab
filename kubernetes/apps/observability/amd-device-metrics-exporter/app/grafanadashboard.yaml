@@ -14,7 +14,7 @@ spec:
       inputName: DS_PROMETHEUS
     - datasourceName: __expr__
       inputName: DS_EXPRESSION
-  # Keep the tag in step with the chart version.
+  # Renovate moves this tag with the chart (amd-device-metrics-exporter group).
   url: https://raw.githubusercontent.com/ROCm/device-metrics-exporter/v1.5.3/grafana/dashboard_overview.json
 ---
 apiVersion: grafana.integreatly.org/v1beta1
