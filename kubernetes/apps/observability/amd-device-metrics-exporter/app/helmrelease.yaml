@@ -1,0 +1,47 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: amd-device-metrics-exporter
+spec:
+  chart:
+    spec:
+      chart: device-metrics-exporter-charts
+      version: v1.5.3
+      sourceRef:
+        kind: HelmRepository
+        name: amd-device-metrics-exporter
+  interval: 1h
+  values:
+    image:
+      repository: docker.io/rocm/device-metrics-exporter
+      tag: v1.5.3@sha256:bdfc644bb8d4d07d9a0c31dda3e0d463101f48170548c5a7e7f7066c253fa813
+      pullPolicy: IfNotPresent
+      initContainerImage: docker.io/library/busybox:1.36@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662
+    configMap: amd-device-metrics-exporter-config
+    # The init container blocks until amdgpu is loaded.
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: extensions.talos.dev/amdgpu
+                  operator: Exists
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+    serviceMonitor:
+      enabled: true
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_node_name]
+          targetLabel: instance
+      metricRelabelings:
+        # No XGMI links between Radeon cards, and the per-block ECC series
+        # duplicate the *_total ones.
+        - sourceLabels: [__name__]
+          regex: gpu_xgmi_.*|gpu_ecc_(correct|uncorrect|deferred)_(athub|bif|df|fuse|gfx|hdp|ih|jpeg|mca|mmhub|mp0|mp1|mpio|sdma|sem|smn|umc|vcn|xgmi_wafl)
+          action: drop

@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/helmrepository_v1.json
+# AMD publishes this chart only to a classic Helm repo, not to an OCI registry.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: amd-device-metrics-exporter
+spec:
+  interval: 1h
+  url: https://rocm.github.io/device-metrics-exporter
