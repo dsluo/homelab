@@ -52,7 +52,38 @@
       hostType: "forgejo",
     },
   ],
+  // Dashboards loaded straight from a repo tag, e.g. AMD's device-metrics-exporter
+  // grafana/ JSON, which neither its chart nor its operator ships.
+  customManagers: [
+    {
+      description: "Grafana dashboards pinned to a GitHub tag in a raw.githubusercontent.com URL",
+      customType: "regex",
+      managerFilePatterns: [
+        "/grafanadashboard\\.ya?ml(?:\\.j2)?$/"
+      ],
+      matchStrings: [
+        "https://raw\\.githubusercontent\\.com/(?<depName>[^/\\s]+/[^/\\s]+)/(?<currentValue>v?\\d+\\.\\d+\\.\\d+)/",
+      ],
+      datasourceTemplate: "github-tags",
+      versioningTemplate: "semver",
+    },
+  ],
   packageRules: [
+    {
+      description: "AMD device-metrics-exporter: chart, image and the dashboards pinned to its tag move together",
+      groupName: "amd-device-metrics-exporter",
+      matchDatasources: [
+        "docker",
+        "github-tags",
+        "helm"
+      ],
+      matchPackageNames: [
+        "/device-metrics-exporter/"
+      ],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+    },
     {
       description: "Flux Operator Group",
       groupName: "flux-operator",
