@@ -49,7 +49,7 @@ spec:
       spec:
         # mounted at /etc/vm/secrets/<name>/
         secrets:
-          - alertmanager-pushover
+          - alertmanager-notifiers
       config:
         route:
           receiver: blackhole
@@ -60,8 +60,13 @@ spec:
           routes:
             - receiver: blackhole
               matchers: ['alertname=~"Watchdog|InfoInhibitor"']
+            # history of every alert; continue so criticals/warnings also page
+            - receiver: discord
+              continue: true
             - receiver: pushover
               matchers: ['severity=~"critical|warning"']
+        # No InfoInhibitor rule: it would hide info alerts from Discord unless
+        # a warning/critical is firing in the same namespace.
         inhibit_rules:
           - source_matchers: ['severity="critical"']
             target_matchers: ['severity=~"warning|info"']
@@ -69,15 +74,15 @@ spec:
           - source_matchers: ['severity="warning"']
             target_matchers: ['severity="info"']
             equal: [alertname, namespace]
-          - source_matchers: ['alertname="InfoInhibitor"']
-            target_matchers: ['severity="info"']
-            equal: [namespace]
         receivers:
           - name: blackhole
+          - name: discord
+            discord_configs:
+              - webhook_url_file: /etc/vm/secrets/alertmanager-notifiers/discord_webhook_url
           - name: pushover
             pushover_configs:
-              - user_key_file: /etc/vm/secrets/alertmanager-pushover/user_key
-                token_file: /etc/vm/secrets/alertmanager-pushover/token
+              - user_key_file: /etc/vm/secrets/alertmanager-notifiers/pushover_user_key
+                token_file: /etc/vm/secrets/alertmanager-notifiers/pushover_token
                 # warnings arrive silently; criticals make noise
                 priority: '{{ if eq .CommonLabels.severity "critical" }}0{{ else }}-1{{ end }}'
     vmalert:
