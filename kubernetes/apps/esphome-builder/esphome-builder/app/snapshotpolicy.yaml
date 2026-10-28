@@ -22,6 +22,9 @@ spec:
     keepHourly: 24
     keepDaily: 7
     keepWeekly: 4
+  # The default VolumeGroupSnapshot needs a VolumeGroupSnapshotClass, which
+  # openebs-zfs does not provide. The two claims are independent anyway.
+  groupBy: None
   sources:
     # One kopia source per StatefulSet claim (/pvc/state-esphome-builder-N), so
     # each receiver restores its own pairing identity.
