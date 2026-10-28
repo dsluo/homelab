@@ -199,6 +199,21 @@
       changelogUrl: "https://github.com/searxng/searxng/blob/master/CHANGELOG.rst",
     },
     {
+      description: "Use Docker Hub timestamps to auto-merge SearXNG after a day while pulling from GHCR",
+      matchDatasources: [
+        "docker"
+      ],
+      matchPackageNames: [
+        "ghcr.io/searxng/searxng"
+      ],
+      overridePackageName: "docker.io/searxng/searxng",
+      minimumReleaseAge: "1 day",
+      automerge: true,
+      automergeType: "pr",
+      platformAutomerge: false,
+      ignoreTests: false,
+    },
+    {
       description: "Auto-merge Grafana dashboards after checks pass",
       matchDatasources: [
         "custom.grafana-dashboards"
