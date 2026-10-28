@@ -131,15 +131,12 @@
       minimumGroupSize: 2,
     },
     {
-      description: "*arr upstreams tag a 4-part version (v6.4.3.10645) or release-<version>, but the images tag 3 parts; without extractVersion Renovate can't match the release and the PR ships no changelog",
+      description: "Match qBittorrent's release-<version> upstream tags to its container versions for changelogs",
       matchDatasources: [
         "docker"
       ],
       matchPackageNames: [
-        "ghcr.io/home-operations/prowlarr",
-        "ghcr.io/home-operations/qbittorrent",
-        "ghcr.io/home-operations/radarr",
-        "ghcr.io/home-operations/sonarr"
+        "ghcr.io/home-operations/qbittorrent"
       ],
       extractVersion: "^(?:release-)?v?(?<version>\\d+\\.\\d+\\.\\d+)",
     },
