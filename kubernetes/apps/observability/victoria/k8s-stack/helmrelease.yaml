@@ -60,6 +60,9 @@ spec:
           routes:
             - receiver: blackhole
               matchers: ['alertname=~"Watchdog|InfoInhibitor"']
+            # llmkube records vLLM/SGLang histograms; llama-server never emits them
+            - receiver: blackhole
+              matchers: ['alertname="RecordingRulesNoData"', 'group="llmkube-inference-recording"']
             # history of every alert; continue so criticals/warnings also page
             - receiver: discord
               continue: true
