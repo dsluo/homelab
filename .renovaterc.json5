@@ -58,6 +58,19 @@
   ],
   packageRules: [
     {
+      description: "Keep the Helmfile dependency name aligned with Envoy Gateway's mirrored chart URL",
+      matchManagers: [
+        "helmfile"
+      ],
+      matchDatasources: [
+        "docker"
+      ],
+      matchPackageNames: [
+        "docker.io/envoyproxy/gateway-helm"
+      ],
+      overrideDepName: "mirror.gcr.io/envoyproxy/gateway-helm",
+    },
+    {
       description: "AMD device-metrics-exporter: chart, image and the dashboards pinned to its tag move together",
       groupName: "amd-device-metrics-exporter",
       matchDatasources: [
