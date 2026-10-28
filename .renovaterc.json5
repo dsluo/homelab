@@ -261,6 +261,20 @@
       ignoreTests: true,
     },
     {
+      description: "Auto-merge non-major Terraform provider updates after checks pass",
+      matchDatasources: [
+        "terraform-provider"
+      ],
+      matchUpdateTypes: [
+        "minor",
+        "patch"
+      ],
+      automerge: true,
+      automergeType: "pr",
+      platformAutomerge: false,
+      ignoreTests: false,
+    },
+    {
       description: "Auto-merge Mise Tools",
       matchManagers: [
         "mise"
