@@ -32,6 +32,12 @@ spec:
             description: Device {{ $labels.device }} on instance {{ $labels.instance }} has {{ $value }}% of its rated endurance left
           labels:
             severity: warning
+        # media_errors is a lifetime counter, so `!= 0` never resolves; alert on growth.
+        # Aggregated because the pod label changes on every exporter restart.
+        smartCTLDeviceMediaErrors:
+          expr: max by (instance, device) (smartctl_device_media_errors) > max by (instance, device) (max_over_time(smartctl_device_media_errors[1d] offset 1h))
+          annotations:
+            description: Device {{ $labels.device }} on instance {{ $labels.instance }} has new media errors ({{ $value }} total)
 
     # chart only binds a PodSecurityPolicy ClusterRole, which no longer exists; PSA on the namespace allows privileged
     rbac:
