@@ -111,6 +111,14 @@ spec:
       # create GrafanaDataSources even though we're not using the grafana provided by VMKS
       forceDeployDatasource: true
 
+    defaultRules:
+      rules:
+        # Two nodes can never absorb losing one, so these fire permanently.
+        KubeCPUOvercommit:
+          enabled: false
+        KubeMemoryOvercommit:
+          enabled: false
+
     defaultDashboards:
       grafanaOperator:
         enabled: true
