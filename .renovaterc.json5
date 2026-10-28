@@ -116,6 +116,21 @@
       minimumGroupSize: 2,
     },
     {
+      description: "agentgateway Group",
+      groupName: "agentgateway",
+      matchDatasources: [
+        "docker"
+      ],
+      matchPackageNames: [
+        "cr.agentgateway.dev/charts/agentgateway",
+        "cr.agentgateway.dev/charts/agentgateway-crds"
+      ],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+      minimumGroupSize: 2,
+    },
+    {
       description: "*arr upstreams tag a 4-part version (v6.4.3.10645) or release-<version>, but the images tag 3 parts; without extractVersion Renovate can't match the release and the PR ships no changelog",
       matchDatasources: [
         "docker"
