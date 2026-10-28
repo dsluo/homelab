@@ -48,7 +48,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      KOPIUR_CAPACITY: 50Gi
+      KOPIUR_CAPACITY: 100Gi
       # These values set both VMSingle's runtime uid/gid and the kopiur mover
       # identity. Keep them in lockstep: kubelet does not fsGroup-remap a
       # read-only snapshot clone, so the mover needs the data owner's ids.
