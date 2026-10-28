@@ -199,6 +199,16 @@
       changelogUrl: "https://github.com/searxng/searxng/blob/master/CHANGELOG.rst",
     },
     {
+      description: "Auto-merge Grafana dashboards after checks pass",
+      matchDatasources: [
+        "custom.grafana-dashboards"
+      ],
+      automerge: true,
+      automergeType: "pr",
+      platformAutomerge: false,
+      ignoreTests: false,
+    },
+    {
       description: "Auto-merge Renovate itself weekly; it releases several times a day",
       matchDatasources: [
         "docker"
