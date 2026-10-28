@@ -1,12 +1,7 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: [
-    "config:recommended",
-    "docker:enableMajor",
     "helpers:pinGitHubActionDigests",
-    ":automergeBranch",
-    ":dependencyDashboard",
-    ":disableRateLimiting",
     ":semanticCommits",
     "github>home-operations/renovate-presets#10.0.1",
     "github>home-operations/renovate-presets//apps/cnpg.json5#10.0.1",
@@ -15,7 +10,6 @@
     "github>home-operations/renovate-presets//apps/searxng.json5#10.0.1",
     "github>home-operations/renovate-presets//apps/talosFactory.json5#10.0.1",
   ],
-  dependencyDashboard: true,
   dependencyDashboardTitle: "Renovate Dashboard",
   timezone: "America/Detroit",
   ignorePaths: [
@@ -24,12 +18,6 @@
   flux: {
     managerFilePatterns: [
       "/(^|/)kubernetes/.+\\.ya?ml(?:\\.j2)?$/"
-    ],
-  },
-  helmfile: {
-    managerFilePatterns: [
-      "/(^|/)helmfile\\.ya?ml(?:\\.gotmpl)?(?:\\.j2)?$/",
-      "/(^|/)helmfile\\.d/.+\\.ya?ml(?:\\.gotmpl)?(?:\\.j2)?$/",
     ],
   },
   kubernetes: {
@@ -219,7 +207,6 @@
         "ghcr.io/renovatebot/renovate"
       ],
       automerge: true,
-      automergeType: "branch",
       matchUpdateTypes: [
         "minor",
         "patch"
@@ -240,7 +227,6 @@
         "github-actions"
       ],
       automerge: true,
-      automergeType: "branch",
       matchUpdateTypes: [
         "minor",
         "patch",
@@ -255,7 +241,6 @@
         "mise"
       ],
       automerge: true,
-      automergeType: "branch",
       matchUpdateTypes: [
         "minor",
         "patch"
@@ -268,7 +253,6 @@
         "major"
       ],
       semanticCommitType: "feat",
-      commitMessagePrefix: "{{semanticCommitType}}({{semanticCommitScope}})!:",
       commitMessageExtra: "( {{currentVersion}} ➔ {{newVersion}} )",
     },
     {
@@ -300,33 +284,10 @@
       commitMessageTopic: "image {{depName}}",
     },
     {
-      matchDatasources: [
-        "helm"
-      ],
-      semanticCommitScope: "helm",
-      commitMessageTopic: "chart {{depName}}",
-    },
-    {
       matchManagers: [
         "github-actions"
       ],
       semanticCommitType: "ci",
-      semanticCommitScope: "github-action",
-      commitMessageTopic: "action {{depName}}",
-    },
-    {
-      matchDatasources: [
-        "github-releases"
-      ],
-      semanticCommitScope: "github-release",
-      commitMessageTopic: "release {{depName}}",
-    },
-    {
-      matchManagers: [
-        "mise"
-      ],
-      semanticCommitScope: "mise",
-      commitMessageTopic: "tool {{depName}}",
     },
     {
       matchUpdateTypes: [
