@@ -1,21 +1,15 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: [
-    "config:recommended",
-    "docker:enableMajor",
     "helpers:pinGitHubActionDigests",
-    ":automergeBranch",
-    ":dependencyDashboard",
-    ":disableRateLimiting",
     ":semanticCommits",
-    "github>home-operations/renovate-presets",
-    "github>home-operations/renovate-presets//apps/cnpg.json5",
-    "github>home-operations/renovate-presets//apps/grafanaDashboards.json5",
-    "github>home-operations/renovate-presets//apps/llamacpp.json5",
-    "github>home-operations/renovate-presets//apps/searxng.json5",
-    "github>home-operations/renovate-presets//apps/talosFactory.json5",
+    "github>home-operations/renovate-presets#10.0.1",
+    "github>home-operations/renovate-presets//apps/cnpg.json5#10.0.1",
+    "github>home-operations/renovate-presets//apps/grafanaDashboards.json5#10.0.1",
+    "github>home-operations/renovate-presets//apps/llamacpp.json5#10.0.1",
+    "github>home-operations/renovate-presets//apps/searxng.json5#10.0.1",
+    "github>home-operations/renovate-presets//apps/talosFactory.json5#10.0.1",
   ],
-  dependencyDashboard: true,
   dependencyDashboardTitle: "Renovate Dashboard",
   timezone: "America/Detroit",
   ignorePaths: [
@@ -24,12 +18,6 @@
   flux: {
     managerFilePatterns: [
       "/(^|/)kubernetes/.+\\.ya?ml(?:\\.j2)?$/"
-    ],
-  },
-  helmfile: {
-    managerFilePatterns: [
-      "/(^|/)helmfile\\.ya?ml(?:\\.gotmpl)?(?:\\.j2)?$/",
-      "/(^|/)helmfile\\.d/.+\\.ya?ml(?:\\.gotmpl)?(?:\\.j2)?$/",
     ],
   },
   kubernetes: {
@@ -131,15 +119,12 @@
       minimumGroupSize: 2,
     },
     {
-      description: "*arr upstreams tag a 4-part version (v6.4.3.10645) or release-<version>, but the images tag 3 parts; without extractVersion Renovate can't match the release and the PR ships no changelog",
+      description: "Match qBittorrent's release-<version> upstream tags to its container versions for changelogs",
       matchDatasources: [
         "docker"
       ],
       matchPackageNames: [
-        "ghcr.io/home-operations/prowlarr",
-        "ghcr.io/home-operations/qbittorrent",
-        "ghcr.io/home-operations/radarr",
-        "ghcr.io/home-operations/sonarr"
+        "ghcr.io/home-operations/qbittorrent"
       ],
       extractVersion: "^(?:release-)?v?(?<version>\\d+\\.\\d+\\.\\d+)",
     },
@@ -214,6 +199,31 @@
       changelogUrl: "https://github.com/searxng/searxng/blob/master/CHANGELOG.rst",
     },
     {
+      description: "Use Docker Hub timestamps to auto-merge SearXNG after a day while pulling from GHCR",
+      matchDatasources: [
+        "docker"
+      ],
+      matchPackageNames: [
+        "ghcr.io/searxng/searxng"
+      ],
+      overridePackageName: "docker.io/searxng/searxng",
+      minimumReleaseAge: "1 day",
+      automerge: true,
+      automergeType: "pr",
+      platformAutomerge: false,
+      ignoreTests: false,
+    },
+    {
+      description: "Auto-merge Grafana dashboards after checks pass",
+      matchDatasources: [
+        "custom.grafana-dashboards"
+      ],
+      automerge: true,
+      automergeType: "pr",
+      platformAutomerge: false,
+      ignoreTests: false,
+    },
+    {
       description: "Auto-merge Renovate itself weekly; it releases several times a day",
       matchDatasources: [
         "docker"
@@ -222,7 +232,6 @@
         "ghcr.io/renovatebot/renovate"
       ],
       automerge: true,
-      automergeType: "branch",
       matchUpdateTypes: [
         "minor",
         "patch"
@@ -243,7 +252,6 @@
         "github-actions"
       ],
       automerge: true,
-      automergeType: "branch",
       matchUpdateTypes: [
         "minor",
         "patch",
@@ -253,12 +261,25 @@
       ignoreTests: true,
     },
     {
+      description: "Auto-merge non-major Terraform provider updates after checks pass",
+      matchDatasources: [
+        "terraform-provider"
+      ],
+      matchUpdateTypes: [
+        "minor",
+        "patch"
+      ],
+      automerge: true,
+      automergeType: "pr",
+      platformAutomerge: false,
+      ignoreTests: false,
+    },
+    {
       description: "Auto-merge Mise Tools",
       matchManagers: [
         "mise"
       ],
       automerge: true,
-      automergeType: "branch",
       matchUpdateTypes: [
         "minor",
         "patch"
@@ -271,7 +292,6 @@
         "major"
       ],
       semanticCommitType: "feat",
-      commitMessagePrefix: "{{semanticCommitType}}({{semanticCommitScope}})!:",
       commitMessageExtra: "( {{currentVersion}} ➔ {{newVersion}} )",
     },
     {
@@ -303,33 +323,10 @@
       commitMessageTopic: "image {{depName}}",
     },
     {
-      matchDatasources: [
-        "helm"
-      ],
-      semanticCommitScope: "helm",
-      commitMessageTopic: "chart {{depName}}",
-    },
-    {
       matchManagers: [
         "github-actions"
       ],
       semanticCommitType: "ci",
-      semanticCommitScope: "github-action",
-      commitMessageTopic: "action {{depName}}",
-    },
-    {
-      matchDatasources: [
-        "github-releases"
-      ],
-      semanticCommitScope: "github-release",
-      commitMessageTopic: "release {{depName}}",
-    },
-    {
-      matchManagers: [
-        "mise"
-      ],
-      semanticCommitScope: "mise",
-      commitMessageTopic: "tool {{depName}}",
     },
     {
       matchUpdateTypes: [
