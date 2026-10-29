@@ -5,7 +5,8 @@
 #
 # Custom so the formats CLIProxyAPI serves pass through untranslated: it bridges
 # each to the Responses-only upstream itself. The model transformation strips
-# the chatgpt/ prefix.
+# the chatgpt/ prefix; it must stay a stripPrefix for /v1/models to find the
+# model in ../../llm-gateway/app/modelcatalog.yaml.
 apiVersion: agentgateway.dev/v1alpha1
 kind: AgentgatewayModel
 metadata:
@@ -21,6 +22,7 @@ spec:
   provider: Custom
   baseURL: http://cliproxyapi.ai.svc.cluster.local:8317/v1
   custom:
+    providerOverride: chatgpt
     formats:
       - type: Completions
       - type: Responses
@@ -31,7 +33,7 @@ spec:
         name: cliproxyapi-key
     transformations:
       - field: model
-        expression: '"gpt-6.1-sol"'
+        expression: 'llmRequest.model.stripPrefix("chatgpt/")'
 ---
 apiVersion: agentgateway.dev/v1alpha1
 kind: AgentgatewayModel
@@ -48,6 +50,7 @@ spec:
   provider: Custom
   baseURL: http://cliproxyapi.ai.svc.cluster.local:8317/v1
   custom:
+    providerOverride: chatgpt
     formats:
       - type: Completions
       - type: Responses
@@ -58,7 +61,7 @@ spec:
         name: cliproxyapi-key
     transformations:
       - field: model
-        expression: '"gpt-5.6-sol"'
+        expression: 'llmRequest.model.stripPrefix("chatgpt/")'
 ---
 apiVersion: agentgateway.dev/v1alpha1
 kind: AgentgatewayModel
@@ -75,6 +78,7 @@ spec:
   provider: Custom
   baseURL: http://cliproxyapi.ai.svc.cluster.local:8317/v1
   custom:
+    providerOverride: chatgpt
     formats:
       - type: Completions
       - type: Responses
@@ -85,7 +89,7 @@ spec:
         name: cliproxyapi-key
     transformations:
       - field: model
-        expression: '"gpt-5.6-terra"'
+        expression: 'llmRequest.model.stripPrefix("chatgpt/")'
 ---
 apiVersion: agentgateway.dev/v1alpha1
 kind: AgentgatewayModel
@@ -102,6 +106,7 @@ spec:
   provider: Custom
   baseURL: http://cliproxyapi.ai.svc.cluster.local:8317/v1
   custom:
+    providerOverride: chatgpt
     formats:
       - type: Completions
       - type: Responses
@@ -112,10 +117,10 @@ spec:
         name: cliproxyapi-key
     transformations:
       - field: model
-        expression: '"gpt-5.6-luna"'
+        expression: 'llmRequest.model.stripPrefix("chatgpt/")'
 ---
-# Any other model the proxy knows. /v1/models lists this as the literal
-# chatgpt/*: agentgateway expands wildcards only from its cost catalog.
+# Any other model the proxy knows. /v1/models expands this only to the chatgpt
+# entries in ../../llm-gateway/app/modelcatalog.yaml.
 apiVersion: agentgateway.dev/v1alpha1
 kind: AgentgatewayModel
 metadata:
@@ -131,6 +136,7 @@ spec:
   provider: Custom
   baseURL: http://cliproxyapi.ai.svc.cluster.local:8317/v1
   custom:
+    providerOverride: chatgpt
     formats:
       - type: Completions
       - type: Responses
