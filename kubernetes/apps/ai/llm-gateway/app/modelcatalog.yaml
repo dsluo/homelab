@@ -1,9 +1,9 @@
 ---
 # Merged over agentgateway's built-in catalog; feeds the /v1/models metadata.
 # Keys are providerOverride and upstream model name (./models,
-# ../../cliproxyapi/app/models.yaml). No rates: none of these bill per token.
-# llmkube contexts are per request: llama.cpp's n_ctx per slot, Radiance's
-# max_model_len.
+# ../../cliproxyapi/app/models.yaml). chatgpt mirrors the built-in openai
+# entries; the rest follow each runtime's own /v1/models (llama.cpp's n_ctx is
+# per slot). Only neuralwatt bills per token, so only it has rates.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -150,9 +150,14 @@ data:
         "neuralwatt": {
           "models": {
             "deepseek-v4.1-flash": {
+              "rates": {
+                "input": "0.15",
+                "output": "0.6",
+                "cacheRead": "0.015"
+              },
               "limits": {
-                "context": 1000000,
-                "output": 128000
+                "context": 1048560,
+                "output": 393216
               },
               "modalities": {
                 "input": [
@@ -166,15 +171,15 @@ data:
               "capabilities": {
                 "reasoning": true,
                 "structuredOutput": true,
-                "toolCall": true,
-                "temperature": true
+                "toolCall": true
               },
               "reasoning": {
                 "effort": [
-                  "none",
-                  "low",
+                  "max",
+                  "xhigh",
                   "high",
-                  "max"
+                  "low",
+                  "none"
                 ]
               }
             }
