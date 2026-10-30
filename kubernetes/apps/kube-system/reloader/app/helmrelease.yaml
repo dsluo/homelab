@@ -12,6 +12,9 @@ spec:
     fullnameOverride: reloader
     reloader:
       readOnlyRootFileSystem: true
+      # For optional Secret refs that land after the pod started (frigate's
+      # llm key). Creates seen during reloader's own startup sync are ignored.
+      reloadOnCreate: true
       podMonitor:
         enabled: true
         namespace: "{{ .Release.Namespace }}"
