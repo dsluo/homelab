@@ -23,9 +23,8 @@ data:
         type: openvino
         device: GPU
 
-    # Not in the image: exported with the YOLOv9 recipe in frigate's
-    # object_detectors docs and copied onto the config PVC by hand, so kopiur
-    # is what carries it across a rebuild.
+    # Not in the image: the helmrelease's model init container exports it onto
+    # the config PVC.
     model:
       model_type: yolo-generic
       path: /config/model_cache/yolov9-s-320.onnx

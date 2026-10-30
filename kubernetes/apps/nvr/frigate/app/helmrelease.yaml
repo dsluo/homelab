@@ -29,6 +29,36 @@ spec:
             # writes carry a group it shares.
             fsGroup: 65534
             fsGroupChangePolicy: OnRootMismatch
+        initContainers:
+          # Frigate's documented YOLOv9 export, run only while the file is
+          # missing from the config PVC. Delete the file to rebuild it.
+          model:
+            image:
+              repository: docker.io/library/python
+              tag: 3.11.18-bookworm@sha256:84fa927127b46670e768371d1ad1be271d57ba93a6fbb3479045c7c6c452432f
+            command: ["/bin/sh", "-ec"]
+            args:
+              - |
+                out=/config/model_cache/yolov9-s-320.onnx
+                [ -f "$out" ] && exit 0
+                apt-get update
+                apt-get install --no-install-recommends -y cmake libgl1
+                git clone https://github.com/WongKinYiu/yolov9.git /tmp/yolov9
+                cd /tmp/yolov9
+                git checkout 5b1ea9a8b3f0ffe4fe0e203ec6232d788bb3fcff
+                # CPU wheels first, or requirements.txt pulls ~3 GB of CUDA.
+                pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
+                pip install --no-cache-dir -r requirements.txt onnx==1.18.0 onnxruntime 'onnx-simplifier==0.4.*' onnxscript
+                curl -fsSLo yolov9-s.pt https://github.com/WongKinYiu/yolov9/releases/download/v0.1/yolov9-s-converted.pt
+                sed -i "s/ckpt = torch.load(attempt_download(w), map_location='cpu')/ckpt = torch.load(attempt_download(w), map_location='cpu', weights_only=False)/g" models/experimental.py
+                python3 export.py --weights ./yolov9-s.pt --imgsz 320 --simplify --include onnx
+                mkdir -p "$(dirname "$out")"
+                # Rename last, so a failed copy never leaves a file that skips the export.
+                cp yolov9-s.onnx "$out.tmp"
+                mv "$out.tmp" "$out"
+            resources:
+              limits:
+                memory: 4Gi
         containers:
           *app :
             image:
