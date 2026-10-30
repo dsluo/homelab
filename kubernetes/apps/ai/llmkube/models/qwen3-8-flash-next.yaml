@@ -112,7 +112,7 @@ spec:
     # the limit and is never reclaimed, so the limit is the OOM margin.
     # --embedding-placement ram refuses to start unless it leaves 4 GiB free
     # after those pins.
-    memory: 42Gi
+    memory: 40Gi
     memoryLimit: 48Gi
     gpu: 2
 
