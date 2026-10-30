@@ -83,8 +83,9 @@ spec:
     - "2"
     - --prefix-cache-mib
     - "8192"
-    - --mm-max-patches
-    - "0"
+    # In VRAM the 857 MiB/card tower comes out of the KV cache.
+    - --vision-tower-placement
+    - ram
 
   # RuntimeDefault refuses io_uring (the n-gram reads) and ROCm's NUMA calls.
   # The profile is a talos1 machine-config file (talos/patches/node/talos1/).
@@ -106,11 +107,13 @@ spec:
 
   resources:
     cpu: "8"
-    # ~33 GiB is pinned at startup at fixed sizes and usage sits near 35 GiB.
-    # --embedding-placement ram refuses to start unless the limit leaves
-    # 4 GiB free after those pins.
+    # ~35.6 GiB is pinned at startup at fixed sizes (the vision tower is
+    # 857 MiB of it) and usage sits near 37.5 GiB. Pinned memory counts against
+    # the limit and is never reclaimed, so the limit is the OOM margin.
+    # --embedding-placement ram refuses to start unless it leaves 4 GiB free
+    # after those pins.
     memory: 40Gi
-    memoryLimit: 44Gi
+    memoryLimit: 48Gi
     gpu: 2
 
   probeOverrides:
