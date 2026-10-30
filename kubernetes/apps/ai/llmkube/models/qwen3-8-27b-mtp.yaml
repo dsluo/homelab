@@ -18,13 +18,13 @@ spec:
     accelerator: rocm
     gpu:
       enabled: true
-      count: 2
+      count: 1
       vendor: amd
       runtime: rocm
       layers: 999 # preset ngl=999 (full offload)
       resourceClaims:
         - name: gpu
-          resourceClaimTemplateName: r9700-x2
+          resourceClaimTemplateName: r9700
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
@@ -42,16 +42,12 @@ spec:
   parallelSlots: 2 # parallel
   batchSize: 2048 # batch-size
   uBatchSize: 512 # ubatch-size
-  cacheTypeK: f16 # cache-type-k
-  cacheTypeV: f16 # cache-type-v
+  cacheTypeK: q8_0 # cache-type-k
+  cacheTypeV: q8_0 # cache-type-v
 
   # --- preset flags without typed CRD fields (MTP draft, KV reuse, sampling) ---
   # Omitted from the preset: load-on-startup (router-only).
   extraArgs:
-    - --split-mode
-    - tensor
-    - --flash-attn
-    - "on"
     - --alias
     - Qwen/Qwen3.8-27B
     - --verbosity
@@ -66,9 +62,9 @@ spec:
     - --spec-draft-ngl
     - "999"
     - --spec-draft-type-k
-    - f16
+    - q8_0
     - --spec-draft-type-v
-    - f16
+    - q8_0
     # Retained from 3.6, deliberately. Qwen3.6 documented two thinking-mode
     # presets -- 1.0 for general tasks and 0.6 for "precise coding tasks" -- and
     # we picked the coding one. Qwen3.8's model card lists only the general 1.0
