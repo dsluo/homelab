@@ -198,6 +198,36 @@ data:
         doorbell_sub:
           - rtsp://{FRIGATE_DOORBELL_USER}:{FRIGATE_DOORBELL_PASSWORD}@doorbell.lan:554/h264Preview_01_sub
 
+    # Here, not in the UI: its group editor saves by rewriting config.yml,
+    # which is the read-only configmap mount. icon is a react-icons/lu name.
+    camera_groups:
+      basement:
+        order: 1
+        icon: LuWarehouse
+        cameras:
+          - basement1
+          - basement2
+          - basement3
+          - basement4
+          - basement5
+          - basement6
+          - laundry
+      outside:
+        order: 2
+        icon: LuTreePine
+        cameras:
+          - doorbell
+          - window-south
+      first_floor:
+        order: 3
+        icon: LuSofa
+        cameras:
+          - kitchen1
+          - kitchen2
+          - living2
+          - living3
+          - entryway
+
     cameras:
       basement1:
         ffmpeg:
