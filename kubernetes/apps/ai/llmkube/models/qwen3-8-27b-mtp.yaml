@@ -18,13 +18,13 @@ spec:
     accelerator: rocm
     gpu:
       enabled: true
-      count: 2
+      count: 1
       vendor: amd
       runtime: rocm
       layers: 999 # preset ngl=999 (full offload)
       resourceClaims:
         - name: gpu
-          resourceClaimTemplateName: r9700-x2
+          resourceClaimTemplateName: r9700
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
@@ -48,8 +48,6 @@ spec:
   # --- preset flags without typed CRD fields (MTP draft, KV reuse, sampling) ---
   # Omitted from the preset: load-on-startup (router-only).
   extraArgs:
-    - --split-mode
-    - tensor
     - --alias
     - Qwen/Qwen3.8-27B
     - --verbosity
