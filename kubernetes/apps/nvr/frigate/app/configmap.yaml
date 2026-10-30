@@ -79,8 +79,13 @@ data:
         objects:
           - person
 
-    # Alerts only (the default), so cat and dog detections go undescribed.
     review:
+      # Not the default [person, car]: with no zones, every car passing on the
+      # street would be an alert.
+      alerts:
+        labels:
+          - person
+      # Alerts only (the default), so everything but person goes undescribed.
       genai:
         enabled: true
 
@@ -363,6 +368,14 @@ data:
             Main: 3dprintercam
             Sub: 3dprintercam_sub
       window-south:
+        objects:
+          track: &outdoor_objects # replaces the global list, not merged
+            - person
+            - cat
+            - dog
+            - car
+            - bicycle
+            - motorcycle
         ffmpeg:
           inputs:
             - path: rtsp://127.0.0.1:8554/window-south_sub
@@ -390,6 +403,8 @@ data:
             Main: office-couch
             Sub: office-couch_sub
       doorbell:
+        objects:
+          track: *outdoor_objects
         ffmpeg:
           inputs:
             - path: rtsp://127.0.0.1:8554/doorbell_sub
