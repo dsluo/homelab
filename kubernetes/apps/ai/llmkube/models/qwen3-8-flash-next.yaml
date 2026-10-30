@@ -74,9 +74,11 @@ spec:
     - --kv-cache-dtype
     - fp8
     - --num-speculative-tokens
-    - "3"
+    - "3 adaptive off B-adaptive-3"
     - --draft-window
-    - fixed
+    - 
+    - --draft-coupling
+    - 
     - --max-num-batched-tokens
     - "4096"
     - --prefill-span
