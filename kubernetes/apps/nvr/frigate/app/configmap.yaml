@@ -69,10 +69,10 @@ data:
       # and the three vendor families have three different sub resolutions.
 
     objects:
+      # No dog indoors: YOLOv9 reads the cats as dogs there.
       track:
         - person
         - cat
-        - dog
       genai:
         enabled: true
         objects:
