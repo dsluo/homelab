@@ -24,3 +24,5 @@ onnx==1.18.0
 onnxruntime
 onnx-simplifier==0.4.*
 onnxscript
+# yolov9's utils/general.py imports pkg_resources, removed in setuptools 82.
+setuptools<82
