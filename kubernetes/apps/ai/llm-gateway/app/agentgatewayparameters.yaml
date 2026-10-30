@@ -4,6 +4,10 @@ kind: AgentgatewayParameters
 metadata:
   name: llm-gateway
 spec:
+  modelCatalog:
+    sources:
+      - configMap:
+          name: llm-gateway-model-catalog
   rawConfig:
     config:
       # Defaults to localhost, which ./service.yaml cannot reach.

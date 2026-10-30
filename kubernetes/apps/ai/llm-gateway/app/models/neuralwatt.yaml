@@ -41,6 +41,7 @@ spec:
   provider: Custom
   baseURL: https://api.neuralwatt.com/v1
   custom:
+    providerOverride: neuralwatt
     formats:
       - type: Completions
   policies:
@@ -49,7 +50,7 @@ spec:
         name: neuralwatt-llm-gateway
     transformations:
       - field: model
-        expression: '"deepseek-v4.1-flash"'
+        expression: 'llmRequest.model.stripPrefix("neuralwatt/")'
       # Default to high when the client does not pick a level.
       - field: reasoning_effort
         expression: 'default(llmRequest.reasoning_effort, "high")'

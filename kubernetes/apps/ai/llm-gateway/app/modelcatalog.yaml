@@ -1,0 +1,234 @@
+---
+# Merged over agentgateway's built-in catalog; feeds the /v1/models metadata.
+# Keys are providerOverride and upstream model name (./models,
+# ../../cliproxyapi/app/models.yaml). chatgpt mirrors the built-in openai
+# entries; the rest follow each runtime's own /v1/models (llama.cpp's n_ctx is
+# per slot). Only neuralwatt bills per token, so only it has rates.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: llm-gateway-model-catalog
+data:
+  catalog.json: |
+    {
+      "providers": {
+        "chatgpt": {
+          "models": {
+            "gpt-5.6-luna": {
+              "limits": {
+                "context": 1050000,
+                "input": 922000,
+                "output": 128000
+              },
+              "modalities": {
+                "input": [
+                  "text",
+                  "image",
+                  "pdf"
+                ],
+                "output": [
+                  "text"
+                ]
+              },
+              "capabilities": {
+                "reasoning": true,
+                "structuredOutput": true,
+                "toolCall": true,
+                "temperature": false
+              },
+              "reasoning": {
+                "effort": [
+                  "none",
+                  "low",
+                  "medium",
+                  "high",
+                  "xhigh",
+                  "max"
+                ]
+              }
+            },
+            "gpt-5.6-sol": {
+              "limits": {
+                "context": 1050000,
+                "input": 922000,
+                "output": 128000
+              },
+              "modalities": {
+                "input": [
+                  "text",
+                  "image",
+                  "pdf"
+                ],
+                "output": [
+                  "text"
+                ]
+              },
+              "capabilities": {
+                "reasoning": true,
+                "structuredOutput": true,
+                "toolCall": true,
+                "temperature": false
+              },
+              "reasoning": {
+                "effort": [
+                  "none",
+                  "low",
+                  "medium",
+                  "high",
+                  "xhigh",
+                  "max"
+                ]
+              }
+            },
+            "gpt-5.6-terra": {
+              "limits": {
+                "context": 1050000,
+                "input": 922000,
+                "output": 128000
+              },
+              "modalities": {
+                "input": [
+                  "text",
+                  "image",
+                  "pdf"
+                ],
+                "output": [
+                  "text"
+                ]
+              },
+              "capabilities": {
+                "reasoning": true,
+                "structuredOutput": true,
+                "toolCall": true,
+                "temperature": false
+              },
+              "reasoning": {
+                "effort": [
+                  "none",
+                  "low",
+                  "medium",
+                  "high",
+                  "xhigh",
+                  "max"
+                ]
+              }
+            },
+            "gpt-6.1-sol": {
+              "limits": {
+                "context": 1050000,
+                "input": 922000,
+                "output": 128000
+              },
+              "modalities": {
+                "input": [
+                  "text",
+                  "image",
+                  "pdf"
+                ],
+                "output": [
+                  "text"
+                ]
+              },
+              "capabilities": {
+                "reasoning": true,
+                "structuredOutput": true,
+                "toolCall": true,
+                "temperature": false
+              },
+              "reasoning": {
+                "effort": [
+                  "low",
+                  "medium",
+                  "high",
+                  "xhigh",
+                  "max"
+                ]
+              }
+            }
+          }
+        },
+        "neuralwatt": {
+          "models": {
+            "deepseek-v4.1-flash": {
+              "rates": {
+                "input": "0.15",
+                "output": "0.6",
+                "cacheRead": "0.015"
+              },
+              "limits": {
+                "context": 1048560,
+                "output": 393216
+              },
+              "modalities": {
+                "input": [
+                  "text",
+                  "image"
+                ],
+                "output": [
+                  "text"
+                ]
+              },
+              "capabilities": {
+                "reasoning": true,
+                "structuredOutput": true,
+                "toolCall": true
+              },
+              "reasoning": {
+                "effort": [
+                  "max",
+                  "xhigh",
+                  "high",
+                  "low",
+                  "none"
+                ]
+              }
+            }
+          }
+        },
+        "llmkube": {
+          "models": {
+            "qwen3-8-27b-mtp": {
+              "limits": {
+                "context": 262144
+              }
+            },
+            "qwen3-8-flash-next": {
+              "limits": {
+                "context": 262144
+              },
+              "modalities": {
+                "input": [
+                  "text"
+                ],
+                "output": [
+                  "text"
+                ]
+              },
+              "capabilities": {
+                "reasoning": true,
+                "toolCall": true
+              },
+              "reasoning": {
+                "effort": [
+                  "none",
+                  "minimal",
+                  "low",
+                  "medium",
+                  "xhigh"
+                ]
+              }
+            },
+            "Qwen/Qwen3-Embedding-0.6B": {
+              "limits": {
+                "context": 4096
+              }
+            },
+            "Qwen/Qwen3-Reranker-0.6B": {
+              "limits": {
+                "context": 2048
+              }
+            }
+          }
+        }
+      }
+    }

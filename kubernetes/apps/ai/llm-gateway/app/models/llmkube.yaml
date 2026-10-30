@@ -7,6 +7,12 @@
 #
 # Custom with Completions only, so Responses/Messages clients get translated
 # to chat completions instead of hitting paths llama.cpp does not serve.
+#
+# /v1/models metadata comes from ../modelcatalog.yaml, looked up by
+# providerOverride and the upstream name. agentgateway recovers that name only
+# by reversing stripPrefix and + steps, so the router-proxy entries spell their
+# fixed name as "strip the whole match, append the backend name" instead of a
+# plain string literal, which would list no metadata.
 apiVersion: agentgateway.dev/v1alpha1
 kind: AgentgatewayModel
 metadata:
@@ -24,12 +30,13 @@ spec:
   # proxy is what makes a non-resident member resident before dispatching.
   baseURL: http://inference-router-proxy.ai.svc.cluster.local:8080/v1
   custom:
+    providerOverride: llmkube
     formats:
       - type: Completions
   policies:
     transformations:
       - field: model
-        expression: '"qwen3-8-27b-mtp"'
+        expression: 'llmRequest.model.stripPrefix("llmkube/Qwen/Qwen3.8-27B-MTP") + "qwen3-8-27b-mtp"'
 ---
 apiVersion: agentgateway.dev/v1alpha1
 kind: AgentgatewayModel
@@ -46,12 +53,13 @@ spec:
   provider: Custom
   baseURL: http://inference-router-proxy.ai.svc.cluster.local:8080/v1
   custom:
+    providerOverride: llmkube
     formats:
       - type: Completions
   policies:
     transformations:
       - field: model
-        expression: '"qwen3-8-flash-next"'
+        expression: 'llmRequest.model.stripPrefix("llmkube/Qwen/Qwen3.8-Flash-Next") + "qwen3-8-flash-next"'
 ---
 apiVersion: agentgateway.dev/v1alpha1
 kind: AgentgatewayModel
@@ -68,12 +76,13 @@ spec:
   provider: Custom
   baseURL: http://qwen3-embedding-0-6b.ai.svc.cluster.local:8080/v1
   custom:
+    providerOverride: llmkube
     formats:
       - type: Embeddings
   policies:
     transformations:
       - field: model
-        expression: '"qwen3-embedding-0-6b"'
+        expression: 'llmRequest.model.stripPrefix("llmkube/")'
       # kritika sends `dimensions`; llama.cpp returns the native 1024
       # regardless. A failed expression removes the field.
       - field: dimensions
@@ -94,6 +103,7 @@ spec:
   provider: Custom
   baseURL: http://qwen3-reranker-0-6b.ai.svc.cluster.local:8080
   custom:
+    providerOverride: llmkube
     formats:
       # Sent as written (baseURL's path is not prepended). llama.cpp
       # --reranking serves the Cohere-style body here.
@@ -102,4 +112,4 @@ spec:
   policies:
     transformations:
       - field: model
-        expression: '"qwen3-reranker-0-6b"'
+        expression: 'llmRequest.model.stripPrefix("llmkube/")'
