@@ -92,7 +92,9 @@ data:
       llm:
         provider: openai
         base_url: http://llm-gateway.ai.svc.cluster.local/v1
-        api_key: "{FRIGATE_LLM_API_KEY}"
+        # No api_key: the OpenAI client reads OPENAI_API_KEY itself, so a
+        # missing key disables GenAI. A {FRIGATE_*} placeholder for an unset
+        # var would fail the whole config load instead.
         model: llmkube/Qwen/Qwen3.8-Flash-Next
         # embeddings stays with the bundled Jina model: only the llamacpp
         # provider can embed images.

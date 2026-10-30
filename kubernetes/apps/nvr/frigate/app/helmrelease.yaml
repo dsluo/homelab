@@ -88,8 +88,11 @@ spec:
             envFrom:
               - secretRef:
                   name: frigate-secret
+              # Optional so recording never waits on the AI stack; reloader's
+              # reloadOnCreate restarts frigate once reflector mirrors it in.
               - secretRef:
                   name: frigate-llm-key
+                  optional: true
             probes:
               liveness:
                 enabled: true
