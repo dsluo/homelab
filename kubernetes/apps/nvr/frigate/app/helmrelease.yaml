@@ -80,7 +80,7 @@ spec:
               repository: ghcr.io/blakeblackshear/frigate
               # Frigate's config migrator can't write the read-only configmap
               # mount: after a tag bump that changes the config schema, port the
-              # migration into configmap.yaml by hand.
+              # migration into resources/config.yml by hand.
               tag: 0.18.2
             env:
               TZ: "${TIMEZONE}"
@@ -139,6 +139,28 @@ spec:
                   set:
                     - name: x-forwarded-groups
                       value: frigate-admins
+            backendRefs:
+              - identifier: *app
+                port: *port
+      # Not targeted by the OIDC SecurityPolicy, so editors can fetch the
+      # schema resources/config.yml points at. Frigate serves it allow_public.
+      schema:
+        hostnames:
+          - *host
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - matches:
+              - path:
+                  type: Exact
+                  value: /api/config/schema.json
+            # A client-sent role header must not reach frigate unauthenticated.
+            filters:
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  remove:
+                    - x-forwarded-groups
             backendRefs:
               - identifier: *app
                 port: *port

@@ -2,12 +2,14 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./configmap.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml
   - ./resourceclaimtemplate.yaml
   - ./usergroup.yaml
 configMapGenerator:
+  - name: frigate-config
+    files:
+      - ./resources/config.yml
   - name: frigate-export-requirements
     files:
       - ./resources/export-requirements.txt
