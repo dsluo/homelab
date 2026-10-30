@@ -125,8 +125,8 @@ data:
         retain:
           days: 30
           mode: all
-      # No detections tier: cat and dog detections are covered by the 14 days
-      # of continuous recording.
+      # No detections tier: every non-person label is a detection, and the 14
+      # days of continuous recording already cover them.
 
     go2rtc:
       streams:

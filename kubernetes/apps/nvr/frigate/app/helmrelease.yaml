@@ -43,6 +43,9 @@ spec:
               - |
                 out=/config/model_cache/yolov9-s-320.onnx
                 [ -f "$out" ] && exit 0
+                # Fail on permissions now, not after the downloads and export.
+                mkdir -p "$(dirname "$out")"
+                touch "$out.tmp"
                 git clone https://github.com/WongKinYiu/yolov9.git /tmp/yolov9
                 cd /tmp/yolov9
                 git checkout 5b1ea9a8b3f0ffe4fe0e203ec6232d788bb3fcff
@@ -53,10 +56,11 @@ spec:
                 # Headless OpenCV, so there's no libGL to apt-get as root.
                 grep -v '^opencv-python' requirements.txt > /tmp/requirements.txt
                 pip install --no-cache-dir -r /tmp/requirements.txt opencv-python-headless onnx==1.18.0 onnxruntime 'onnx-simplifier==0.4.*' onnxscript
+                # Unpinned until a run succeeds; pin from this list then.
+                pip freeze
                 curl -fsSLo yolov9-s.pt https://github.com/WongKinYiu/yolov9/releases/download/v0.1/yolov9-s-converted.pt
                 sed -i "s/ckpt = torch.load(attempt_download(w), map_location='cpu')/ckpt = torch.load(attempt_download(w), map_location='cpu', weights_only=False)/g" models/experimental.py
                 python3 export.py --weights ./yolov9-s.pt --imgsz 320 --simplify --include onnx
-                mkdir -p "$(dirname "$out")"
                 # Rename last, so a failed copy never leaves a file that skips the export.
                 cp yolov9-s.onnx "$out.tmp"
                 mv "$out.tmp" "$out"
@@ -106,12 +110,11 @@ spec:
             resources:
               requests:
                 cpu: "2"
-                memory: 2Gi
+                # 6.7Gi measured before the large Jina and face models; the
+                # cache and dshm tmpfs mounts below are charged here too.
+                memory: 7Gi
               limits:
-                # Frigate itself peaked ~5.1Gi before the large Jina and face
-                # models; the cache and dshm tmpfs mounts below are charged
-                # here too.
-                memory: 10Gi
+                memory: 12Gi
               claims:
                 - name: gpu
     service:
