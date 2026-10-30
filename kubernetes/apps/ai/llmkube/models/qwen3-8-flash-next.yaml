@@ -74,7 +74,7 @@ spec:
     - --kv-cache-dtype
     - fp8
     - --num-speculative-tokens
-    - "5"
+    - "3"
     - --draft-window
     - "fixed"
     - --draft-coupling
