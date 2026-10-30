@@ -74,11 +74,11 @@ spec:
     - --kv-cache-dtype
     - fp8
     - --num-speculative-tokens
-    - "3"
+    - "4"
     - --draft-window
     - "fixed"
     - --draft-coupling
-    - "on"
+    - "off"
     - --max-num-batched-tokens
     - "4096"
     - --prefill-span
