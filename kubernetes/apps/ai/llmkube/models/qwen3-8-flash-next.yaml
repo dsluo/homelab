@@ -83,11 +83,13 @@ spec:
     - "2"
     - --prefix-cache-mib
     - "8192"
-    # Loads the vision tower (VRAM, out of the experts' and KV cache's share).
     # 4096 16px patches caps one image at 1024x1024 and the encoder's
     # activations, against the 16384 default.
     - --mm-max-patches
     - "4096"
+    # In VRAM the 857 MiB/card tower comes out of the KV cache.
+    - --vision-tower-placement
+    - ram
 
   # RuntimeDefault refuses io_uring (the n-gram reads) and ROCm's NUMA calls.
   # The profile is a talos1 machine-config file (talos/patches/node/talos1/).
