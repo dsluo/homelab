@@ -44,6 +44,8 @@ spec:
             envFrom:
               - secretRef:
                   name: frigate-secret
+              - secretRef:
+                  name: frigate-llm-key
             probes:
               liveness:
                 enabled: true
@@ -59,9 +61,10 @@ spec:
                 cpu: "2"
                 memory: 2Gi
               limits:
-                # Frigate itself peaks ~5.1Gi; the cache and dshm tmpfs mounts
-                # below are charged here too.
-                memory: 7Gi
+                # Frigate itself peaked ~5.1Gi before the large Jina and face
+                # models; the cache and dshm tmpfs mounts below are charged
+                # here too.
+                memory: 10Gi
               claims:
                 - name: gpu
     service:

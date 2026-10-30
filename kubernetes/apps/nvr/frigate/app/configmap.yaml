@@ -6,22 +6,34 @@ metadata:
 data:
   config.yml: |
     ---
+    # Bump with each hand-ported migration; without it the migrator treats the
+    # file as 0.13 and replays every migration over it.
+    version: 0.18-0
+
     mqtt:
       enabled: false # no broker in-cluster
 
+    # Two instances: YOLOv9-s is ~20 ms on the UHD 770, so one tops out near
+    # the ~50 detections/s the cameras already ask for.
     detectors:
-      ov:
+      ov_0:
         type: openvino
         device: GPU # the UHD 770 iGPU, claimed via DRA
+      ov_1:
+        type: openvino
+        device: GPU
 
-    # Bundled with the image, so nothing is downloaded at runtime.
+    # Not in the image: exported with the YOLOv9 recipe in frigate's
+    # object_detectors docs and copied onto the config PVC by hand, so kopiur
+    # is what carries it across a rebuild.
     model:
-      path: /openvino-model/ssdlite_mobilenet_v2.xml
-      labelmap_path: /openvino-model/coco_91cl_bkgr.txt
-      width: 300
-      height: 300
-      input_tensor: nhwc
-      input_pixel_format: bgr
+      model_type: yolo-generic
+      path: /config/model_cache/yolov9-s-320.onnx
+      labelmap_path: /labelmap/coco-80.txt
+      width: 320
+      height: 320
+      input_tensor: nchw
+      input_dtype: float
 
     # Envoy's OIDC SecurityPolicy is the only gate: every hostname routed here
     # carries it. Native auth would silence header_map below -- the two modes
@@ -60,6 +72,37 @@ data:
     objects:
       track:
         - person
+        - cat
+        - dog
+      genai:
+        enabled: true
+        objects:
+          - person
+
+    # Alerts only (the default), so cat and dog detections go undescribed.
+    review:
+      genai:
+        enabled: true
+
+    genai:
+      llm:
+        provider: openai
+        base_url: http://llm-gateway.ai.svc.cluster.local/v1
+        api_key: "{FRIGATE_LLM_API_KEY}"
+        model: llmkube/Qwen/Qwen3.8-Flash-Next
+        # embeddings stays with the bundled Jina model: only the llamacpp
+        # provider can embed images.
+        roles:
+          - descriptions
+          - chat
+
+    semantic_search:
+      enabled: true
+      model_size: large # runs on the iGPU through OpenVINO
+
+    face_recognition:
+      enabled: true
+      model_size: large
 
     snapshots:
       enabled: true
@@ -76,9 +119,8 @@ data:
         retain:
           days: 30
           mode: all
-      # No detections tier: `person` is the only tracked object and it's an
-      # alert label, so every review item is an alert and detections stays
-      # empty. Add one if objects.track grows.
+      # No detections tier: cat and dog detections are covered by the 14 days
+      # of continuous recording.
 
     go2rtc:
       streams:

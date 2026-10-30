@@ -13,9 +13,12 @@ spec:
       namespace: kopiur-system
     - name: intel-gpu-resource-driver
       namespace: kube-system
+    - name: llm-gateway
+      namespace: ai
   components:
     - ../../../../components/oidc/envoy
     - ../../../../components/kopiur
+    - ../../../../components/llm-key
   interval: 1h
   path: ./kubernetes/apps/nvr/frigate/app
   postBuild:
@@ -29,6 +32,9 @@ spec:
       KOPIUR_CAPACITY: 10Gi
       KOPIUR_UID: "65534"
       KOPIUR_GID: "65534"
+      LLM_KEY_MODELS: '"llmkube/Qwen/Qwen3.8-Flash-Next"'
+      # Frigate only interpolates {FRIGATE_*} env vars into config.yml.
+      LLM_KEY_SECRET_KEY: FRIGATE_LLM_API_KEY
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
