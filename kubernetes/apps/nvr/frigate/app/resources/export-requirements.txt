@@ -4,9 +4,9 @@ absl-py==2.5.1 \
     --hash=sha256:286e71c82c1a38e75bbcf185f9b37d0305ad7786535107cb49bf4df9ff2e1f95 \
     --hash=sha256:721200f2f0e9960f2ca9dc3a2a706b201f5f75d812c158f059cbbe29eeafbdb8
     # via tensorboard
-albucore==0.0.24 \
-    --hash=sha256:adef6e434e50e22c2ee127b7a3e71f2e35fa088bcf54431e18970b62d97d0005 \
-    --hash=sha256:f2cab5431fadf94abf87fd0c89d9f59046e49fe5de34afea8f89bc8390253746
+albucore==0.3.1 \
+    --hash=sha256:5addf314322297201a944ce5bbb9a0aec86b7771b9bab08dc313df3729bc175f \
+    --hash=sha256:f78703910add252ddf91601a5e4419ac400bd3c13edcb59c2d2426fe4fbf13c5
     # via albumentations
 albumentations==2.0.8 \
     --hash=sha256:4da95e658e490de3c34af8fcdffed09e36aa8a4edd06ca9f9e7e3ea0b0b16856 \
