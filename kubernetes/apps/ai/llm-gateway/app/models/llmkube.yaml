@@ -9,9 +9,10 @@
 # to chat completions instead of hitting paths llama.cpp does not serve.
 #
 # /v1/models metadata comes from ../modelcatalog.yaml, looked up by
-# providerOverride and the upstream name. agentgateway derives that name only
-# from a stripPrefix-style transformation, so the router-proxy entries' fixed
-# names list no metadata yet.
+# providerOverride and the upstream name. agentgateway recovers that name only
+# by reversing stripPrefix and + steps, so the router-proxy entries spell their
+# fixed name as "strip the whole match, append the backend name" instead of a
+# plain string literal, which would list no metadata.
 apiVersion: agentgateway.dev/v1alpha1
 kind: AgentgatewayModel
 metadata:
@@ -35,7 +36,7 @@ spec:
   policies:
     transformations:
       - field: model
-        expression: '"qwen3-8-27b-mtp"'
+        expression: 'llmRequest.model.stripPrefix("llmkube/Qwen/Qwen3.8-27B-MTP") + "qwen3-8-27b-mtp"'
 ---
 apiVersion: agentgateway.dev/v1alpha1
 kind: AgentgatewayModel
@@ -58,7 +59,7 @@ spec:
   policies:
     transformations:
       - field: model
-        expression: '"qwen3-8-flash-next"'
+        expression: 'llmRequest.model.stripPrefix("llmkube/Qwen/Qwen3.8-Flash-Next") + "qwen3-8-flash-next"'
 ---
 apiVersion: agentgateway.dev/v1alpha1
 kind: AgentgatewayModel
