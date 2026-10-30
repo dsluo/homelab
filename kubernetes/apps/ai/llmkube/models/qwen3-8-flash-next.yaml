@@ -83,10 +83,6 @@ spec:
     - "2"
     - --prefix-cache-mib
     - "8192"
-    # 4096 16px patches caps one image at 1024x1024 and the encoder's
-    # activations, against the 16384 default.
-    - --mm-max-patches
-    - "4096"
     # In VRAM the 857 MiB/card tower comes out of the KV cache.
     - --vision-tower-placement
     - ram
@@ -111,11 +107,13 @@ spec:
 
   resources:
     cpu: "8"
-    # ~33 GiB is pinned at startup at fixed sizes and usage sits near 35 GiB.
-    # --embedding-placement ram refuses to start unless the limit leaves
-    # 4 GiB free after those pins.
-    memory: 40Gi
-    memoryLimit: 44Gi
+    # ~35.6 GiB is pinned at startup at fixed sizes (the vision tower is
+    # 857 MiB of it) and usage sits near 37.5 GiB. Pinned memory counts against
+    # the limit and is never reclaimed, so the limit is the OOM margin.
+    # --embedding-placement ram refuses to start unless it leaves 4 GiB free
+    # after those pins.
+    memory: 42Gi
+    memoryLimit: 48Gi
     gpu: 2
 
   probeOverrides:
