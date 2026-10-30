@@ -15,12 +15,12 @@ spec:
     accelerator: rocm
     gpu:
       enabled: true
-      count: 2
+      count: 1
       vendor: amd
       runtime: rocm
       resourceClaims:
         - name: gpu
-          resourceClaimTemplateName: r9700-x2
+          resourceClaimTemplateName: r9700
 ---
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
@@ -50,7 +50,7 @@ spec:
     - --port
     - "8080"
     - --tp
-    - "2"
+    - "1"
     - --max-num-seqs
     - "8"
     - --max-model-len
@@ -75,7 +75,7 @@ spec:
     cpu: "8"
     memory: 16Gi
     memoryLimit: 24Gi
-    gpu: 2
+    gpu: 1
 
   probeOverrides:
     startup:
