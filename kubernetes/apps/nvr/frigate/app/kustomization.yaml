@@ -7,3 +7,9 @@ resources:
   - ./ocirepository.yaml
   - ./resourceclaimtemplate.yaml
   - ./usergroup.yaml
+configMapGenerator:
+  - name: frigate-export-requirements
+    files:
+      - ./resources/export-requirements.txt
+generatorOptions:
+  disableNameSuffixHash: true

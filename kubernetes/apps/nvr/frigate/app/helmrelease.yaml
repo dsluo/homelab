@@ -29,6 +29,51 @@ spec:
             # writes carry a group it shares.
             fsGroup: 65534
             fsGroupChangePolicy: OnRootMismatch
+        initContainers:
+          # Frigate's documented YOLOv9 export, run only while the file is
+          # missing from the config PVC. Delete the file to rebuild it.
+          model:
+            image:
+              repository: docker.io/library/python
+              # 3.11 is the newest Python with onnx-simplifier 0.4 wheels;
+              # on 3.12+ pip builds it from source.
+              tag: 3.11.18-bookworm@sha256:84fa927127b46670e768371d1ad1be271d57ba93a6fbb3479045c7c6c452432f
+            command: ["/bin/sh", "-ec"]
+            args:
+              - |
+                out=/config/model_cache/yolov9-s-320.onnx
+                [ -f "$out" ] && exit 0
+                # Fail on permissions now, not after the downloads and export.
+                mkdir -p "$(dirname "$out")"
+                touch "$out.tmp"
+                git clone https://github.com/WongKinYiu/yolov9.git /tmp/yolov9
+                cd /tmp/yolov9
+                git checkout 5b1ea9a8b3f0ffe4fe0e203ec6232d788bb3fcff
+                python3 -m venv /tmp/venv
+                . /tmp/venv/bin/activate
+                # Locked in resources/export-requirements.txt: CPU-only torch
+                # and headless OpenCV, so no CUDA download and no libGL.
+                pip install --no-cache-dir --require-hashes --extra-index-url https://download.pytorch.org/whl/cpu -r /export/export-requirements.txt
+                curl -fsSLo yolov9-s.pt https://github.com/WongKinYiu/yolov9/releases/download/v0.1/yolov9-s-converted.pt
+                echo "09bf9ca4adef37944f4406455b5b81b451c1e67307916e4702da68cda4d3e46d  yolov9-s.pt" | sha256sum -c -
+                sed -i "s/ckpt = torch.load(attempt_download(w), map_location='cpu')/ckpt = torch.load(attempt_download(w), map_location='cpu', weights_only=False)/g" models/experimental.py
+                python3 export.py --weights ./yolov9-s.pt --imgsz 320 --simplify --include onnx
+                # Rename last, so a failed copy never leaves a file that skips the export.
+                cp yolov9-s.onnx "$out.tmp"
+                mv "$out.tmp" "$out"
+            env:
+              HOME: /tmp
+            # model_cache is owned by 65534 and not group-writable.
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 65534
+              runAsGroup: 65534
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              limits:
+                memory: 4Gi
         containers:
           *app :
             image:
@@ -44,6 +89,11 @@ spec:
             envFrom:
               - secretRef:
                   name: frigate-secret
+              # Optional so recording never waits on the AI stack; reloader's
+              # reloadOnCreate restarts frigate once reflector mirrors it in.
+              - secretRef:
+                  name: frigate-llm-key
+                  optional: true
             probes:
               liveness:
                 enabled: true
@@ -57,11 +107,11 @@ spec:
             resources:
               requests:
                 cpu: "2"
-                memory: 2Gi
-              limits:
-                # Frigate itself peaks ~5.1Gi; the cache and dshm tmpfs mounts
-                # below are charged here too.
+                # 6.7Gi measured before the large Jina and face models; the
+                # cache and dshm tmpfs mounts below are charged here too.
                 memory: 7Gi
+              limits:
+                memory: 12Gi
               claims:
                 - name: gpu
     service:
@@ -104,6 +154,14 @@ spec:
           - path: /config/config.yml
             subPath: config.yml
             readOnly: true
+      export-requirements:
+        type: configMap
+        name: frigate-export-requirements
+        advancedMounts:
+          *app :
+            model:
+              - path: /export
+                readOnly: true
       # Recordings and snapshots. The export all_squash's to 4011, so the
       # pod's root uid never reaches the NAS -- ownership there is fixed.
       media:

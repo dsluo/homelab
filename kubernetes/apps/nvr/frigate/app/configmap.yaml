@@ -6,22 +6,33 @@ metadata:
 data:
   config.yml: |
     ---
+    # Bump with each hand-ported migration; without it the migrator treats the
+    # file as 0.13 and replays every migration over it.
+    version: 0.18-0
+
     mqtt:
       enabled: false # no broker in-cluster
 
+    # Two instances: YOLOv9-s is ~20 ms on the UHD 770, so one tops out near
+    # the ~50 detections/s the cameras already ask for.
     detectors:
-      ov:
+      ov_0:
         type: openvino
         device: GPU # the UHD 770 iGPU, claimed via DRA
+      ov_1:
+        type: openvino
+        device: GPU
 
-    # Bundled with the image, so nothing is downloaded at runtime.
+    # Not in the image: the helmrelease's model init container exports it onto
+    # the config PVC.
     model:
-      path: /openvino-model/ssdlite_mobilenet_v2.xml
-      labelmap_path: /openvino-model/coco_91cl_bkgr.txt
-      width: 300
-      height: 300
-      input_tensor: nhwc
-      input_pixel_format: bgr
+      model_type: yolo-generic
+      path: /config/model_cache/yolov9-s-320.onnx
+      labelmap_path: /labelmap/coco-80.txt
+      width: 320
+      height: 320
+      input_tensor: nchw
+      input_dtype: float
 
     # Envoy's OIDC SecurityPolicy is the only gate: every hostname routed here
     # carries it. Native auth would silence header_map below -- the two modes
@@ -60,6 +71,44 @@ data:
     objects:
       track:
         - person
+        - cat
+        - dog
+      genai:
+        enabled: true
+        objects:
+          - person
+
+    review:
+      # Not the default [person, car]: with no zones, every car passing on the
+      # street would be an alert.
+      alerts:
+        labels:
+          - person
+      # Alerts only (the default), so everything but person goes undescribed.
+      genai:
+        enabled: true
+
+    genai:
+      llm:
+        provider: openai
+        base_url: http://llm-gateway.ai.svc.cluster.local/v1
+        # No api_key: the OpenAI client reads OPENAI_API_KEY itself, so a
+        # missing key disables GenAI. A {FRIGATE_*} placeholder for an unset
+        # var would fail the whole config load instead.
+        model: llmkube/Qwen/Qwen3.8-Flash-Next
+        # embeddings stays with the bundled Jina model: only the llamacpp
+        # provider can embed images.
+        roles:
+          - descriptions
+          - chat
+
+    semantic_search:
+      enabled: true
+      model_size: large # runs on the iGPU through OpenVINO
+
+    face_recognition:
+      enabled: true
+      model_size: large
 
     snapshots:
       enabled: true
@@ -76,9 +125,8 @@ data:
         retain:
           days: 30
           mode: all
-      # No detections tier: `person` is the only tracked object and it's an
-      # alert label, so every review item is an alert and detections stays
-      # empty. Add one if objects.track grows.
+      # No detections tier: every non-person label is a detection, and the 14
+      # days of continuous recording already cover them.
 
     go2rtc:
       streams:
@@ -321,6 +369,14 @@ data:
             Main: 3dprintercam
             Sub: 3dprintercam_sub
       window-south:
+        objects:
+          track: &outdoor_objects # replaces the global list, not merged
+            - person
+            - cat
+            - dog
+            - car
+            - bicycle
+            - motorcycle
         ffmpeg:
           inputs:
             - path: rtsp://127.0.0.1:8554/window-south_sub
@@ -348,6 +404,8 @@ data:
             Main: office-couch
             Sub: office-couch_sub
       doorbell:
+        objects:
+          track: *outdoor_objects
         ffmpeg:
           inputs:
             - path: rtsp://127.0.0.1:8554/doorbell_sub

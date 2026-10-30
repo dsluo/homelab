@@ -16,6 +16,7 @@ spec:
   components:
     - ../../../../components/oidc/envoy
     - ../../../../components/kopiur
+    - ../../../../components/llm-key
   interval: 1h
   path: ./kubernetes/apps/nvr/frigate/app
   postBuild:
@@ -29,6 +30,7 @@ spec:
       KOPIUR_CAPACITY: 10Gi
       KOPIUR_UID: "65534"
       KOPIUR_GID: "65534"
+      LLM_KEY_MODELS: '"llmkube/Qwen/Qwen3.8-Flash-Next"'
     substituteFrom:
       - name: cluster-global-config
         kind: ConfigMap
