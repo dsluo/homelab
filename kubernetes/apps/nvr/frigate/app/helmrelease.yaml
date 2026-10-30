@@ -51,14 +51,11 @@ spec:
                 git checkout 5b1ea9a8b3f0ffe4fe0e203ec6232d788bb3fcff
                 python3 -m venv /tmp/venv
                 . /tmp/venv/bin/activate
-                # CPU wheels first, or requirements.txt pulls ~3 GB of CUDA.
-                pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
-                # Headless OpenCV, so there's no libGL to apt-get as root.
-                grep -v '^opencv-python' requirements.txt > /tmp/requirements.txt
-                pip install --no-cache-dir -r /tmp/requirements.txt opencv-python-headless onnx==1.18.0 onnxruntime 'onnx-simplifier==0.4.*' onnxscript
-                # Unpinned until a run succeeds; pin from this list then.
-                pip freeze
+                # Locked in resources/export-requirements.txt: CPU-only torch
+                # and headless OpenCV, so no CUDA download and no libGL.
+                pip install --no-cache-dir --require-hashes --extra-index-url https://download.pytorch.org/whl/cpu -r /export/export-requirements.txt
                 curl -fsSLo yolov9-s.pt https://github.com/WongKinYiu/yolov9/releases/download/v0.1/yolov9-s-converted.pt
+                echo "09bf9ca4adef37944f4406455b5b81b451c1e67307916e4702da68cda4d3e46d  yolov9-s.pt" | sha256sum -c -
                 sed -i "s/ckpt = torch.load(attempt_download(w), map_location='cpu')/ckpt = torch.load(attempt_download(w), map_location='cpu', weights_only=False)/g" models/experimental.py
                 python3 export.py --weights ./yolov9-s.pt --imgsz 320 --simplify --include onnx
                 # Rename last, so a failed copy never leaves a file that skips the export.
@@ -157,6 +154,14 @@ spec:
           - path: /config/config.yml
             subPath: config.yml
             readOnly: true
+      export-requirements:
+        type: configMap
+        name: frigate-export-requirements
+        advancedMounts:
+          *app :
+            model:
+              - path: /export
+                readOnly: true
       # Recordings and snapshots. The export all_squash's to 4011, so the
       # pod's root uid never reaches the NAS -- ownership there is fixed.
       media:
