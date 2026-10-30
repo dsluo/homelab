@@ -6,6 +6,7 @@ resources:
   - ./priorityclass.yaml
   - ./resourceclaimtemplate.yaml
   - ./qwen3-8-27b-mtp.yaml
+  - ./qwen3-8-27b-rad.yaml
   - ./qwen3-8-flash-next.yaml
   - ./qwen3-embedding-0-6b.yaml
   - ./qwen3-reranker-0-6b.yaml

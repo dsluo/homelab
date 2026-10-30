@@ -1,0 +1,96 @@
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: Model
+metadata:
+  name: qwen3-8-27b-rad
+spec:
+  # Radiance's own container (AMD Quark MXFP4 weights, DFlash2 drafter), 18 GiB.
+  # Pinned to an HF commit so a re-upload cannot drift from the image version.
+  source: https://huggingface.co/StillDeadcode/qwen3.8-27b-mxfp4/resolve/60bd4139f335205fbc120e5534329c30b691af0e/qwen3.8-27b-mxfp4.rad
+  sourceSecretRef:
+    name: llmkube-hf-secret
+  format: custom
+  quantization: MXFP4
+  hardware:
+    accelerator: rocm
+    gpu:
+      enabled: true
+      count: 2
+      vendor: amd
+      runtime: rocm
+      resourceClaims:
+        - name: gpu
+          resourceClaimTemplateName: r9700-x2
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: InferenceService
+metadata:
+  name: qwen3-8-27b-rad
+  annotations:
+    # Radiance has no /slots; without this the generic runtime has no idle
+    # probe and the ModelPool never swaps away from it.
+    inference.llmkube.dev/idle-metric: vllm:num_requests_running
+spec:
+  modelRef: qwen3-8-27b-rad
+  runtime: generic
+  stageModel: true
+  image: docker.io/stilldeadcode/radiance:1.13.0@sha256:78cf0d6a5f760d9d5e462d8eb37fe11f25ef59f10c843158e19d0cdb06990a84
+  priorityClassName: gpu-preemptible
+
+  command:
+    - /opt/radiance/bin/radiance
+  args:
+    - --model
+    - $(LLMKUBE_MODEL_PATH)
+    # Must equal the ModelRouter backend name.
+    - --served-model-name
+    - qwen3-8-27b-rad
+    - --host
+    - "::"
+    - --port
+    - "8080"
+    - --tp
+    - "2"
+    - --max-num-seqs
+    - "8"
+    - --max-model-len
+    - "262144"
+    - --kv-cache-dtype
+    - fp8
+
+  # Same seccomp profile and UID as flash-next; see qwen3-8-flash-next.yaml.
+  podSecurityContext:
+    fsGroup: 102
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile:
+      type: Localhost
+      localhostProfile: profiles/radiance.json
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    allowPrivilegeEscalation: false
+
+  resources:
+    cpu: "8"
+    memory: 16Gi
+    memoryLimit: 24Gi
+    gpu: 2
+
+  probeOverrides:
+    startup:
+      httpGet:
+        path: /health
+        port: 8080
+      periodSeconds: 10
+      failureThreshold: 90
+    readiness:
+      httpGet:
+        path: /health
+        port: 8080
+      periodSeconds: 10
+
+  endpoint:
+    port: 8080
+    path: /v1/chat/completions
+    type: ClusterIP

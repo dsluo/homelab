@@ -13,6 +13,9 @@ spec:
     - name: qwen3-8-27b-mtp
       inferenceServiceRef:
         name: qwen3-8-27b-mtp
+    - name: qwen3-8-27b-rad
+      inferenceServiceRef:
+        name: qwen3-8-27b-rad
     - name: qwen3-8-flash-next
       inferenceServiceRef:
         name: qwen3-8-flash-next
