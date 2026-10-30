@@ -76,9 +76,9 @@ spec:
     - --num-speculative-tokens
     - "3"
     - --draft-window
-    - adaptive
+    - "adaptive"
     - --draft-coupling
-    - off
+    - "off"
     - --max-num-batched-tokens
     - "4096"
     - --prefill-span
