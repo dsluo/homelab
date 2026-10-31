@@ -34,7 +34,7 @@ spec:
   modelRef: qwen3-8-flash-next
   runtime: generic
   stageModel: true
-  image: docker.io/stilldeadcode/radiance:1.15.0@sha256:0118b9d6f05831c9db4abdb1e8ba0b585a0122584651792b72ac937d5ae5ff0e
+  image: docker.io/stilldeadcode/radiance:1.15.1@sha256:cccbc0bd6bfef1441e8fcf3ca8d10313d4e6d18a03d9c6ede3bcb15d95376668
   priorityClassName: gpu-preemptible
 
   command:
