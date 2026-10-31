@@ -13,7 +13,9 @@
   dependencyDashboardTitle: "Renovate Dashboard",
   timezone: "America/Detroit",
   ignorePaths: [
-    "**/*.sops.*"
+    "**/*.sops.*",
+    // Update the fixed YOLOv9 export environment together and test a fresh export.
+    "kubernetes/apps/nvr/frigate/app/resources/export-requirements.*"
   ],
   flux: {
     managerFilePatterns: [
@@ -57,6 +59,19 @@
     },
   ],
   packageRules: [
+    {
+      description: "Keep Frigate's model exporter on Python 3.11 for onnx-simplifier wheels",
+      matchDatasources: [
+        "docker"
+      ],
+      matchFileNames: [
+        "kubernetes/apps/nvr/frigate/app/helmrelease.yaml"
+      ],
+      matchPackageNames: [
+        "docker.io/library/python"
+      ],
+      allowedVersions: "/^3\\.11\\./",
+    },
     {
       description: "Keep the Helmfile dependency name aligned with Envoy Gateway's mirrored chart URL",
       matchManagers: [
