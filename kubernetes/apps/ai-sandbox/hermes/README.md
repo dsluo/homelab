@@ -189,7 +189,7 @@ use `llm-gateway` for the in-cluster models and any other provider (keys via
 ```sh
 kubectl -n ai-sandbox exec -it deploy/hermes -- sh -c '
   hermes config set model.provider llm-gateway
-  hermes config set model.default llmkube/Qwen/Qwen3.8-27B-MTP
+  hermes config set model.default llmkube/Qwen/Qwen3.8-Flash-Next
 '
 ```
 

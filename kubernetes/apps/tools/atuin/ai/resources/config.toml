@@ -2,7 +2,7 @@ port = 8080
 
 endpoint = "http://llm-gateway.ai.svc.cluster.local/v1"
 
-default_model = "qwen3.8-27b"
+default_model = "qwen3.8-flash-next"
 
 [api_key]
 env = "OPENAI_API_KEY"
