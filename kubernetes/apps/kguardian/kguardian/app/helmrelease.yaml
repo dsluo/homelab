@@ -48,7 +48,7 @@ spec:
       # kguardian appends the provider's request path to this verbatim, so the
       # /v1 has to be spelled out.
       baseUrl: http://llm-gateway.ai.svc.cluster.local/v1
-      model: llmkube/Qwen/Qwen3.8-27B-MTP
+      model: llmkube/Qwen/Qwen3.8-Flash-Next
       # Minted by components/llm-key in ../ks.yaml and mirrored in here by
       # reflector; nothing in this repo creates it directly.
       secret: kguardian-llm-key
