@@ -29,3 +29,31 @@ newapp:
 # Run static migration checks and flate tests
 test:
     flate test all --path kubernetes/flux/cluster --allow-missing-secrets
+
+# Stop NFS-backed apps (those using components/zeroscaler) before planned NAS downtime.
+nas-down:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    kubectl get kustomizations.kustomize.toolkit.fluxcd.io --all-namespaces --output json |
+        jq -r '.items[] | select(any(.spec.components[]?; endswith("/zeroscaler"))) | "\(.metadata.namespace) \(.metadata.name)"' |
+        while read -r ns app; do
+            # Suspend Flux first, or it recreates the HPA and the HPA scales the app back up.
+            flux --namespace "$ns" suspend kustomization "$app"
+            flux --namespace "$ns" suspend helmrelease "$app"
+            kubectl --namespace "$ns" delete hpa "$app" --ignore-not-found
+            kubectl --namespace "$ns" scale deployment "$app" --replicas 0
+            kubectl --namespace "$ns" wait --for=delete pod --selector "app.kubernetes.io/controller=$app" \
+                --field-selector status.phase=Running --timeout 5m
+        done
+
+# Bring NFS-backed apps back once the NAS is up again.
+nas-up:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    kubectl get kustomizations.kustomize.toolkit.fluxcd.io --all-namespaces --output json |
+        jq -r '.items[] | select(any(.spec.components[]?; endswith("/zeroscaler"))) | "\(.metadata.namespace) \(.metadata.name)"' |
+        while read -r ns app; do
+            flux --namespace "$ns" resume helmrelease "$app"
+            # Recreates the HPA, which scales the app back to one replica.
+            flux --namespace "$ns" resume kustomization "$app"
+        done

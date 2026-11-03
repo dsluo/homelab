@@ -7,7 +7,9 @@ components:
 resources:
   - ./namespace.yaml
   - ./amd-device-metrics-exporter/ks.yaml
+  - ./blackbox-exporter/ks.yaml
   - ./grafana/ks.yaml
+  - ./prometheus-adapter/ks.yaml
   - ./prometheus-operator-crds/ks.yaml
   - ./smartctl-exporter/ks.yaml
   - ./snmp-exporter/ks.yaml

@@ -9,6 +9,7 @@ spec:
   components:
     - ../../../../components/oidc
     - ../../../../components/kopiur
+    - ../../../../components/zeroscaler
   postBuild:
     substitute:
       APP: *app

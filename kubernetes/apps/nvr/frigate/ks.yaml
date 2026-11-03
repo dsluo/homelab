@@ -16,6 +16,7 @@ spec:
   components:
     - ../../../../components/oidc/envoy
     - ../../../../components/kopiur
+    - ../../../../components/zeroscaler
     - ../../../../components/llm-key
   interval: 1h
   path: ./kubernetes/apps/nvr/frigate/app

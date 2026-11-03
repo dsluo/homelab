@@ -37,3 +37,9 @@ upgrade-k8s version:
 # Reset nodes and reboot; pass force=true to wipe the whole disk.
 reset force="false":
     topf reset --full={{ if force == "false" { "false" } else { "true" } }} --graceful=false
+
+# Kubelet pods hang unmounting hard NFS mounts if the NAS is already gone; power it off after this returns.
+# Shut down both nodes for a full power-off, skipping the drain.
+[confirm('Shut down talos0 and talos1? [y/N]')]
+shutdown:
+    talosctl --nodes 10.0.42.4,10.0.42.3 shutdown --force

@@ -16,6 +16,7 @@ spec:
     - ../../../../components/oidc/envoy
     - ../../components/sibling-access
     - ../../../../components/kopiur
+    - ../../../../components/zeroscaler
   interval: 1h
   path: ./kubernetes/apps/media/radarr/app
   postBuild:

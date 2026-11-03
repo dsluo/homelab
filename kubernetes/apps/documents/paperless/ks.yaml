@@ -19,6 +19,7 @@ spec:
     - ../../../../components/database
     - ../../../../components/oidc
     - ../../../../components/kopiur
+    - ../../../../components/zeroscaler
     - ../../../../components/llm-key
   postBuild:
     substitute:
