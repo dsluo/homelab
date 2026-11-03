@@ -1,14 +1,15 @@
 ---
 # Scales ${APP} to zero while the NAS's NFS port is unreachable and back to
-# one when it answers. If the metric is missing (adapter or probe down) the
-# HPA holds the current replica count instead of scaling.
+# ZEROSCALER_REPLICAS when it answers. The HPA owns the replica count, so set
+# multi-replica apps' count here, not in the HelmRelease. If the metric is
+# missing (adapter or probe down) the HPA holds the current count.
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: "${APP}"
 spec:
   minReplicas: 0
-  maxReplicas: 1
+  maxReplicas: ${ZEROSCALER_REPLICAS:=1}
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
@@ -21,9 +22,11 @@ spec:
           selector:
             matchLabels:
               job: nfs_probe
+        # A tiny target makes any success (1) overshoot, so the HPA clamps to
+        # maxReplicas. With "1" it scales up from zero to one replica only.
         target:
           type: Value
-          value: "1"
+          value: 1m
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 0
