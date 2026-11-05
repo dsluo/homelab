@@ -37,7 +37,7 @@ spec:
               repository: docker.io/library/python
               # 3.11 is the newest Python with onnx-simplifier 0.4 wheels;
               # on 3.12+ pip builds it from source.
-              tag: 3.11.18-bookworm@sha256:84fa927127b46670e768371d1ad1be271d57ba93a6fbb3479045c7c6c452432f
+              tag: 3.11.18-bookworm@sha256:a78ac56989e704fadc8e9be30b3fe78e7bf8a52572a726911e525c30468604f8
             command: ["/bin/sh", "-ec"]
             args:
               - |
