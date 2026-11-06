@@ -12,3 +12,12 @@ apiVersion: v1alpha1
 kind: UserVolumeConfig
 name: local-hostpath
 volumeType: directory
+---
+apiVersion: v1alpha1
+kind: RawVolumeConfig
+name: bulk-zpool
+provisioning:
+  diskSelector:
+    match: disk.transport == "sata" && disk.model.startsWith("Samsung SSD 870")
+  minSize: "1.5TB"
+  grow: true
