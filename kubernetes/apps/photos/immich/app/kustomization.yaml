@@ -21,21 +21,3 @@ patches:
       - op: add
         path: /spec/callbackUrls/-
         value: app.immich:///oauth-callback
-  # Thumbnails and transcodes are regenerable from the originals. An explicit
-  # ignoreRules list replaces kopiur's defaults, so those are repeated here.
-  - target:
-      group: kopiur.home-operations.com
-      version: v1alpha1
-      kind: SnapshotPolicy
-    patch: |
-      - op: add
-        path: /spec/files
-        value:
-          ignoreRules:
-            - /lost+found
-            - System Volume Information
-            - $RECYCLE.BIN
-            - "@eaDir"
-            - .snapshot
-            - /thumbs
-            - /encoded-video
