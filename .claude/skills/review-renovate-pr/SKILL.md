@@ -13,7 +13,7 @@ Accept any of:
 - PR number (e.g. `693`) → `owner/repo` is this repo
 - Full PR URL
 - "latest" → `gh pr list --state open --search "head:renovate/"`, pick the newest, confirm with the user
-- **No PR specified, or "all open" / "the open renovate PRs" / multiple PR numbers → batch mode (the default)**: review every open Renovate PR — read `references/batch.md` and follow it. Use one subagent per PR in parallel when delegation is available, within the environment's concurrency limit; otherwise review serially. Do not stop to ask which PRs to review.
+- **No PR specified, or "all open" / "the open renovate PRs" / multiple PR numbers → batch mode (the default)**: review every open Renovate PR — read `references/batch.md` and follow it. Use one subagent per PR in parallel when delegation is available, within the environment's concurrency limit, each on the model `references/batch.md` assigns to its update type; otherwise review serially. Do not stop to ask which PRs to review.
 
 ## Tool rules
 
@@ -84,7 +84,7 @@ For each breaking change, determine which of these categories it falls into, the
 - **Label key rename or label value change** (e.g. `app` → `app.kubernetes.io/component`, or chart-name prefix stripped from a value): grep `kubernetes/` for anything that **selects on** the old key *or the old value* — `matchLabels:`, `selector:`, `labelSelector:`, `jobLabel:` in VMServiceScrape/VMPodScrape/ServiceMonitor, PromQL/LogQL queries inside VMRules and Grafana dashboard JSON (in ConfigMaps or the `GrafanaDashboard` CRD). A label being emitted differently matters only if something reads it.
 - **Resource name change** (e.g. dropping a chart-name prefix from a Service/Deployment): grep for references to the old name — `HTTPRoute` `backendRefs`, `VMUser` `targetRefs`, `ServiceMonitor`/`VMServiceScrape` selectors, `Ingress` backends, cross-namespace Service DNS (`<name>.<ns>.svc.cluster.local`), NetworkPolicy `podSelector`.
 - **Value / flag / CRD-field rename**: grep HelmRelease `values:` blocks, any `valuesFrom` ConfigMaps/Secrets (check they exist and trace ESO-managed Secrets back to their `ExternalSecret` mappings), `postRenderers`, `kustomize` patches, and CRD manifests (`apiVersion: <group>`) consumed by other apps.
-- **Database schema migration**: check whether it's one-way. If it is, the shared CNPG `postgres` cluster streams WAL for PITR, so don't gate the merge on base-backup age. PITR still needs a base backup to replay WAL onto: confirm `ContinuousArchiving=True` on the cluster **and** at least one completed `postgres-daily-b2` Backup (the `backblaze` store, which also holds the WAL; `garage` backups have no WAL and can't do PITR), then note the pre-merge time as the restore target. If no completed B2 backup exists, recommend taking one before merging. PITR restores the whole shared cluster, though, so for a migration risky enough that you'd want to undo it for one app alone, recommend a `pg_dump` of that app's database before merging. Also check whether the operator's CRD actually exposes a rollback/version-pin field — if it doesn't, say so explicitly; "roll back the image" is not a plan the CRD supports.
+- **Database schema migration**: check whether it's one-way. If it is, the shared CNPG `postgres` cluster streams WAL for PITR, so don't gate the merge on base-backup age. PITR still needs a base backup to replay WAL onto: confirm `ContinuousArchiving=True` on the cluster **and** at least one completed `postgres-daily-b2` Backup (the `backblaze` store, which also holds the WAL; `garage` backups have no WAL and can't do PITR), then note the pre-merge time as the restore target. If no completed B2 backup exists, recommend taking one before merging. PITR restores the whole shared cluster, though, so for a migration risky enough that you'd want to undo it for one app alone, recommend a `pg_dump` of that app's database before merging. Also check whether the operator's CRD actually exposes a rollback/version-pin field — if it doesn't, say so explicitly; "roll back the image" is not a plan the CRD supports. Don't run commands that read live database contents (e.g. a `kubectl exec ... psql` row count) yourself; give the user the command to run (in Claude Code, as `! <command>`).
 
 **Verify before prescribing a rename.** If you're about to recommend the user edit a file to match a renamed resource, label value, or field, confirm the new value from the chart itself — do not infer it from the release-note text. Acceptable evidence:
 
@@ -116,7 +116,7 @@ decision-relevant line. "None — config-only, no workload restart" is a valid e
 
 ### Breaking changes
 - <change> — upstream: <release URL>
-  - Impact here: <path/to/file.yaml:NN> | no impact — not used
+  - Impact here: <path/to/file.yaml:NN> | no impact: not used
 
 ### Notable changes
 - <non-breaking behavior change worth knowing>
@@ -128,7 +128,7 @@ decision-relevant line. "None — config-only, no workload restart" is a valid e
 - <only if noticed in passing: stale comments, deprecated apiVersions, dead values — omit the section if empty>
 ```
 
-**Citation rule:** every `Impact here:` entry must either be a concrete `path/to/file.yaml:NN` reference (line number required — find it with `rg -n` or an equivalent search tool) or the literal string `no impact — not used`. Prose claims like "our helmrelease doesn't reference it" are not acceptable — if it's truly absent, show the search came up empty; if it's present, cite the line.
+**Citation rule:** every `Impact here:` entry must either be a concrete `path/to/file.yaml:NN` reference (line number required — find it with `rg -n` or an equivalent search tool) or the literal string `no impact: not used`. Prose claims like "our helmrelease doesn't reference it" are not acceptable — if it's truly absent, show the search came up empty; if it's present, cite the line.
 
 **Recommended-actions rule:** every concrete edit in `Recommended actions` (renames, value changes, field swaps) must be backed by template evidence per §4's verify-before-prescribing step. If you only have the release-note text, phrase the action as verification, not a prescribed edit — e.g. `after merge, confirm that the rendered VMAgent Service name still matches httproute.yaml:14; if not, update the backendRef`. Better to ask the user to verify than to prescribe a wrong rename.
 
