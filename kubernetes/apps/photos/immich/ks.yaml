@@ -27,6 +27,7 @@ spec:
       APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/immich.svg"
       OIDC_APP_NAME: Immich
       OIDC_CALLBACK_PATH: /auth/login
+      OIDC_PKCE_ENABLED: "true"
       # Created by CNPG as superuser; immich's migrations only re-check them.
       DB_EXTENSIONS: '[{"name":"vector"},{"name":"vchord"},{"name":"cube"},{"name":"earthdistance"}]'
       # Keep at or under half the bulk pool: kopiur's staging PVC requests the
