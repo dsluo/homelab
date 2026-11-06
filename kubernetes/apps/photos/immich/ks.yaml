@@ -1,0 +1,51 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app immich
+spec:
+  dependsOn:
+    - name: external-secrets-config
+      namespace: external-secrets
+    - name: pocket-id
+      namespace: security
+    - name: kopiur-repository
+      namespace: kopiur-system
+    - name: intel-gpu-resource-driver
+      namespace: kube-system
+    - name: openebs
+      namespace: openebs-system
+  interval: 1h
+  path: ./kubernetes/apps/photos/immich/app
+  components:
+    - ../../../../components/database
+    - ../../../../components/oidc
+    - ../../../../components/kopiur
+  postBuild:
+    substitute:
+      APP: *app
+      APP_ICON_URL: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/immich.svg"
+      OIDC_APP_NAME: Immich
+      OIDC_CALLBACK_PATH: /auth/login
+      OIDC_PKCE_ENABLED: "true"
+      # Created by CNPG as superuser; immich's migrations only re-check them.
+      DB_EXTENSIONS: '[{"name":"vector"},{"name":"vchord"},{"name":"cube"},{"name":"earthdistance"}]'
+      # Keep at or under half the bulk pool: kopiur's staging PVC requests the
+      # same size, and the CSI capacity check refuses it once free space is lower.
+      KOPIUR_CAPACITY: 800Gi
+      KOPIUR_STORAGECLASS: openebs-zfspv-bulk
+      KOPIUR_UID: "4012"
+      KOPIUR_GID: "4012"
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+      - name: immich-oidc-credentials
+        kind: Secret
+        optional: true
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: photos
+  wait: false

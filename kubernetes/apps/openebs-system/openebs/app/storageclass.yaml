@@ -14,3 +14,26 @@ parameters:
 provisioner: zfs.csi.openebs.io
 allowVolumeExpansion: true
 volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: openebs-zfspv-bulk
+parameters:
+  poolname: "bulk"
+  fstype: "zfs"
+  # Large write-once media (photos, video), unlike tank's mixed app state.
+  recordsize: "1M"
+  compression: "on"
+  dedup: "off"
+  shared: "yes"
+  # No reservation: kopiur's staging clone of a big PVC would otherwise reserve
+  # a second full copy of its quota.
+  thinprovision: "yes"
+provisioner: zfs.csi.openebs.io
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+allowedTopologies:
+  - matchLabelExpressions:
+      - key: kubernetes.io/hostname
+        values: ["talos0"]

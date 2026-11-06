@@ -1,0 +1,15 @@
+---
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: immich
+spec:
+  spec:
+    devices:
+      requests:
+        - name: gpu
+          exactly:
+            deviceClassName: gpu.intel.com
+            # Shared, not reserving: a reserving claim would lock jellyfin,
+            # frigate and orcaslicer off the single iGPU.
+            adminAccess: true
