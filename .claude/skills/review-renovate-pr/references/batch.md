@@ -2,7 +2,7 @@
 
 Review all open Renovate PRs with one subagent per PR when delegation is available. Respect the environment's concurrency limit and dispatch remaining PRs as slots become available. Claude Code runs at most 20 subagents at once; Agent calls past that in the same message fail with "Concurrent subagent limit reached". If delegation is unavailable, review serially and still perform the cross-PR check and batch summary below.
 
-When reviewing serially, finish and emit each PR's review block before starting the next. Carry forward only compact findings needed for the cross-PR check and summary, not raw changelogs.
+When reviewing serially, finish and emit each PR's review block before starting the next, ending it with the same `Summary:` line the §2 dispatch prompt requires. Carry forward only those lines and the compact findings needed for the cross-PR check, not raw changelogs.
 
 ## 1. Enumerate
 
