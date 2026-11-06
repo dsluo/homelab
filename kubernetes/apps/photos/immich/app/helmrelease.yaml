@@ -38,6 +38,7 @@ spec:
                     name: immich-postgres-secret
                     key: uri
               REDIS_HOSTNAME: immich-valkey.photos.svc.cluster.local
+              IMMICH_TELEMETRY_INCLUDE: all
             probes:
               liveness: &serverProbe
                 enabled: true
@@ -76,6 +77,9 @@ spec:
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
               tag: v3.3.6-openvino@sha256:035c30de002da9d4d4ae3872107bb9d8e195ead1c1f9fd470a2b0149ed37aec1
+            env:
+              # HOME=/ isn't writable as uid 4012.
+              MPLCONFIGDIR: /cache/matplotlib-config
             probes:
               liveness: &mlProbe
                 enabled: true
@@ -88,6 +92,16 @@ spec:
                   timeoutSeconds: 5
                   failureThreshold: 3
               readiness: *mlProbe
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: *mlPort
+                  # Room for a slow cold start before liveness can restart it.
+                  failureThreshold: 60
+                  periodSeconds: 10
             resources:
               requests:
                 cpu: 100m
@@ -117,6 +131,10 @@ spec:
         ports:
           http:
             port: *port
+          metrics-api:
+            port: 8081
+          metrics-ms:
+            port: 8082
       machine-learning:
         controller: machine-learning
         ports:
@@ -127,6 +145,14 @@ spec:
         ports:
           valkey:
             port: 6379
+
+    serviceMonitor:
+      immich:
+        service:
+          identifier: immich
+        endpoints:
+          - port: metrics-api
+          - port: metrics-ms
 
     route:
       immich:
