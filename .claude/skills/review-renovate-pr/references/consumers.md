@@ -31,6 +31,13 @@ repo, and update this file.
   bump, render-and-diff **all** consumers, not a sample — a no-op render across all of them is
   the ✅ evidence.
 
+## App-specific
+
+- **Sonarr / Radarr / Prowlarr** (`kubernetes/apps/media/`) → patch bumps can carry one-way
+  database migrations the release notes don't list; check the upstream migrations folder for new
+  entries. The HelmReleases set liveness and readiness probes but no startup probe, so a long
+  migration can be killed mid-run by the liveness probe.
+
 ## Amplifiers
 
 - **`wait: true` in a `ks.yaml`** makes that app a choke point: if it crash-loops, every
