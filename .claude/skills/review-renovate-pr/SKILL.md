@@ -119,7 +119,7 @@ decision-relevant line. "None — config-only, no workload restart" is a valid e
   - Impact here: <path/to/file.yaml:NN> | no impact: not used
 
 ### Notable changes
-- <non-breaking behavior change worth knowing>
+- <significant new feature or non-breaking behavior change, and whether this repo could use it>
 
 ### Recommended actions
 - <migration step, values change, or "none — direct merge">
@@ -129,6 +129,8 @@ decision-relevant line. "None — config-only, no workload restart" is a valid e
 ```
 
 **Citation rule:** every `Impact here:` entry must either be a concrete `path/to/file.yaml:NN` reference (line number required — find it with `rg -n` or an equivalent search tool) or the literal string `no impact: not used`. Prose claims like "our helmrelease doesn't reference it" are not acceptable — if it's truly absent, show the search came up empty; if it's present, cite the line.
+
+**Notable-changes rule:** list what someone running this repo would want to know even though nothing breaks: new features or options this repo could adopt (cite the `path/to/file.yaml:NN` it would change or replace), changed defaults, new deprecations, and security or performance fixes that touch features this repo uses. Skip routine bugfixes, docs and dependency bumps. In batch mode the orchestrator collects these across PRs into the batch summary.
 
 **Recommended-actions rule:** every concrete edit in `Recommended actions` (renames, value changes, field swaps) must be backed by template evidence per §4's verify-before-prescribing step. If you only have the release-note text, phrase the action as verification, not a prescribed edit — e.g. `after merge, confirm that the rendered VMAgent Service name still matches httproute.yaml:14; if not, update the backendRef`. Better to ask the user to verify than to prescribe a wrong rename.
 

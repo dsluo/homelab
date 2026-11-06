@@ -2,7 +2,7 @@
 
 Review all open Renovate PRs with one subagent per PR when delegation is available. Respect the environment's concurrency limit and dispatch remaining PRs as slots become available. Claude Code runs at most 20 subagents at once; Agent calls past that in the same message fail with "Concurrent subagent limit reached". If delegation is unavailable, review serially and still perform the cross-PR check and batch summary below.
 
-When reviewing serially, finish and emit each PR's review block before starting the next, ending it with the same `Summary:` line the §2 dispatch prompt requires. Carry forward only those lines and the compact findings needed for the cross-PR check, not raw changelogs.
+When reviewing serially, finish and emit each PR's review block before starting the next, ending it with the same `Summary:` line the §2 dispatch prompt requires. Carry forward only those lines, the notable changes, and the compact findings needed for the cross-PR check, not raw changelogs.
 
 ## 1. Enumerate
 
@@ -51,8 +51,9 @@ Your final report must be exactly the markdown review block the skill's §5 spec
 with `## Renovate review: ...`), with no extra preamble or commentary around it. Drop empty
 sections entirely, heading included. Follow the citation rule strictly: every `Impact here:`
 must be a `path/to/file.yaml:NN` with a real line number, or the literal `no impact: not used`.
-End the block with one line:
-`Summary: <verdict> | <blast radius> | <couplings with other open PRs, or none>`
+End the block with one line, listing the significant features/changes from your `Notable changes`
+section in a few words each:
+`Summary: <verdict> | <blast radius> | <notable changes, separated by semicolons, or none> | <couplings with other open PRs, or none>`
 ```
 
 Add a PR-specific note to the prompt only when there is something the leaf should chase: a companion PR for the same package family, or a package-specific gotcha. Before dispatching, recall memory (memini) for each package in the batch and pass any relevant gotcha in that note.
@@ -73,15 +74,15 @@ Revise individual verdicts if a coupling changes them, and say which PR gates wh
 
 ## 4. Batch summary — the required final output
 
-End with a summary table plus a staged merge order (this, not the individual blocks, is what the user acts on). Build the table from each leaf's `Summary:` line:
+End with a summary table plus a staged merge order (this, not the individual blocks, is what the user acts on). Build the table from each leaf's `Summary:` line, and the notable-changes list from each leaf's `Notable changes` section:
 
 ```
 ## Batch summary
 
-| PR | Package | Bump | Verdict | Blast radius |
-|----|---------|------|---------|--------------|
-| #1470 | pocket-id-operator | 0.13.1 → 0.14.0 | ⚠ pair with #1469 | SSO outage ~1min |
-| ... | | | | |
+| PR | Package | Bump | Verdict | Blast radius | Notable changes |
+|----|---------|------|---------|--------------|-----------------|
+| #1470 | pocket-id-operator | 0.13.1 → 0.14.0 | ⚠ pair with #1469 | SSO outage ~1min | <a few words each, or none> |
+| ... | | | | | |
 
 **Suggested merge order:**
 1. <inert/config-only PRs — any time, any order>
@@ -89,9 +90,14 @@ End with a summary table plus a staged merge order (this, not the individual blo
 3. <CNI / node / DB-migration PRs — last, individually, watching Flux between each>
 
 <couplings: "#A must merge before #B because ...">
+
+**Notable changes:**
+- #<num> <package>: <significant feature or behavior change, one line each; say when this repo could use it>
 ```
 
 Order by blast radius, not PR number: config-only first; workload restarts second; anything cycling the CNI, the nodes themselves, or a database last and individually.
+
+In the notable-changes list, put features this repo could adopt first, then changed defaults and deprecations, then the rest. Merge entries that several PRs report for the same upstream change, and omit the list if no leaf reported any.
 
 ## 5. Merge phase ("merge the safe ones")
 
