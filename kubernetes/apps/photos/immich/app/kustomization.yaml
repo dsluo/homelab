@@ -1,0 +1,41 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./configsecret.yaml
+  - ./helmrelease.yaml
+  - ./ocirepository.yaml
+  - ./resourceclaimtemplate.yaml
+  - ./usergroup.yaml
+patches:
+  # Immich also returns to /user-settings (account linking) and to the mobile
+  # app's custom scheme; the component only sets the one login callback.
+  - target:
+      group: pocketid.internal
+      version: v1alpha1
+      kind: PocketIDOIDCClient
+    patch: |
+      - op: add
+        path: /spec/callbackUrls/-
+        value: https://immich.${DOMAIN}/user-settings
+      - op: add
+        path: /spec/callbackUrls/-
+        value: app.immich:///oauth-callback
+  # Thumbnails and transcodes are regenerable from the originals. An explicit
+  # ignoreRules list replaces kopiur's defaults, so those are repeated here.
+  - target:
+      group: kopiur.home-operations.com
+      version: v1alpha1
+      kind: SnapshotPolicy
+    patch: |
+      - op: add
+        path: /spec/files
+        value:
+          ignoreRules:
+            - /lost+found
+            - System Volume Information
+            - $RECYCLE.BIN
+            - "@eaDir"
+            - .snapshot
+            - /thumbs
+            - /encoded-video

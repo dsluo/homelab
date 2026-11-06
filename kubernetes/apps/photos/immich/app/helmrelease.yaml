@@ -1,0 +1,171 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: immich
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: immich
+  interval: 1h
+  values:
+    controllers:
+      immich:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod: &pod
+          resourceClaims:
+            - name: gpu
+              resourceClaimTemplateName: immich
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 4012
+            runAsGroup: 4012
+            fsGroup: 4012
+            fsGroupChangePolicy: OnRootMismatch
+        containers:
+          immich:
+            image:
+              repository: ghcr.io/immich-app/immich-server
+              tag: v3.3.6@sha256:e1981983b1c13f6024b57d72e7ecae3342eed1581201ab09fb248932d86c593a
+            env:
+              TZ: "${TIMEZONE}"
+              IMMICH_CONFIG_FILE: /config/immich.yaml
+              DB_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: immich-postgres-secret
+                    key: uri
+              REDIS_HOSTNAME: immich-valkey.photos.svc.cluster.local
+            probes:
+              liveness: &serverProbe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/server/ping
+                    port: &port 2283
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *serverProbe
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/server/ping
+                    port: *port
+                  # First boot runs every database migration.
+                  failureThreshold: 60
+                  periodSeconds: 5
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 4Gi
+              claims:
+                - name: gpu
+
+      machine-learning:
+        pod: *pod
+        containers:
+          machine-learning:
+            image:
+              repository: ghcr.io/immich-app/immich-machine-learning
+              tag: v3.3.6-openvino@sha256:035c30de002da9d4d4ae3872107bb9d8e195ead1c1f9fd470a2b0149ed37aec1
+            probes:
+              liveness: &mlProbe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: &mlPort 3003
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *mlProbe
+            resources:
+              requests:
+                cpu: 100m
+                memory: 1Gi
+              limits:
+                memory: 6Gi
+              claims:
+                - name: gpu
+
+      valkey:
+        containers:
+          valkey:
+            image:
+              repository: ghcr.io/valkey-io/valkey
+              tag: 9.1.3
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+
+    service:
+      immich:
+        controller: immich
+        primary: true
+        ports:
+          http:
+            port: *port
+      machine-learning:
+        controller: machine-learning
+        ports:
+          http:
+            port: *mlPort
+      valkey:
+        controller: valkey
+        ports:
+          valkey:
+            port: 6379
+
+    route:
+      immich:
+        hostnames:
+          - "immich.${DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+          - name: envoy-towonel
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: immich
+                port: http
+
+    persistence:
+      library:
+        existingClaim: immich
+        advancedMounts:
+          immich:
+            immich:
+              - path: /data
+      config:
+        type: secret
+        name: immich-config
+        advancedMounts:
+          immich:
+            immich:
+              - path: /config
+                readOnly: true
+      ml-cache:
+        # A lone chart-made PVC is named after the release, which would collide
+        # with the kopiur-managed `immich` library claim.
+        forceRename: immich-ml-cache
+        type: persistentVolumeClaim
+        storageClass: openebs-zfspv-bulk
+        accessMode: ReadWriteOnce
+        size: 20Gi
+        advancedMounts:
+          machine-learning:
+            machine-learning:
+              - path: /cache

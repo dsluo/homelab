@@ -1,0 +1,13 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: immich-users
+spec:
+  friendlyName: Immich Users
+  allowedOIDCClients:
+    - name: immich
+  users:
+    userRefs:
+      - name: david
+        namespace: security
