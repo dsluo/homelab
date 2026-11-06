@@ -1,0 +1,69 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
+      },
+      "toolExposure": {
+        "get_commit": "direct",
+        "get_file_contents": "direct",
+        "get_label": "direct",
+        "get_latest_release": "direct",
+        "get_release_by_tag": "direct",
+        "get_tag": "direct",
+        "issue_read": "direct",
+        "list_branches": "direct",
+        "list_commits": "direct",
+        "list_issue_fields": "direct",
+        "list_issue_types": "direct",
+        "list_issues": "direct",
+        "list_pull_requests": "direct",
+        "list_releases": "direct",
+        "list_repository_collaborators": "direct",
+        "list_tags": "direct",
+        "search_code": "direct",
+        "search_commits": "direct",
+        "search_issues": "direct",
+        "search_pull_requests": "direct",
+        "search_repositories": "direct",
+        "search_users": "direct"
+      }
+    },
+    "kguardian": {
+      "type": "http",
+      "url": "https://kguardian-mcp.crayon.club/mcp",
+      "oauth": {
+        "clientId": "https://gist.githack.com/dsluo/688435a31421742fad1220894fc82805/raw/oauth-metadata.json"
+      }
+    },
+    "konflate": {
+      "type": "http",
+      "url": "https://konflate.crayon.club/mcp"
+    },
+    "grafana": {
+      "type": "stdio",
+      "command": "mcp-grafana",
+      "args": [],
+      "env": {
+        "GRAFANA_URL": "${GRAFANA_URL}",
+        "GRAFANA_SERVICE_ACCOUNT_TOKEN": "${GRAFANA_SERVICE_ACCOUNT_TOKEN}",
+        "GRAFANA_USAGE_STATS": "disabled"
+      }
+    },
+    "mikrotik": {
+      "type": "stdio",
+      "command": "mcp-server-mikrotik",
+      "env": {
+        "MIKROTIK_HOST": "${MIKROTIK_HOST}",
+        "MIKROTIK_USERNAME": "${MIKROTIK_USERNAME}",
+        "MIKROTIK_PASSWORD": "${MIKROTIK_PASSWORD}"
+      }
+    },
+    "unifi-network": {
+      "type": "stdio",
+      "command": "unifi-network-mcp"
+    }
+  }
+}

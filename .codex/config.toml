@@ -23,5 +23,4 @@ env_vars = ["UNIFI_NETWORK_HOST", "UNIFI_NETWORK_USERNAME", "UNIFI_NETWORK_PASSW
 
 [mcp_servers.memini]
 url = "https://memini.crayon.club/mcp"
-bearer_token_env_var = "MEMINI_API_KEY"
 env_http_headers = { "X-Memini-Namespace" = "MEMINI_NAMESPACE" }
