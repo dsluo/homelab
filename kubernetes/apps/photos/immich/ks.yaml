@@ -34,6 +34,12 @@ spec:
       # CSI capacity check refuses once the 1.8T bulk pool is under half free.
       KOPIUR_CAPACITY: 1400Gi
       KOPIUR_COPYMETHOD: Direct
+      # ZFS won't mount a dataset read-only while the app has it mounted
+      # read-write. OnRootMismatch matches the app pod, so the kubelet skips the
+      # recursive chgrp of the live volume.
+      KOPIUR_READONLY: "false"
+      KOPIUR_ACKNOWLEDGE_LIVE_MUTATION: "true"
+      KOPIUR_FSGROUPCHANGEPOLICY: OnRootMismatch
       KOPIUR_STORAGECLASS: openebs-zfspv-bulk
       KOPIUR_UID: "4012"
       KOPIUR_GID: "4012"
