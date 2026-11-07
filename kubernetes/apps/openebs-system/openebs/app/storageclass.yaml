@@ -37,3 +37,20 @@ allowedTopologies:
   - matchLabelExpressions:
       - key: kubernetes.io/hostname
         values: ["talos0"]
+---
+# kopiur staging clones of bulk volumes. Immediate binding skips the scheduler's
+# capacity check, which counts a clone's full request although it costs no space.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: openebs-zfspv-bulk-staging
+parameters:
+  # zfs-localpv requires the snapshot's pool; the clone inherits everything else.
+  poolname: "bulk"
+  fstype: "zfs"
+provisioner: zfs.csi.openebs.io
+volumeBindingMode: Immediate
+allowedTopologies:
+  - matchLabelExpressions:
+      - key: kubernetes.io/hostname
+        values: ["talos0"]

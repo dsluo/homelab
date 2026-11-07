@@ -23,7 +23,6 @@ spec:
       runAsUser: ${KOPIUR_UID}
       runAsGroup: ${KOPIUR_GID}
       fsGroup: ${KOPIUR_GID}
-      fsGroupChangePolicy: ${KOPIUR_FSGROUPCHANGEPOLICY:=Always}
   repository:
     kind: ClusterRepository
     name: homelab
@@ -35,6 +34,4 @@ spec:
   sources:
     - pvc:
         name: ${APP}
-      readOnly: ${KOPIUR_READONLY:=true}
-      acknowledgeLiveMutation: ${KOPIUR_ACKNOWLEDGE_LIVE_MUTATION:=false}
   volumeSnapshotClassName: ${KOPIUR_SNAPSHOTCLASS:=openebs-zfs-snapshot}
