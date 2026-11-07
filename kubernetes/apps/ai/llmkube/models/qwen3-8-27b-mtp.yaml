@@ -34,7 +34,7 @@ spec:
   modelRef: qwen3-8-27b-mtp
   runtime: llamacpp
   # gfx1201 is in the upstream ROCm image's build targets.
-  image: ghcr.io/ggml-org/llama.cpp:server-rocm-b12124@sha256:eeeea483af484e0a7f49f382e618ec86d637352be874b039694b760ed0e0de9e
+  image: ghcr.io/ggml-org/llama.cpp:server-rocm-b12169@sha256:949e8fe1f625587998e6ac38f972867fcf4bc443fc0ae6656f4feedcd9d0e192
   # No replicas: the ModelPool owns them, and a value here makes Flux fight it.
 
   # --- typed preset fields ---
