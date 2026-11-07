@@ -30,9 +30,10 @@ spec:
       OIDC_PKCE_ENABLED: "true"
       # Created by CNPG as superuser; immich's migrations only re-check them.
       DB_EXTENSIONS: '[{"name":"vector"},{"name":"vchord"},{"name":"cube"},{"name":"earthdistance"}]'
-      # Keep at or under half the bulk pool: kopiur's staging PVC requests the
-      # same size, and the CSI capacity check refuses it once free space is lower.
-      KOPIUR_CAPACITY: 800Gi
+      # Direct: a Snapshot-staged PVC requests the full 1400Gi again, which the
+      # CSI capacity check refuses once the 1.8T bulk pool is under half free.
+      KOPIUR_CAPACITY: 1400Gi
+      KOPIUR_COPYMETHOD: Direct
       KOPIUR_STORAGECLASS: openebs-zfspv-bulk
       KOPIUR_UID: "4012"
       KOPIUR_GID: "4012"
