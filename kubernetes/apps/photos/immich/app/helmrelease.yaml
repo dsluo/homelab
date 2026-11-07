@@ -14,11 +14,11 @@ spec:
       immich:
         annotations:
           reloader.stakater.com/auto: "true"
-        pod: &pod
+        pod:
           resourceClaims:
             - name: gpu
               resourceClaimTemplateName: immich
-          securityContext:
+          securityContext: &securityContext
             runAsNonRoot: true
             runAsUser: 4012
             runAsGroup: 4012
@@ -71,12 +71,17 @@ spec:
                 - name: gpu
 
       machine-learning:
-        pod: *pod
+        pod:
+          # CPU inference on talos1's idle 7950X3D; OpenVINO on talos0's iGPU
+          # grew past 8Gi of GPU buffers during bulk imports.
+          nodeSelector:
+            kubernetes.io/hostname: talos1
+          securityContext: *securityContext
         containers:
           machine-learning:
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
-              tag: v3.3.6-openvino@sha256:035c30de002da9d4d4ae3872107bb9d8e195ead1c1f9fd470a2b0149ed37aec1
+              tag: v3.3.6@sha256:14367bfb374b8576ddf49abd67c5ca0190a4c7fcf6303cdad65d7f7bf1a50bc2
             env:
               # HOME=/ isn't writable as uid 4012.
               MPLCONFIGDIR: /cache/matplotlib-config
@@ -104,12 +109,10 @@ spec:
                   periodSeconds: 10
             resources:
               requests:
-                cpu: 100m
-                memory: 1Gi
+                cpu: 1
+                memory: 2Gi
               limits:
-                memory: 8Gi
-              claims:
-                - name: gpu
+                memory: 6Gi
 
       valkey:
         containers:
@@ -186,9 +189,9 @@ spec:
       ml-cache:
         # A lone chart-made PVC is named after the release, which would collide
         # with the kopiur-managed `immich` library claim.
-        forceRename: immich-ml-cache
+        forceRename: immich-ml-cache-talos1
         type: persistentVolumeClaim
-        storageClass: openebs-zfspv-bulk
+        storageClass: openebs-zfspv
         accessMode: ReadWriteOnce
         size: 20Gi
         advancedMounts:
