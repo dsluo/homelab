@@ -7,7 +7,6 @@ metadata:
 spec:
   compression:
     compressor: zstd
-  copyMethod: ${KOPIUR_COPYMETHOD:=Snapshot}
   credentialProjection:
     # Consumer half of the projection handshake (owner half: `allowed` on the
     # ClusterRepository). Copies the repository credentials into this app's
@@ -34,4 +33,6 @@ spec:
   sources:
     - pvc:
         name: ${APP}
+  staging:
+    storageClassName: "${KOPIUR_STAGING_STORAGECLASS:=${KOPIUR_STORAGECLASS:=openebs-zfspv}}"
   volumeSnapshotClassName: ${KOPIUR_SNAPSHOTCLASS:=openebs-zfs-snapshot}

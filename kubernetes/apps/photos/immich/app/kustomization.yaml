@@ -21,13 +21,3 @@ patches:
       - op: add
         path: /spec/callbackUrls/-
         value: app.immich:///oauth-callback
-  # The staged clone requests the full 1400Gi; an Immediate-binding class skips
-  # the scheduler's capacity check, which can't see that a ZFS clone is free.
-  - target:
-      group: kopiur.home-operations.com
-      kind: SnapshotPolicy
-    patch: |
-      - op: add
-        path: /spec/staging
-        value:
-          storageClassName: openebs-zfspv-bulk-staging

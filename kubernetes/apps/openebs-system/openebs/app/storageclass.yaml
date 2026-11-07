@@ -43,7 +43,7 @@ allowedTopologies:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: openebs-zfspv-bulk-staging
+  name: openebs-zfspv-bulk-immediate
 parameters:
   # zfs-localpv requires the snapshot's pool; the clone inherits everything else.
   poolname: "bulk"

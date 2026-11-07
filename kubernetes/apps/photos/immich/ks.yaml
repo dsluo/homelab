@@ -32,6 +32,9 @@ spec:
       DB_EXTENSIONS: '[{"name":"vector"},{"name":"vchord"},{"name":"cube"},{"name":"earthdistance"}]'
       KOPIUR_CAPACITY: 1400Gi
       KOPIUR_STORAGECLASS: openebs-zfspv-bulk
+      # The staged clone requests the full 1400Gi; Immediate binding skips the
+      # scheduler's capacity check, which can't see that a ZFS clone is free.
+      KOPIUR_STAGING_STORAGECLASS: openebs-zfspv-bulk-immediate
       KOPIUR_UID: "4012"
       KOPIUR_GID: "4012"
     substituteFrom:
