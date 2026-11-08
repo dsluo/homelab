@@ -1,0 +1,22 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: zfs-scrub
+spec:
+  dependsOn:
+    - name: openebs
+      namespace: openebs-system
+  interval: 1h
+  path: ./kubernetes/apps/openebs-system/zfs-scrub/app
+  postBuild:
+    substituteFrom:
+      - name: cluster-global-config
+        kind: ConfigMap
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: openebs-system
+  wait: false

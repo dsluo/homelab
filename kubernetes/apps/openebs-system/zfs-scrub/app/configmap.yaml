@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zfs-scrub-script
+  annotations:
+    # postBuild envsubst would blank the script's shell variables.
+    kustomize.toolkit.fluxcd.io/substitute: disabled
+data:
+  scrub.sh: |
+    #!/bin/sh
+    set -u
+    zpool() { chroot /host /usr/local/sbin/zpool "$@"; }
+
+    for pool in $(zpool list -H -o name); do
+      echo "scrubbing ${pool}"
+      # If a scrub is already running, -w fails; wait on that one instead.
+      zpool scrub -w "${pool}" || zpool wait -t scrub "${pool}"
+    done
+
+    zpool status -v
+    # Fail the Job (KubeJobFailed) unless every pool on this node is clean.
+    [ "$(zpool status -x)" = "all pools are healthy" ]

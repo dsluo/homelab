@@ -1,0 +1,89 @@
+---
+# One CronJob per node: zpool only sees the pools imported on its own host.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: zfs-scrub-talos0
+spec:
+  schedule: "0 4 1 * *"
+  timeZone: "${TIMEZONE}"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      # A retry would start a second full scrub.
+      backoffLimit: 0
+      template:
+        spec:
+          restartPolicy: Never
+          nodeSelector:
+            kubernetes.io/hostname: talos0
+          containers:
+            - name: scrub
+              image: docker.io/library/busybox:1.37.0@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec
+              command: ["/bin/sh", "/scripts/scrub.sh"]
+              # chroot into the host to run its zpool against /dev/zfs.
+              securityContext:
+                privileged: true
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 16Mi
+                limits:
+                  memory: 64Mi
+              volumeMounts:
+                - name: host
+                  mountPath: /host
+                  readOnly: true
+                - name: scripts
+                  mountPath: /scripts
+                  readOnly: true
+          volumes:
+            - name: host
+              hostPath:
+                path: /
+            - name: scripts
+              configMap:
+                name: zfs-scrub-script
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: zfs-scrub-talos1
+spec:
+  schedule: "0 4 1 * *"
+  timeZone: "${TIMEZONE}"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          restartPolicy: Never
+          nodeSelector:
+            kubernetes.io/hostname: talos1
+          containers:
+            - name: scrub
+              image: docker.io/library/busybox:1.37.0@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec
+              command: ["/bin/sh", "/scripts/scrub.sh"]
+              securityContext:
+                privileged: true
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 16Mi
+                limits:
+                  memory: 64Mi
+              volumeMounts:
+                - name: host
+                  mountPath: /host
+                  readOnly: true
+                - name: scripts
+                  mountPath: /scripts
+                  readOnly: true
+          volumes:
+            - name: host
+              hostPath:
+                path: /
+            - name: scripts
+              configMap:
+                name: zfs-scrub-script
