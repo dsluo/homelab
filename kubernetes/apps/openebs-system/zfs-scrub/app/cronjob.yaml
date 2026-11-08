@@ -26,8 +26,9 @@ spec:
                 - -c
                 - |
                   set -eu
+                  # Log pool status on every exit, including a failed scrub.
+                  trap 'chroot /host /usr/local/sbin/zpool status -v' EXIT
                   chroot /host /usr/local/sbin/zpool list -H -o name | xargs chroot /host /usr/local/sbin/zpool scrub -w
-                  chroot /host /usr/local/sbin/zpool status -v
                   chroot /host /usr/local/sbin/zpool status -x | grep -qx 'all pools are healthy'
               # chroot into the host to run its zpool against /dev/zfs.
               securityContext:
@@ -72,8 +73,9 @@ spec:
                 - -c
                 - |
                   set -eu
+                  # Log pool status on every exit, including a failed scrub.
+                  trap 'chroot /host /usr/local/sbin/zpool status -v' EXIT
                   chroot /host /usr/local/sbin/zpool list -H -o name | xargs chroot /host /usr/local/sbin/zpool scrub -w
-                  chroot /host /usr/local/sbin/zpool status -v
                   chroot /host /usr/local/sbin/zpool status -x | grep -qx 'all pools are healthy'
               securityContext:
                 privileged: true
