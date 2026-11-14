@@ -10,17 +10,52 @@ spec:
   interval: 1h
   values:
     fullnameOverride: k8s-gateway
-    domain: "${DOMAIN}"
-    ttl: 1
     service:
-      type: LoadBalancer
-      port: 53
       annotations:
         lbipam.cilium.io/ips: 10.0.42.128
       externalTrafficPolicy: Cluster
-      # Without this the Service publishes UDP only, so every TCP query to the
-      # VIP is dropped SERVICE_BACKEND_NOT_FOUND — including CoreDNS' fallback
-      # when a `forward crayon.club` response comes back truncated. The pod
-      # already serves TCP on 1053; only the port declarations were missing.
-      useTcp: true
-    watchedResources: ["HTTPRoute", "Service"]
+    securityContext:
+      runAsUser: 1000
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        # null clears the chart's default 100m CPU limit, which would otherwise merge in.
+        cpu: null
+        memory: 256Mi
+    readinessProbe:
+      initialDelaySeconds: 10
+      failureThreshold: 5
+    # Single replica: the chart's maxUnavailable 1 stops the old pod before the
+    # new one is Ready, leaving the DNS VIP with no endpoint during rollouts.
+    rollingUpdate:
+      maxUnavailable: 0
+    servers:
+      - zones:
+          - zone: .
+            # Without TCP the VIP drops CoreDNS' retry of truncated
+            # `forward ${DOMAIN}` answers (SERVICE_BACKEND_NOT_FOUND).
+            use_tcp: true
+        port: 1053
+        servicePort: 53
+        plugins:
+          - name: k8s_gateway
+            parameters: "${DOMAIN}"
+            configBlock: |-
+              apex k8s-gateway.network
+              ttl 1
+              resources HTTPRoute Service
+          - name: log
+          - name: errors
+          - name: health
+            configBlock: |-
+              lameduck 5s
+          - name: ready
+          - name: prometheus
+            parameters: 0.0.0.0:9153
+          - name: forward
+            parameters: . /etc/resolv.conf
+          - name: loop
+          - name: reload
+          - name: loadbalance
